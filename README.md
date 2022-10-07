@@ -1,5 +1,8 @@
 # Bubble Blaster 2 - Issues and Wiki.
 
+## Coming soon
+The game's code is coming soon!
+
 ## There's a bug / my game crashes
  * Go to the [issue tracker](https://github.com/Ultreon/bubble-blaster-2/issues).
  * Press on the `New Issue` button.
