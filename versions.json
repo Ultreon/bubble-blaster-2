@@ -1,0 +1,81 @@
+{
+  "versions": {
+    "0.0.2992-indev4": {
+      "name": "0.0.2992 Indev 4",
+      "type": "Indev",
+      "stable": false,
+      "preRelease": false,
+      "release": false,
+      "runtime": {
+        "type": "JavaJDK",
+        "version": 17
+      },
+      "version": {
+        "version": 0,
+        "release": 0,
+        "build": 2992
+      },
+      "buildDate": "2022-05-04 12:56",
+      "download": "https://github.com/Ultreon/bubble-blaster/raw/main/.mavenrepo/com/ultreon/bubbles/0.0.2992-indev4/bubbles-0.0.2992-indev4.jar",
+      "librariesUrl": "https://github.com/Ultreon/bubble-blaster/raw/main/.library-meta/0.0.2992-indev4.json",
+      "args": ["gameDir={game_dir}"]
+    },
+    "0.0.2169-indev3": {
+      "name": "0.0.2169 Indev 3",
+      "type": "Indev",
+      "stable": false,
+      "preRelease": false,
+      "release": false,
+      "runtime": {
+        "type": "JavaJDK",
+        "version": 17
+      },
+      "version": {
+        "version": 0,
+        "release": 0,
+        "build": 2169
+      },
+      "buildDate": "2022-01-20 22:18",
+      "download": "https://github.com/Ultreon/bubble-blaster/releases/download/0.0.2169-indev3/bubbles-0.0.2169-indev3.jar",
+      "args": ["gameDir={game_dir}"]
+    },
+    "0.0.1891-indev2": {
+      "name": "0.0.1891 Indev 2",
+      "type": "Indev",
+      "stable": false,
+      "preRelease": false,
+      "release": false,
+      "runtime": {
+        "type": "JavaJDK",
+        "version": 17
+      },
+      "version": {
+        "version": 0,
+        "release": 0,
+        "build": 1891
+      },
+      "buildDate": "2021-12-23 14:33",
+      "download": "https://github.com/Ultreon/bubble-blaster/releases/download/0.0.1891-indev2/bubbles-0.0.1891-indev2.jar",
+      "args": ["gameDir={game_dir}"]
+    },
+    "0.0.1881-indev1": {
+      "name": "0.0.1881 Indev 1",
+      "type": "Indev",
+      "stable": false,
+      "preRelease": false,
+      "release": false,
+      "runtime": {
+        "type": "JavaJDK",
+        "version": 17
+      },
+      "version": {
+        "version": 0,
+        "release": 0,
+        "build": 1881
+      },
+      "buildDate": "2021-12-21 18:08",
+      "download": "https://github.com/Ultreon/bubble-blaster/releases/download/0.0.1881-indev1/bubbles-0.0.1881-indev1.jar",
+      "args": ["gameDir={game_dir}"]
+    }
+  }
+}

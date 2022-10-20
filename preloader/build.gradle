@@ -1,0 +1,113 @@
+import static java.lang.System.getenv
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            name = "sonatype"
+        }
+        maven {
+            url = "https://maven.atlassian.com/3rdparty/"
+        }
+        google()
+    }
+    dependencies {
+        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
+        classpath "com.google.code.gson:gson:2.8.+"
+    }
+}
+
+plugins {
+    id "groovy"
+}
+
+apply plugin: 'eclipse'
+
+def calendar = Calendar.getInstance()
+def date = String.format("%01dy%02dm%02dd", calendar.get(Calendar.YEAR) - 2000, calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+def time = String.format("%01dh%02dm%02ds", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND))
+version = "$date+$time"
+if ((getenv "BUILD_NUMBER") != null) {
+    def buildNr = getenv "BUILD_NUMBER"
+    version = "$project_version-$buildNr"
+}
+
+group = 'com.ultreon.bubbles' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'preloader'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16' // Need this here so eclipse task generates correctly.
+
+//GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
+//shell.run(file, arguments);
+
+println("Current version: " + version)
+println("Project: " + group + ":" + archivesBaseName)
+println("Bulding a Java " + compileJava.targetCompatibility + " project...")
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // configuration that holds jars to include in the jar
+    api
+}
+
+dependencies {
+    api 'it.unimi.dsi:fastutil-core:8.5.9'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
+    api group: 'org.ow2.asm', name: 'asm', version: '9.2'
+    api group: 'org.ow2.asm', name: 'asm-tree', version: '9.2'
+    api group: 'org.xbib.elasticsearch', name: 'joptsimple', version: '6.3.2.1'
+    api group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
+    api group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    api group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'QBubbles',
+                'Implementation-Vendor': 'Ultreon Team',
+                'Implementation-Version': "1.0-indev1",
+                'Main-Class': 'com.ultreon.preloader.PreGameLoader',
+                'Multi-Release': 'true'
+    }
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+test {
+    useJUnitPlatform()
+}
+
+task("uploadJars", dependsOn: "build") {
+
+    description = "uploads JARs"
+
+    if (project.hasProperty("local_maven") || project.hasProperty("sftp_maven")) {
+//        apply plugin: 'maven'
+//        uploadArchives {
+//            repositories {
+//                if (project.hasProperty("local_maven")) {
+//                    mavenDeployer {
+//                        repository(url: "file://${local_maven}")
+//                    }
+//                }
+//                if (project.hasProperty("sftp_maven")) {
+//                    repositories.mavenDeployer {
+//                        configuration = configurations.deployerJars
+//                        repository(url: "sftp://${sftp_maven}") {
+//                            authentication(userName: "${sftp_username}", privateKey: "${sftp_key}")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+}

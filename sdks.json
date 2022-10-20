@@ -1,0 +1,41 @@
+{
+  "Python": {
+    "3.9": {
+      "download": {
+        "win-x64": "https://www.python.org/ftp/python/3.9.9/python-3.9.9-embed-amd64.zip"
+      },
+      "version": "3.9.9",
+      "date": "2021-11-15 00:00",
+      "executablePath": "python",
+      "innerPath": null
+    }
+  },
+  "JavaJDK": {
+    "17": {
+      "download": {
+        "win-x64": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12.zip",
+        "win-x86": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x86_windows_hotspot_17.0.1_12.zip",
+        "lin-x64": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz",
+        "lin-arm": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_arm_linux_hotspot_17.0.1_12.tar.gz",
+        "mac-x64": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_mac_hotspot_17.0.1_12.tar.gz"
+      },
+      "version": "17.0.1+12",
+      "date": "2021-10-27 15:36",
+      "executablePath": "bin/javaw",
+      "innerPath": "jdk-17.0.1+12"
+    },
+    "16": {
+      "download": {
+        "win-x64": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
+        "win-x86": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.zip",
+        "lin-x64": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz",
+        "lin-arm": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_arm_linux_hotspot_16.0.2_7.tar.gz",
+        "mac-x64": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_mac_hotspot_16.0.2_7.tar.gz"
+      },
+      "version": "16.0.2+7",
+      "date": "2021-07-30 15:36",
+      "executablePath": "bin/javaw",
+      "innerPath": "jdk-16.0.2+7"
+    }
+  }
+}

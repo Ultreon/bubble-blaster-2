@@ -1,0 +1,26 @@
+{
+  "music": [
+    {
+      "type": "bgm",
+      "author": {
+        "url": "https://www.youtube.com/c/Epicuras",
+        "name": "Epicuras"
+      },
+      "source": {
+        "name": "Submarine - Fanmade Minecraft Music Disc",
+        "url": "https://youtu.be/2iiG7MY1BJ8"
+      }
+    },
+    {
+      "type": "bgm",
+      "author": {
+        "url": "https://www.youtube.com/channel/UC9VI6D9htAEayFEG-4EVFPQ",
+        "name": "Thaetaa-Terraainn"
+      },
+      "source": {
+        "name": "Ultima - fan made minecraft music disc",
+        "url": "https://youtu.be/YRbiIRTXnws"
+      }
+    }
+  ]
+}

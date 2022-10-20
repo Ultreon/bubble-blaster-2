@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Game" type="Application" factoryName="Application">
+    <envs>
+      <env name="DEV_CLASS_PATH" value="" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.ultreon.dev.GameDevMain" />
+    <module name="bubbles.main" />
+    <option name="PROGRAM_PARAMETERS" value="gameDir=&quot;$ProjectFileDir$/run/&quot;" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

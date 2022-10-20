@@ -1,0 +1,105 @@
+## Java
+
+*.class
+*.war
+*.ear
+hs_err_pid*
+
+## Android Studio and Intellij and Android in general
+.idea/workspace.xml
+*.ipr
+*.iws
+*.iml
+/android/out/
+com_crashlytics_export_strings.xml
+
+## Eclipse
+
+.classpath
+.project
+.metadata/
+/preloader/bin/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+
+## NetBeans
+/nbproject/private/
+/preloader/nbproject/private
+
+/build/
+/preloader/build/
+
+/nbbuild/
+/preloader/nbbuild/
+
+/dist/
+/preloader/dist/
+
+/nbdist/
+/preloader/nbdist/
+
+nbactions.xml
+nb-configuration.xml
+
+## Gradle
+/local.bootOptions
+.gradle/
+gradle-app.setting
+
+## OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Directories
+/**/log/
+/**/venv/
+/out/
+
+# Files.
+/result.png
+
+# Recusive Directories
+/**/__pycache__/
+/**/.gradle/
+/**/.idea/workspace.xml
+/**/build/
+/run/Logs/
+/**/out/
+/**/run/
+
+# Test files.
+/test.bson
+/test.data
+/test.qdat
+
+# File types.
+*.qdat
+*.pkl
+*.log
+*.temp
+
+# Lombok config
+lombok.config
+
+# Local files
+/local/
+/tmp/
+/temp/
+
+# Libraries
+!libs/*.jar
+
+# Java Libraries
+/lib/
+/java-lib/
+/java-libs/
+
+# Removed
+/docs/
