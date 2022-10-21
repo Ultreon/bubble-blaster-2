@@ -5,7 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -37,13 +36,15 @@ public class ModInfo {
     private String credits = "";
 
     @NonNull
-    private Map<String, String> entryPoints = new HashMap<>();
+    @SerializedName("entry-points")
+    private final Map<String, String> entryPoints;
 
-    ModInfo(@NonNull String modId, @NonNull String name, @NonNull String[] author, @NonNull String license) {
+    ModInfo(@NonNull String modId, @NonNull String name, @NonNull String[] author, @NonNull String license, @NonNull Map<String, String> entryPoints) {
         this.modId = modId;
         this.name = name;
         this.author = author;
         this.license = license;
+        this.entryPoints = entryPoints;
     }
 
     public ModInfo(@NonNull String modId, @NonNull String name, @NonNull String[] author, @NonNull String license, String repo, URL website, URL issueTracker, String[] contributors, String credits, @NonNull Map<String, String> entryPoints) {
