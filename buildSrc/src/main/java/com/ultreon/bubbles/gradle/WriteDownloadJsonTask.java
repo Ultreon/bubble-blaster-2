@@ -39,7 +39,7 @@ public class WriteDownloadJsonTask extends BaseTask {
         gson.toJson(urls, jw);
         Project rootProject = getProject().getRootProject();
         try {
-            Files.write(Paths.get(rootProject.getProjectDir().getPath() + "/build/libraries.json"), sw.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            Files.write(Paths.get(rootProject.getProjectDir().getPath() + "/build/libs/libraries.json"), sw.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
