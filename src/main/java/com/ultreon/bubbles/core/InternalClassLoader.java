@@ -1,26 +1,23 @@
 package com.ultreon.bubbles.core;
 
-import com.google.gson.*;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.loader.Scanner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.ultreon.bubbles.mod.loader.ScannerResult;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 public class InternalClassLoader extends URLClassLoader {
     private static final String INTERNAL_ID = "com.ultreon.bubbleblaster";
-    private final Map<String, Scanner.Result> scans = new HashMap<>();
+    private final Map<String, ScannerResult> scans = new HashMap<>();
 
     private static InternalClassLoader instance = new InternalClassLoader();
     private final File gameFile;
-    private Scanner.Result scanResult;
+    private ScannerResult scanResult;
 
     public InternalClassLoader() {
         super(new URL[]{BubbleBlaster.class.getProtectionDomain().getCodeSource().getLocation()}, BubbleBlaster.class.getClassLoader());
@@ -39,9 +36,9 @@ public class InternalClassLoader extends URLClassLoader {
         return instance;
     }
 
-    public Scanner.Result scan() {
+    public ScannerResult scan() {
         Scanner scanner = new Scanner(gameFile, this);
-        Scanner.Result scanResult = scanner.scan();
+        ScannerResult scanResult = scanner.scan();
         this.scans.put(INTERNAL_ID, scanResult);
         return this.scanResult = scanResult;
     }
@@ -66,11 +63,11 @@ public class InternalClassLoader extends URLClassLoader {
         return super.loadClass(name);
     }
 
-    public Scanner.Result getResult(String modFileId) {
+    public ScannerResult getResult(String modFileId) {
         return scans.get(modFileId);
     }
 
-    public Scanner.Result getScanResult() {
+    public ScannerResult getScanResult() {
         return scanResult;
     }
 

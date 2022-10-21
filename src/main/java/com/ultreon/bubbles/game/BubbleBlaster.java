@@ -22,6 +22,7 @@ import com.ultreon.bubbles.media.MP3Player;
 import com.ultreon.bubbles.media.Sound;
 import com.ultreon.bubbles.media.SoundPlayer;
 import com.ultreon.bubbles.mod.loader.Scanner;
+import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registers;
@@ -137,7 +138,7 @@ public final class BubbleBlaster {
     private final BufferedImage background = null;
     private final Object rpcUpdateLock = new Object();
     private final Ticker ticker = new Ticker();
-    private final Scanner.Result scanResults;
+    private final ScannerResult scanResults;
     // Utility objects.
     public InputController input;
     // Environment
@@ -1819,7 +1820,7 @@ public final class BubbleBlaster {
         return tps;
     }
 
-    public Scanner.Result getScanResults() {
+    public ScannerResult getScanResults() {
         return scanResults;
     }
 

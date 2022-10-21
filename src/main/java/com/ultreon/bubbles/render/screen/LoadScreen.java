@@ -5,6 +5,7 @@ import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.mod.loader.ModLoader;
 import com.ultreon.bubbles.registry.Registers;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
@@ -21,9 +22,11 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public final class LoadScreen extends Screen implements Runnable {
@@ -43,6 +46,7 @@ public final class LoadScreen extends Screen implements Runnable {
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
+    private final ModLoader modLoader = new ModLoader((URLClassLoader) getClass().getClassLoader());
 
     public LoadScreen() {
         instance = this;
@@ -141,9 +145,27 @@ public final class LoadScreen extends Screen implements Runnable {
             }
         }
 
+        LOGGER.info("Loading mods...");
+        this.progMain.sendNext("Loading mods...");
+        modLoader.scanForJars();
+        this.progAlt = null;
+
+        LOGGER.info("Scanning mods...");
+        this.progMain.sendNext("Scanning mods...");
+        modLoader.scan(msgAlt, new AtomicReference<>(progAlt));
+        this.progAlt = null;
+
         LOGGER.info("Loading resources...");
         this.progMain.sendNext("Loading resources...");
         game().getResourceManager().importResources(game.getGameFile());
+        for (File file : modLoader.getFiles()) {
+            game().getResourceManager().importResources(file);
+        }
+        this.progAlt = null;
+
+        LOGGER.info("Setting up mods...");
+        this.progMain.sendNext("Setting up mods...");
+        modLoader.init(msgAlt, new AtomicReference<>(progAlt));
         this.progAlt = null;
 
         // Loading object holders

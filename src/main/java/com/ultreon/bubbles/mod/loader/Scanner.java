@@ -18,7 +18,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -26,6 +25,7 @@ import java.util.stream.Stream;
 
 import static java.io.File.pathSeparator;
 
+@AntiMod
 @SuppressWarnings({"unused", "resource"})
 public final class Scanner {
     private final File file = BubbleBlaster.getInstance().getGameFile();
@@ -42,7 +42,7 @@ public final class Scanner {
         this.classLoader = classLoader;
     }
 
-    public Result scan() {
+    public ScannerResult scan() {
         classes = new HashMap<>();
         className = null;
         jarEntry = null;
@@ -71,7 +71,7 @@ public final class Scanner {
             crashLog.addCategory(modCategory);
             BubbleBlaster.getInstance().crash(crashLog.createCrash());
         }
-        return new Result(this, classes);
+        return new ScannerResult(classes);
     }
 
     private void scanJarFile() throws IOException {
@@ -229,28 +229,4 @@ public final class Scanner {
     public JarFile getJarFile() {
         return jarFile;
     }
-
-    public static class Result {
-        private final HashMap<Class<? extends Annotation>, ArrayList<Class<?>>> classes;
-        private final Scanner scanner;
-
-        public Result(Scanner scanner, HashMap<Class<? extends Annotation>, ArrayList<Class<?>>> classes) {
-            this.classes = classes;
-            this.scanner = scanner;
-        }
-
-        @SuppressWarnings({"UnusedReturnValue"})
-        public List<Class<?>> getClasses(Class<? extends Annotation> annotation) {
-            if (!this.classes.containsKey(annotation)) {
-                return new ArrayList<>();
-            }
-
-            return this.classes.get(annotation);
-        }
-
-        public Scanner getScanner() {
-            return scanner;
-        }
-    }
-
 }
