@@ -62,6 +62,16 @@ public class PreClassLoader extends URLClassLoader {
     }
 
     @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        return super.loadClass(name);
+    }
+
+    @Override
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        return super.loadClass(name, resolve);
+    }
+
+    @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
         if (invalidClassesCache.contains(name)) {
             throw new ClassNotFoundException(name);

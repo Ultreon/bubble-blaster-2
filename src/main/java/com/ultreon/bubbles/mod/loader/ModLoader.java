@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+@AntiMod
 @ApiStatus.Internal
 public class ModLoader {
     @ApiStatus.Internal
@@ -74,8 +75,10 @@ public class ModLoader {
             try {
                 ModClassLoader modClassLoader = new ModClassLoader(file, jarFile, modInfo, classLoader);
                 this.modClassLoaders.add(modClassLoader);
-                this.modClasses.add(new ModClass(modInfo.getModId(), Class.forName(normal, false, modClassLoader)));
+                Class<?> aClass = Class.forName(normal, false, modClassLoader);
+                this.modClasses.add(new ModClass(modInfo.getModId(), aClass));
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
                 throw new RuntimeException("Can't load jar file: " + file, e);
             }
         }

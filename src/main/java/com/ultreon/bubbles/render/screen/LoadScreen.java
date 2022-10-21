@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.screen;
 
+import com.ultreon.bubbles.Main;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
@@ -22,7 +23,6 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,7 +46,7 @@ public final class LoadScreen extends Screen implements Runnable {
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
-    private final ModLoader modLoader = new ModLoader((URLClassLoader) getClass().getClassLoader());
+    private final ModLoader modLoader = new ModLoader(Main.mainClassLoader);
 
     public LoadScreen() {
         instance = this;
@@ -133,7 +133,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
     @Override
     public void run() {
-        this.progMain = new ProgressMessenger(msgMain, 9);
+        this.progMain = new ProgressMessenger(msgMain, 12);
 
         // Get game directory in Java's File format.
         File gameDir = BubbleBlaster.getGameDir();

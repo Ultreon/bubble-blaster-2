@@ -37,7 +37,7 @@ public class InternalClassLoader extends URLClassLoader {
     }
 
     public ScannerResult scan() {
-        Scanner scanner = new Scanner(gameFile, this);
+        Scanner scanner = new Scanner(true, gameFile, this);
         ScannerResult scanResult = scanner.scan();
         this.scans.put(INTERNAL_ID, scanResult);
         return this.scanResult = scanResult;

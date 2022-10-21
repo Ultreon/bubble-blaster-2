@@ -4,12 +4,14 @@ import com.ultreon.preloader.PreClassLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.JarFile;
 
 @AntiMod
 @ApiStatus.Internal
-public class ModClassLoader extends ClassLoader {
+public class ModClassLoader extends URLClassLoader {
     private final File file;
     private final JarFile jarFile;
     private final ModInfo modInfo;
@@ -18,7 +20,7 @@ public class ModClassLoader extends ClassLoader {
 
     @ApiStatus.Internal
     public ModClassLoader(File file, JarFile jarFile, ModInfo modInfo, URLClassLoader classLoader) {
-        super(classLoader);
+        super(getUrls(file), classLoader);
         if (!(classLoader instanceof PreClassLoader preClassLoader)) {
             throw new IllegalArgumentException("Expected the pre class loader.");
         }
@@ -28,11 +30,22 @@ public class ModClassLoader extends ClassLoader {
         this.modInfo = modInfo;
         this.classLoader = preClassLoader;
 
-        this.scanner = new Scanner(file, this);
+        this.scanner = new Scanner(false, file, this);
+    }
+
+    private static URL[] getUrls(File file) {
+        try {
+            return new URL[]{new URL("jar:" + file.toURI().toURL() + "!/")};
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ApiStatus.Internal
     public ScannerResult scan() {
+        for (URL url : getURLs()) {
+            classLoader.addURL(url);
+        }
         return scanner.scan();
     }
 

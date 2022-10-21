@@ -28,9 +28,9 @@ import static java.io.File.pathSeparator;
 @AntiMod
 @SuppressWarnings({"unused", "resource"})
 public final class Scanner {
-    private final File file = BubbleBlaster.getInstance().getGameFile();
+    private final File file;
     private final ClassLoader classLoader;
-    private final boolean isGame = true;
+    private boolean isGame;
     private JarFile jarFile;
     private static final Logger logger = LogManager.getLogger("Scanner");
     private boolean annotationScan;
@@ -38,8 +38,10 @@ public final class Scanner {
     private String className;
     private HashMap<Class<? extends Annotation>, ArrayList<Class<?>>> classes;
 
-    public Scanner(File file, ClassLoader classLoader) {
+    public Scanner(boolean isGame, File file, ClassLoader classLoader) {
         this.classLoader = classLoader;
+        this.file = file;
+        this.isGame = isGame;
     }
 
     public ScannerResult scan() {
@@ -90,9 +92,10 @@ public final class Scanner {
                 String className1 = je.getName().substring(0, je.getName().length() - 6);
                 className = className1.replace('/', '.');
                 try {
-                    Class<?> aClass = Class.forName(className);
-                } catch (ClassNotFoundException ignored) {
-
+                    Class<?> aClass = Class.forName(className, false, classLoader);
+                } catch (ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
                 }
             }
         }

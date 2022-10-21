@@ -202,7 +202,7 @@ public final class BubbleBlaster {
             throw new RuntimeException("Game file not found!");
         }
 
-        Scanner scanner = new Scanner(null, getClassLoader());
+        Scanner scanner = new Scanner(true, getGameFile(), getClassLoader());
         scanResults = scanner.scan();
 
         // Set game properties.
