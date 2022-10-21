@@ -337,10 +337,6 @@ jar {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-artifacts {
-    portableJar
-}
-
 mkdir("build/lib-out")
 
 (configurations.api).collect { File file ->
@@ -456,6 +452,10 @@ task createExec {
             into file("build/exec/lib/")
         }
     }
+}
+
+artifacts {
+    portableJar
 }
 
 jar.finalizedBy(retrieveUrls)
