@@ -4,11 +4,12 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.loader.Scanner;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
 
-import java.io.*;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InternalClassLoader extends URLClassLoader {
@@ -37,7 +38,7 @@ public class InternalClassLoader extends URLClassLoader {
     }
 
     public ScannerResult scan() {
-        Scanner scanner = new Scanner(true, gameFile, this);
+        Scanner scanner = new Scanner(true, List.of(gameFile), this);
         ScannerResult scanResult = scanner.scan();
         this.scans.put(INTERNAL_ID, scanResult);
         return this.scanResult = scanResult;

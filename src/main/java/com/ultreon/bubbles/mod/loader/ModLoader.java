@@ -5,12 +5,11 @@ import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.lang.ProgressMessenger;
+import com.ultreon.dev.GameDevMain;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,9 +42,22 @@ public class ModLoader {
     @ApiStatus.Internal
     public void scanForJars() {
         if (!References.MODS_DIR.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             References.MODS_DIR.mkdirs();
             return;
         }
+
+        if (GameDevMain.isRanFromHere()) {
+            for (List<String> files : GameDevMain.getClassPath().values()) {
+                List<File> files1 = files.stream().map(File::new).toList();
+                try {
+                    addDevCP(files1);
+                } catch (Exception e) {
+                    throw new RuntimeException("Invalid development classpath: " + GameDevMain.getClassPath());
+                }
+            }
+        }
+
         File[] files = References.MODS_DIR.listFiles();
         if (files == null) throw new RuntimeException("Can't access mods directory: " + References.MODS_DIR.getAbsolutePath());
         for (File file : files) {
@@ -73,7 +85,7 @@ public class ModLoader {
             Map<String, String> entryPoints = modInfo.getEntryPoints();
             String normal = entryPoints.get("normal");
             try {
-                ModClassLoader modClassLoader = new ModClassLoader(file, jarFile, modInfo, classLoader);
+                ModClassLoader modClassLoader = new ModClassLoader(file, modInfo, classLoader);
                 this.modClassLoaders.add(modClassLoader);
                 Class<?> aClass = Class.forName(normal, false, modClassLoader);
                 this.modClasses.add(new ModClass(modInfo.getModId(), aClass));
@@ -82,6 +94,36 @@ public class ModLoader {
                 throw new RuntimeException("Can't load jar file: " + file, e);
             }
         }
+    }
+
+    @ApiStatus.Internal
+    public void addDevCP(List<File> file) throws IOException {
+        var metaFile = getResourceFromRoot(file, "bubbles.mod.json");
+        if (metaFile == null) throw new FileNotFoundException("Mod meta-file couldn't be found.");
+        Reader reader = new FileReader(metaFile);
+        ModInfo modInfo = GSON.fromJson(reader, ModInfo.class);
+        Map<String, String> entryPoints = modInfo.getEntryPoints();
+        String normal = entryPoints.get("normal");
+        try {
+            ModClassLoader modClassLoader = new ModClassLoader(file, modInfo, classLoader);
+            this.modClassLoaders.add(modClassLoader);
+            Class<?> aClass = Class.forName(normal, false, modClassLoader);
+            this.modClasses.add(new ModClass(modInfo.getModId(), aClass));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Can't load jar file: " + file, e);
+        }
+    }
+
+    @Nullable
+    private File getResourceFromRoot(List<File> roots, String path) {
+        for (File root : roots) {
+            File res = new File(root, path);
+            if (res.exists()) {
+                return res;
+            }
+        }
+        return null;
     }
 
     @ApiStatus.Internal

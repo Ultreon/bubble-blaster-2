@@ -91,6 +91,7 @@ public final class BubbleBlaster {
     public static final String NAMESPACE = "bubbles";
     // Logger.
     private static final Logger logger = LoggerFactory.getLogger("Generic");
+    private static final WatchManager watcher = new WatchManager(new ConfigurationScheduler("File Watcher"));
     // Modes
     private static boolean debugMode;
     private static boolean devMode;
@@ -102,8 +103,8 @@ public final class BubbleBlaster {
     private static long ticks = 0L;
     // Instance
     private static BubbleBlaster instance;
-    private static final WatchManager watcher = new WatchManager(new ConfigurationScheduler("File Watcher"));
     private static boolean hasRendered;
+    public final Profiler profiler = new Profiler();
     private final File gameFile;
     @IntVal(20)
     private final int tps;
@@ -146,6 +147,7 @@ public final class BubbleBlaster {
     public Environment environment;
     // Player entity
     public Player player;
+    BufferedImage cachedImage;
     // Values
     @IntRange(from = 0)
     private int fps;
@@ -155,7 +157,6 @@ public final class BubbleBlaster {
     private boolean loaded;
     private boolean crashed;
     private volatile boolean running = false;
-
     // Running value.
     // Threads
     private Thread renderingThread;
@@ -175,8 +176,6 @@ public final class BubbleBlaster {
     private Supplier<Activity> activity;
     private volatile boolean rpcUpdated;
     private Map<String, Long> lastProfile = new HashMap<>();
-    public final Profiler profiler = new Profiler();
-    BufferedImage cachedImage;
     private float fadeInDuration = Float.NEGATIVE_INFINITY;
     private boolean fadeIn = false;
     private long fadeInStart = 0L;
@@ -202,7 +201,7 @@ public final class BubbleBlaster {
             throw new RuntimeException("Game file not found!");
         }
 
-        Scanner scanner = new Scanner(true, getGameFile(), getClassLoader());
+        Scanner scanner = new Scanner(true, List.of(getGameFile()), getClassLoader());
         scanResults = scanner.scan();
 
         // Set game properties.
@@ -260,13 +259,10 @@ public final class BubbleBlaster {
                 resourceManager.importResources(file);
             }
         } catch (Exception e) {
-            if (classPath != null) {
-                for (File file : classPath.getFiles()) {
-                    resourceManager.importResources(file);
-                }
-            } else {
+            if (classPath != null)
+                classPath.values().forEach(list -> list.forEach(file -> resourceManager.importResources(new File(file))));
+            else
                 throw new FileNotFoundException("Can't find bubble blaster game executable.");
-            }
         }
 
 
@@ -378,63 +374,6 @@ public final class BubbleBlaster {
         getGameWindow().requestFocus();
     }
 
-    private void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding) {
-        final LoadedGame loadedGame = this.loadedGame;
-
-        if (loadedGame != null) {
-            final Environment environment = loadedGame.getEnvironment();
-
-            if (!holding) {
-                if (keyCode == KeyEvent.VK_SLASH && hasScreenOpen()) {
-                    BubbleBlaster.getInstance().showScreen(new CommandScreen());
-                }
-            }
-
-            if (keyCode == KeyEvent.VK_F1 && BubbleBlaster.isDevMode()) {
-                environment.triggerBloodMoon();
-            } else if (keyCode == KeyEvent.VK_F3 && BubbleBlaster.isDevMode()) {
-                Objects.requireNonNull(environment.getPlayer()).destroy();
-            } else if (keyCode == KeyEvent.VK_F4 && BubbleBlaster.isDevMode()) {
-                Objects.requireNonNull(environment.getPlayer()).levelUp();
-            } else if (keyCode == KeyEvent.VK_F5 && BubbleBlaster.isDevMode()) {
-                Objects.requireNonNull(environment.getPlayer()).addScore(1000);
-            } else if (keyCode == KeyEvent.VK_F6 && BubbleBlaster.isDevMode()) {
-                Player player = loadedGame.getGamemode().getPlayer();
-
-                if (player != null) {
-                    Objects.requireNonNull(player).setHealth(player.getMaxHealth());
-                }
-            }
-        }
-
-        if (player != null && !holding) {
-            if (keyCode == KEY_UP) player.forward(true);
-            if (keyCode == KEY_DOWN) player.backward(true);
-            if (keyCode == KEY_LEFT) player.left(true);
-            if (keyCode == KEY_RIGHT) player.right(true);
-        }
-    }
-
-    private void onKeyRelease(int keyCode, int scanCode, int modifiers) {
-        if (player != null) {
-            if (keyCode == KEY_UP) player.forward(true);
-            if (keyCode == KEY_DOWN) player.backward(true);
-            if (keyCode == KEY_LEFT) player.left(true);
-            if (keyCode == KEY_RIGHT) player.right(true);
-        }
-    }
-
-    private void onMouseClick(int x, int y, int button, int clicks) {
-        LoadedGame loadedGame = this.loadedGame;
-        if (isDevMode()) {
-            if (loadedGame != null && button == 1) {
-                if (KeyInput.isDown(KEY_F1)) {
-                    Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
-                }
-            }
-        }
-    }
-
     public static Map<String, Long> getLastProfile() {
         return instance.lastProfile;
     }
@@ -447,42 +386,6 @@ public final class BubbleBlaster {
         return hasRendered;
     }
 
-    /**
-     * Event handler for collecting textures.
-     * @param collection the texture collection being collected.
-     */
-    public void onCollectTextures(TextureCollection collection) {
-        if (collection == TextureCollections.BUBBLE_TEXTURES.get()) {
-            Collection<BubbleType> bubbles = Registers.BUBBLES.values();
-            LoadScreen loadScreen = LoadScreen.get();
-
-            if (loadScreen == null) {
-                throw new IllegalStateException("Load scene is not available.");
-            }
-            for (BubbleType bubble : bubbles) {
-                for (int i = 0; i <= bubble.getMaxRadius(); i++) {
-                    TextureCollection.Index identifier = new TextureCollection.Index(bubble.id().location(), bubble.id().path() + "/" + i);
-                    final int finalI = i;
-                    collection.set(identifier, new ITexture() {
-                        @Override
-                        public void render(Renderer renderer) {
-                            EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, bubble.colors);
-                        }
-
-                        @Override
-                        public int width() {
-                            return finalI + bubble.getColors().length * 2;
-                        }
-
-                        @Override
-                        public int height() {
-                            return finalI + bubble.getColors().length * 2;
-                        }
-                    });
-                }
-            }
-        }
-    }
     public static BubbleBlaster getInstance() {
         return instance;
     }
@@ -654,6 +557,101 @@ public final class BubbleBlaster {
     public static void initEngine(boolean debugMode, boolean devMode) {
         BubbleBlaster.debugMode = debugMode;
         BubbleBlaster.devMode = devMode;
+    }
+
+    private void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding) {
+        final LoadedGame loadedGame = this.loadedGame;
+
+        if (loadedGame != null) {
+            final Environment environment = loadedGame.getEnvironment();
+
+            if (!holding) {
+                if (keyCode == KeyEvent.VK_SLASH && hasScreenOpen()) {
+                    BubbleBlaster.getInstance().showScreen(new CommandScreen());
+                }
+            }
+
+            if (keyCode == KeyEvent.VK_F1 && BubbleBlaster.isDevMode()) {
+                environment.triggerBloodMoon();
+            } else if (keyCode == KeyEvent.VK_F3 && BubbleBlaster.isDevMode()) {
+                Objects.requireNonNull(environment.getPlayer()).destroy();
+            } else if (keyCode == KeyEvent.VK_F4 && BubbleBlaster.isDevMode()) {
+                Objects.requireNonNull(environment.getPlayer()).levelUp();
+            } else if (keyCode == KeyEvent.VK_F5 && BubbleBlaster.isDevMode()) {
+                Objects.requireNonNull(environment.getPlayer()).addScore(1000);
+            } else if (keyCode == KeyEvent.VK_F6 && BubbleBlaster.isDevMode()) {
+                Player player = loadedGame.getGamemode().getPlayer();
+
+                if (player != null) {
+                    Objects.requireNonNull(player).setHealth(player.getMaxHealth());
+                }
+            }
+        }
+
+        if (player != null && !holding) {
+            if (keyCode == KEY_UP) player.forward(true);
+            if (keyCode == KEY_DOWN) player.backward(true);
+            if (keyCode == KEY_LEFT) player.left(true);
+            if (keyCode == KEY_RIGHT) player.right(true);
+        }
+    }
+
+    private void onKeyRelease(int keyCode, int scanCode, int modifiers) {
+        if (player != null) {
+            if (keyCode == KEY_UP) player.forward(true);
+            if (keyCode == KEY_DOWN) player.backward(true);
+            if (keyCode == KEY_LEFT) player.left(true);
+            if (keyCode == KEY_RIGHT) player.right(true);
+        }
+    }
+
+    private void onMouseClick(int x, int y, int button, int clicks) {
+        LoadedGame loadedGame = this.loadedGame;
+        if (isDevMode()) {
+            if (loadedGame != null && button == 1) {
+                if (KeyInput.isDown(KEY_F1)) {
+                    Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
+                }
+            }
+        }
+    }
+
+    /**
+     * Event handler for collecting textures.
+     *
+     * @param collection the texture collection being collected.
+     */
+    public void onCollectTextures(TextureCollection collection) {
+        if (collection == TextureCollections.BUBBLE_TEXTURES.get()) {
+            Collection<BubbleType> bubbles = Registers.BUBBLES.values();
+            LoadScreen loadScreen = LoadScreen.get();
+
+            if (loadScreen == null) {
+                throw new IllegalStateException("Load scene is not available.");
+            }
+            for (BubbleType bubble : bubbles) {
+                for (int i = 0; i <= bubble.getMaxRadius(); i++) {
+                    TextureCollection.Index identifier = new TextureCollection.Index(bubble.id().location(), bubble.id().path() + "/" + i);
+                    final int finalI = i;
+                    collection.set(identifier, new ITexture() {
+                        @Override
+                        public void render(Renderer renderer) {
+                            EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, bubble.colors);
+                        }
+
+                        @Override
+                        public int width() {
+                            return finalI + bubble.getColors().length * 2;
+                        }
+
+                        @Override
+                        public int height() {
+                            return finalI + bubble.getColors().length * 2;
+                        }
+                    });
+                }
+            }
+        }
     }
 
     public File getGameFile() {
@@ -1488,7 +1486,7 @@ public final class BubbleBlaster {
         this.fps = fps;
 
         // Dispose and show.
-        profiler.section("dispose" , render::dispose);
+        profiler.section("dispose", render::dispose);
 
         try {
             bs.show();
@@ -1496,7 +1494,7 @@ public final class BubbleBlaster {
             render.dispose();
             hasRendered = true;
         } catch (IllegalStateException ignored) {
-            
+
         }
     }
 
@@ -1550,7 +1548,7 @@ public final class BubbleBlaster {
         if (fadeIn) {
             final long timeDiff = System.currentTimeMillis() - fadeInStart;
             if (timeDiff <= fadeInDuration) {
-                int clamp = (int) MathHelper.clamp(255 * (1f - ((float)timeDiff) / fadeInDuration), 0, 255);
+                int clamp = (int) MathHelper.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
                 Color color = new Color(0, 0, 0, clamp);
                 GuiElement.fill(renderer, 0, 0, getWidth(), getHeight(), color);
             }
@@ -1726,7 +1724,7 @@ public final class BubbleBlaster {
         // Clip finishing; see comments.
         //        new Thread(() -> {
         try {
-            Sound sound = new Sound(identifier, identifier.toString() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            Sound sound = new Sound(identifier, identifier + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
             sound.setVolume(volume);
             sound.play();
             return sound;

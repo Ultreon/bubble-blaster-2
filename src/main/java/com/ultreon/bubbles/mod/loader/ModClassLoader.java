@@ -7,38 +7,43 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.jar.JarFile;
+import java.util.List;
 
 @AntiMod
 @ApiStatus.Internal
 public class ModClassLoader extends URLClassLoader {
-    private final File file;
-    private final JarFile jarFile;
+    private final List<File> files;
     private final ModInfo modInfo;
     private final PreClassLoader classLoader;
     private final Scanner scanner;
 
     @ApiStatus.Internal
-    public ModClassLoader(File file, JarFile jarFile, ModInfo modInfo, URLClassLoader classLoader) {
-        super(getUrls(file), classLoader);
+    public ModClassLoader(File file, ModInfo modInfo, URLClassLoader classLoader) {
+        this(List.of(file), modInfo, classLoader);
+    }
+
+    @ApiStatus.Internal
+    public ModClassLoader(List<File> files, ModInfo modInfo, URLClassLoader classLoader) {
+        super(getUrls(files), classLoader);
         if (!(classLoader instanceof PreClassLoader preClassLoader)) {
             throw new IllegalArgumentException("Expected the pre class loader.");
         }
 
-        this.file = file;
-        this.jarFile = jarFile;
+        this.files = files;
         this.modInfo = modInfo;
         this.classLoader = preClassLoader;
 
-        this.scanner = new Scanner(false, file, this);
+        this.scanner = new Scanner(false, files, this);
     }
 
-    private static URL[] getUrls(File file) {
-        try {
-            return new URL[]{new URL("jar:" + file.toURI().toURL() + "!/")};
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    private static URL[] getUrls(List<File> files) {
+        return files.stream().map(file -> {
+            try {
+                return new URL("jar:" + file.toURI().toURL() + "!/");
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList().toArray(new URL[]{});
     }
 
     @ApiStatus.Internal
@@ -68,13 +73,8 @@ public class ModClassLoader extends URLClassLoader {
     }
 
     @ApiStatus.Internal
-    public File getFile() {
-        return file;
-    }
-
-    @ApiStatus.Internal
-    public JarFile getJarFile() {
-        return jarFile;
+    public List<File> getFile() {
+        return files;
     }
 
     @ApiStatus.Internal

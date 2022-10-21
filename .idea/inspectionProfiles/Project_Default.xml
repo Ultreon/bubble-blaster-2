@@ -2288,7 +2288,7 @@
     <inspection_tool class="SafeVarargsDetector" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SameElementsToEquals" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SamePackageImport" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="SameParameterValue" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SameParameterValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SameReturnValue" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SbtDependencyVersionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="SbtReplaceProjectWithProjectIn" enabled="true" level="WARNING" enabled_by_default="true" />

@@ -6,7 +6,7 @@ import com.ultreon.commons.crash.CrashLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,67 +18,73 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.io.File.pathSeparator;
 
 @AntiMod
-@SuppressWarnings({"unused", "resource"})
+@ApiStatus.Internal
+@SuppressWarnings({"unused"})
 public final class Scanner {
-    private final File file;
+    private final List<File> files;
     private final ClassLoader classLoader;
-    private boolean isGame;
-    private JarFile jarFile;
+    private final boolean isGame;
     private static final Logger logger = LogManager.getLogger("Scanner");
     private boolean annotationScan;
     private JarEntry jarEntry;
     private String className;
     private HashMap<Class<? extends Annotation>, ArrayList<Class<?>>> classes;
 
-    public Scanner(boolean isGame, File file, ClassLoader classLoader) {
+    @ApiStatus.Internal
+    public Scanner(boolean isGame, List<File> files, ClassLoader classLoader) {
         this.classLoader = classLoader;
-        this.file = file;
+        this.files = files;
         this.isGame = isGame;
     }
-
+    
+    @ApiStatus.Internal
     public ScannerResult scan() {
         classes = new HashMap<>();
         className = null;
         jarEntry = null;
         annotationScan = false;
 
-        try {
-            Enumeration<JarEntry> e;
-            File[] files;
+        for (File file : files) {
+            scan(file);
+        }
+        
+        return new ScannerResult(classes);
+    }
 
+    private void scan(File file) {
+        try {
             try {
                 BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 if (basicFileAttributes.isDirectory()) {
-                    scanDirectory();
+                    scanDir(file);
                 } else if (basicFileAttributes.isRegularFile()) {
-                    scanJarFile();
+                    scanJar(file);
                 }
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Jar File being scanned", t);
-            CrashCategory modCategory = new CrashCategory("Jar Entry being scanned");
+            CrashLog crashLog = new CrashLog("Jar file being scanned", t);
+            CrashCategory modCategory = new CrashCategory("Jar entry being scanned");
             modCategory.add("Class Name", className);
             modCategory.add("Entry", jarEntry != null ? jarEntry.getName() : null);
             modCategory.add("Annotation Scan", annotationScan);
             crashLog.addCategory(modCategory);
             BubbleBlaster.getInstance().crash(crashLog.createCrash());
         }
-        return new ScannerResult(classes);
     }
 
-    private void scanJarFile() throws IOException {
+    private void scanJar(File file) throws IOException {
         Enumeration<JarEntry> e;
-        jarFile = new JarFile(file.getPath());
+        JarFile jarFile = new JarFile(file.getPath());
         if (!isGame) {
             e = jarFile.entries();
             while (e.hasMoreElements()) {
@@ -92,10 +98,9 @@ public final class Scanner {
                 String className1 = je.getName().substring(0, je.getName().length() - 6);
                 className = className1.replace('/', '.');
                 try {
-                    Class<?> aClass = Class.forName(className, false, classLoader);
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
+                    Class<?> aClass = Class.forName(className, false, BubbleBlaster.class.getClassLoader());
+                } catch (ClassNotFoundException ignored) {
+                    
                 }
             }
         }
@@ -123,11 +128,68 @@ public final class Scanner {
             try {
                 scanClass(className);
             } catch (Throwable t) {
-                logger.error("Couldn't load class: " + className);
+                logger.warn("Couldn't load class: " + className);
                 t.printStackTrace();
-                continue;
             }
-            logger.info("Scanned: " + je.getName());
+        }
+    }
+
+    private void scanDir(File file) throws IOException {
+        if (!isGame) {
+            try (var walk = Files.walk(file.toPath(), 30)) {
+                for (File subFile : walk.map(Path::toFile).toList()) {
+                    String substring = getRelativePath(subFile);
+
+                    if (subFile.isDirectory() || !(subFile.getName().endsWith(".class") || subFile.getName().endsWith(".java"))) {
+                        continue;
+                    }
+
+                    // -6 because create .class
+                    String className1 = substring.substring(0, substring.length() - 6);
+                    className = className1.replace('/', '.');
+                    try {
+                        Class<?> aClass = Class.forName(className);
+                    } catch (ClassNotFoundException ignored) {
+
+                    }
+                }
+            }
+        }
+
+        annotationScan = true;
+
+        try (var walk = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS)) {
+            try (var walk1 = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS)) {
+                try (var walk2 = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS)) {
+                    logger.info(walk.collect(Collectors.toList()));
+                    logger.info(walk1.map(Path::toFile).collect(Collectors.toList()));
+
+                    for (var subFile : walk2.map(Path::toFile).toList()) {
+                        if (subFile.isDirectory() || !(subFile.getName().endsWith(".class") || subFile.getName().endsWith(".java"))) {
+                            continue;
+                        }
+
+                        var substring = getRelativePath(subFile);
+
+                        logger.debug("Scanning file: " + subFile.getPath());
+
+                        if (isGame) {
+                            if (!substring.startsWith("com/ultreon")) {
+                                continue;
+                            }
+                        }
+
+                        // -6 because create .class
+                        String className1 = substring.substring(0, substring.length() - 6);
+                        className = className1.replace('/', '.');
+                        try {
+                            scanClass(className);
+                        } catch (Throwable t) {
+                            logger.warn("Couldn't load class: " + className);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -142,67 +204,9 @@ public final class Scanner {
         }
     }
 
-    private void scanDirectory() throws IOException {
-        if (!isGame) {
-            for (File file : Files.walk(file.toPath(), 30)
-                    .map(Path::toFile).toList()) {
-
-                String substring = getRelativePath(file);
-
-                if (file.isDirectory() || !(file.getName().endsWith(".class") || file.getName().endsWith(".java"))) {
-                    continue;
-                }
-
-                logger.debug("Checking: " + file.getPath());
-
-                // -6 because create .class
-                String className1 = substring.substring(0, substring.length() - 6);
-                className = className1.replace('/', '.');
-                try {
-                    Class<?> aClass = Class.forName(className);
-                } catch (ClassNotFoundException ignored) {
-
-                }
-            }
-        }
-
-        annotationScan = true;
-
-        Stream<Path> walk = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS);
-        Stream<Path> walk1 = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS);
-        Stream<Path> walk2 = Files.walk(file.toPath(), 30, FileVisitOption.FOLLOW_LINKS);
-        logger.info(walk.collect(Collectors.toList()));
-        logger.info(walk1.map(Path::toFile).collect(Collectors.toList()));
-
-        for (File file : walk2.map(Path::toFile).toList()) {
-            if (file.isDirectory() || !(file.getName().endsWith(".class") || file.getName().endsWith(".java"))) {
-                continue;
-            }
-
-            String substring = getRelativePath(file);
-
-            logger.debug("Scanning file: " + file.getPath());
-
-            if (isGame) {
-                if (!substring.startsWith("com/ultreon")) {
-                    continue;
-                }
-            }
-
-            // -6 because create .class
-            String className1 = substring.substring(0, substring.length() - 6);
-            className = className1.replace('/', '.');
-            try {
-                scanClass(className);
-            } catch (Throwable t) {
-                logger.debug("Couldn't load class: " + className);
-            }
-        }
-    }
-
     @NonNull
     private String getRelativePath(File file) {
-        int length = pathLength();
+        int length = pathLength(file);
 
         String string = file.getAbsolutePath();
         String substring = string.substring(length);
@@ -214,8 +218,8 @@ public final class Scanner {
         return substring;
     }
 
-    private int pathLength() {
-        String path = this.file.getAbsolutePath();
+    private int pathLength(File file) {
+        String path = file.getAbsolutePath();
         path = path.replaceAll("/", pathSeparator);
         if (path.endsWith(pathSeparator)) {
             path += System.getProperty(pathSeparator);
@@ -224,12 +228,8 @@ public final class Scanner {
         return path.length();
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    @Nullable
-    public JarFile getJarFile() {
-        return jarFile;
+    @ApiStatus.Internal
+    public List<File> getFiles() {
+        return files;
     }
 }
