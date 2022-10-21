@@ -54,9 +54,7 @@ public class PreClassLoader extends URLClassLoader {
         addInternalPackage("org.apache.batik.");
         addInternalPackage("org.apache.logging.");
         addInternalPackage("com.ultreon.bubbles.");
-        addInternalPackage("com.ultreon.preloader.");
-        addInternalPackage("com.ultreon.dev.");
-        addInternalPackage("com.ultreon.bubbles.");
+        addInternalPackage("com.ultreon.commons.");
         addInternalPackage("com.ultreon.preloader.");
         addInternalPackage("com.ultreon.dev.");
     }
