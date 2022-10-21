@@ -43,3 +43,10 @@ jobs:
         with:
           name: Preloader
           path: preloader/build/libs/
+      - name: Publish package
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_BUILD_NUMBER: ${{ github.run_number }}
