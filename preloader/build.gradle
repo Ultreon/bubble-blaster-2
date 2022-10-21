@@ -1,3 +1,5 @@
+import groovy.xml.MarkupBuilder
+
 import static java.lang.System.getenv
 
 buildscript {
@@ -56,6 +58,9 @@ repositories {
 configurations {
     // configuration that holds jars to include in the jar
     api
+
+    def xml = new MarkupBuilder();
+    xml.component()
 }
 
 dependencies {
