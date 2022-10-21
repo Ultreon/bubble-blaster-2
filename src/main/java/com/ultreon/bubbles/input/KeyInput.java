@@ -19,7 +19,7 @@ public final class KeyInput {
     }
 
     public static boolean isDown(int keyCode) {
-        return instance.controller.isKeyDown(keyCode);
+        return KeyboardInput.isDown(keyCode);
     }
 
     public static void listen(Component canvas) {
