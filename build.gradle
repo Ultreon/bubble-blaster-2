@@ -240,57 +240,6 @@ allprojects {
                     password = getenv("GITHUB_TOKEN")
                 }
             }
-            maven {
-                url "https://gitlab.com/api/v4/projects/${projectId}/packages/maven"
-                credentials(HttpHeaderCredentials) {
-                    name = "Deploy-Token"
-                    value = getenv("GITLAB_ACCESS_TOKEN") // the token must be defined in the user environments variables.
-                }
-                authentication {
-                    header(HttpHeaderAuthentication)
-                }
-            }
-            maven {
-                name "Project"
-                url "file://${rootProject.projectDir}/.mavenrepo"
-            }
-        }
-    }
-
-    publish.finalizedBy(it.retrieveUrls)
-}
-
-subprojects {
-    publishing {
-        publications {
-            library(MavenPublication) {
-
-            }
-        }
-        repositories {
-            maven {
-                url "https://gitlab.com/api/v4/projects/${projectId}/packages/maven"
-                credentials(HttpHeaderCredentials) {
-                    name = "Deploy-Token"
-                    value = getenv("GITLAB_ACCESS_TOKEN") // the token must be defined in the user environments variables.
-                }
-                authentication {
-                    header(HttpHeaderAuthentication)
-                }
-            }
-        }
-    }
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-            }
-        }
-        repositories {
-            maven {
-                name "Project"
-                url "file://${rootProject.projectDir}/.mavenrepo"
-            }
         }
     }
 
@@ -366,30 +315,6 @@ tasks.withType(ProcessResources).configureEach {
 
 tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult {
-
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            name "Project"
-            url "file://${rootProject.projectDir}/.mavenrepo"
-        }
-    }
 }
 
 task portableJar(type: Jar) {
