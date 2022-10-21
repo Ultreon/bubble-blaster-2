@@ -240,6 +240,7 @@ allprojects {
         }
     }
 
+    publish.dependsOn build
     publish.finalizedBy(it.retrieveUrls)
 }
 
