@@ -225,9 +225,6 @@ allprojects {
 
     publishing {
         publications {
-            library(MavenPublication) {
-                from components.java
-            }
             mavenJava(MavenPublication) {
             }
         }
