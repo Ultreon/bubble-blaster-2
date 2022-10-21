@@ -313,7 +313,7 @@ processResources {
     finalizedBy replaceResources
 }
 
-task jar(type: Jar) {
+jar {
     dependsOn ":preloader:jar"
 
     //noinspection GroovyAssignabilityCheck
