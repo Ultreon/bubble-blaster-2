@@ -33,12 +33,12 @@ jobs:
         run: ./gradlew build
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
-      - name: capture the common build artifacts
+      - name: capture the game's build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Bubble Blaster
           path: build/libs/
-      - name: capture forge's build artifacts
+      - name: capture pre-loader's build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Preloader
