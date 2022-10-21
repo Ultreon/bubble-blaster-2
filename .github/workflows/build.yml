@@ -46,7 +46,6 @@ jobs:
           path: preloader/build/libs/
   publish:
     runs-on: ubuntu-latest
-    environment: production
     permissions:
       contents: read
       packages: write
