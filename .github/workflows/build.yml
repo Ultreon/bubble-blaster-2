@@ -5,9 +5,10 @@
 
 name: build
 
+on: [ pull_request, push ]
+
 jobs:
   build:
-    on: [ pull_request, push ]
     strategy:
       matrix:
         # Use these Java versions
@@ -44,10 +45,8 @@ jobs:
           name: Preloader
           path: preloader/build/libs/
   publish:
-    on:
-      release:
-        types: [created]
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       packages: write
