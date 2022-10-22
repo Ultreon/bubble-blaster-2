@@ -27,7 +27,7 @@ public class GameDevMain {
                 String name = key.substring(keyStart.length());
                 Object o = properties.get(obj);
                 String classPath = o.toString();
-                LOGGER.info("Classpath (" + name + ") -> " + classPath);
+                System.out.println("Classpath (" + name + ") -> " + classPath);
                 String[] split = classPath.split(System.getProperty("path.separator"));
                 GameDevMain.classPath.computeIfAbsent(name, s -> new ArrayList<>()).addAll(List.of(split));
             }
