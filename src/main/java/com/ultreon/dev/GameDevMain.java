@@ -1,6 +1,8 @@
 package com.ultreon.dev;
 
 import com.ultreon.preloader.PreGameLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Properties;
 
 @SuppressWarnings("ALL")
 public class GameDevMain {
+    private static final Logger LOGGER = LoggerFactory.getLogger("GameDevMain");
     private static DevClassPath classPath;
     private static boolean isRanFromHere = false;
 
@@ -24,8 +27,9 @@ public class GameDevMain {
                 String name = key.substring(keyStart.length());
                 Object o = properties.get(obj);
                 String classPath = o.toString();
-                String[] split = classPath.split("\\%s".formatted(System.getProperty("path.separator")));
-                GameDevMain.classPath.computeIfAbsent(key, s -> new ArrayList<>()).addAll(List.of(split));
+                LOGGER.info("Classpath (" + name + ") -> " + classPath);
+                String[] split = classPath.split(System.getProperty("path.separator"));
+                GameDevMain.classPath.computeIfAbsent(name, s -> new ArrayList<>()).addAll(List.of(split));
             }
         });
 
