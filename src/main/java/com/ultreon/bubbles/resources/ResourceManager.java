@@ -154,7 +154,8 @@ public class ResourceManager {
             Map<Identifier, Resource> map = new HashMap<>();
 
             // Create jar file instance from file.
-            try (ZipFile jarFile = new ZipFile(file)) {
+            try {
+                @SuppressWarnings("resource") ZipFile jarFile = new ZipFile(file); // Shouldn't be closed.
                 // Get jar entries, and convert it into an iterable to use in for(...) loops
                 Enumeration<? extends ZipEntry> var0 = jarFile.entries();
 
