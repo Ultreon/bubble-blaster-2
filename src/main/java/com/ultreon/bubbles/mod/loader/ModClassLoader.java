@@ -39,7 +39,11 @@ public class ModClassLoader extends URLClassLoader {
     private static URL[] getUrls(List<File> files) {
         return files.stream().map(file -> {
             try {
-                return new URL("jar:" + file.toURI().toURL() + "!/");
+                if (file.isFile()) {
+                    return new URL("jar:" + file.toURI().toURL() + "!/");
+                } else {
+                    return file.toURI().toURL();
+                }
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
