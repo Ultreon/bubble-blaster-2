@@ -7,14 +7,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class DevClassPath extends HashMap<String, List<String>> {
-    private String s;
 
     public DevClassPath() {
         super();
-    }
-
-    void string(String s) {
-        this.s = s;
     }
 
     private List<File> parse(String s) {
@@ -24,10 +19,5 @@ public class DevClassPath extends HashMap<String, List<String>> {
     @Deprecated
     public List<File> getFiles() {
         return new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return s;
     }
 }
