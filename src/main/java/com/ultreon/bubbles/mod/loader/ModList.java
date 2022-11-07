@@ -4,7 +4,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
-@AntiMod
 public class ModList {
     private static ModList instance;
     private Map<String, ModObject> objects;
