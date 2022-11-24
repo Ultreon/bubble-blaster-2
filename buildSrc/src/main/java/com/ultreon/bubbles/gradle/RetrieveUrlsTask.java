@@ -12,12 +12,16 @@ import org.gradle.jvm.tasks.Jar;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Retrieve URLs for the dependencies that will be downloaded by the game.
 */
 public class RetrieveUrlsTask extends BaseTask {
     private final JsonArray urls = new JsonArray();
+    private final List<com.ultreon.bubbles.gradle.Dependency> gameDeps = new ArrayList<>();
 
     public RetrieveUrlsTask() {
         super("retrieveUrls", "bubbles");
@@ -58,6 +62,10 @@ public class RetrieveUrlsTask extends BaseTask {
                         name, version,
                         jar.getArchiveClassifier().get(), jar.getArchiveExtension());
 
+                Platform platform = Platform.get(dep.getTargetConfiguration());
+                if (platform == null) {
+                    continue;
+                }
                 try {
                     var jarFile = new URL(jarUrl);
                     try (var in = jarFile.openStream()) {
@@ -66,6 +74,14 @@ public class RetrieveUrlsTask extends BaseTask {
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
                                     jar.getArchiveClassifier(), jar.getArchiveExtension()));
                             this.urls.add(jarFile.toString());
+                            this.gameDeps.add(new com.ultreon.bubbles.gradle.Dependency(
+                                    Objects.requireNonNull(dependency.getGroup(), "Dependency should have group."),
+                                    dependency.getName(),
+                                    Objects.requireNonNull(dependency.getVersion(), "Dependency should have version."),
+                                    platform,
+                                    jar.getArchiveClassifier().get(),
+                                    jar.getArchiveExtension().get(),
+                                    url));
                         }
                     }
                 } catch (Exception ignored) {
@@ -77,6 +93,10 @@ public class RetrieveUrlsTask extends BaseTask {
 
     private void retrieveArtifactsInfo(Dependency dependency, URI url, AbstractModuleDependency dep) {
         for (DependencyArtifact artifact : dep.getArtifacts()) {
+            Platform platform = Platform.get(dep.getTargetConfiguration());
+            if (platform == null) {
+                return;
+            }
             if (dependency.getGroup() != null) {
                 var jarUrl = String.format("%s%s/%s/%s/%s-%s-%s.%s",
                         url, dependency.getGroup().replaceAll("\\.", "/"),
@@ -92,6 +112,14 @@ public class RetrieveUrlsTask extends BaseTask {
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
                                     artifact.getClassifier(), artifact.getExtension()));
                             this.urls.add(jarFile.toString());
+                            this.gameDeps.add(new com.ultreon.bubbles.gradle.Dependency(
+                                    Objects.requireNonNull(dependency.getGroup(), "Dependency should have group."),
+                                    dependency.getName(),
+                                    Objects.requireNonNull(dependency.getVersion(), "Dependency should have version."),
+                                    platform,
+                                    artifact.getClassifier(),
+                                    artifact.getExtension(),
+                                    url.toString()));
                         }
                     }
                 } catch (Exception ignored) {
@@ -101,8 +129,12 @@ public class RetrieveUrlsTask extends BaseTask {
         }
     }
 
-    private void retrieveDependencyInfo(Dependency dependency, URI url, AbstractModuleDependency moduleDependency) {
-        var artifacts = moduleDependency.getArtifacts();
+    private void retrieveDependencyInfo(Dependency dependency, URI url, AbstractModuleDependency dep) {
+        var artifacts = dep.getArtifacts();
+        Platform platform = Platform.get(dep.getTargetConfiguration());
+        if (platform == null) {
+            return;
+        }
         if (artifacts.isEmpty()) {
             if (dependency.getGroup() != null) {
                 var jarUrl = String.format("%s%s/%s/%s/%s-%s.jar",
@@ -116,6 +148,12 @@ public class RetrieveUrlsTask extends BaseTask {
                         if (in != null) {
                             getLogger().info(String.format("%s:%s:%s", dependency.getGroup(), dependency.getName(), dependency.getVersion()));
                             this.urls.add(jarFile.toString());
+                            this.gameDeps.add(new com.ultreon.bubbles.gradle.Dependency(
+                                    Objects.requireNonNull(dependency.getGroup(), "Dependency should have group."),
+                                    dependency.getName(),
+                                    Objects.requireNonNull(dependency.getVersion(), "Dependency should have version."),
+                                    platform,
+                                    url.toString()));
                         }
                     }
                 } catch (Exception ignored) {
@@ -123,6 +161,11 @@ public class RetrieveUrlsTask extends BaseTask {
                 }
             }
         }
+    }
+
+    @Internal
+    public List<com.ultreon.bubbles.gradle.Dependency> getGameDeps() {
+        return gameDeps;
     }
 
     @Internal

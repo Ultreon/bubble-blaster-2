@@ -2,6 +2,7 @@
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import com.ultreon.bubbles.gradle.VersionType
 
 import static java.lang.System.getenv
 
@@ -71,6 +72,10 @@ mkdir "$projectDir/docs/latest"
 
 javadoc.finalizedBy(copyJavadoc)
 
+bubbles {
+    versionType(VersionType.DEV)
+}
+
 //**********************//
 //     Repositories     //
 //**********************//
@@ -110,7 +115,7 @@ repositories {
  */
 configurations {
     // configuration that holds jars to include in the jar
-    api {
+    implementation {
         canBeResolved true
     }
 }
@@ -120,99 +125,99 @@ configurations {
  */
 dependencies {
     // Projects
-    api project(":preloader")
-    api 'it.unimi.dsi:fastutil:8.5.9'
-    api 'it.unimi.dsi:fastutil-extra:8.5.4'
-    api 'it.unimi.dsi:fastutil-core:8.5.9'
-    api 'org.checkerframework:checker:3.25.0'
+    implementation project(":preloader")
+    implementation 'it.unimi.dsi:fastutil:8.5.9'
+    implementation 'it.unimi.dsi:fastutil-extra:8.5.4'
+    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
+    implementation 'org.checkerframework:checker:3.25.0'
 
     // Test dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
     // Misc
-    api 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
 
     // Apis
-    api 'commons-io:commons-io:2.11.0'
-    api 'org.apache.commons:commons-lang3:3.12.0'
-    api 'org.apache.commons:commons-collections4:4.4'
-    api 'org.apache.commons:commons-text:1.10.0'
-    api 'org.apache.ant:ant:1.10.12'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.apache.ant:ant:1.10.12'
 
     //noinspection GradlePackageUpdate
-    api 'commons-lang:commons-lang:2.6'
+    implementation 'commons-lang:commons-lang:2.6'
 
     // Local jars.
-    api fileTree(dir: '.\\libs', include: ['*.jar'])
+    implementation fileTree(dir: '.\\libs', include: ['*.jar'])
 
     // Google
-    api group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-    api group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
-    api group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
 
     // Apache
-    api group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.14.1'
-    api group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.14'
-    api group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.14'
-    api group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.14'
-    api group: 'org.apache.xmlgraphics', name: 'batik-util', version: '1.14'
-    api group: 'org.apache.xmlgraphics', name: 'batik-swing', version: '1.14'
-    api group: 'org.apache.xmlgraphics', name: 'batik-awt-util', version: '1.14'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.14.1'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.14'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.14'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.14'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-util', version: '1.14'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-swing', version: '1.14'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-awt-util', version: '1.14'
 
     // JHLabs
-    api group: 'com.jhlabs', name: 'filters', version: '2.0.235-1'
+    implementation group: 'com.jhlabs', name: 'filters', version: '2.0.235-1'
 
     // SwingLabs
-    api group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.5-1'
+    implementation group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.5-1'
 
     // FuseSource
-    api group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.4'
+    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.4'
 
     // OpenJFX
-    api 'org.openjfx:javafx-swing:19'
-    api 'org.openjfx:javafx-media:19'
-    api 'org.openjfx:javafx-controls:19'
-    api 'org.openjfx:javafx-graphics:19'
-    api 'org.openjfx:javafx:19'
+    implementation 'org.openjfx:javafx-swing:19'
+    implementation 'org.openjfx:javafx-media:19'
+    implementation 'org.openjfx:javafx-controls:19'
+    implementation 'org.openjfx:javafx-graphics:19'
+    implementation 'org.openjfx:javafx:19'
 
     // OpenJFX Natives
-    api 'org.openjfx:javafx-swing:19:win'
-    api 'org.openjfx:javafx-swing:19:mac'
-    api 'org.openjfx:javafx-swing:19:linux'
-    api 'org.openjfx:javafx-media:19:win'
-    api 'org.openjfx:javafx-media:19:mac'
-    api 'org.openjfx:javafx-media:19:linux'
-    api 'org.openjfx:javafx-controls:19:win'
-    api 'org.openjfx:javafx-controls:19:mac'
-    api 'org.openjfx:javafx-controls:19:linux'
-    api 'org.openjfx:javafx-graphics:19:win'
-    api 'org.openjfx:javafx-graphics:19:mac'
-    api 'org.openjfx:javafx-graphics:19:linux'
-    api 'org.openjfx:javafx-base:19:win'
-    api 'org.openjfx:javafx-base:19:mac'
-    api 'org.openjfx:javafx-base:19:linux'
+    implementation 'org.openjfx:javafx-swing:19:win'
+    implementation 'org.openjfx:javafx-swing:19:mac'
+    implementation 'org.openjfx:javafx-swing:19:linux'
+    implementation 'org.openjfx:javafx-media:19:win'
+    implementation 'org.openjfx:javafx-media:19:mac'
+    implementation 'org.openjfx:javafx-media:19:linux'
+    implementation 'org.openjfx:javafx-controls:19:win'
+    implementation 'org.openjfx:javafx-controls:19:mac'
+    implementation 'org.openjfx:javafx-controls:19:linux'
+    implementation 'org.openjfx:javafx-graphics:19:win'
+    implementation 'org.openjfx:javafx-graphics:19:mac'
+    implementation 'org.openjfx:javafx-graphics:19:linux'
+    implementation 'org.openjfx:javafx-base:19:win'
+    implementation 'org.openjfx:javafx-base:19:mac'
+    implementation 'org.openjfx:javafx-base:19:linux'
 
     // MongoDB
-    api group: 'org.mongodb', name: 'bson', version: '4.3.2'
+    implementation group: 'org.mongodb', name: 'bson', version: '4.3.2'
 
     // OSHi (For system info in crash reports)
-    api 'com.github.oshi:oshi-core:6.3.0'
+    implementation 'com.github.oshi:oshi-core:6.3.2'
 
     // Discord Presence
-    api 'com.github.JnCrMx:discord-game-sdk4j:v0.5.5'
+    implementation 'com.github.JnCrMx:discord-game-sdk4j:v0.5.5'
 
     // MP3 Sounds
-    api group: 'javazoom', name: 'jlayer', version: '1.0.1'
+    implementation group: 'javazoom', name: 'jlayer', version: '1.0.1'
 
     // Apache commons
-    api group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 }
 
 allprojects {
@@ -287,7 +292,7 @@ jar {
 
 mkdir("build/lib-out")
 
-(configurations.api).collect { File file ->
+(configurations.implementation).collect { File file ->
     copy { from file; into "${projectDir}/build/lib-out" }
 }
 
@@ -332,7 +337,7 @@ task portableJar(type: Jar) {
         }
     }
     from {
-        (configurations.api).collect {
+        (configurations.implementation).collect {
             it.getPath().startsWith(projectDir.getPath()) ? [] : it.isDirectory() ? it : zipTree(it)
         }
     }
@@ -341,8 +346,6 @@ task portableJar(type: Jar) {
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
-
-def dependsDir = file("${projectDir}/build/dependencies")
 
 task createExec {
     doFirst {

@@ -19,6 +19,7 @@ public class BubblesGradlePlugin implements Plugin<Project> {
     @Override
     public void apply(@Nonnull Project project) {
         project.getTasks().register("retrieveUrls", RetrieveUrlsTask.class);
+        project.getTasks().register("bubbles", BubblesTask.class);
 
         if (project.getRootProject().equals(project)) {
             project.getTasks().register("writeDownloadJson", WriteDownloadJsonTask.class);
