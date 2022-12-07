@@ -36,7 +36,7 @@ public class PreClassLoader extends URLClassLoader {
 
     @SuppressWarnings("SpellCheckingInspection")
     public PreClassLoader(URL[] sources) {
-        super(sources, null);
+        super(sources, PreGameLoader.class.getProtectionDomain().getClassLoader());
         this.sources = new ArrayList<>(Arrays.asList(sources));
 
         // classloader exclusions

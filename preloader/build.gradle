@@ -57,24 +57,24 @@ repositories {
 
 configurations {
     // configuration that holds jars to include in the jar
-    api
+    implementation
 
     def xml = new MarkupBuilder();
     xml.component()
 }
 
 dependencies {
-    api 'it.unimi.dsi:fastutil-core:8.5.9'
-    api 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    api group: 'org.ow2.asm', name: 'asm', version: '9.2'
-    api group: 'org.ow2.asm', name: 'asm-tree', version: '9.2'
-    api group: 'org.xbib.elasticsearch', name: 'joptsimple', version: '6.3.2.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    api group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.ow2.asm', name: 'asm', version: '9.2'
+    implementation group: 'org.ow2.asm', name: 'asm-tree', version: '9.2'
+    implementation group: 'org.xbib.elasticsearch', name: 'joptsimple', version: '6.3.2.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
 }
 
 jar {

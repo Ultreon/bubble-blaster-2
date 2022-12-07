@@ -1,3 +1,4 @@
 rootProject.name = "bubbles"
 
 include 'preloader'
+include 'game'

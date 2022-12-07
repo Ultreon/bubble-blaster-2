@@ -39,7 +39,11 @@ public class PreGameLoader {
         }
 
         classLoader = new PreClassLoader(urls);
-        Thread.currentThread().setContextClassLoader(classLoader);
+    }
+
+    public static URL getPreMainUrl() {
+        return PreGameLoader.class.getProtectionDomain().getClassLoader()
+                .getClass().getProtectionDomain().getCodeSource().getLocation();
     }
 
     private void loadGame(String[] args) {
@@ -57,7 +61,7 @@ public class PreGameLoader {
             LOGGER.info(String.format("Current loader class %s", loader.getClass().getName()));
 
             final String loadTarget = Objects.requireNonNull(loader).getLoadingTarget();
-            final Class<?> clazz = Class.forName(loadTarget, false, classLoader);
+            final Class<?> clazz = Class.forName(loadTarget, false, getClass().getClassLoader());
             final Method mainMethod = clazz.getMethod("main", String[].class, PreClassLoader.class);
 
             LOGGER.info(String.format("Loading Bubble Blaster {%s}", loadTarget));

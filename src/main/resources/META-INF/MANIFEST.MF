@@ -1,3 +1,1 @@
 Manifest-Version: 1.0
-Premain-Class: com.ultreon.bubbles.core.InstrumentHook
-Main-Class: com.ultreon.preloader.PreGameLoader

@@ -11,6 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="build" />
+          <option value="packedJar" />
         </list>
       </option>
       <option name="vmOptions" />

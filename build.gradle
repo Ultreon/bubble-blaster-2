@@ -4,6 +4,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import com.ultreon.bubbles.gradle.VersionType
 
+import java.nio.file.StandardOpenOption
+
 import static java.lang.System.getenv
 
 buildscript {
@@ -35,6 +37,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
+    id "org.panteleyev.jpackageplugin" version "1.5.0"
 }
 
 apply plugin: 'java'
@@ -45,12 +48,18 @@ apply plugin: 'bubbles-gradle'
 //****************************//
 // Setting up main properties //
 //****************************//
-def calendar = Calendar.getInstance()
-def date = String.format("%01dy%02dm%02dd", calendar.get(Calendar.YEAR) - 2000, calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-def time = String.format("%01dh%02dm%02ds", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND))
 
-version "${project_version}+${getenv("GITHUB_BUILD_NUMBER") == null ? "$date+$time" : getenv("GITHUB_BUILD_NUMBER")}"
-group 'com.ultreon' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+// Project properties.
+def projectId = property("project_id")
+def projectName = property("project_name")
+def projectVersion = property("project_version")
+def appName1 = property("app_name")
+
+version "${project_version}+${getenv("GITHUB_BUILD_NUMBER") == null ? "local" : getenv("GITHUB_BUILD_NUMBER")}"
+group 'com.ultreon.bubbles' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "premain"
+
+def packageVersion = ((String) version).replaceAll("\\+local", ".0").replaceAll("\\+", ".")
 
 java {
     withSourcesJar()
@@ -118,6 +127,9 @@ configurations {
     implementation {
         canBeResolved true
     }
+    include {
+        canBeResolved true
+    }
 }
 
 /***************
@@ -125,99 +137,8 @@ configurations {
  */
 dependencies {
     // Projects
-    implementation project(":preloader")
-    implementation 'it.unimi.dsi:fastutil:8.5.9'
-    implementation 'it.unimi.dsi:fastutil-extra:8.5.4'
-    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
-    implementation 'org.checkerframework:checker:3.25.0'
-
-    // Test dependencies
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-
-    // Misc
-    implementation 'org.jetbrains:annotations:23.0.0'
-
-    // Apis
-    implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.apache.commons:commons-collections4:4.4'
-    implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation 'org.apache.ant:ant:1.10.12'
-
-    //noinspection GradlePackageUpdate
-    implementation 'commons-lang:commons-lang:2.6'
-
-    // Local jars.
-    implementation fileTree(dir: '.\\libs', include: ['*.jar'])
-
-    // Google
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
-
-    // Apache
-    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.14.1'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-util', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-swing', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-awt-util', version: '1.14'
-
-    // JHLabs
-    implementation group: 'com.jhlabs', name: 'filters', version: '2.0.235-1'
-
-    // SwingLabs
-    implementation group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.5-1'
-
-    // FuseSource
-    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.4'
-
-    // OpenJFX
-    implementation 'org.openjfx:javafx-swing:19'
-    implementation 'org.openjfx:javafx-media:19'
-    implementation 'org.openjfx:javafx-controls:19'
-    implementation 'org.openjfx:javafx-graphics:19'
-    implementation 'org.openjfx:javafx:19'
-
-    // OpenJFX Natives
-    implementation 'org.openjfx:javafx-swing:19:win'
-    implementation 'org.openjfx:javafx-swing:19:mac'
-    implementation 'org.openjfx:javafx-swing:19:linux'
-    implementation 'org.openjfx:javafx-media:19:win'
-    implementation 'org.openjfx:javafx-media:19:mac'
-    implementation 'org.openjfx:javafx-media:19:linux'
-    implementation 'org.openjfx:javafx-controls:19:win'
-    implementation 'org.openjfx:javafx-controls:19:mac'
-    implementation 'org.openjfx:javafx-controls:19:linux'
-    implementation 'org.openjfx:javafx-graphics:19:win'
-    implementation 'org.openjfx:javafx-graphics:19:mac'
-    implementation 'org.openjfx:javafx-graphics:19:linux'
-    implementation 'org.openjfx:javafx-base:19:win'
-    implementation 'org.openjfx:javafx-base:19:mac'
-    implementation 'org.openjfx:javafx-base:19:linux'
-
-    // MongoDB
-    implementation group: 'org.mongodb', name: 'bson', version: '4.3.2'
-
-    // OSHi (For system info in crash reports)
-    implementation 'com.github.oshi:oshi-core:6.3.2'
-
-    // Discord Presence
-    implementation 'com.github.JnCrMx:discord-game-sdk4j:v0.5.5'
-
-    // MP3 Sounds
-    implementation group: 'javazoom', name: 'jlayer', version: '1.0.1'
-
-    // Apache commons
-    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    include(runtimeOnly project(":preloader"))
+    include(runtimeOnly project(":game"))
 }
 
 allprojects {
@@ -272,9 +193,9 @@ jar {
     //noinspection GroovyAssignabilityCheck
     manifest {
         //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'QBubbles',
+        attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': "1.0-indev1",
+                'Implementation-Version': project.version,
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }
@@ -288,12 +209,6 @@ jar {
 
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-mkdir("build/lib-out")
-
-(configurations.implementation).collect { File file ->
-    copy { from file; into "${projectDir}/build/lib-out" }
 }
 
 processResources {
@@ -321,30 +236,43 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-task portableJar(type: Jar) {
+task packedJar(type: Jar) {
+    doFirst {
+        def collect = configurations.include.files.collect { it.name }
+        Files.write(file("$buildDir/jar-files.txt").toPath(), String.join("\n", collect).getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+    }
+
+    dependsOn ":preloader:jar"
+    dependsOn ":jar"
+
     //noinspection GroovyAssignabilityCheck
     manifest {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'QBubbles',
                 'Implementation-Vendor': 'Ultreon Team',
                 'Implementation-Version': "1.0-indev1",
-                'Main-Class': 'com.ultreon.preloader.PreGameLoader',
+                'Main-Class': 'com.ultreon.premain.PreMain',
                 'Multi-Release': 'true'
     }
-    from {
-        (rootProject.getSubprojects()).collect {
-            zipTree(it.getTasks().getByName("jar").archiveFile.get())
-        }
+
+    into('META-INF/jars') {
+        from configurations.include
     }
-    from {
-        (configurations.implementation).collect {
-            it.getPath().startsWith(projectDir.getPath()) ? [] : it.isDirectory() ? it : zipTree(it)
-        }
+
+    into('META-INF') {
+        from file("$buildDir/jar-files.txt")
     }
-    from jar.archiveFile.get()
-    classifier "portable"
+
+    archivesBaseName = "bubbles"
+
+    from zipTree(jar.archiveFile.get())
+    classifier "packed"
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+build {
+    mustRunAfter ":packedJar"
 }
 
 task createExec {
@@ -382,7 +310,7 @@ task createExec {
 }
 
 artifacts {
-    portableJar
+    packedJar
 }
 
 jar.finalizedBy(retrieveUrls)
@@ -390,6 +318,16 @@ publish.finalizedBy(retrieveUrls)
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+task("copyDependencies", type: Copy) {
+    from(configurations.runtimeClasspath)
+    into("$buildDir/jars")
+}
+
+task("copyJar", type: Copy) {
+    from(tasks.jar)
+    into("$buildDir/jars")
 }
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))

@@ -4,19 +4,18 @@
 # against bad commits.
 
 name: build
-
-on: [ pull_request, push ]
+on: [pull_request, push]
 
 jobs:
-  build:
+  build-linux:
     strategy:
       matrix:
         # Use these Java versions
         java: [
-          17    # Minimum supported by Minecraft
+          17    # Minimum supported
         ]
         # and run on both Linux and not Windows
-        os: [ ubuntu-20.04 ]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout repository
@@ -28,21 +27,20 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: build
-        run: ./gradlew build
+        run: ./gradlew build packedJar
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: capture the game's build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Bubble Blaster
+          name: Bubble Blaster Build ${{ github.run_number }}
           path: build/libs/
       - name: capture pre-loader's build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Preloader
+          name: Preloader Build ${{ github.run_number }}
           path: preloader/build/libs/
   publish:
     runs-on: ubuntu-latest
