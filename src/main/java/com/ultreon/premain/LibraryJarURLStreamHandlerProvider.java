@@ -38,12 +38,8 @@ public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerPr
 
                         @Override
                         public InputStream getInputStream() throws IOException {
+                            connect();
                             return stream;
-                        }
-
-                        @Override
-                        public OutputStream getOutputStream() throws IOException {
-                            throw new ReadOnlyFileSystemException();
                         }
                     };
                 }
