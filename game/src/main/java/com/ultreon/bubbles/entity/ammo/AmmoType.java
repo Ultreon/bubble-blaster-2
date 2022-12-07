@@ -3,7 +3,6 @@ package com.ultreon.bubbles.entity.ammo;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
-import com.ultreon.bubbles.common.Registrable;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.item.ItemType;
 import com.ultreon.bubbles.render.Renderer;
@@ -17,7 +16,7 @@ import java.awt.*;
  * @author Qboi123
  */
 @Beta
-public abstract class AmmoType extends Registrable {
+public abstract class AmmoType {
     public abstract void render(Renderer renderer, Bullet rotation);
 
     /**
@@ -34,11 +33,6 @@ public abstract class AmmoType extends Registrable {
     public abstract AttributeContainer getDefaultAttributes();
 
     public abstract Shape getShape(Bullet bullet);
-
-    @Override
-    public String toString() {
-        return "AmmoType[" + id() + "]";
-    }
 
     public abstract float getSpeed();
 }

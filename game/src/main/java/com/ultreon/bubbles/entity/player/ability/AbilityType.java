@@ -1,8 +1,5 @@
 package com.ultreon.bubbles.entity.player.ability;
 
-import com.ultreon.bubbles.common.Registrable;
-
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -10,7 +7,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the type of ability.
  */
-public class AbilityType<T extends Ability<T>> extends Registrable {
+public class AbilityType<T extends Ability<T>> {
     private final Supplier<T> ability;
 
     /**
@@ -21,29 +18,11 @@ public class AbilityType<T extends Ability<T>> extends Registrable {
         this.ability = ability;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbilityType<?> that = (AbilityType<?>) o;
-        return Objects.equals(id(), that.id());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id());
-    }
-
     /**
      * Create the ability instance.
      * @return the ability.
      */
     public T getAbility() {
         return ability.get();
-    }
-
-    @Override
-    public String toString() {
-        return "AbilityType[" + id() + "]";
     }
 }

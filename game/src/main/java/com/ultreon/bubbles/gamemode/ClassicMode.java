@@ -92,7 +92,7 @@ public class ClassicMode extends Gamemode {
         } catch (Exception e) {
             CrashLog crashLog = new CrashLog("Could not initialize classic game type.", e);
 
-            BubbleBlaster.getInstance().crash(crashLog.createCrash());
+            BubbleBlaster.crash(crashLog.createCrash());
         }
 
         this.make();

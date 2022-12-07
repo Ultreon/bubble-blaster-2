@@ -93,7 +93,7 @@ public final class Identifier {
 
     @Contract("_ -> param1")
     public static @NonNull String testPath(String path) {
-        if (!Pattern.matches("([A-Z][a-zA-Z\\d]{2,})(/[A-Z][a-zA-Z\\d]{2,})*", path)) {
+        if (!Pattern.matches("([a-z_.\\d]{2,})(/[a-z_.\\d]{2,})*", path)) {
             throw new SyntaxException("Path is invalid: " + path);
         }
         return path;

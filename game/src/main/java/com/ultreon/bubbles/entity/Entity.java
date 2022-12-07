@@ -12,7 +12,7 @@ import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.GameObject;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
 import net.querz.nbt.tag.CompoundTag;
@@ -310,7 +310,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     //     Getters     //
     /////////////////////
     public final Identifier id() {
-        return this.type.id();
+        return Registry.ENTITIES.getKey(type);
     }
 
     public EntityType<?> getType() {
@@ -437,7 +437,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public static Entity loadFully(Environment environment, CompoundTag tags) {
         Identifier type = Identifier.tryParse(tags.getString("type"));
         if (type == null) return null;
-        EntityType<?> entityType = Registers.ENTITIES.get(type);
+        EntityType<?> entityType = Registry.ENTITIES.getValue(type);
         return entityType == null ? null : entityType.create(environment, tags);
     }
 
@@ -509,8 +509,8 @@ public abstract class Entity extends GameObject implements StateHolder {
         state.putLong("id", this.entityId);
         state.putLongArray("uuid", new long[]{this.uniqueId.getMostSignificantBits(), this.uniqueId.getLeastSignificantBits()});
         state.putDouble("scale", this.scale);
-        state.putString("type", this.type.id().toString());
 
+        state.putString("type", Registry.ENTITIES.getKey(this.type).toString());
         return state;
     }
 

@@ -45,13 +45,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -69,18 +69,63 @@ loadScripts(document, 'script');</script>
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">com.ultreon.bubbles.registry</a></div>
-<h1 title="Class Registry" class="title">Class Registry&lt;T extends <a href="../common/IRegistrable.html" title="interface in com.ultreon.bubbles.common">IRegistrable</a>&gt;</h1>
+<h1 title="Class Registry" class="title">Class Registry&lt;T&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">com.ultreon.bubbles.registry.Registry&lt;T&gt;</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Registry&lt;T extends <a href="../common/IRegistrable.html" title="interface in com.ultreon.bubbles.common">IRegistrable</a>&gt;</span>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Registry&lt;T&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/player/ability/AbilityType.html" title="class in com.ultreon.bubbles.entity.player.ability">AbilityType</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#ABILITIES" class="member-name-link">ABILITIES</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/ammo/AmmoType.html" title="class in com.ultreon.bubbles.entity.ammo">AmmoType</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#AMMO_TYPES" class="member-name-link">AMMO_TYPES</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../bubble/BubbleType.html" title="class in com.ultreon.bubbles.bubble">BubbleType</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#BUBBLES" class="member-name-link">BUBBLES</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/Cursor.html" title="class or interface in java.awt" class="external-link">Cursor</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#CURSORS" class="member-name-link">CURSORS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../effect/StatusEffect.html" title="class in com.ultreon.bubbles.effect">StatusEffect</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#EFFECTS" class="member-name-link">EFFECTS</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/types/EntityType.html" title="class in com.ultreon.bubbles.entity.types">EntityType</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#ENTITIES" class="member-name-link">ENTITIES</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../gamemode/Gamemode.html" title="class in com.ultreon.bubbles.gamemode">Gamemode</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#GAMEMODES" class="member-name-link">GAMEMODES</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../common/gamestate/GameplayEvent.html" title="class in com.ultreon.bubbles.common.gamestate">GameplayEvent</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#GAMEPLAY_EVENTS" class="member-name-link">GAMEPLAY_EVENTS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../item/ItemType.html" title="class in com.ultreon.bubbles.item">ItemType</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#ITEMS" class="member-name-link">ITEMS</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../media/Sound.html" title="class in com.ultreon.bubbles.media">Sound</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#SOUNDS" class="member-name-link">SOUNDS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../render/TextureCollection.html" title="class in com.ultreon.bubbles.render">TextureCollection</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#TEXTURE_COLLECTIONS" class="member-name-link">TEXTURE_COLLECTIONS</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -91,7 +136,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected </code></div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Class,com.ultreon.bubbles.common.Identifier)" class="member-name-link">Registry</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;&nbsp;clazz,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Class,com.ultreon.bubbles.common.Identifier)" class="member-name-link">Registry</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;&nbsp;clazz,
  <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;id)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -111,9 +156,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#contains(com.ultreon.bubbles.common.Identifier)" class="member-name-link">contains</a><wbr>(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;rl)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T extends <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&gt;<br><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.lang.Class,com.ultreon.bubbles.common.Identifier)" class="member-name-link">create</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
- <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;registryName)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(com.ultreon.bubbles.common.Identifier,T...)" class="member-name-link">create</a><wbr>(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;registryName,
+ @NonNull T...&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#dump()" class="member-name-link">dump</a>()</code></div>
@@ -127,20 +172,20 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#freeze()" class="member-name-link">freeze</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Registry.html" title="type parameter in Registry">T</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get(com.ultreon.bubbles.common.Identifier)" class="member-name-link">get</a><wbr>(@Nullable <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;key)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the registered instance from the given <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common"><code>Identifier</code></a></div>
-</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKey(T)" class="member-name-link">getKey</a><wbr>(<a href="Registry.html" title="type parameter in Registry">T</a>&nbsp;obj)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getRegistries()" class="member-name-link">getRegistries</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T extends <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&gt;<br><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getRegistry(java.lang.Class)" class="member-name-link">getRegistry</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;objType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Registry.html" title="type parameter in Registry">T</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValue(com.ultreon.bubbles.common.Identifier)" class="member-name-link">getValue</a><wbr>(@Nullable <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;key)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the registered instance from the given <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common"><code>Identifier</code></a></div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#id()" class="member-name-link">id</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -156,13 +201,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Register an object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registrable(com.ultreon.bubbles.common.Identifier,com.ultreon.bubbles.common.Registrable)" class="member-name-link">registrable</a><wbr>(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;rl,
- <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&nbsp;object)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -175,6 +216,81 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="AMMO_TYPES">
+<h3>AMMO_TYPES</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/ammo/AmmoType.html" title="class in com.ultreon.bubbles.entity.ammo">AmmoType</a>&gt;</span>&nbsp;<span class="element-name">AMMO_TYPES</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="ENTITIES">
+<h3>ENTITIES</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/types/EntityType.html" title="class in com.ultreon.bubbles.entity.types">EntityType</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">ENTITIES</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="BUBBLES">
+<h3>BUBBLES</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../bubble/BubbleType.html" title="class in com.ultreon.bubbles.bubble">BubbleType</a>&gt;</span>&nbsp;<span class="element-name">BUBBLES</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="EFFECTS">
+<h3>EFFECTS</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../effect/StatusEffect.html" title="class in com.ultreon.bubbles.effect">StatusEffect</a>&gt;</span>&nbsp;<span class="element-name">EFFECTS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="ABILITIES">
+<h3>ABILITIES</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../entity/player/ability/AbilityType.html" title="class in com.ultreon.bubbles.entity.player.ability">AbilityType</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">ABILITIES</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="GAMEPLAY_EVENTS">
+<h3>GAMEPLAY_EVENTS</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../common/gamestate/GameplayEvent.html" title="class in com.ultreon.bubbles.common.gamestate">GameplayEvent</a>&gt;</span>&nbsp;<span class="element-name">GAMEPLAY_EVENTS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="GAMEMODES">
+<h3>GAMEMODES</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../gamemode/Gamemode.html" title="class in com.ultreon.bubbles.gamemode">Gamemode</a>&gt;</span>&nbsp;<span class="element-name">GAMEMODES</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="CURSORS">
+<h3>CURSORS</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/java/awt/Cursor.html" title="class or interface in java.awt" class="external-link">Cursor</a>&gt;</span>&nbsp;<span class="element-name">CURSORS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="ITEMS">
+<h3>ITEMS</h3>
+<div class="member-signature"><span class="annotations">@Beta
+</span><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../item/ItemType.html" title="class in com.ultreon.bubbles.item">ItemType</a>&gt;</span>&nbsp;<span class="element-name">ITEMS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="TEXTURE_COLLECTIONS">
+<h3>TEXTURE_COLLECTIONS</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../render/TextureCollection.html" title="class in com.ultreon.bubbles.render">TextureCollection</a>&gt;</span>&nbsp;<span class="element-name">TEXTURE_COLLECTIONS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="SOUNDS">
+<h3>SOUNDS</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;<a href="../media/Sound.html" title="class in com.ultreon.bubbles.media">Sound</a>&gt;</span>&nbsp;<span class="element-name">SOUNDS</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -183,7 +299,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.lang.Class,com.ultreon.bubbles.common.Identifier)">
 <h3>Registry</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">Registry</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;&nbsp;clazz,
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">Registry</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="Registry.html" title="type parameter in Registry">T</a>&gt;&nbsp;clazz,
  <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;id)</span>
             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></span></div>
 <dl class="notes">
@@ -219,22 +335,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="create(java.lang.Class,com.ultreon.bubbles.common.Identifier)">
-<h3>create</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&gt;</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
- <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;registryName)</span></div>
+<section class="detail" id="create(com.ultreon.bubbles.common.Identifier,T...)">
+<h3 id="create(com.ultreon.bubbles.common.Identifier,java.lang.Object[])">create</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/SafeVarargs.html" title="class or interface in java.lang" class="external-link">@SafeVarargs</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;registryName,
+ @NonNull T...&nbsp;type)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="getRegistry(java.lang.Class)">
-<h3>getRegistry</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&gt;</span>&nbsp;<span class="return-type"><a href="Registry.html" title="class in com.ultreon.bubbles.registry">Registry</a>&lt;T&gt;</span>&nbsp;<span class="element-name">getRegistry</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;objType)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="get(com.ultreon.bubbles.common.Identifier)">
-<h3>get</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Registry.html" title="type parameter in Registry">T</a></span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(@Nullable <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;key)</span></div>
+<section class="detail" id="getValue(com.ultreon.bubbles.common.Identifier)">
+<h3>getValue</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Registry.html" title="type parameter in Registry">T</a></span>&nbsp;<span class="element-name">getValue</span><wbr><span class="parameters">(@Nullable <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;key)</span></div>
 <div class="block">Returns the registered instance from the given <a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common"><code>Identifier</code></a></div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -260,7 +371,7 @@ loadScripts(document, 'script');</script>
 </li>
 <li>
 <section class="detail" id="register(com.ultreon.bubbles.common.Identifier,T)">
-<h3 id="register(com.ultreon.bubbles.common.Identifier,com.ultreon.bubbles.common.IRegistrable)">register</h3>
+<h3 id="register(com.ultreon.bubbles.common.Identifier,java.lang.Object)">register</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">register</span><wbr><span class="parameters">(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;rl,
  <a href="Registry.html" title="type parameter in Registry">T</a>&nbsp;val)</span></div>
 <div class="block">Register an object.</div>
@@ -296,13 +407,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="registrable(com.ultreon.bubbles.common.Identifier,com.ultreon.bubbles.common.Registrable)">
-<h3>registrable</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registrable</span><wbr><span class="parameters">(<a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a>&nbsp;rl,
- <a href="../common/Registrable.html" title="class in com.ultreon.bubbles.common">Registrable</a>&nbsp;object)</span></div>
-</section>
-</li>
-<li>
 <section class="detail" id="dump()">
 <h3>dump</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dump</span>()</div>
@@ -312,6 +416,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isFrozen()">
 <h3>isFrozen</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFrozen</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getKey(T)">
+<h3 id="getKey(java.lang.Object)">getKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../common/Identifier.html" title="class in com.ultreon.bubbles.common">Identifier</a></span>&nbsp;<span class="element-name">getKey</span><wbr><span class="parameters">(<a href="Registry.html" title="type parameter in Registry">T</a>&nbsp;obj)</span></div>
 </section>
 </li>
 </ul>

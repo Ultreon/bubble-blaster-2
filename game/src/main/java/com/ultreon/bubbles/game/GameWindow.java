@@ -169,7 +169,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         frame.setResizable(false);
         frame.enableInputMethods(true);
         frame.setFocusTraversalKeysEnabled(false);
-        try (InputStream inputStream = Objects.requireNonNull(BubbleBlaster.class.getResourceAsStream("/icon.png"), "Bruh, why icon no exist")) {
+        try (InputStream inputStream = BubbleBlaster.getGameJar().openStream("icon.png")) {
             frame.setIconImage(ImageIO.read(inputStream));
         }
 
@@ -348,7 +348,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
         Identifier textureEntry = new Identifier("textures/cursors/" + identifier.path(), identifier.location());
         Image image;
-        try (InputStream assetAsStream = game().getResourceManager().getAssetAsStream(textureEntry)) {
+        try (InputStream assetAsStream = game().getResourceManager().openResourceStream(textureEntry)) {
             image = ImageIO.read(assetAsStream);
         } catch (IOException e) {
             throw new IOError(e);

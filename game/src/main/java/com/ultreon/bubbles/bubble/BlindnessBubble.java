@@ -4,8 +4,8 @@ import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
-import org.apache.commons.lang.math.DoubleRange;
-import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.Range;
 
 import java.awt.*;
 
@@ -18,8 +18,8 @@ public class BlindnessBubble extends BubbleType {
 
         setPriority(640_000L);
 //        setPriority(640_000_000L);
-        setRadius(new IntRange(21, 70));
-        setSpeed(new DoubleRange(7.4, 12.6));
+        setRadius(Range.between(21, 70));
+        setSpeed(Range.between(7.4, 12.6));
         setDefense(0.2369f);
         setAttack(0.0f);
         setScore(2);

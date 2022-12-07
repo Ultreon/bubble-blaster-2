@@ -4,7 +4,7 @@ import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.input.MouseInput;
-import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.AbstractButton;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
@@ -14,8 +14,6 @@ import com.ultreon.bubbles.util.GraphicsUtils;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.net.URISyntaxException;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class OptionsButton extends AbstractButton implements GuiElement {
@@ -84,13 +82,9 @@ public class OptionsButton extends AbstractButton implements GuiElement {
     public void mouseEnter(int x, int y) {
         super.mouseEnter(x, y);
         if (isWithinBounds(x, y)) {
-            try {
-                Sound focusChangeSFX = new Sound(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
-                focusChangeSFX.setVolume(0.2d);
-                focusChangeSFX.play();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
+            focusChangeSFX.setVolume(0.2d);
+            focusChangeSFX.play();
         }
     }
 

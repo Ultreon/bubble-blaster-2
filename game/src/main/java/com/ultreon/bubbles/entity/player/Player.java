@@ -18,7 +18,7 @@ import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
 import com.ultreon.bubbles.player.InputController;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.MessengerScreen;
 import com.ultreon.bubbles.render.screen.Screen;
@@ -141,7 +141,7 @@ public class Player extends LivingEntity implements InputController {
         // Health
         this.health = 30f;
 
-        for (EntityType<?> entityType : Registers.ENTITIES.values()) {
+        for (EntityType<?> entityType : Registry.ENTITIES.values()) {
             markAsAttackable(entityType);
         }
 

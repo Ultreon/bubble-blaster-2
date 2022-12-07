@@ -4,8 +4,8 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.commons.util.ColorUtils;
-import org.apache.commons.lang.math.DoubleRange;
-import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.Range;
 
 public class AccelerateBubble extends BubbleType {
     public AccelerateBubble() {
@@ -15,8 +15,8 @@ public class AccelerateBubble extends BubbleType {
 
 //        setPriority(244000);
         setPriority(2440000);
-        setRadius(new IntRange(25, 54));
-        setSpeed(new DoubleRange(6.0, 28.0));
+        setRadius(Range.between(25, 54));
+        setSpeed(Range.between(6.0, 28.0));
         setDefense(1.0f);
         setAttack(0.001f);
         setScore(1);
@@ -25,9 +25,7 @@ public class AccelerateBubble extends BubbleType {
 
     @Override
     public void onCollision(Bubble source, Entity target) {
-        if (target instanceof Player) {
-            Player player = (Player) target;
-
+        if (target instanceof Player player) {
             // Calculate Velocity X and Y.
             double accelerateX = 0;
             double accelerateY = 0;

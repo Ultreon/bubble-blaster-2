@@ -1,8 +1,6 @@
 package com.ultreon.bubbles.item;
 
-import com.ultreon.bubbles.common.Registrable;
-
-public abstract class ItemType extends Registrable implements IItemProvider {
+public abstract class ItemType implements IItemProvider {
     @Override
     public ItemType getItem() {
         return this;

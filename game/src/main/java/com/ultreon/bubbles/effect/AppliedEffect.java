@@ -4,7 +4,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
@@ -33,7 +33,7 @@ public class AppliedEffect implements TagHolder {
      */
     private AppliedEffect(CompoundTag document) {
         this.tag = document.getCompoundTag("Tag");
-        this.type = Registers.EFFECTS.get(Identifier.parse(document.getString("id")));
+        this.type = Registry.EFFECTS.getValue(Identifier.parse(document.getString("id")));
         this.setRemainingTime(document.getLong("duration"));
         this.baseDuration = document.getLong("baseDuration");
         this.strength = document.getInt("strength");
@@ -187,7 +187,7 @@ public class AppliedEffect implements TagHolder {
         tag.putLong("baseDuration", getBaseDuration());
         tag.putLong("duration", getRemainingTime());
         tag.putInt("strength", getStrength());
-        tag.putString("id", getType().id().toString());
+        tag.putString("id", Registry.EFFECTS.getKey(getType()).toString());
 
         return tag;
     }

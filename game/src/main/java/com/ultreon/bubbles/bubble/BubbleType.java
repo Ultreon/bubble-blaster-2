@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.bubble;
 
 import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.common.Registrable;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
@@ -10,10 +9,10 @@ import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.commons.lang.Pair;
-import org.apache.commons.lang.math.DoubleRange;
-import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang3.Range;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.awt.*;
@@ -25,12 +24,12 @@ import java.util.*;
  * @see EntityType
  */
 @SuppressWarnings({"unused", "SameParameterValue", "SameReturnValue"})
-public abstract class BubbleType extends Registrable implements Serializable, com.ultreon.bubbles.common.text.translation.Translatable {
+public abstract class BubbleType implements Serializable, com.ultreon.bubbles.common.text.translation.Translatable {
     public Color[] colors;
     private double priority;
 
-    private IntRange radius;
-    private DoubleRange speed;
+    private Range<Integer> radius;
+    private Range<Double> speed;
     private float bounceAmount;
     private BubbleEffectCallback effect = (source, target) -> null;
 
@@ -53,19 +52,6 @@ public abstract class BubbleType extends Registrable implements Serializable, co
         return Collections.unmodifiableList(aiTasks);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BubbleType that = (BubbleType) o;
-        return that.id().equals(id());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id());
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Effect     //
     ////////////////////
@@ -81,35 +67,35 @@ public abstract class BubbleType extends Registrable implements Serializable, co
     //     Attributes     //
     ////////////////////////
     public int getMinRadius() {
-        return radius.getMinimumInteger();
+        return radius.getMaximum();
     }
 
     public int getMaxRadius() {
-        return radius.getMaximumInteger();
+        return radius.getMaximum();
     }
 
     public double getMinSpeed() {
-        return speed.getMinimumDouble();
+        return speed.getMaximum();
     }
 
     public double getMaxSpeed() {
-        return speed.getMaximumDouble();
+        return speed.getMaximum();
     }
 
     protected final void setMinRadius(int radius) {
-        this.radius = new IntRange(radius, this.radius.getMaximumInteger());
+        this.radius = Range.between(radius, this.radius.getMaximum());
     }
 
     protected final void setMaxRadius(int radius) {
-        this.radius = new IntRange(this.radius.getMinimumInteger(), radius);
+        this.radius = Range.between(this.radius.getMinimum(), radius);
     }
 
     protected final void setMinSpeed(double speed) {
-        this.speed = new DoubleRange(speed, this.radius.getMaximumDouble());
+        this.speed = Range.between(speed, this.speed.getMaximum());
     }
 
     protected final void setMaxSpeed(double speed) {
-        this.speed = new DoubleRange(this.speed.getMinimumInteger(), speed);
+        this.speed = Range.between(this.speed.getMinimum(), speed);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,11 +149,11 @@ public abstract class BubbleType extends Registrable implements Serializable, co
         return priority;
     }
 
-    public IntRange getRadius() {
+    public Range<Integer> getRadius() {
         return radius;
     }
 
-    public DoubleRange getSpeed() {
+    public Range<Double> getSpeed() {
         return speed;
     }
 
@@ -195,11 +181,11 @@ public abstract class BubbleType extends Registrable implements Serializable, co
         this.priority = priority;
     }
 
-    protected void setRadius(IntRange radius) {
+    protected void setRadius(Range<Integer> radius) {
         this.radius = radius;
     }
 
-    protected void setSpeed(DoubleRange speed) {
+    protected void setSpeed(Range<Double> speed) {
         this.speed = speed;
     }
 
@@ -265,17 +251,16 @@ public abstract class BubbleType extends Registrable implements Serializable, co
         private float score = 1f;
         private float defense = Float.MIN_NORMAL;
         private float attack = 0.2f;
-        private IntRange radius = new IntRange(21, 80);
-        private DoubleRange speed = new DoubleRange(1d, 2.5d);
+        private Range<Integer> radius = Range.between(21, 80);
+        private Range<Double> speed = Range.between(1d, 2.5d);
         private int rarity;
         private float bounceAmount = 0f;
         private double hardness = 1d;
         private Color[] colors;
         private BubbleEffectCallback bubbleEffect = (source, target) -> null;
-        private DoubleRange _speed;
         private boolean doesBounce = false;
         private int difficulty = -1;
-        private List<Pair<Integer, AiTask>> aiTasks = new ArrayList<>();
+        private final List<Pair<Integer, AiTask>> aiTasks = new ArrayList<>();
 
         private Builder() {
         }
@@ -318,18 +303,11 @@ public abstract class BubbleType extends Registrable implements Serializable, co
             return bubbleType;
         }
 
-        @Deprecated(since = "0.0.3470-indev5", forRemoval = true)
-        public Builder name(String name) {
-            return this;
-        }
-
-        // Longs
         public Builder priority(long priority) {
             this.priority = priority;
             return this;
         }
 
-        // Ints
         public Builder score(float score) {
             this.score = score;
             return this;
@@ -365,21 +343,21 @@ public abstract class BubbleType extends Registrable implements Serializable, co
 
         // Ranges
         public Builder radius(int _min, int _max) {
-            this.radius = new IntRange(_min, _max);
+            this.radius = Range.between(_min, _max);
             return this;
         }
 
-        public Builder radius(IntRange range) {
+        public Builder radius(Range<Integer> range) {
             this.radius = range;
             return this;
         }
 
         public Builder speed(double _min, double _max) {
-            this.speed = new DoubleRange(_min, _max);
+            this.speed = Range.between(_min, _max);
             return this;
         }
 
-        public Builder speed(DoubleRange range) {
+        public Builder speed(Range<Double> range) {
             this.speed = range;
             return this;
         }
@@ -433,12 +411,12 @@ public abstract class BubbleType extends Registrable implements Serializable, co
 
     @Override
     public String getTranslationPath() {
-        Identifier registryName = id();
+        Identifier registryName = Registry.BUBBLES.getKey(this);
         return registryName.location() + "/bubble/name/" + registryName.path();
     }
 
     public String getDescriptionTranslationPath() {
-        Identifier registryName = id();
+        Identifier registryName = Registry.BUBBLES.getKey(this);
         return registryName.location() + "/bubble/description/" + registryName.path();
     }
 }

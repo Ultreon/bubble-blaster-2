@@ -132,42 +132,43 @@ public final class Scanner {
             modCategory.add("Entry", jarEntry != null ? jarEntry.getName() : null);
             modCategory.add("Annotation Scan", annotationScan);
             crashLog.addCategory(modCategory);
-            BubbleBlaster.getInstance().crash(crashLog.createCrash());
+            BubbleBlaster.crash(crashLog.createCrash());
         }
     }
 
     private void scanJar(File file) throws IOException {
         Enumeration<JarEntry> e;
-        JarFile jarFile = new JarFile(file.getPath());
-        if (!isGame) {
+        try (JarFile jarFile = new JarFile(file.getPath())) {
+            if (!isGame) {
+                e = jarFile.entries();
+                while (e.hasMoreElements()) {
+                    JarEntry je = e.nextElement();
+                    jarEntry = je;
+                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                        continue;
+                    }
+
+                    // -6 because create .class
+                    String className1 = je.getName().substring(0, je.getName().length() - 6);
+                    className = className1.replace('/', '.');
+                    try {
+                        Class<?> aClass = Class.forName(className, false, BubbleBlaster.class.getClassLoader());
+                        throw new ScannerException("Class is included by Bubble Blaster: " + className);
+                    } catch (ClassNotFoundException ignored) {
+
+                    }
+                }
+            }
+
             e = jarFile.entries();
+
+            annotationScan = true;
+
             while (e.hasMoreElements()) {
                 JarEntry je = e.nextElement();
                 jarEntry = je;
-                if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                    continue;
-                }
-
-                // -6 because create .class
-                String className1 = je.getName().substring(0, je.getName().length() - 6);
-                className = className1.replace('/', '.');
-                try {
-                    Class<?> aClass = Class.forName(className, false, BubbleBlaster.class.getClassLoader());
-                    throw new ScannerException("Class is included by Bubble Blaster: " + className);
-                } catch (ClassNotFoundException ignored) {
-                    
-                }
+                scanEntry(je);
             }
-        }
-
-        e = jarFile.entries();
-
-        annotationScan = true;
-
-        while (e.hasMoreElements()) {
-            JarEntry je = e.nextElement();
-            jarEntry = je;
-            scanEntry(je);
         }
     }
 

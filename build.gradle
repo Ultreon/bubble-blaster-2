@@ -269,6 +269,14 @@ task packedJar(type: Jar) {
     classifier "packed"
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
+
+    doLast {
+        copy {
+            from archiveFile
+            into buildDir
+            rename ".*", "packed.jar"
+        }
+    }
 }
 
 build {

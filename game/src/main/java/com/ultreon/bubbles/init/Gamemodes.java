@@ -4,7 +4,7 @@ import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gamemode.ClassicMode;
 import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 //@ObjectHolder(modId = "bubbleblaster", type = GameType.class)
 public class Gamemodes {
-    private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registers.GAME_TYPES);
+    private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.GAMEMODES);
 
     public static final RegistrySupplier<ClassicMode> CLASSIC = register("Classic", ClassicMode::new);
 

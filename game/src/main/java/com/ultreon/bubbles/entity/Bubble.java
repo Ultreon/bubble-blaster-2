@@ -320,7 +320,7 @@ public class Bubble extends AbstractBubbleEntity {
         document.putFloat("baseBounceAmount", baseBounceAmount);
 
         document.putBoolean("effectApplied", effectApplied);
-        document.putString("bubbleType", bubbleType.id().toString());
+        document.putString("bubbleType", Registry.BUBBLES.getKey(bubbleType).toString());
 
         return document;
     }
@@ -337,7 +337,7 @@ public class Bubble extends AbstractBubbleEntity {
 
         Identifier bubbleTypeKey = Identifier.parse(tag.getString("bubbleType"));
         this.effectApplied = tag.getBoolean("effectApplied");
-        this.bubbleType = Registry.getRegistry(BubbleType.class).get(bubbleTypeKey);
+        this.bubbleType = Registry.BUBBLES.getValue(bubbleTypeKey);
     }
 
     public void setEffectApplied(boolean effectApplied) {

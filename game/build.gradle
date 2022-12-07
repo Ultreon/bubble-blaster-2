@@ -124,98 +124,94 @@ repositories {
 dependencies {
     // Projects
     implementation project(":preloader")
-    implementation 'it.unimi.dsi:fastutil:8.5.9'
-    implementation 'it.unimi.dsi:fastutil-extra:8.5.4'
-    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
-    implementation 'org.checkerframework:checker:3.25.0'
+    implementation "it.unimi.dsi:fastutil:8.5.9"
+    implementation "it.unimi.dsi:fastutil-extra:8.5.4"
+    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "org.checkerframework:checker:3.25.0"
 
     // Test dependencies
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 
     // Misc
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation "org.jetbrains:annotations:23.0.0"
 
     // Apis
-    implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.apache.commons:commons-collections4:4.4'
-    implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation 'org.apache.ant:ant:1.10.12'
-
-    //noinspection GradlePackageUpdate
-    implementation 'commons-lang:commons-lang:2.6'
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "org.apache.commons:commons-collections4:4.4"
+    implementation "org.apache.commons:commons-text:1.10.0"
+    implementation "org.apache.commons:commons-math3:3.6.1"
+    implementation "org.apache.ant:ant:1.10.12"
 
     // Local jars.
-    implementation fileTree(dir: "$projectDir/libs", include: ['*.jar'])
+    implementation fileTree(dir: "$projectDir/libs", include: ["*.jar"])
 
     // Google
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
+    implementation "com.google.code.findbugs:jsr305:$jsr_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "com.google.code.gson:gson:$gson_version"
 
     // Apache
-    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.14.1'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-util', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-swing', version: '1.14'
-    implementation group: 'org.apache.xmlgraphics', name: 'batik-awt-util', version: '1.14'
+    implementation "org.apache.logging.log4j:log4j:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version") { exclude group: "org.slf4j" }
+    implementation "org.apache.logging.log4j:log4j-jcl:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-jul:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-web:$log4j_version"
+    implementation "org.apache.xmlgraphics:batik-svg-dom:$batik_version"
+    implementation "org.apache.xmlgraphics:batik-dom:$batik_version"
+    implementation "org.apache.xmlgraphics:batik-all:$batik_version"
+    implementation "org.apache.xmlgraphics:batik-util:$batik_version"
+    implementation "org.apache.xmlgraphics:batik-swing:$batik_version"
+    implementation "org.apache.xmlgraphics:batik-awt-util:$batik_version"
+
+    // SLF4J
+    implementation "org.slf4j:slf4j-api:[1.7, 1.8)!!"
 
     // JHLabs
-    implementation group: 'com.jhlabs', name: 'filters', version: '2.0.235-1'
+    implementation "com.jhlabs:filters:2.0.235-1"
 
     // SwingLabs
-    implementation group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.5-1'
+    implementation "org.swinglabs.swingx:swingx-all:1.6.5-1"
 
     // FuseSource
-    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.4'
+    implementation "org.fusesource.jansi:jansi:2.4.0"
 
     // OpenJFX
-    implementation 'org.openjfx:javafx-swing:19'
-    implementation 'org.openjfx:javafx-media:19'
-    implementation 'org.openjfx:javafx-controls:19'
-    implementation 'org.openjfx:javafx-graphics:19'
-    implementation 'org.openjfx:javafx:19'
+    implementation "org.openjfx:javafx-swing:$openjfx_version"
+    implementation "org.openjfx:javafx-media:$openjfx_version"
+    implementation "org.openjfx:javafx-controls:$openjfx_version"
+    implementation "org.openjfx:javafx-graphics:$openjfx_version"
+    implementation "org.openjfx:javafx:$openjfx_version"
 
     // OpenJFX Natives
-    implementation 'org.openjfx:javafx-swing:19:win'
-    implementation 'org.openjfx:javafx-swing:19:mac'
-    implementation 'org.openjfx:javafx-swing:19:linux'
-    implementation 'org.openjfx:javafx-media:19:win'
-    implementation 'org.openjfx:javafx-media:19:mac'
-    implementation 'org.openjfx:javafx-media:19:linux'
-    implementation 'org.openjfx:javafx-controls:19:win'
-    implementation 'org.openjfx:javafx-controls:19:mac'
-    implementation 'org.openjfx:javafx-controls:19:linux'
-    implementation 'org.openjfx:javafx-graphics:19:win'
-    implementation 'org.openjfx:javafx-graphics:19:mac'
-    implementation 'org.openjfx:javafx-graphics:19:linux'
-    implementation 'org.openjfx:javafx-base:19:win'
-    implementation 'org.openjfx:javafx-base:19:mac'
-    implementation 'org.openjfx:javafx-base:19:linux'
-
-    // MongoDB
-    implementation group: 'org.mongodb', name: 'bson', version: '4.3.2'
+    implementation "org.openjfx:javafx-swing:$openjfx_version:win"
+    implementation "org.openjfx:javafx-swing:$openjfx_version:mac"
+    implementation "org.openjfx:javafx-swing:$openjfx_version:linux"
+    implementation "org.openjfx:javafx-media:$openjfx_version:win"
+    implementation "org.openjfx:javafx-media:$openjfx_version:mac"
+    implementation "org.openjfx:javafx-media:$openjfx_version:linux"
+    implementation "org.openjfx:javafx-controls:$openjfx_version:win"
+    implementation "org.openjfx:javafx-controls:$openjfx_version:mac"
+    implementation "org.openjfx:javafx-controls:$openjfx_version:linux"
+    implementation "org.openjfx:javafx-graphics:$openjfx_version:win"
+    implementation "org.openjfx:javafx-graphics:$openjfx_version:mac"
+    implementation "org.openjfx:javafx-graphics:$openjfx_version:linux"
+    implementation "org.openjfx:javafx-base:$openjfx_version:win"
+    implementation "org.openjfx:javafx-base:$openjfx_version:mac"
+    implementation "org.openjfx:javafx-base:$openjfx_version:linux"
 
     // OSHi (For system info in crash reports)
-    implementation 'com.github.oshi:oshi-core:6.3.2'
+    implementation "com.github.oshi:oshi-core:$oshi_version"
 
     // Discord Presence
-    implementation 'com.github.JnCrMx:discord-game-sdk4j:v0.5.5'
+    implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
 
     // MP3 Sounds
-    implementation group: 'javazoom', name: 'jlayer', version: '1.0.1'
-
-    // Apache commons
-    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation "javazoom:jlayer:1.0.1"
+    implementation "javax.media:jmf:2.1.1e"
 }
 
 // task to add addons.json to all relevant folders

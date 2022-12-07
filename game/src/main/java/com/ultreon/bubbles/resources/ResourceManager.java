@@ -23,22 +23,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ResourceManager {
-    private final Map<File, PathMapping<byte[]>> mapping = new ConcurrentHashMap<>();
     private final Map<Identifier, byte[]> assets = new ConcurrentHashMap<>();
     private final List<ResourcePackage> resourcePackages = new ArrayList<>();
     private final Logger logger = LogManager.getLogger("Resource-Manager");
+    private final String root;
 
-    public byte[] getResource(String path) {
-        List<byte[]> collect = mapping.values().stream().map((mapping) -> mapping.get(path)).toList();
-        if (collect.size() == 0) {
-            return null;
-        }
-        return collect.get(collect.size() - 1);
-    }
-
-    public InputStream openResourceStream(String path) {
-        byte[] resource = getResource(path);
-        return resource == null ? null : new ByteArrayInputStream(resource);
+    public ResourceManager(String root) {
+        this.root = root;
     }
 
     public InputStream openResourceStream(Identifier entry) {
@@ -75,6 +66,8 @@ public class ResourceManager {
             }
         } else if (Objects.equals(url.getProtocol(), "libraryjar")) {
             importLibraryResourcePackage(new LibraryJar(url));
+        } else {
+            throw new UnsupportedOperationException("Protocol not supported: " + url);
         }
     }
 
@@ -85,11 +78,15 @@ public class ResourceManager {
 
             JarEntry entry;
             while ((entry = jarInputStream.getNextJarEntry()) != null) {
-                if (entry.getName().startsWith("assets/")) {
+                if (entry.getName().startsWith(root + "/")) {
                     byte[] bytes = jarInputStream.readAllBytes();
-                    addEntry(map, entry.getName(), () -> new ByteArrayInputStream(bytes));
+                    URL libraryUrl = libraryJar.getLibraryUrl();
+                    URL url = new URL(libraryUrl.getProtocol(), libraryUrl.getHost(), "/" + entry.getName());
+                    addEntry(map, entry.getName(), () -> new ByteArrayInputStream(bytes), url);
                 }
             }
+
+            resourcePackages.add(new ResourcePackage(map));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -117,7 +114,7 @@ public class ResourceManager {
             Map<Identifier, Resource> map = new HashMap<>();
 
             // Get assets directory.
-            File assets = new File(file, "assets/");
+            File assets = new File(file, root + "/");
 
             // Check if assets directory exists.
             if (assets.exists()) {
@@ -142,7 +139,7 @@ public class ResourceManager {
 
                             // Create resource with file input stream.
                             ThrowingSupplier<InputStream, IOException> sup = () -> new FileInputStream(asset);
-                            Resource resource = new Resource(sup);
+                            Resource resource = new Resource(sup, asset.toURI().toURL());
 
                             // Continue to next file / folder if asset path is the same path as the assets package.
                             if (assetPath.toFile().equals(assetsPackage)) {
@@ -200,9 +197,12 @@ public class ResourceManager {
                     String name = jarEntry.getName();
                     ThrowingSupplier<InputStream, IOException> sup = () -> jarFile.getInputStream(jarEntry);
 
+                    URL srcUrl = file.toURI().toURL();
+                    URL url = new URL("jar:" + srcUrl.getProtocol(), srcUrl.getHost(), srcUrl.getPath() + "!/" + name);
+
                     // Check if it isn't a directory, because we want a file.
                     if (!jarEntry.isDirectory()) {
-                        addEntry(map, name, sup);
+                        addEntry(map, name, sup, url);
                     }
                 }
             } catch (IOException e) {
@@ -213,17 +213,17 @@ public class ResourceManager {
         }
     }
 
-    private static void addEntry(Map<Identifier, Resource> map, String name, ThrowingSupplier<InputStream, IOException> sup) {
+    private void addEntry(Map<Identifier, Resource> map, String name, ThrowingSupplier<InputStream, IOException> sup, URL url) {
         String[] splitPath = name.split("/", 3);
 
         if (splitPath.length >= 3) {
-            if (name.startsWith("assets/")) {
+            if (name.startsWith(root + "/")) {
                 // Get namespace and path from split path
                 String namespace = splitPath[1];
                 String path = splitPath[2];
 
                 // Resource
-                Resource resource = new Resource(sup);
+                Resource resource = new Resource(sup, url);
 
                 try {
                     // Entry
@@ -267,23 +267,7 @@ public class ResourceManager {
         return assets;
     }
 
-    private static class PathMapping<T> {
-        private final Map<String, T> mapping = new ConcurrentHashMap<>();
-
-        public PathMapping() {
-
-        }
-
-        public T get(String path) {
-            return mapping.get(path);
-        }
-
-        public void map(String path, T type) {
-            mapping.put(path, type);
-        }
-
-        public List<Map.Entry<String, T>> entries() {
-            return new ArrayList<>(mapping.entrySet());
-        }
+    public String getRoot() {
+        return root;
     }
 }

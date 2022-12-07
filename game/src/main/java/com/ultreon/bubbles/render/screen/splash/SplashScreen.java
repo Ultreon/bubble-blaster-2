@@ -1,7 +1,8 @@
 package com.ultreon.bubbles.render.screen.splash;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.init.Sounds;
+import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.LoadScreen;
 import com.ultreon.bubbles.render.screen.Screen;
@@ -13,7 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.util.Objects;
 
 public class SplashScreen extends Screen {
@@ -36,8 +37,8 @@ public class SplashScreen extends Screen {
 
     @Override
     public void init() {
-        try {
-            this.logoImage = ImageIO.read(Objects.requireNonNull(BubbleBlaster.class.getResourceAsStream("/logo.png")));
+        try (InputStream stream = BubbleBlaster.getGameJar().openStream("logo.png")) {
+            this.logoImage = ImageIO.read(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -53,12 +54,8 @@ public class SplashScreen extends Screen {
         if (this.startTime == 0L) {
             this.startTime = System.currentTimeMillis();
 
-            Sound ambientAudio = null;
-            try {
-                ambientAudio = new Sound(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/logo_reveal.mp3")), "ambient");
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            SoundInstance ambientAudio;
+            ambientAudio = new SoundInstance(BubbleBlaster.id("sfx/logo_reveal"), "logo-reveal");
             ambientAudio.setVolume(0.4d);
             ambientAudio.play();
         }

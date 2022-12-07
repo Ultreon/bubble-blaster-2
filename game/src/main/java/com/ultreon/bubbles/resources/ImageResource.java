@@ -7,12 +7,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 public class ImageResource extends Resource {
     private BufferedImage image;
 
-    public ImageResource(ThrowingSupplier<InputStream, IOException> opener) {
-        super(opener);
+    public ImageResource(ThrowingSupplier<InputStream, IOException> opener, URL url) {
+        super(opener, url);
     }
 
     @Override

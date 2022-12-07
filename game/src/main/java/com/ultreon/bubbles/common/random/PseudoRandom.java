@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.common.random;
 
-import org.bson.ByteBuf;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.IOException;
@@ -71,7 +70,7 @@ public class PseudoRandom {
          *
          * @return an integer between min and max, inclusive.
          */
-        final Integer clip(BigInteger bigVal) {
+        Integer clip(BigInteger bigVal) {
             BigInteger modulus = BigInteger.valueOf(max + 1L - min);
             return (int) (min + bigVal.mod(modulus).longValue());
         }
@@ -101,7 +100,7 @@ public class PseudoRandom {
          *
          * @return an 64-bit integer between min and max, inclusive.
          */
-        final Long clip(BigInteger bigVal) {
+        Long clip(BigInteger bigVal) {
             BigInteger modulus = BigInteger.valueOf(max + 1L - min);
             return min + bigVal.mod(modulus).longValue();
         }
@@ -131,7 +130,7 @@ public class PseudoRandom {
          *
          * @return an BigInteger between min and max, inclusive.
          */
-        final BigInteger clip(BigInteger bigVal) {
+        BigInteger clip(BigInteger bigVal) {
             BigInteger modulus = max.add(new BigInteger("1")).subtract(min);
             return min.add(bigVal.mod(modulus));
         }
@@ -161,7 +160,7 @@ public class PseudoRandom {
          *
          * @return an floateger between min and max, inclusive.
          */
-        final Float clip(BigInteger bigVal) {
+        Float clip(BigInteger bigVal) {
             BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
             return (float) (min + mod(bigVal, modulus).doubleValue());
         }
@@ -191,7 +190,7 @@ public class PseudoRandom {
          *
          * @return an 64-bit integer between min and max, inclusive.
          */
-        final Double clip(BigInteger bigVal) {
+        Double clip(BigInteger bigVal) {
             BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
             return min + mod(bigVal, modulus).doubleValue();
         }
@@ -221,7 +220,7 @@ public class PseudoRandom {
          *
          * @return an BigDecimal between min and max, inclusive.
          */
-        final BigDecimal clip(BigInteger bigVal) {
+        BigDecimal clip(BigInteger bigVal) {
             BigDecimal modulus = max.add(new BigDecimal("1")).subtract(min);
             return min.add(mod(bigVal, modulus));
         }
@@ -318,14 +317,6 @@ public class PseudoRandom {
      */
     public PseudoRandom(byte[] seed) {
         this(new BigInteger(1, seed));
-    }
-
-    /**
-     * Creates a new PseudoRandom instance,
-     * seeded by the current system time.
-     */
-    public PseudoRandom(ByteBuf seed) {
-        this(seed.array());
     }
 
     /**
@@ -738,13 +729,6 @@ public class PseudoRandom {
      */
     public void setSeed(byte[] seed) {
         this.setSeed(new BigInteger(1, seed));
-    }
-
-    /**
-     * Sets the seed create the PseudoRandom
-     */
-    public void setSeed(ByteBuf seed) {
-        this.setSeed(seed.array());
     }
 
     /**

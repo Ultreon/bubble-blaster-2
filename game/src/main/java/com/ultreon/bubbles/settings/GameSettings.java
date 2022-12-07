@@ -11,7 +11,7 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.KeyInput;
 import com.ultreon.bubbles.input.Keybind;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +70,7 @@ public final class GameSettings implements Serializable {
         try {
             String json = Files.readString(References.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
-            if (!Registers.GAME_TYPES.contains(instance.gamemode)) {
+            if (!Registry.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.CLASSIC.id();
             }
             GameSettings.instance = instance;
@@ -138,7 +138,7 @@ public final class GameSettings implements Serializable {
     }
 
     public Gamemode getGamemode() {
-        return Registers.GAME_TYPES.get(gamemode);
+        return Registry.GAMEMODES.getValue(gamemode);
     }
 
     public Difficulty getDifficulty() {
