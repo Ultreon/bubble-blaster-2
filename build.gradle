@@ -167,6 +167,16 @@ allprojects {
         }
     }
 
+    repositories {
+        maven {
+            url = uri("https://maven.pkg.github.com/Ultreon/ultreon-data")
+            credentials {
+                username = project.findProperty("gpr.user") ?: getenv("UT-GPR-USERNAME")
+                password = project.findProperty("gpr.key") ?: getenv("UT-GPR-TOKEN")
+            }
+        }
+    }
+
     publish.dependsOn build
     publish.finalizedBy(it.retrieveUrls)
 }
