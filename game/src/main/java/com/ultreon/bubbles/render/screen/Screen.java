@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.screen;
 
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.input.KeyInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
 import com.ultreon.bubbles.render.screen.gui.InputWidget;
@@ -83,14 +83,14 @@ public abstract class Screen extends com.ultreon.bubbles.render.screen.gui.Conta
 
     @Override
     public boolean keyPress(int keyCode, char character) {
-        if (keyCode == KeyInput.Map.KEY_ESCAPE) {
+        if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
             game.showScreen(null);
             return true;
         }
 
         if (super.keyPress(keyCode, character)) return true;
 
-        if (keyCode == KeyInput.Map.KEY_TAB) {
+        if (keyCode == KeyboardInput.Map.KEY_TAB) {
             this.focusIndex++;
             onChildFocusChanged();
             return true;
@@ -101,14 +101,14 @@ public abstract class Screen extends com.ultreon.bubbles.render.screen.gui.Conta
 
     @Override
     public boolean keyRelease(int keyCode, char character) {
-        if (keyCode == KeyInput.Map.KEY_TAB) return true;
+        if (keyCode == KeyboardInput.Map.KEY_TAB) return true;
 
         return this.focused != null && this.focused.keyRelease(keyCode, character);
     }
 
     @Override
     public boolean charType(int keyCode, char character) {
-        if (keyCode == KeyInput.Map.KEY_TAB) return true;
+        if (keyCode == KeyboardInput.Map.KEY_TAB) return true;
 
         return this.focused != null && this.focused.charType(keyCode, character);
     }

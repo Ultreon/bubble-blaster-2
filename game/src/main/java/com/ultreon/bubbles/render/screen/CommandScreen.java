@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.render.screen;
 
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
 import com.ultreon.bubbles.command.CommandConstructor;
-import com.ultreon.bubbles.input.KeyInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
@@ -52,20 +52,20 @@ public class CommandScreen extends Screen {
     public boolean keyPress(int keyCode, char character) {
         if (super.keyPress(keyCode, character)) return true;
 
-        if (keyCode == KeyInput.Map.KEY_BACK_SPACE && !currentText.isEmpty()) {
+        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE && !currentText.isEmpty()) {
             currentText = currentText.substring(0, currentText.length() - 1);
             cursorIndex--;
             return true;
         }
-        if (keyCode == KeyInput.Map.KEY_LEFT && cursorIndex > 0) {
+        if (keyCode == KeyboardInput.Map.KEY_LEFT && cursorIndex > 0) {
             cursorIndex--;
             return true;
         }
-        if (keyCode == KeyInput.Map.KEY_RIGHT && cursorIndex < currentText.length() - 1) {
+        if (keyCode == KeyboardInput.Map.KEY_RIGHT && cursorIndex < currentText.length() - 1) {
             cursorIndex++;
             return true;
         }
-        if (keyCode == KeyInput.Map.KEY_ENTER) {
+        if (keyCode == KeyboardInput.Map.KEY_ENTER) {
             LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
             if (loadedGame != null) {
                 if (!currentText.isEmpty()) {

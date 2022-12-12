@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.render.gui;
 
 import com.ultreon.bubbles.api.event.keyboard.KeyboardModifiers;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.event.v1.type.KeyEventType;
-import com.ultreon.bubbles.input.KeyInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.InputWidget;
 import com.ultreon.bubbles.render.screen.gui.Rectangle;
@@ -73,7 +73,7 @@ public class OptionsTextEntry extends InputWidget {
     public boolean keyPress(int keyCode, char character) {
         if (!activated) return false;
 
-        if (keyCode == KeyInput.Map.KEY_BACK_SPACE) {
+        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
             if (text.length() == 0) return false;
 
             String leftText = text.substring(0, cursorIndex - 1);
@@ -87,7 +87,7 @@ public class OptionsTextEntry extends InputWidget {
             return true;
         }
 
-        if (keyCode == KeyInput.Map.KEY_ESCAPE) {
+        if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
             if (text.length() == 0) return false;
             if (cursorIndex >= text.length() - 1) return false;
 
@@ -102,23 +102,23 @@ public class OptionsTextEntry extends InputWidget {
             return true;
         }
 
-        if (keyCode == KeyInput.Map.KEY_LEFT) {
+        if (keyCode == KeyboardInput.Map.KEY_LEFT) {
             cursorIndex = MathHelper.clamp(cursorIndex - 1, 0, this.text.length());
             return true;
         }
 
-        if (keyCode == KeyInput.Map.KEY_RIGHT) {
+        if (keyCode == KeyboardInput.Map.KEY_RIGHT) {
             cursorIndex = MathHelper.clamp(cursorIndex + 1, 0, this.text.length());
             return true;
         }
 
         char c = character;
 
-        if (keyCode == KeyInput.Map.KEY_DEAD_ACUTE) {
+        if (keyCode == KeyboardInput.Map.KEY_DEAD_ACUTE) {
             c = '\'';
         }
 
-        if (keyCode == KeyInput.Map.KEY_QUOTEDBL) {
+        if (keyCode == KeyboardInput.Map.KEY_QUOTEDBL) {
             c = '"';
         }
 
@@ -143,7 +143,7 @@ public class OptionsTextEntry extends InputWidget {
         if (!activated) return;
 
         if (type == KeyEventType.PRESS || type == KeyEventType.HOLD) {
-            if (keyCode == KeyInput.Map.KEY_BACK_SPACE) {
+            if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
                 if (text.length() == 0) return;
 
                 String leftText = text.substring(0, cursorIndex - 1);
@@ -155,23 +155,23 @@ public class OptionsTextEntry extends InputWidget {
                 return;
             }
 
-            if (keyCode == KeyInput.Map.KEY_LEFT) {
+            if (keyCode == KeyboardInput.Map.KEY_LEFT) {
                 cursorIndex = MathHelper.clamp(cursorIndex - 1, 0, text.length());
                 return;
             }
 
-            if (keyCode == KeyInput.Map.KEY_RIGHT) {
+            if (keyCode == KeyboardInput.Map.KEY_RIGHT) {
                 cursorIndex = MathHelper.clamp(cursorIndex + 1, 0, text.length());
                 return;
             }
 
             char c = key;
 
-            if (keyCode == KeyInput.Map.KEY_DEAD_ACUTE) {
+            if (keyCode == KeyboardInput.Map.KEY_DEAD_ACUTE) {
                 c = '\'';
             }
 
-            if (keyCode == KeyInput.Map.KEY_QUOTEDBL) {
+            if (keyCode == KeyboardInput.Map.KEY_QUOTEDBL) {
                 c = '"';
             }
 

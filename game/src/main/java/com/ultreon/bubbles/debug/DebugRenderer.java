@@ -1,13 +1,14 @@
 package com.ultreon.bubbles.debug;
 
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.input.KeyInput;
-import com.ultreon.bubbles.input.MouseInput;
+import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.Screen;
@@ -54,7 +55,7 @@ public class DebugRenderer {
             left(renderer, "Local Difficulty: " + environment.getLocalDifficulty());
             left(renderer, "Seed: " + environment.getSeed());
 
-            if (KeyInput.isDown(KeyInput.Map.KEY_SHIFT)) {
+            if (KeyboardInput.isDown(KeyboardInput.Map.KEY_SHIFT)) {
                 Entity entityAt = environment.getEntityAt(MouseInput.getPos());
                 if (entityAt != null) {
                     left(renderer, "Entity Type: " + Registry.ENTITIES.getKey(entityAt.getType()));

@@ -18,7 +18,7 @@ class LibraryJarManager {
     private final Map<String, byte[]> classData = new HashMap<>();
     private final Map<String, byte[]> resources = new HashMap<>();
     private final List<URL> resourceUrls = new ArrayList<>();
-    private Map<String, Certificate[]> classCertificates = new HashMap<>();
+    private final Map<String, Certificate[]> classCertificates = new HashMap<>();
 
     public LibraryJarManager(Class<?> reference, String[] jars) {
         this.reference = reference;

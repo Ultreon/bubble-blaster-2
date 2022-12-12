@@ -18,7 +18,7 @@ import com.ultreon.bubbles.event.v2.RenderEvents;
 import com.ultreon.bubbles.event.v2.TickEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
-import com.ultreon.bubbles.input.KeyInput;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.media.MP3Player;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.media.SoundPlayer;
@@ -51,8 +51,6 @@ import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
-import org.apache.logging.slf4j.Log4jLogger;
-import org.apache.logging.slf4j.Log4jLoggerFactory;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -81,7 +79,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
-import static com.ultreon.bubbles.input.KeyInput.Map.*;
+import static com.ultreon.bubbles.core.input.KeyboardInput.Map.*;
 
 /**
  * The Bubble Blaster game main class.
@@ -191,7 +189,7 @@ public final class BubbleBlaster {
      * @see LoadScreen
      */
     public BubbleBlaster() throws IOException {
-        GameWindow.Properties windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720).fullscreen();
+        GameWindow.Properties windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720)/*.fullscreen()*/;
         BubbleBlaster.BootOptions bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions(this));
@@ -640,7 +638,7 @@ public final class BubbleBlaster {
         LoadedGame loadedGame = this.loadedGame;
         if (isDevMode()) {
             if (loadedGame != null && button == 1) {
-                if (KeyInput.isDown(KEY_F1)) {
+                if (KeyboardInput.isDown(KEY_F1)) {
                     Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
                 }
             }
@@ -1619,7 +1617,7 @@ public final class BubbleBlaster {
         }
 
         if (player != null) {
-            if (KeyInput.isDown(KEY_SPACE)) {
+            if (KeyboardInput.isDown(KEY_SPACE)) {
                 player.shoot();
             }
         }
@@ -1874,8 +1872,9 @@ public final class BubbleBlaster {
         onClose();
         window.close();
         if (crashed) {
-            System.exit(0);
+            System.exit(1);
         }
+        System.exit(0);
     }
 
     /**

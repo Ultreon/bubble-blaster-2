@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.screen.gui;
 
-import com.ultreon.bubbles.input.KeyInput;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
@@ -145,7 +145,7 @@ public abstract class InputWidget implements GuiElement, StaticWidget {
 
     /**
      * Key press handler.
-     * Match a constant {@link KeyInput.Map} with the {@code keyCode} parameter for checking which key is pressed.
+     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is pressed.
      *
      * @param keyCode   the code for the key pressed.
      * @param character the character pressed.
@@ -157,7 +157,7 @@ public abstract class InputWidget implements GuiElement, StaticWidget {
 
     /**
      * Key release handler.
-     * Match a constant {@link KeyInput.Map} with the {@code keyCode} parameter for checking which key is released.
+     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is released.
      *
      * @param keyCode   the code for the key released.
      * @param character the character released.
@@ -169,7 +169,7 @@ public abstract class InputWidget implements GuiElement, StaticWidget {
 
     /**
      * Key type handler.
-     * Match a constant {@link KeyInput.Map} with the {@code keyCode} parameter for checking which key is typed.
+     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is typed.
      *
      * @param keyCode   the code for the key typed.
      * @param character the character typed.

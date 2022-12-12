@@ -2,10 +2,10 @@ package com.ultreon.bubbles.game;
 
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.core.CursorManager;
+import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.event.v2.EventResult;
 import com.ultreon.bubbles.event.v2.GameEvents;
-import com.ultreon.bubbles.input.KeyInput;
-import com.ultreon.bubbles.input.MouseInput;
 import com.ultreon.bubbles.render.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
@@ -75,6 +75,8 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         this.canvas = createCanvas(properties);
         this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
         this.frame.add(this.canvas);
+        this.frame.enableInputMethods(true);
+        this.frame.setFocusTraversalKeysEnabled(false);
     }
 
     /**
@@ -85,8 +87,8 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      * @throws IOException when a resource couldn't be loaded.
      */
     @NotNull
-    private JXFrame setupFrame(@NotNull Properties properties) throws IOException {
-        var frame = new JXFrame(properties.title);
+    private JFrame setupFrame(@NotNull Properties properties) throws IOException {
+        var frame = new JFrame(properties.title);
 
         setupFrameSettings(frame, properties);
         setupFrameListeners(frame);
@@ -138,7 +140,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     /**
      * Set up the listeners for the game frame.
      */
-    private void setupFrameListeners(JXFrame frame) {
+    private void setupFrameListeners(JFrame frame) {
         // Set listeners.
         frame.addComponentListener(this);
         frame.addWindowListener(this);
@@ -151,7 +153,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      * @param properties the game window properties.
      * @throws IOException when a resource couldn't be loaded.
      */
-    private void setupFrameSettings(JXFrame frame, @NotNull Properties properties) throws IOException {
+    private void setupFrameSettings(JFrame frame, @NotNull Properties properties) throws IOException {
         // Setup frame settings.
         frame.setPreferredSize(new Dimension(properties.width, properties.height));
         if (properties.fullscreen) {
@@ -324,14 +326,11 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
             throw new OneTimeUseException("The game window is already initialized.");
         }
 
-        KeyInput.init();
-        MouseInput.init();
-
-        KeyInput.listen(this.frame);
+        KeyboardInput.listen(this.frame);
         MouseInput.listen(this.frame);
 
-        KeyInput.listen(this.canvas);
-        MouseInput.listen(this.canvas);
+//        KeyboardInput.listen(this.canvas);
+//        MouseInput.listen(this.canvas);
 
         this.initialized = true;
 
@@ -342,7 +341,6 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
 
     void close() {
         this.frame.dispose(); // Window#dispose() closes the awt-based window.
-        System.exit(0);
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {

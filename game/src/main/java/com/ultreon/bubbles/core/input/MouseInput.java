@@ -9,9 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,14 +22,12 @@ import java.util.Map;
  * @see java.awt.event.MouseAdapter
  */
 @SuppressWarnings("ConstantConditions")
-public abstract class MouseInput extends MouseAdapter {
+public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
+    private static final MouseInput INSTANCE = new MouseInput();
     // Mouse input values.
     private Point currentLocationOnScreen;
     private Point currentPoint;
     private int clickCount;
-
-    // Logger
-    private static final Logger logger = LogManager.getLogger("Game-Input");
 
     // Other fields.
     private final Map<Integer, Boolean> buttonMap = new HashMap<>();
@@ -43,6 +39,16 @@ public abstract class MouseInput extends MouseAdapter {
      */
     public MouseInput() {
         this.game = BubbleBlaster.getInstance();
+    }
+
+    public static void listen(Component canvas) {
+        canvas.addMouseListener(INSTANCE);
+        canvas.addMouseMotionListener(INSTANCE);
+        canvas.addMouseWheelListener(INSTANCE);
+    }
+
+    public static Vec2i getPos() {
+        return INSTANCE.getCurrentPoint();
     }
 
     @Override
@@ -198,5 +204,22 @@ public abstract class MouseInput extends MouseAdapter {
 
     protected boolean isPressed(int button) {
         return buttonMap.getOrDefault(button, false);
+    }
+
+    enum Button {
+        LEFT(1),
+        RIGHT(2),
+        MIDDLE(3),
+        ;
+
+        private final int id;
+
+        Button(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

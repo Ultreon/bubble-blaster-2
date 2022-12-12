@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
-import com.ultreon.bubbles.input.KeyInput;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.Rectangle;
 import com.ultreon.bubbles.render.screen.gui.border.Border;
@@ -77,7 +77,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
     public boolean keyPress(int keyCode, char character) {
         if (super.keyPress(keyCode, character)) return true;
 
-        if (keyCode == KeyInput.Map.KEY_BACK_SPACE) {
+        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
             if (cursorIndex == 0) return false;
             String leftText = text.substring(0, cursorIndex - 1);
             String rightText = text.substring(cursorIndex);
@@ -89,14 +89,14 @@ public class OptionsNumberInput extends OptionsTextEntry {
             return true;
         }
 
-        if (keyCode == KeyInput.Map.KEY_LEFT) {
+        if (keyCode == KeyboardInput.Map.KEY_LEFT) {
             cursorIndex--;
 
             cursorIndex = MathHelper.clamp(cursorIndex, 0, text.length());
             return true;
         }
 
-        if (keyCode == KeyInput.Map.KEY_RIGHT) {
+        if (keyCode == KeyboardInput.Map.KEY_RIGHT) {
             cursorIndex++;
 
             cursorIndex = MathHelper.clamp(cursorIndex, 0, text.length());
@@ -105,11 +105,11 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
         char c = character;
 
-        if (keyCode == KeyInput.Map.KEY_DEAD_ACUTE) {
+        if (keyCode == KeyboardInput.Map.KEY_DEAD_ACUTE) {
             c = '\'';
         }
 
-        if (keyCode == KeyInput.Map.KEY_QUOTEDBL) {
+        if (keyCode == KeyboardInput.Map.KEY_QUOTEDBL) {
             c = '"';
         }
 

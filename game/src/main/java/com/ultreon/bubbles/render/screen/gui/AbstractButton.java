@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.screen.gui;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.input.MouseInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
