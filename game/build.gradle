@@ -91,7 +91,10 @@ repositories {
     mavenCentral()
     mavenLocal()
     google()
-    jcenter()
+    maven {
+        name "JitPack"
+        url 'https://jitpack.io'
+    }
     maven {
         name "Atlassian"
         url "https://maven.atlassian.com/3rdparty/"
@@ -108,14 +111,11 @@ repositories {
         name "RuneLite"
         url "https://repo.runelite.net/"
     }
-    maven {
-        name "JitPack"
-        url 'https://jitpack.io'
-    }
     flatDir {
         name "Project Libraries"
         dirs "${projectDir}/libs"
     }
+    jcenter()
 }
 
 /***************
@@ -129,7 +129,7 @@ dependencies {
     implementation 'it.unimi.dsi:fastutil-core:8.5.9'
     implementation 'org.checkerframework:checker:3.25.0'
 
-    implementation 'com.ultreon:ubo-data:1.0.0+3'
+    implementation 'com.github.Ultreon:ultreon-data:64728df4b2'
 
     // Test dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'

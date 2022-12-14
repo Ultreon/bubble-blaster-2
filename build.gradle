@@ -168,13 +168,38 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
         maven {
-            url = uri("https://maven.pkg.github.com/Ultreon/ultreon-data")
-            credentials {
-                username = project.findProperty("gpr.user") ?: getenv("UT-GPR-USERNAME")
-                password = project.findProperty("gpr.key") ?: getenv("UT-GPR-TOKEN")
-            }
+            name "JitPack"
+            url 'https://jitpack.io'
         }
+        maven {
+            name "Atlassian"
+            url "https://maven.atlassian.com/3rdparty/"
+        }
+        maven {
+            name "ImageJ"
+            url "https://maven.imagej.net/content/repositories/public/"
+        }
+        maven {
+            name "Maven Central"
+            url "https://repo1.maven.org/maven2/"
+        }
+        maven {
+            name "RuneLite"
+            url "https://repo.runelite.net/"
+        }
+        flatDir {
+            name "Project Libraries"
+            dirs "${projectDir}/libs"
+        }
+        flatDir {
+            name "Project Libraries"
+            dirs "${rootProject.projectDir}/libs"
+        }
+        jcenter()
     }
 
     publish.dependsOn build
