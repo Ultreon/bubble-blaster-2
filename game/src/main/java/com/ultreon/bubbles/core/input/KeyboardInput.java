@@ -61,6 +61,7 @@ public final class KeyboardInput extends KeyAdapter {
 
     @ApiStatus.Internal
     public static void listen(@NotNull final Component component) {
+        BubbleBlaster.getLogger().debug("Keyboard input launched on component: " + component.getClass().getName() + " at %08x".formatted(component.hashCode()));
         component.addKeyListener(INSTANCE);
     }
 

@@ -5,8 +5,6 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.screen.Screen;
 import com.ultreon.bubbles.render.screen.ScreenManager;
 import com.ultreon.bubbles.vector.Vec2i;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -32,7 +30,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
     // Other fields.
     private final Map<Integer, Boolean> buttonMap = new HashMap<>();
     private final BubbleBlaster game;
-    private HashMap<Integer, Vec2i> dragStarts = new HashMap<>();
+    private final HashMap<Integer, Vec2i> dragStarts = new HashMap<>();
 
     /**
      *
@@ -41,10 +39,11 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
         this.game = BubbleBlaster.getInstance();
     }
 
-    public static void listen(Component canvas) {
-        canvas.addMouseListener(INSTANCE);
-        canvas.addMouseMotionListener(INSTANCE);
-        canvas.addMouseWheelListener(INSTANCE);
+    public static void listen(Component component) {
+        BubbleBlaster.getLogger().debug("Mouse input launched on component: " + component.getClass().getName() + " at %08x".formatted(component.hashCode()));
+        component.addMouseListener(INSTANCE);
+        component.addMouseMotionListener(INSTANCE);
+        component.addMouseWheelListener(INSTANCE);
     }
 
     public static Vec2i getPos() {

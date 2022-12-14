@@ -47,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Environment {
     private static final int RNG_INDEX_SPAWN = 0;
     private static final int RNG_INDEX_SPAWN_BUBBLE = 0;
-    private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("BubbleSpawnUsage");
+    private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("bubble_spawn_usage");
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private final List<Player> players = new CopyOnWriteArrayList<>();
     private Gamemode gamemode;

@@ -263,7 +263,7 @@ test {
 }
 
 tasks.create('prepareRun', {
-    Files.createDirectories(Paths.get(projectDir.getAbsolutePath(), "run"))
+    Files.createDirectories(Paths.get(rootProject.projectDir.getAbsolutePath(), "run"))
 })
 
 tasks.withType(JavaCompile).configureEach {

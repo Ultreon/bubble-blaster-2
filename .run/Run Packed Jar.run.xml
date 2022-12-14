@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Packed Jar" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/build/packed.jar" />
-    <option name="WORKING_DIRECTORY" value="C:\Users\quint\Projects\Code\bubble-blaster-2\run" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$\run" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="Build Project" run_configuration_type="GradleRunConfiguration" />

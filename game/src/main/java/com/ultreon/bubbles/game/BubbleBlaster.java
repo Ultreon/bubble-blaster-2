@@ -7,6 +7,7 @@ import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
 import com.ultreon.bubbles.common.exceptions.ResourceNotFoundException;
 import com.ultreon.bubbles.common.text.translation.LanguageManager;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.player.Player;
@@ -18,7 +19,6 @@ import com.ultreon.bubbles.event.v2.RenderEvents;
 import com.ultreon.bubbles.event.v2.TickEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.media.MP3Player;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.media.SoundPlayer;
@@ -84,7 +84,7 @@ import static com.ultreon.bubbles.core.input.KeyboardInput.Map.*;
 /**
  * The Bubble Blaster game main class.
  *
- * @since 0.0.1-indev1
+ * @since 0.0.1
  */
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "RedundantSuppression"})
@@ -1469,7 +1469,6 @@ public final class BubbleBlaster {
 
         // Set filter gotten from filter event-handlers.
         try {
-
             // Buffer strategy (triple buffering).
             bs = this.window.canvas.getBufferStrategy();
 
@@ -1916,6 +1915,8 @@ public final class BubbleBlaster {
         this.garbageCollector = new GarbageCollector(this);
         this.garbageCollector.setDaemon(true);
         this.garbageCollector.start();
+
+        BubbleBlaster.getLogger().info("Game threads started!");
     }
 
     public void crash(Throwable t) {
