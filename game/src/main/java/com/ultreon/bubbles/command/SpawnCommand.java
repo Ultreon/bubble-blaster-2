@@ -7,7 +7,7 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import net.querz.nbt.io.SNBTUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class SpawnCommand implements CommandExecutor {
@@ -38,7 +38,7 @@ public class SpawnCommand implements CommandExecutor {
             if (args[0].equals("spawn")) {
                 BubbleType bubble;
                 try {
-                    bubble = Registry.getRegistry(BubbleType.class).get(Identifier.parse(args[1]));
+                    bubble = Registry.BUBBLES.getValue(Identifier.parse(args[1]));
                 } catch (InvalidValueException exception) {
                     player.sendMessage("Invalid key: " + args[1]);
                     return false;

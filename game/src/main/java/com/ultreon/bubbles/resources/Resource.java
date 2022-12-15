@@ -9,13 +9,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 public class Resource {
     protected ThrowingSupplier<InputStream, IOException> opener;
     private byte[] data;
+    private final URL url;
 
-    public Resource(ThrowingSupplier<InputStream, IOException> opener) {
+    public Resource(ThrowingSupplier<InputStream, IOException> opener, URL url) {
         this.opener = opener;
+        this.url = url;
     }
 
     public void load() {
@@ -51,7 +54,7 @@ public class Resource {
     }
 
     public ByteArrayInputStream openStream() {
-        return new ByteArrayInputStream(data);
+        return new ByteArrayInputStream(loadOrGet());
     }
 
     public Font loadFont() throws FontFormatException {
@@ -62,5 +65,9 @@ public class Resource {
         } catch (IOException e) {
             throw new IOError(e);
         }
+    }
+
+    public URL getUrl() {
+        return url;
     }
 }

@@ -5,8 +5,8 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.commons.util.ColorUtils;
-import org.apache.commons.lang.math.DoubleRange;
-import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.Range;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -22,8 +22,8 @@ public class LevelUpBubble extends BubbleType {
 
         // Set initial data values.
         setPriority(131_072L);
-        setRadius(new IntRange(21, 60));
-        setSpeed(new DoubleRange(6.4, 19.2));
+        setRadius(Range.between(21, 60));
+        setSpeed(Range.between(6.4, 19.2));
         setDefense(Float.NaN);
         setAttack(0.0f);
         setScore(1);

@@ -3,7 +3,7 @@ package com.ultreon.bubbles.save;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import net.querz.nbt.tag.CompoundTag;
 
 public class GameSaveInfo {
@@ -18,7 +18,7 @@ public class GameSaveInfo {
         this.savedTime = tag.getLong("savedTime");
         this.highScore = tag.getLong("highScore");
         this.seed = tag.getLong("seed");
-        this.gamemode = Registers.GAME_TYPES.get(Identifier.tryParse(tag.getString("gamemode", Gamemodes.CLASSIC.id().toString())));
+        this.gamemode = Registry.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.CLASSIC.id().toString())));
     }
 
     public String getName() {

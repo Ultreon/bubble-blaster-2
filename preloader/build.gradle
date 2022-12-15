@@ -47,9 +47,9 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 //GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
 //shell.run(file, arguments);
 
-println("Current version: " + version)
-println("Project: " + group + ":" + archivesBaseName)
-println("Bulding a Java " + compileJava.targetCompatibility + " project...")
+println("Current version: $version")
+println("Project: $group:$archivesBaseName")
+println("Bulding a Java $compileJava.targetCompatibility project...")
 
 repositories {
     mavenCentral()
@@ -58,23 +58,18 @@ repositories {
 configurations {
     // configuration that holds jars to include in the jar
     implementation
-
-    def xml = new MarkupBuilder();
-    xml.component()
 }
 
 dependencies {
-    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "com.google.code.findbugs:jsr305:$jsr_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
 
-    implementation group: 'org.ow2.asm', name: 'asm', version: '9.2'
-    implementation group: 'org.ow2.asm', name: 'asm-tree', version: '9.2'
-    implementation group: 'org.xbib.elasticsearch', name: 'joptsimple', version: '6.3.2.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation "org.xbib.elasticsearch:joptsimple:6.3.2.1"
+    implementation "org.apache.logging.log4j:log4j:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
 }
 
 jar {

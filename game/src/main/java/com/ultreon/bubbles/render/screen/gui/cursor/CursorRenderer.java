@@ -10,10 +10,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class CursorRenderer implements Drawable {
-    private final String name;
+    private final Identifier id;
 
-    public CursorRenderer(String name) {
-        this.name = name;
+    public CursorRenderer(Identifier id) {
+        this.id = id;
     }
 
     public final Cursor create() {
@@ -25,10 +25,9 @@ public abstract class CursorRenderer implements Drawable {
         draw(renderer);
 
         // Create a new blank cursor.
-        Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                img, new Point(11, 11), name);
+        Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(img, new Point(11, 11), id.toString());
 
-        Registry.getRegistry(RegistrableCursor.class).register(Identifier.parse("qbubbles:" + name), new RegistrableCursor(cursor));
+        Registry.CURSORS.register(id, cursor);
 
         return cursor;
     }
@@ -36,7 +35,7 @@ public abstract class CursorRenderer implements Drawable {
     @Override
     public abstract void draw(Renderer renderer);
 
-    public String getName() {
-        return name;
+    public Identifier getId() {
+        return id;
     }
 }

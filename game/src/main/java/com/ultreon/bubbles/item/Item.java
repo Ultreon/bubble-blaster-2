@@ -4,7 +4,7 @@ import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import net.querz.nbt.tag.CompoundTag;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -29,7 +29,7 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     public @NonNull CompoundTag save() {
         CompoundTag document = new CompoundTag();
         document.put("Tag", tag);
-        document.putString("type", type.id().toString());
+        document.putString("type", Registry.ITEMS.getKey(type).toString());
 
         return document;
     }
@@ -37,7 +37,7 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     @Override
     public void load(CompoundTag tag) {
         this.tag = tag.getCompoundTag("Tag");
-        this.type = Registers.ITEMS.get(Identifier.parse(tag.getString("type")));
+        this.type = Registry.ITEMS.getValue(Identifier.parse(tag.getString("type")));
     }
 
     @Override

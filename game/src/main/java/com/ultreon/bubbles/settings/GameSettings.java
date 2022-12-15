@@ -6,12 +6,12 @@ import com.google.gson.annotations.SerializedName;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
-import com.ultreon.bubbles.input.KeyInput;
 import com.ultreon.bubbles.input.Keybind;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +27,12 @@ public final class GameSettings implements Serializable {
 //            .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())
             .create();
     private static GameSettings instance;
-    public static Keybind keybindForward = new Keybind(KeyInput.Map.KEY_UP);
+    public static Keybind keybindForward = new Keybind(KeyboardInput.Map.KEY_UP);
 
-    public static Keybind keybindBackward = new Keybind(KeyInput.Map.KEY_DOWN);
+    public static Keybind keybindBackward = new Keybind(KeyboardInput.Map.KEY_DOWN);
 
-    public static Keybind keybindRotateLeft = new Keybind(KeyInput.Map.KEY_LEFT);
-    public static Keybind keybindRotateRight = new Keybind(KeyInput.Map.KEY_RIGHT);
+    public static Keybind keybindRotateLeft = new Keybind(KeyboardInput.Map.KEY_LEFT);
+    public static Keybind keybindRotateRight = new Keybind(KeyboardInput.Map.KEY_RIGHT);
     @SerializedName("max-bubbles")
     private int maxBubbles = 200;
     @SerializedName("lang")
@@ -70,7 +70,7 @@ public final class GameSettings implements Serializable {
         try {
             String json = Files.readString(References.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
-            if (!Registers.GAME_TYPES.contains(instance.gamemode)) {
+            if (!Registry.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.CLASSIC.id();
             }
             GameSettings.instance = instance;
@@ -138,7 +138,7 @@ public final class GameSettings implements Serializable {
     }
 
     public Gamemode getGamemode() {
-        return Registers.GAME_TYPES.get(gamemode);
+        return Registry.GAMEMODES.getValue(gamemode);
     }
 
     public Difficulty getDifficulty() {

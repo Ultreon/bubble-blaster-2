@@ -31,7 +31,7 @@ public class EffectCommand implements CommandExecutor {
             if (args[0].equals("give")) {
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.getRegistry(StatusEffect.class).get(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
@@ -61,7 +61,7 @@ public class EffectCommand implements CommandExecutor {
 
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.getRegistry(StatusEffect.class).get(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
@@ -109,7 +109,7 @@ public class EffectCommand implements CommandExecutor {
 
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.getRegistry(StatusEffect.class).get(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {

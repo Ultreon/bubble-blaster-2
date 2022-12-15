@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.common.Registrable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,7 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-public class TextureCollection extends Registrable {
+public class TextureCollection {
     private static final Logger LOGGER = LogManager.getLogger("Texture-Collection");
     private final HashMap<Index, Image> textures = new HashMap<>();
 

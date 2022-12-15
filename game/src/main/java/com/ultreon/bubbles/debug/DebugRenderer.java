@@ -1,13 +1,15 @@
 package com.ultreon.bubbles.debug;
 
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.input.KeyInput;
-import com.ultreon.bubbles.input.MouseInput;
+import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.Screen;
 
@@ -47,18 +49,18 @@ public class DebugRenderer {
             left(renderer, "Entity Count: " + environment.getEntities().size());
             left(renderer, "Visible Entity Count: " + environment.getEntities().stream().filter(Entity::isVisible).count());
             left(renderer, "Entity Removal Count: " + environment.getEntities().stream().filter(Entity::willBeDeleted).count());
-            left(renderer, "Cur. Game Event: " + (curGe != null ? curGe.id() : "null"));
+            left(renderer, "Cur. Game Event: " + (curGe != null ? Registry.GAMEPLAY_EVENTS.getKey(curGe) : "null"));
             left(renderer, "Is Initialized: " + environment.isInitialized());
             left(renderer, "Difficulty: " + environment.getDifficulty().name());
             left(renderer, "Local Difficulty: " + environment.getLocalDifficulty());
             left(renderer, "Seed: " + environment.getSeed());
 
-            if (KeyInput.isDown(KeyInput.Map.KEY_SHIFT)) {
+            if (KeyboardInput.isDown(KeyboardInput.Map.KEY_SHIFT)) {
                 Entity entityAt = environment.getEntityAt(MouseInput.getPos());
                 if (entityAt != null) {
-                    left(renderer, "Entity Type: " + entityAt.getType().id());
+                    left(renderer, "Entity Type: " + Registry.ENTITIES.getKey(entityAt.getType()));
                     if (entityAt instanceof Bubble bubble) {
-                        left(renderer, "Bubble Type: " + bubble.getBubbleType().id());
+                        left(renderer, "Bubble Type: " + Registry.BUBBLES.getKey(bubble.getBubbleType()));
                         left(renderer, "Base Speed: " + bubble.getBaseSpeed());
                         left(renderer, "Speed: " + bubble.getSpeed());
                     }

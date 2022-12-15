@@ -4,7 +4,6 @@ import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.common.Registrable;
 import com.ultreon.bubbles.common.StateListener;
 import com.ultreon.bubbles.common.interfaces.DefaultSaver;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
@@ -51,7 +50,7 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @SuppressWarnings({"unused", "FieldCanBeLocal", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted", "RedundantThrows", "UnnecessaryLocalVariable"})
-public abstract class Gamemode extends Registrable implements StateHolder, DefaultSaver, StateListener {
+public abstract class Gamemode implements StateHolder, DefaultSaver, StateListener {
     // Types.
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
 
@@ -313,7 +312,7 @@ public abstract class Gamemode extends Registrable implements StateHolder, Defau
     @Nullable
     public static Gamemode getFromNbt(@NonNull CompoundTag nbt) {
         try {
-            return Registry.getRegistry(Gamemode.class).get(Identifier.parse(nbt.getString("Name")));
+            return Registry.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -427,7 +426,7 @@ public abstract class Gamemode extends Registrable implements StateHolder, Defau
         } catch (Exception e) {
             CrashLog crashLog = new CrashLog("Could not initialize classic game type.", e);
 
-            BubbleBlaster.getInstance().crash(crashLog.createCrash());
+            BubbleBlaster.crash(crashLog.createCrash());
         }
 
         this.make();

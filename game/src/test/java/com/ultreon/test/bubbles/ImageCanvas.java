@@ -14,7 +14,7 @@ public class ImageCanvas extends Canvas {
         media.addImage(image, 0);
         try {
             media.waitForID(0);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -28,14 +28,14 @@ public class ImageCanvas extends Canvas {
 
     public static void main(String[] argv) {
         if (argv.length < 1) {
-            System.out.println
-                    ("usage: ImageCanvas.class [image file name]");
+            System.out.println("usage: ImageCanvas.class [image file name]");
             System.exit(0);
         }
         Frame frame = new Frame(argv[0]);
         frame.setLayout(new BorderLayout());
         frame.add("Center", new ImageCanvas(argv[0]));
-        frame.resize(400, 400);
-        frame.show();
+        frame.setSize(400, 400);
+        frame.pack();
+        frame.setVisible(true);
     }
 }

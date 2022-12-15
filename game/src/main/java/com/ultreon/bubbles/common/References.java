@@ -9,8 +9,8 @@ import java.io.IOException;
 public class References {
     // Dirs
     public static final File GAME_DIR = BubbleBlaster.getGameDir();
-    public static final File LOGS_DIR = new File(GAME_DIR.getAbsolutePath(), "Logs");
-    public static final File MODS_DIR = new File(GAME_DIR.getAbsolutePath(), "Mods");
+    public static final File LOGS_DIR = new File(GAME_DIR, "Logs");
+    public static final File MODS_DIR = new File(GAME_DIR, "Mods");
     public static final File SAVES_DIR = new File(GAME_DIR, "Saves");
 
     // Files

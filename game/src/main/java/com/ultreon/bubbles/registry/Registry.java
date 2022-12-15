@@ -1,29 +1,52 @@
 package com.ultreon.bubbles.registry;
 
-import com.ultreon.bubbles.common.IRegistrable;
+import com.google.common.annotations.Beta;
+import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.common.Registrable;
+import com.ultreon.bubbles.common.gamestate.GameplayEvent;
+import com.ultreon.bubbles.effect.StatusEffect;
+import com.ultreon.bubbles.entity.ammo.AmmoType;
+import com.ultreon.bubbles.entity.player.ability.AbilityType;
+import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.item.ItemType;
+import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.commons.map.OrderedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.awt.*;
 import java.util.*;
 
 
-@SuppressWarnings("unchecked")
-public class Registry<T extends IRegistrable> {
+public class Registry<T> {
     private static final Logger dumpLogger = LogManager.getLogger("Registry-Dump");
-    private final OrderedHashMap<Identifier, T> registry = new OrderedHashMap<>();
+    private final OrderedHashMap<Identifier, T> keyMap = new OrderedHashMap<>();
+    private final OrderedHashMap<T, Identifier> valueMap = new OrderedHashMap<>();
     private final Class<T> type;
     private static final OrderedHashMap<Class<?>, Registry<?>> registries = new OrderedHashMap<>();
     private final Identifier id;
     private boolean frozen;
 
-    protected Registry(@NonNull Class<T> clazz, Identifier id) throws IllegalStateException {
+    public static final Registry<AmmoType> AMMO_TYPES = Registry.create(new Identifier("ammo"));
+    public static final Registry<EntityType<?>> ENTITIES = Registry.create(new Identifier("entity"));
+    public static final Registry<BubbleType> BUBBLES = Registry.create(new Identifier("bubble"));
+    public static final Registry<StatusEffect> EFFECTS = Registry.create(new Identifier("status_effect"));
+    public static final Registry<AbilityType<?>> ABILITIES = Registry.create(new Identifier("ability"));
+    public static final Registry<GameplayEvent> GAMEPLAY_EVENTS = Registry.create(new Identifier("gameplay_event"));
+    public static final Registry<Gamemode> GAMEMODES = Registry.create(new Identifier("gamemode"));
+    public static final Registry<Cursor> CURSORS = Registry.create(new Identifier("cursor"));
+    @Beta
+    public static final Registry<ItemType> ITEMS = Registry.create(new Identifier("item"));
+    public static final Registry<TextureCollection> TEXTURE_COLLECTIONS = Registry.create(new Identifier("texture_collection"));
+    public static final Registry<Sound> SOUNDS = Registry.create(new Identifier("sound"));
+
+    protected Registry(Class<T> clazz, Identifier id) throws IllegalStateException {
         this.id = id;
         this.type = clazz;
 
@@ -42,19 +65,18 @@ public class Registry<T extends IRegistrable> {
         return id;
     }
 
-    public static <T extends Registrable> Registry<T> create(@NonNull Class<T> clazz, Identifier registryName) {
-        if (registries.containsKey(clazz)) {
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    public static <T> Registry<T> create(Identifier registryName, @NonNull T... type) {
+        Class<T> componentType = (Class<T>) type.getClass().getComponentType();
+        if (registries.containsKey(componentType)) {
             throw new IllegalStateException();
         }
 
-        Registry<T> registry = new Registry<>(clazz, registryName);
-        registries.put(clazz, registry);
+        Registry<T> registry = new Registry<>(componentType, registryName);
+        registries.put(componentType, registry);
 
         return registry;
-    }
-
-    public static <T extends Registrable> Registry<T> getRegistry(Class<T> objType) {
-        return (Registry<T>) registries.get(objType);
     }
 
     /**
@@ -64,15 +86,15 @@ public class Registry<T extends IRegistrable> {
      * @return a registered instance create the type {@link T}.
      * @throws ClassCastException if the type is invalid.
      */
-    public T get(@Nullable Identifier key) {
-        if (!registry.containsKey(key)) {
+    public T getValue(@Nullable Identifier key) {
+        if (!keyMap.containsKey(key)) {
             throw new IllegalArgumentException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
         }
-        return registry.get(key);
+        return keyMap.get(key);
     }
 
     public boolean contains(Identifier rl) {
-        return registry.containsKey(rl);
+        return keyMap.containsKey(rl);
     }
 
     public void dumpRegistry() {
@@ -96,15 +118,16 @@ public class Registry<T extends IRegistrable> {
             throw new IllegalArgumentException("Not allowed type detected, got " + val.getClass() + " expected assignable to " + type);
         }
 
-        registry.put(rl, val);
+        keyMap.put(rl, val);
+        valueMap.put(val, rl);
     }
 
     public Collection<T> values() {
-        return Collections.unmodifiableCollection(registry.values());
+        return Collections.unmodifiableCollection(keyMap.values());
     }
 
     public Set<Identifier> keys() {
-        return Collections.unmodifiableSet(registry.keySet());
+        return Collections.unmodifiableSet(keyMap.keySet());
     }
 
     public Set<Map.Entry<Identifier, T>> entries() {
@@ -125,12 +148,6 @@ public class Registry<T extends IRegistrable> {
 
     public Class<T> getType() {
         return type;
-    }
-
-    public void registrable(Identifier rl, Registrable object) {
-        if (type.isAssignableFrom(object.getClass())) {
-            register(rl, (T) object);
-        }
     }
 
     public static void dump() {
@@ -160,5 +177,9 @@ public class Registry<T extends IRegistrable> {
 
     public boolean isFrozen() {
         return frozen;
+    }
+
+    public Identifier getKey(T obj) {
+        return valueMap.get(obj);
     }
 }

@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.api.event;
 
-import org.apache.commons.lang.IllegalClassException;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,9 +18,9 @@ public abstract class Event<T extends IListener> {
 
         Method[] methods = listenerClass.getMethods();
         if (methods.length > 1)
-            throw new IllegalClassException("Class " + listenerClass.getName() + " has too many methods: " + methods.length + ". Only 1 is allowed for functional interfaces.");
+            throw new IllegalArgumentException("Class " + listenerClass.getName() + " has too many methods: " + methods.length + ". Only 1 is allowed for functional interfaces.");
         if (methods.length < 1)
-            throw new IllegalClassException("Class " + listenerClass.getName() + " has too few methods: " + methods.length + ". Need 1 for functional interfaces.");
+            throw new IllegalArgumentException("Class " + listenerClass.getName() + " has too few methods: " + methods.length + ". Need 1 for functional interfaces.");
 
         this.method = methods[0];
         this.parameterTypes = method.getParameterTypes();

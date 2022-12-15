@@ -7,7 +7,7 @@ import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.loader.ModLoader;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.TextureCollection;
@@ -197,7 +197,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         this.progMain.send("");
         this.progMain.increment();
-        Collection<TextureCollection> values = Registers.TEXTURE_COLLECTIONS.values();
+        Collection<TextureCollection> values = Registry.TEXTURE_COLLECTIONS.values();
         this.progAlt = new ProgressMessenger(this.msgAlt, values.size());
         for (TextureCollection collection : values) {
             GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);

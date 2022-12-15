@@ -9,7 +9,7 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.IngameButton;
@@ -19,7 +19,6 @@ import com.ultreon.bubbles.util.helpers.MathHelper;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -73,19 +72,15 @@ public class PauseScreen extends Screen {
         prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text("Prev").command(this::previousPage).build();
         nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text("Next").command(this::nextPage).build();
 
-        differentBubbles = Registry.getRegistry(BubbleType.class).values().size();
+        differentBubbles = Registry.BUBBLES.values().size();
         tickPage();
     }
 
     private void previousPage() {
         if (helpIndex > 0) {
-            try {
-                Sound focusChangeSFX = new Sound(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
-                focusChangeSFX.setVolume(0.1d);
-                focusChangeSFX.play();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
+            focusChangeSFX.setVolume(0.1d);
+            focusChangeSFX.play();
         }
 
         helpIndex = MathHelper.clamp(helpIndex - 1, 0, differentBubbles - 1);
@@ -94,13 +89,9 @@ public class PauseScreen extends Screen {
 
     private void nextPage() {
         if (helpIndex < differentBubbles - 1) {
-            try {
-                Sound focusChangeSFX = new Sound(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
-                focusChangeSFX.setVolume(0.1d);
-                focusChangeSFX.play();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            SoundInstance focusChangeSFX = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
+            focusChangeSFX.setVolume(0.1d);
+            focusChangeSFX.play();
         }
 
         helpIndex = MathHelper.clamp(helpIndex + 1, 0, differentBubbles - 1);
@@ -108,7 +99,7 @@ public class PauseScreen extends Screen {
     }
 
     private void tickPage() {
-        bubble = new ArrayList<>(Registry.getRegistry(BubbleType.class).values()).get(helpIndex);
+        bubble = new ArrayList<>(Registry.BUBBLES.values()).get(helpIndex);
 
         if (helpIndex >= differentBubbles - 1 && nextButton.isValid()) {
             nextButton.destroy();

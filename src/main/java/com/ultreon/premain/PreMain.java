@@ -1,18 +1,17 @@
 package com.ultreon.premain;
 
-import java.io.IOException;
+import java.io.FilePermission;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Permissions;
 import java.util.Objects;
 
 public class PreMain {
-    private static BubblesJarClassLoader loader;
+    private static URLClassLoader loader;
+    private static LibraryJarManager manager;
 
     public static void main(String[] args) {
         try {
@@ -29,14 +28,8 @@ public class PreMain {
 
             String[] names = files.split("\n");
 
-            loader = new BubblesJarClassLoader(PreMain.class, names, PreMain.class.getClassLoader());
-            URL url = new URL("libraryjar://ant-launcher-1.10.12.jar/META-INF/NOTICE.txt");
-            URLConnection connection = url.openConnection();
-            connection.connect();
-            InputStream inputStream = connection.getInputStream();
-            byte[] bytes = inputStream.readAllBytes();
-            String notice = new String(bytes);
-            System.out.println(notice);
+            manager = new LibraryJarManager(PreMain.class, names);
+            loader = new URLClassLoader(manager.getUrls());
 
             Class<?> aClass = loader.loadClass(mainClass);
             Method main = aClass.getDeclaredMethod("main", String[].class);
@@ -46,7 +39,11 @@ public class PreMain {
         }
     }
 
-    public static BubblesJarClassLoader getLoader() {
+    static URLClassLoader getLoader() {
         return loader;
+    }
+
+    static LibraryJarManager getManager() {
+        return manager;
     }
 }

@@ -1,8 +1,6 @@
 package com.ultreon.bubbles.registry;
 
-import com.ultreon.bubbles.common.IRegistrable;
 import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.common.Registrable;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
-public class DelayedRegister<@NonNull T extends IRegistrable> {
+public class DelayedRegister<@NonNull T> {
     @NonNull
     private final String modId;
     @NonNull
@@ -24,16 +22,16 @@ public class DelayedRegister<@NonNull T extends IRegistrable> {
         this.registry = registry;
     }
 
-    public static <T extends Registrable> DelayedRegister<T> create(String modId, Registry<T> registry) {
+    public static <T> DelayedRegister<T> create(String modId, Registry<T> registry) {
         return new DelayedRegister<>(modId, registry);
     }
 
     public <@NonNull C extends T> RegistrySupplier<C> register(@NonNull String key, @NonNull Supplier<@NonNull C> supplier) {
-        Identifier rl = new Identifier(key, modId);
+        Identifier id = new Identifier(key, modId);
 
-        objects.add(new HashMap.SimpleEntry<>(rl, supplier::get));
+        objects.add(new HashMap.SimpleEntry<>(id, supplier::get));
 
-        return new RegistrySupplier<>(registry, supplier, rl);
+        return new RegistrySupplier<>(registry, supplier, id);
     }
 
     public void register() {
@@ -46,14 +44,13 @@ public class DelayedRegister<@NonNull T extends IRegistrable> {
 
             for (HashMap.Entry<Identifier, Supplier<T>> entry : objects) {
                 T object = entry.getValue().get();
-                Identifier rl = entry.getKey();
+                Identifier id = entry.getKey();
 
                 if (!registry.getType().isAssignableFrom(object.getClass())) {
                     throw new IllegalArgumentException("Got invalid type in deferred register: " + object.getClass() + " expected assignable to " + registry.getType());
                 }
 
-                this.registry.register(rl, object);
-                object.setId(rl);
+                this.registry.register(id, object);
             }
         });
     }

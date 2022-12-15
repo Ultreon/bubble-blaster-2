@@ -4,7 +4,7 @@ import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.ammo.BasicAmmoType;
 import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 
 import java.util.function.Supplier;
@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * @see AmmoType
  */
 public class AmmoTypes {
-    private static final DelayedRegister<AmmoType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registers.AMMO_TYPES);
+    private static final DelayedRegister<AmmoType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.AMMO_TYPES);
 
     public static final RegistrySupplier<BasicAmmoType> BASIC = register("Basic", BasicAmmoType::new);
 

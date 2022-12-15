@@ -66,21 +66,6 @@ java {
     withJavadocJar()
 }
 
-task deleteOldJavadoc(type: Delete) {
-    delete fileTree("$projectDir/docs/latest/")
-}
-
-task copyJavadoc(type: Copy) {
-    from javadoc.outputs
-    into "$projectDir/docs/latest/"
-    dependsOn deleteOldJavadoc
-}
-
-mkdir "$projectDir/docs/"
-mkdir "$projectDir/docs/latest"
-
-javadoc.finalizedBy(copyJavadoc)
-
 bubbles {
     versionType(VersionType.DEV)
 }
@@ -304,6 +289,14 @@ task packedJar(type: Jar) {
     classifier "packed"
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
+
+    doLast {
+        copy {
+            from archiveFile
+            into buildDir
+            rename ".*", "packed.jar"
+        }
+    }
 }
 
 build {

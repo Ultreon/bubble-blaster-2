@@ -4,7 +4,7 @@ import com.ultreon.bubbles.ability.TeleportAbility;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 
 import java.util.function.Supplier;
@@ -15,9 +15,8 @@ import java.util.function.Supplier;
  * @since 0.0.0
  * @author Qboi123
  */
-@SuppressWarnings({"rawtypes", "unused", "SameParameterValue"})
 public class Abilities {
-    private static final DelayedRegister<AbilityType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registers.ABILITIES);
+    private static final DelayedRegister<AbilityType<?>> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.ABILITIES);
 
     /**
      * Teleport ability

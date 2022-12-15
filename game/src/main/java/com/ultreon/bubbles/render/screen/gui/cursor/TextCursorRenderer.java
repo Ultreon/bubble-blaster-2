@@ -1,12 +1,13 @@
 package com.ultreon.bubbles.render.screen.gui.cursor;
 
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 
 import java.awt.*;
 
 public class TextCursorRenderer extends CursorRenderer {
     public TextCursorRenderer() {
-        super("text_cursor");
+        super(BubbleBlaster.id("text_cursor"));
     }
 
     @Override

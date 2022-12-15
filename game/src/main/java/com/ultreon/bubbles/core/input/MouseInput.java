@@ -5,13 +5,9 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.screen.Screen;
 import com.ultreon.bubbles.render.screen.ScreenManager;
 import com.ultreon.bubbles.vector.Vec2i;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,25 +20,34 @@ import java.util.Map;
  * @see java.awt.event.MouseAdapter
  */
 @SuppressWarnings("ConstantConditions")
-public abstract class MouseInput extends MouseAdapter {
+public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
+    private static final MouseInput INSTANCE = new MouseInput();
     // Mouse input values.
     private Point currentLocationOnScreen;
     private Point currentPoint;
     private int clickCount;
 
-    // Logger
-    private static final Logger logger = LogManager.getLogger("Game-Input");
-
     // Other fields.
     private final Map<Integer, Boolean> buttonMap = new HashMap<>();
     private final BubbleBlaster game;
-    private HashMap<Integer, Vec2i> dragStarts = new HashMap<>();
+    private final HashMap<Integer, Vec2i> dragStarts = new HashMap<>();
 
     /**
      *
      */
     public MouseInput() {
         this.game = BubbleBlaster.getInstance();
+    }
+
+    public static void listen(Component component) {
+        BubbleBlaster.getLogger().debug("Mouse input launched on component: " + component.getClass().getName() + " at %08x".formatted(component.hashCode()));
+        component.addMouseListener(INSTANCE);
+        component.addMouseMotionListener(INSTANCE);
+        component.addMouseWheelListener(INSTANCE);
+    }
+
+    public static Vec2i getPos() {
+        return INSTANCE.getCurrentPoint();
     }
 
     @Override
@@ -198,5 +203,22 @@ public abstract class MouseInput extends MouseAdapter {
 
     protected boolean isPressed(int button) {
         return buttonMap.getOrDefault(button, false);
+    }
+
+    enum Button {
+        LEFT(1),
+        RIGHT(2),
+        MIDDLE(3),
+        ;
+
+        private final int id;
+
+        Button(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

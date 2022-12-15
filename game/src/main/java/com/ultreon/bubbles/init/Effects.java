@@ -3,7 +3,7 @@ package com.ultreon.bubbles.init;
 import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.effect.*;
 import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 
 import java.util.function.Supplier;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused")
 public class Effects {
-    private static final DelayedRegister<StatusEffect> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registers.EFFECTS);
+    private static final DelayedRegister<StatusEffect> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.EFFECTS);
 
     public static final RegistrySupplier<DefenseBoostEffect> DEFENSE_BOOST = register("defense", DefenseBoostEffect::new);
     public static final RegistrySupplier<BubbleFreezeEffect> BUBBLE_FREEZE = register("bubble_freeze", BubbleFreezeEffect::new);

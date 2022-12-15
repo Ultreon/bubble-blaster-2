@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +33,7 @@ public final class TextureManager {
             graphics.dispose();
             out.close();
             return new ByteArrayInputStream(out.toByteArray());
-        });
+        }, BubbleBlaster.getJarUrl()); // TODO: Replace with mem:// url.
     }
     private final Map<Identifier, Texture> textureMap = new ConcurrentHashMap<>();
 

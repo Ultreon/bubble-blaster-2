@@ -7,7 +7,6 @@ import com.ultreon.bubbles.game.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.common.IRegistrable;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.gamemode.Gamemode;
@@ -20,7 +19,6 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
-import com.ultreon.bubbles.registry.Registers;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.screen.GameOverScreen;
@@ -49,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Environment {
     private static final int RNG_INDEX_SPAWN = 0;
     private static final int RNG_INDEX_SPAWN_BUBBLE = 0;
-    private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("BubbleSpawnUsage");
+    private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("bubble_spawn_usage");
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private final List<Player> players = new CopyOnWriteArrayList<>();
     private Gamemode gamemode;
@@ -172,12 +170,12 @@ public final class Environment {
     }
 
     @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
-    private <T extends IRegistrable> void dumpRegistryData(GameSave gameSave, Registry<T> registry) throws IOException {
+    private <T> void dumpRegistryData(GameSave gameSave, Registry<T> registry) throws IOException {
         CompoundTag tag = new CompoundTag();
         ListTag<StringTag> entriesTag = new ListTag<>(StringTag.class);
 
         for (T type : registry.values()) {
-            entriesTag.add(new StringTag(type.id().toString()));
+            entriesTag.add(new StringTag(registry.getKey(type).toString()));
         }
         tag.put("Entries", entriesTag);
 
@@ -198,7 +196,7 @@ public final class Environment {
         if (gameTypeId == null) {
             this.gamemode = Gamemodes.CLASSIC.get();
         } else {
-            this.gamemode = Registers.GAME_TYPES.get(Identifier.parse(gameTypeId));
+            this.gamemode = Registry.GAMEMODES.getValue(Identifier.parse(gameTypeId));
         }
     }
 
@@ -210,7 +208,7 @@ public final class Environment {
         }
         tag.put("Entities", entitiesTag);
         tag.putString("name", name);
-        tag.putString("gameType", gamemode.id().toString());
+        tag.putString("gameType", Registry.GAMEMODES.getKey(gamemode).toString());
         tag.putLong("seed", seed);
         return tag;
     }
@@ -443,7 +441,7 @@ public final class Environment {
 
     private void loadAndSpawnEntity(CompoundTag tag) {
         String type = tag.getString("Type");
-        EntityType<?> entityType = Registers.ENTITIES.get(Identifier.parse(type));
+        EntityType<?> entityType = Registry.ENTITIES.getValue(Identifier.parse(type));
         Entity entity = entityType.create(this, tag);
         entity.prepareSpawn(SpawnInformation.fromLoadSpawn(tag));
         entity.load(tag);
@@ -460,7 +458,7 @@ public final class Environment {
 
                 continue;
             }
-            for (GameplayEvent gameplayEvent : Registers.GAME_EVENTS.values()) {
+            for (GameplayEvent gameplayEvent : Registry.GAMEPLAY_EVENTS.values()) {
                 if (gameplayEvent.isActive(DateTime.current())) {
                     currentGameplayEvent = gameplayEvent;
                     break;

@@ -6,14 +6,14 @@ import java.util.function.Predicate;
 
 public class SoundPlayer {
     private int maximal;
-    private final ArrayList<Sound> slots;
+    private final ArrayList<SoundInstance> slots;
 
     public SoundPlayer(int maximal) {
         this.maximal = maximal;
         slots = new ArrayList<>();
     }
 
-    public void add(Sound slot) {
+    public void add(SoundInstance slot) {
         if (slots.size() >= maximal) return;
 
         slots.add(slot);
@@ -21,11 +21,11 @@ public class SoundPlayer {
         if (!slot.isPlaying()) slot.play();
     }
 
-    public void addIf(Sound slot, Predicate<Sound> predicate) {
+    public void addIf(SoundInstance slot, Predicate<SoundInstance> predicate) {
         if (slots.size() >= maximal) return;
 
         boolean flag = false;
-        for (Sound slot1 : slots) {
+        for (SoundInstance slot1 : slots) {
             boolean flag1 = predicate.test(slot1);
             if (flag1) {
                 flag = true;
@@ -39,51 +39,51 @@ public class SoundPlayer {
         if (!slot.isPlaying()) slot.play();
     }
 
-    public boolean removeIf(Predicate<Sound> filter) {
+    public boolean removeIf(Predicate<SoundInstance> filter) {
         return slots.removeIf(filter);
     }
 
     public boolean removeStopped() {
-        return removeIf(Sound::isStopped);
+        return removeIf(SoundInstance::isStopped);
     }
 
     public boolean removePlaying() {
-        return removeIf(Sound::isPlaying);
+        return removeIf(SoundInstance::isPlaying);
     }
 
-    public boolean remove(Sound slot) {
+    public boolean remove(SoundInstance slot) {
         return slots.remove(slot);
     }
 
-    public Sound remove(int index) {
+    public SoundInstance remove(int index) {
         return slots.remove(index);
     }
 
-    public Sound get(int index) {
+    public SoundInstance get(int index) {
         return slots.get(index);
     }
 
     public void stopAll() {
-        for (Sound slot : slots) {
+        for (SoundInstance slot : slots) {
             slot.stop();
         }
     }
 
     public void playAll() {
-        for (Sound slot : slots) {
+        for (SoundInstance slot : slots) {
             slot.play();
         }
     }
 
     public boolean isSilent() {
-        for (Sound slot : slots) {
+        for (SoundInstance slot : slots) {
             if (slot.isPlaying()) return false;
         }
         return true;
     }
 
     public void clear() {
-        for (Sound slot : slots) {
+        for (SoundInstance slot : slots) {
             slot.stop();
         }
         slots.clear();
@@ -97,7 +97,7 @@ public class SoundPlayer {
         this.maximal = maximal;
     }
 
-    public List<Sound> getSlots() {
+    public List<SoundInstance> getSlots() {
         return slots;
     }
 }

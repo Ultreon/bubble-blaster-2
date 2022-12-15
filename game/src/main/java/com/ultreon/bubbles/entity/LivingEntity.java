@@ -2,7 +2,6 @@ package com.ultreon.bubbles.entity;
 
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
-import com.ultreon.bubbles.entity.modifier.Modifier;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
@@ -11,9 +10,6 @@ import com.ultreon.bubbles.util.helpers.MathHelper;
 import net.querz.nbt.tag.CompoundTag;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Living Entity base class.
@@ -25,7 +21,6 @@ import java.util.List;
 public abstract class LivingEntity extends Entity {
     protected double health;
     protected boolean invincible;
-    private final List<Modifier> modifiers = new ArrayList<>();
 
     // Constructor.
     public LivingEntity(EntityType<?> type, Environment environment) {

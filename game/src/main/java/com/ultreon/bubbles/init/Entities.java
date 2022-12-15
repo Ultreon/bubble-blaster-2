@@ -7,15 +7,13 @@ import com.ultreon.bubbles.entity.GiantBubble;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 
 import java.util.function.Supplier;
 
-//@ObjectHolder(modId = "bubbleblaster")
 public class Entities {
-    @SuppressWarnings("rawtypes")
-    private static final DelayedRegister<EntityType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registers.ENTITIES);
+    private static final DelayedRegister<EntityType<?>> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.ENTITIES);
 
     public static final RegistrySupplier<EntityType<Bullet>> BULLET = register("bullet", () -> new EntityType<>(Bullet::new));
     public static final RegistrySupplier<EntityType<Bubble>> BUBBLE = register("bubble", () -> new EntityType<>(Bubble::new));

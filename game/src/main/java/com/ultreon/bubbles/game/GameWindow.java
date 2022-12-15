@@ -2,10 +2,10 @@ package com.ultreon.bubbles.game;
 
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.core.CursorManager;
+import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.event.v2.EventResult;
 import com.ultreon.bubbles.event.v2.GameEvents;
-import com.ultreon.bubbles.input.KeyInput;
-import com.ultreon.bubbles.input.MouseInput;
 import com.ultreon.bubbles.render.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
@@ -13,9 +13,10 @@ import com.ultreon.commons.exceptions.OneTimeUseException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
-import org.jdesktop.swingx.JXFrame;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,21 +35,20 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 public class GameWindow implements WindowListener, WindowFocusListener, WindowStateListener, ComponentListener {
+    private static final Marker MARKER = MarkerFactory.getMarker("GameWindow");
     // GUI Elements.
     @NonNull
-    private final Frame frame;
-    @NonNull
-    final Canvas canvas;
+    private final JFrame frame;
+    @NonNull Canvas canvas;
 
     // AWT Toolkit.
     @NonNull
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     // Graphics thingies.
+    @NonNull ImageObserver observer;
     @NonNull
-    final ImageObserver observer;
-    @NonNull
-    private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    private final GraphicsEnvironment gfxEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
     @NonNull
     private final GraphicsDevice device;
     @NonNull
@@ -66,51 +66,49 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      * @param properties window properties, not fully implemented yet. LOL
      */
     @SuppressWarnings("FunctionalExpressionCanBeFolded")
-    public GameWindow(@NonNull Properties properties) throws IOException {
+    public GameWindow(@NonNull Properties properties) {
         this.properties = properties;
-        this.frame = setupFrame(properties);
 
-        this.device = getGraphicsDevice(this.frame);
+        // --- Set up window --- //
+        BubbleBlaster.getLogger().info(MARKER, "Setting up game window.");
 
-        this.canvas = createCanvas(properties);
-        this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
-        this.frame.add(this.canvas);
-    }
+        this.frame = new JFrame(properties.title);
 
-    /**
-     * Set up the game frame.
-     *
-     * @param properties the window properties.
-     * @return the game frame.
-     * @throws IOException when a resource couldn't be loaded.
-     */
-    @NotNull
-    private JXFrame setupFrame(@NotNull Properties properties) throws IOException {
-        var frame = new JXFrame(properties.title);
+        var config = this.frame.getGraphicsConfiguration();
 
-        setupFrameSettings(frame, properties);
-        setupFrameListeners(frame);
-        return frame;
-    }
+        this.frame.enableInputMethods(true);
+        this.frame.setFocusTraversalKeysEnabled(false);
 
-    /**
-     * Setup graphics device.
-     * @return the graphics device.
-     */
-    @NotNull
-    private GraphicsDevice getGraphicsDevice(Frame frame) {
-        return frame.getGraphicsConfiguration().getDevice();
-    }
+        // Setup frame settings.
+        this.frame.setPreferredSize(new Dimension(properties.width, properties.height));
+        this.device = config.getDevice();
 
-    /**
-     * Create the rendering canvas.
-     * @param properties the game window properties.
-     * @return the created canvas.
-     */
-    @NotNull
-    private Canvas createCanvas(@NotNull Properties properties) {
-        // Setup canvas.
-        var canvas = new Canvas(this.frame.getGraphicsConfiguration()) {
+        if (properties.fullscreen) {
+            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
+            this.frame.setBounds(bounds);
+            this.frame.setUndecorated(true);
+        } else {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            this.frame.setSize(properties.width, properties.height);
+            this.frame.setLocationRelativeTo(null);
+        }
+        this.frame.setResizable(false);
+        try (InputStream inputStream = BubbleBlaster.getGameJar().openStream("icon.png")) {
+            this.frame.setIconImage(ImageIO.read(inputStream));
+        } catch (Exception e) {
+            BubbleBlaster.getLogger().error(MARKER, "Failed to load game icon:", e);
+        }
+
+        // Set flag attributes.
+        this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        // Set listeners.
+        this.frame.addComponentListener(this);
+        this.frame.addWindowListener(this);
+        this.frame.addWindowFocusListener(this);
+
+        // --- Set up canvas --- //
+        this.canvas = new Canvas(config) {
             @Override
             public void paint(Graphics g) {
                 if (BubbleBlaster.hasRendered()) {
@@ -120,62 +118,55 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
                 }
             }
         };
-        canvas.enableInputMethods(true);
-        canvas.setFocusTraversalKeysEnabled(false);
 
         if (properties.fullscreen) {
-            GraphicsDevice graphicsDevice = getGraphicsDevice(frame);
-            Rectangle bounds = graphicsDevice.getDefaultConfiguration().getBounds();
-            canvas.setSize(bounds.getSize());
+            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
+            this.canvas.setSize(bounds.getSize());
         } else {
-            canvas.setSize(properties.width, properties.height);
+            this.canvas.setSize(properties.width, properties.height);
         }
-        canvas.setBackground(new Color(72, 72, 72));
-        canvas.setSize(properties.width, properties.height);
+
+        this.canvas.setBackground(new Color(72, 72, 72));
+        this.canvas.setSize(properties.width, properties.height);
+
+        // --- Post setup --- //
+        this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
+        this.frame.add(this.canvas);
+    }
+
+    /**
+     * Set up the game frame.
+     *
+     * @param properties the window properties.
+     * @return the game frame.
+     */
+    @NotNull
+    private JFrame setupFrame(@NotNull Properties properties) {
+        return frame;
+    }
+
+    /**
+     * Create the rendering canvas.
+     * @param properties the game window properties.
+     * @return the created canvas.
+     */
+    @NotNull
+    private Canvas createCanvas(@NotNull Properties properties) {
         return canvas;
     }
 
     /**
      * Set up the listeners for the game frame.
      */
-    private void setupFrameListeners(JXFrame frame) {
-        // Set listeners.
-        frame.addComponentListener(this);
-        frame.addWindowListener(this);
-        frame.addWindowFocusListener(this);
+    private void setupFrameListeners(JFrame frame) {
     }
 
     /**
      * Set up the game frame settings.
      * @param frame the window frame.
      * @param properties the game window properties.
-     * @throws IOException when a resource couldn't be loaded.
      */
-    private void setupFrameSettings(JXFrame frame, @NotNull Properties properties) throws IOException {
-        // Setup frame settings.
-        frame.setPreferredSize(new Dimension(properties.width, properties.height));
-        if (properties.fullscreen) {
-            GraphicsDevice graphicsDevice = getGraphicsDevice(frame);
-            Rectangle bounds = graphicsDevice.getDefaultConfiguration().getBounds();
-            frame.setBounds(bounds);
-            frame.setUndecorated(true);
-        } else {
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            frame.setSize(properties.width, properties.height);
-            System.out.println("screenSize.height = " + screenSize.height);
-            System.out.println("properties.height = " + properties.height);
-            frame.setLocationRelativeTo(null);
-        }
-        frame.setResizable(false);
-        frame.enableInputMethods(true);
-        frame.setFocusTraversalKeysEnabled(false);
-        try (InputStream inputStream = Objects.requireNonNull(BubbleBlaster.class.getResourceAsStream("/icon.png"), "Bruh, why icon no exist")) {
-            frame.setIconImage(ImageIO.read(inputStream));
-        }
-
-        // Set flag attributes.
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.setFocusTraversalKeysEnabled(false);
+    private void setupFrameSettings(JFrame frame, @NotNull Properties properties) {
     }
 
     /**
@@ -324,31 +315,29 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
             throw new OneTimeUseException("The game window is already initialized.");
         }
 
-        KeyInput.init();
-        MouseInput.init();
+        BubbleBlaster.getLogger().info(MARKER, "Post-init stage of game window.");
 
-        KeyInput.listen(this.frame);
+        KeyboardInput.listen(this.frame);
         MouseInput.listen(this.frame);
 
-        KeyInput.listen(this.canvas);
+        KeyboardInput.listen(this.canvas);
         MouseInput.listen(this.canvas);
 
         this.initialized = true;
 
-        BubbleBlaster.getLogger().info("Initialized game window");
+        BubbleBlaster.getLogger().info(MARKER, "Initialized game window");
 
         game().windowLoaded();
     }
 
     void close() {
         this.frame.dispose(); // Window#dispose() closes the awt-based window.
-        System.exit(0);
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
         Identifier textureEntry = new Identifier("textures/cursors/" + identifier.path(), identifier.location());
         Image image;
-        try (InputStream assetAsStream = game().getResourceManager().getAssetAsStream(textureEntry)) {
+        try (InputStream assetAsStream = game().getResourceManager().openResourceStream(textureEntry)) {
             image = ImageIO.read(assetAsStream);
         } catch (IOException e) {
             throw new IOError(e);
@@ -425,12 +414,14 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     public void requestFocus() {
-        this.frame.requestFocus();
+        this.frame.setFocusable(true);
+        this.canvas.setFocusable(true);
         this.canvas.requestFocus();
+        this.canvas.requestFocusInWindow();
     }
 
     public boolean isFocused() {
-        return this.frame.isFocused();
+        return this.frame.isFocused() && this.canvas.isFocusable();
     }
 
     /**

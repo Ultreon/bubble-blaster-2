@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.input.MouseInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.AbstractButton;
 import com.ultreon.bubbles.render.screen.gui.border.Border;

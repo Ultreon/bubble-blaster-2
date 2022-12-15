@@ -5,7 +5,7 @@ import com.ultreon.bubbles.common.exceptions.ValueExists;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.registry.Registers;
+import com.ultreon.bubbles.registry.Registry;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,10 +64,10 @@ public class BubbleSystem {
      * {@linkplain BubbleType Bubble} initialization for random spawning.
      *
      * @see BubbleType
-     * @see Registers#BUBBLES
+     * @see Registry#BUBBLES
      */
     public static void init() {
-        Collection<BubbleType> bubbleTypes = Registers.BUBBLES.values();
+        Collection<BubbleType> bubbleTypes = Registry.BUBBLES.values();
         BubbleSystem.bubblePriorities = new HashMap<>();
         BubbleSystem.maxPriority = 0;
 

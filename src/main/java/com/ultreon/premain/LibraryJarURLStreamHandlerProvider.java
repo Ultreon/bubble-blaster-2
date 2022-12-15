@@ -25,9 +25,9 @@ public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerPr
                         public void connect() throws IOException {
                             String host = u.getHost();
                             String path = u.getPath();
-                            InputStream stream = PreMain.getLoader().openConnectionInternal(u);
+                            InputStream stream = PreMain.getManager().openConnectionInternal(u);
                             if (stream == null) {
-                                if (!PreMain.getLoader().jarExists(host)) {
+                                if (!PreMain.getManager().jarExists(host)) {
                                     throw new IOException("Library jar not found: " + host);
                                 } else {
                                     throw new FileNotFoundException(host + path);
