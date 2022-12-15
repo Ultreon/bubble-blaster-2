@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.media;
+package com.ultreon.bubbles.sound;
 
 import java.util.ArrayList;
 import java.util.List;

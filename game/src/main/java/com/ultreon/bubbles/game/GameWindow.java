@@ -113,8 +113,6 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
             public void paint(Graphics g) {
                 if (BubbleBlaster.hasRendered()) {
                     super.paint(g);
-                } else {
-                    g.drawImage(BubbleBlaster.getInstance().cachedImage, 0, 0, getWidth(), getHeight(), this);
                 }
             }
         };

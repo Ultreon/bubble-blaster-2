@@ -16,6 +16,7 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.Screen;
@@ -304,7 +305,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void damage(double value, EntityDamageSource source) {
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
         if (isValid() && isVisible()) {
-            BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3);
+            Sounds.BUBBLE_POP.get().play(0.3f);
         }
         delete();
         radius = (int) health + 4;

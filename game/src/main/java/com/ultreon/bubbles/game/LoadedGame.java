@@ -2,18 +2,19 @@ package com.ultreon.bubbles.game;
 
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.PseudoRandom;
-import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.damage.DamageSourceType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EntityEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.MessengerScreen;
 import com.ultreon.bubbles.save.GameSave;
+import com.ultreon.bubbles.sound.SoundInstance;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.commons.util.CollisionUtil;
@@ -23,7 +24,6 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class LoadedGame {
@@ -100,7 +100,10 @@ public class LoadedGame {
         gamemode.destroy();
         deactivate();
 
-        ambientAudio.stop();
+        final SoundInstance ambientAudio1 = ambientAudio;
+        if (ambientAudio1 != null) {
+            ambientAudio1.stop();
+        }
 
         if (autoSaveThread != null) autoSaveThread.interrupt();
         if (collisionThread != null) collisionThread.interrupt();
@@ -123,18 +126,14 @@ public class LoadedGame {
             if (this.ambientAudio == null) {
                 if (!this.environment.isBloodMoonActive() && this.nextAudio < System.currentTimeMillis()) {
                     if (new PseudoRandom(System.nanoTime()).getNumber(0, 5, -1) == 0) {
-                        this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/submarine.mp3")), "ambient");
-                        this.ambientAudio.setVolume(0.5d);
-                        this.ambientAudio.play();
+                        Sounds.MUSIC_SUBMARINE.get().play(0.5f);
                     } else {
                         this.nextAudio = System.currentTimeMillis() + new Random().nextLong(1000, 2000);
                     }
                 } else if (this.environment.isBloodMoonActive()) {
-                    this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
-                    this.ambientAudio.setVolume(0.4d);
-                    this.ambientAudio.play();
+                    Sounds.MUSIC_ULTIMA.get().play(0.4f);
                 }
-            } else if (this.ambientAudio.isStopped() && this.environment.isBloodMoonActive() && this.ambientAudio.getName().equals("blood_moon_state")) {
+            } else if (this.ambientAudio.isStopped() && this.environment.isBloodMoonActive() && this.ambientAudio.getSound().equals(Sounds.MUSIC_ULTIMA.get())) {
                 this.ambientAudio = null;
                 this.environment.stopBloodMoon();
             } else if (this.ambientAudio.isStopped()) {
@@ -142,13 +141,12 @@ public class LoadedGame {
             } else if (!this.ambientAudio.isPlaying()) {
                 this.ambientAudio.stop();
                 this.ambientAudio = null;
-            } else if (this.environment.isBloodMoonActive() && !this.ambientAudio.getName().equals("blood_moon_state")) {
+            } else if (this.environment.isBloodMoonActive()
+                    && !this.ambientAudio.getSound().equals(Sounds.MUSIC_ULTIMA.get())) {
                 this.ambientAudio.stop();
                 this.ambientAudio = null;
 
-                this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
-                this.ambientAudio.setVolume(0.25d);
-                this.ambientAudio.play();
+                Sounds.MUSIC_ULTIMA.get().play(0.4f);
             }
         }
     }
@@ -218,7 +216,6 @@ public class LoadedGame {
     //     Event Binding     //
     ///////////////////////////
     public void activate() {
-        BubbleBlaster.getEventBus().subscribe(this);
         this.gameActive = true;
     }
 

@@ -100,7 +100,7 @@ repositories {
     }
     flatDir {
         name "Project Libraries"
-        dirs "${projectDir}/libs"
+        dirs "${rootProject.projectDir}/libs"
     }
 }
 
@@ -149,6 +149,41 @@ allprojects {
                     password = getenv("GITHUB_TOKEN")
                 }
             }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        google()
+        jcenter()
+        maven {
+            name "Atlassian"
+            url "https://maven.atlassian.com/3rdparty/"
+        }
+        maven {
+            name "ImageJ"
+            url "https://maven.imagej.net/content/repositories/public/"
+        }
+        maven {
+            name "Maven Central"
+            url "https://repo1.maven.org/maven2/"
+        }
+        maven {
+            name "RuneLite"
+            url "https://repo.runelite.net/"
+        }
+        maven {
+            name "JitPack"
+            url 'https://jitpack.io'
+        }
+        maven {
+            name "Velocity"
+            url "https://nexus.velocitypowered.com/repository/maven-public/"
+        }
+        flatDir {
+            name "Project Libraries"
+            dirs "${rootProject.projectDir}/libs"
         }
     }
 

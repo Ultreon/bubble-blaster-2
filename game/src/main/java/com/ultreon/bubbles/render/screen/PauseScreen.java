@@ -9,7 +9,7 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.IngameButton;
@@ -20,7 +20,6 @@ import com.ultreon.bubbles.util.helpers.MathHelper;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class PauseScreen extends Screen {
     private final IngameButton exitButton;
@@ -78,9 +77,7 @@ public class PauseScreen extends Screen {
 
     private void previousPage() {
         if (helpIndex > 0) {
-            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
-            focusChangeSFX.setVolume(0.1d);
-            focusChangeSFX.play();
+            Sounds.UI_BUTTON_FOCUS_CHANGE.get().play(0.1f);
         }
 
         helpIndex = MathHelper.clamp(helpIndex - 1, 0, differentBubbles - 1);
@@ -89,9 +86,7 @@ public class PauseScreen extends Screen {
 
     private void nextPage() {
         if (helpIndex < differentBubbles - 1) {
-            SoundInstance focusChangeSFX = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
-            focusChangeSFX.setVolume(0.1d);
-            focusChangeSFX.play();
+            Sounds.UI_BUTTON_FOCUS_CHANGE.get().play(0.1f);
         }
 
         helpIndex = MathHelper.clamp(helpIndex + 1, 0, differentBubbles - 1);

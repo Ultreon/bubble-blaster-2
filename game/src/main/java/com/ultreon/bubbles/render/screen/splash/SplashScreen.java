@@ -1,12 +1,11 @@
 package com.ultreon.bubbles.render.screen.splash;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Sounds;
-import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.LoadScreen;
 import com.ultreon.bubbles.render.screen.Screen;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
+import com.ultreon.bubbles.sound.LogoSound;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.vector.Vec2f;
 
@@ -15,7 +14,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 public class SplashScreen extends Screen {
     private static final float DURATION = 6000f;
@@ -54,10 +52,7 @@ public class SplashScreen extends Screen {
         if (this.startTime == 0L) {
             this.startTime = System.currentTimeMillis();
 
-            SoundInstance ambientAudio;
-            ambientAudio = new SoundInstance(BubbleBlaster.id("sfx/logo_reveal"), "logo-reveal");
-            ambientAudio.setVolume(0.4d);
-            ambientAudio.play();
+            LogoSound.get().play(0.4f);
         }
 
         final long timeDiff = System.currentTimeMillis() - startTime;

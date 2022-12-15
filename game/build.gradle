@@ -73,30 +73,6 @@ bubbles {
 //     Repositories     //
 //**********************//
 repositories {
-    mavenCentral()
-    mavenLocal()
-    google()
-    jcenter()
-    maven {
-        name "Atlassian"
-        url "https://maven.atlassian.com/3rdparty/"
-    }
-    maven {
-        name "ImageJ"
-        url "https://maven.imagej.net/content/repositories/public/"
-    }
-    maven {
-        name "Maven Central"
-        url "https://repo1.maven.org/maven2/"
-    }
-    maven {
-        name "RuneLite"
-        url "https://repo.runelite.net/"
-    }
-    maven {
-        name "JitPack"
-        url 'https://jitpack.io'
-    }
     flatDir {
         name "Project Libraries"
         dirs "${projectDir}/libs"
@@ -194,7 +170,9 @@ dependencies {
     // Discord Presence
     implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
 
-    // MP3 Sounds
+    // Audio
+    implementation 'com.paulscode:soundsystem:20120107' // https://mvnrepository.com/artifact/com.paulscode/soundsystem
+    implementation 'de.jarnbjo:j-ogg-all:1.0.0' // https://mvnrepository.com/artifact/de.jarnbjo/j-ogg-all
     implementation "javazoom:jlayer:1.0.1"
     implementation "javax.media:jmf:2.1.1e"
 }

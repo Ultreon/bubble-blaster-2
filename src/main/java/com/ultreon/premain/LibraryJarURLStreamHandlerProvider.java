@@ -3,12 +3,10 @@ package com.ultreon.premain;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.spi.URLStreamHandlerProvider;
-import java.nio.file.ReadOnlyFileSystemException;
 
 public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerProvider {
 
@@ -17,7 +15,7 @@ public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerPr
         if ("libraryjar".equals(protocol)) {
             return new URLStreamHandler() {
                 @Override
-                protected URLConnection openConnection(URL u) throws IOException {
+                protected URLConnection openConnection(URL u) {
                     return new URLConnection(u) {
                         private InputStream stream;
 
@@ -41,11 +39,15 @@ public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerPr
                             connect();
                             return stream;
                         }
+
+                        @Override
+                        public int getContentLength() {
+                            return PreMain.getManager().contentLength(u);
+                        }
                     };
                 }
             };
         }
         return null;
     }
-
 }

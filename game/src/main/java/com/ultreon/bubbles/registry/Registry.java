@@ -12,7 +12,7 @@ import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
-import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.sound.Sound;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.commons.map.OrderedHashMap;
 import org.apache.logging.log4j.LogManager;

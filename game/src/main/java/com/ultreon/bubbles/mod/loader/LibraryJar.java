@@ -49,4 +49,12 @@ public class LibraryJar {
     public URL getLibraryUrl() {
         return libraryUrl;
     }
+
+    public URL child(String path) {
+        try {
+            return new URL("libraryjar", libraryUrl.getHost(), addSepAtStart(path));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

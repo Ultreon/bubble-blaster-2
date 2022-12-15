@@ -19,9 +19,10 @@ import com.ultreon.bubbles.event.v2.RenderEvents;
 import com.ultreon.bubbles.event.v2.TickEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
-import com.ultreon.bubbles.media.MP3Player;
-import com.ultreon.bubbles.media.SoundInstance;
-import com.ultreon.bubbles.media.SoundPlayer;
+import com.ultreon.bubbles.sound.LogoSound;
+import com.ultreon.bubbles.sound.Sound;
+import com.ultreon.bubbles.sound.SoundInstance;
+import com.ultreon.bubbles.sound.SoundPlayer;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
 import com.ultreon.bubbles.mod.loader.Scanner;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
@@ -55,12 +56,16 @@ import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
+import org.checkerframework.com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.checkerframework.common.value.qual.IntRange;
 import org.checkerframework.common.value.qual.IntVal;
 import org.fusesource.jansi.AnsiConsole;
 import org.jdesktop.swingx.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import paulscode.sound.*;
+import paulscode.sound.codecs.CodecJOgg;
+import paulscode.sound.libraries.LibraryJavaSound;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
@@ -107,6 +112,7 @@ public final class BubbleBlaster {
     private static BubbleBlaster instance;
     private static boolean hasRendered;
     private static LibraryJar jar;
+    private static final Identifier EMPTY_ID = BubbleBlaster.id("missingno");
     public final Profiler profiler = new Profiler();
     private final URL gameFile;
     @IntVal(20)
@@ -143,6 +149,7 @@ public final class BubbleBlaster {
     private final Object rpcUpdateLock = new Object();
     private final Ticker ticker = new Ticker();
     private final ScannerResult scanResults;
+    private final SoundSystem soundSystem;
     // Utility objects.
     public InputController input;
     // Environment
@@ -189,6 +196,7 @@ public final class BubbleBlaster {
      * @see LoadScreen
      */
     public BubbleBlaster() throws IOException {
+        SoundSystem soundSystem;
         GameWindow.Properties windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720)/*.fullscreen()*/;
         BubbleBlaster.BootOptions bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
@@ -223,6 +231,7 @@ public final class BubbleBlaster {
         GameplayEvents.register();
         Gamemodes.register();
         TextureCollections.register();
+        Sounds.register();
 
         // Load game with loading screen.
         this.load(new ProgressMessenger(new Messenger(this::log), 1000));
@@ -266,15 +275,6 @@ public final class BubbleBlaster {
                 classPath.values().forEach(list -> list.forEach(file -> resourceManager.importResources(new File(file))));
             else
                 throw new FileNotFoundException("Can't find bubble blaster game executable.");
-        }
-
-
-        // Assign instance.
-
-        for (Thread thread : Thread.getAllStackTraces().keySet()) {
-            if (thread.getName().equals("JavaFX Application Thread")) {
-                thread.setName("Application Thread");
-            }
         }
 
         // Add ansi color compatibility in console.
@@ -344,12 +344,52 @@ public final class BubbleBlaster {
         textCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 txtCurImg, new Point(1, 12), "text cursor");
 
-        // Hook output for logger.
-//        System.setErr(new PrintStream(new CustomOutputStream("STDERR", Level.ERROR), true));
-//        System.setOut(new PrintStream(new CustomOutputStream("STDOUT", Level.INFO), true));
+        SoundSystemConfig.setLogger(new SoundSystemLogger() {
+            private final Logger logger = LoggerFactory.getLogger("SoundSystem");
+
+            @Override
+            public void message(String message, int indent) {
+                logger.info(" ".repeat(indent) + message);
+            }
+
+            @Override
+            public void importantMessage(String message, int indent) {
+                logger.warn(" ".repeat(indent) + message);
+            }
+
+            @Override
+            public void errorMessage(String classname, String message, int indent) {
+                logger.error(" ".repeat(indent) + "Error in class: " + classname);
+                logger.error(" ".repeat(indent) + message);
+            }
+
+            @Override
+            public void printStackTrace(Exception e, int indent) {
+                logger.error("Sound system error:", e);
+            }
+
+            @Override
+            public void printExceptionMessage(Exception e, int indent) {
+                logger.error("Sound system error: " + e.getMessage());
+            }
+        });
+
+        try {
+            SoundSystemConfig.setCodec(".ogg", CodecJOgg.class);
+            soundSystem = new SoundSystem(LibraryJavaSound.class);
+//            soundSystem.setMasterVolume(100f);
+        } catch (SoundSystemException e) {
+            soundSystem = null;
+            crash(e);
+            System.exit(1);
+        }
 
         // Logs directory creation.
+        this.soundSystem = soundSystem;
         References.LOGS_DIR.mkdirs();
+
+        // Create logo sound.
+        LogoSound.create();
 
         // Font Name
         fontName = "Chicle Regular";
@@ -586,6 +626,10 @@ public final class BubbleBlaster {
             jar = new LibraryJar(getJarUrl());
         }
         return jar;
+    }
+
+    public static Identifier emptyId() {
+        return EMPTY_ID;
     }
 
     private void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding) {
@@ -1130,6 +1174,10 @@ public final class BubbleBlaster {
 
     public TextureManager getTextureManager() {
         return textureManager;
+    }
+
+    public SoundSystem getSoundSystem() {
+        return soundSystem;
     }
 
     /////////////////////////
@@ -1731,31 +1779,24 @@ public final class BubbleBlaster {
         return null;
     }
 
-    public synchronized MP3Player playSound(Identifier identifier) {
-        // The wrapper thread is unnecessary, unless it blocks on the
-        // Clip finishing; see comments.
-        //        new Thread(() -> {
+    @CanIgnoreReturnValue
+    public synchronized SoundInstance playSound(Sound sound) {
         try {
-            Identifier identifier1 = identifier.mapPath(path -> "audio/" + path + ".mp3");
-            System.out.println("identifier1 = " + identifier1);
-            Resource input = resourceManager.getResource(identifier1);
-            System.out.println(input);
-            MP3Player player = new MP3Player(identifier + "/" + UUID.randomUUID().toString().replaceAll("-", ""), Objects.requireNonNull(input).loadOrOpenStream());
-            player.play();
-            return player;
+            SoundInstance instance = new SoundInstance(sound, sound.getId());
+            instance.play();
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-//        }).start();
-//        return null;
     }
 
-    public synchronized SoundInstance playSound(Identifier identifier, double volume) {
+    @CanIgnoreReturnValue
+    public synchronized SoundInstance playSound(Sound sound, float volume) {
         try {
-            SoundInstance sound = new SoundInstance(identifier, identifier + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
-            sound.setVolume(volume);
-            sound.play();
-            return sound;
+            SoundInstance instance = new SoundInstance(sound, sound.getId());
+            instance.setVolume(volume);
+            instance.play();
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

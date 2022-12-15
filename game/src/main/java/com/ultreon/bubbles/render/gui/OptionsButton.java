@@ -4,7 +4,7 @@ import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.gui.AbstractButton;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
@@ -82,9 +82,7 @@ public class OptionsButton extends AbstractButton implements GuiElement {
     public void mouseEnter(int x, int y) {
         super.mouseEnter(x, y);
         if (isWithinBounds(x, y)) {
-            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
-            focusChangeSFX.setVolume(0.2d);
-            focusChangeSFX.play();
+            Sounds.UI_BUTTON_FOCUS_CHANGE.get().play(0.1f);
         }
     }
 
