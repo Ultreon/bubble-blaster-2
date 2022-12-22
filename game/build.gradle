@@ -1,10 +1,10 @@
 //file:noinspection GroovyUnusedCatchParameter
 
-import java.nio.file.Files
-import java.nio.file.Paths
+
 import com.ultreon.bubbles.gradle.VersionType
 
-import java.nio.file.StandardOpenOption
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import static java.lang.System.getenv
 
@@ -114,7 +114,7 @@ dependencies {
     implementation "it.unimi.dsi:fastutil-core:8.5.9"
     implementation "org.checkerframework:checker:3.25.0"
 
-    implementation 'com.github.Ultreon:ultreon-data:64728df4b2'
+    implementation 'com.github.Ultreon:ultreon-data:d6e10585a7'
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"

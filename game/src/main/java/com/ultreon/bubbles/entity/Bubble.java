@@ -21,7 +21,8 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.screen.Screen;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -311,22 +312,22 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     @Override
-    public @NonNull CompoundTag save() {
-        @NonNull CompoundTag document = super.save();
-        document.putInt("radius", radius);
-        document.putInt("baseRadius", baseRadius);
+    public @NonNull MapType save() {
+        @NonNull MapType data = super.save();
+        data.putInt("radius", radius);
+        data.putInt("baseRadius", baseRadius);
 
-        document.putFloat("bounceAmount", bounceAmount);
-        document.putFloat("baseBounceAmount", baseBounceAmount);
+        data.putFloat("bounceAmount", bounceAmount);
+        data.putFloat("baseBounceAmount", baseBounceAmount);
 
-        document.putBoolean("effectApplied", effectApplied);
-        document.putString("bubbleType", Registry.BUBBLES.getKey(bubbleType).toString());
+        data.putBoolean("effectApplied", effectApplied);
+        data.putString("bubbleType", Registry.BUBBLES.getKey(bubbleType).toString());
 
-        return document;
+        return data;
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         super.load(tag);
 
         this.radius = tag.getInt("radius");

@@ -9,7 +9,7 @@ import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 import org.checkerframework.common.value.qual.IntRange;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -25,14 +25,14 @@ public class AppliedEffect implements TagHolder {
     private long endTime;
 
     private boolean active;
-    private CompoundTag tag = new CompoundTag();
+    private MapType tag = new MapType();
     private long baseDuration;
 
     /**
      * @throws ClassCastException when effect couldn't be recognized.
      */
-    private AppliedEffect(CompoundTag document) {
-        this.tag = document.getCompoundTag("Tag");
+    private AppliedEffect(MapType document) {
+        this.tag = document.getMap("Tag");
         this.type = Registry.EFFECTS.getValue(Identifier.parse(document.getString("id")));
         this.setRemainingTime(document.getLong("duration"));
         this.baseDuration = document.getLong("baseDuration");
@@ -181,8 +181,8 @@ public class AppliedEffect implements TagHolder {
         return Objects.hash(getType());
     }
 
-    public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
+    public MapType save() {
+        MapType tag = new MapType();
         tag.put("Tag", this.tag);
         tag.putLong("baseDuration", getBaseDuration());
         tag.putLong("duration", getRemainingTime());
@@ -193,7 +193,7 @@ public class AppliedEffect implements TagHolder {
     }
 
     @Override
-    public CompoundTag getTag() {
+    public MapType getTag() {
         return this.tag;
     }
 

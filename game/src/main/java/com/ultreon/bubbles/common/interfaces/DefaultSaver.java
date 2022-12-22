@@ -1,7 +1,8 @@
 package com.ultreon.bubbles.common.interfaces;
 
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 
 public interface DefaultSaver {
-    CompoundTag saveDefaults();
+    MapType saveDefaults();
 }

@@ -25,7 +25,8 @@ import com.ultreon.bubbles.render.screen.Screen;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.commons.time.TimeProcessor;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -533,11 +534,12 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Save the player data.
+     *
      * @return the player data.
      */
     @Override
-    public @NonNull CompoundTag save() {
-        @NonNull CompoundTag document = super.save();
+    public @NonNull MapType save() {
+        @NonNull MapType document = super.save();
 
         document.putDouble("score", score);
         document.putFloat("rotation", rotation);
@@ -549,7 +551,7 @@ public class Player extends LivingEntity implements InputController {
      * @param tag the player data.
      */
     @Override
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         super.save();
 
         this.score = tag.getFloat("score");

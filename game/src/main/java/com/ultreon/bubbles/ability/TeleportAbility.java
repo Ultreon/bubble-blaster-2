@@ -54,7 +54,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
         // Check for player entity.
         if (entity instanceof Player player) {
             // Calculate delta time
-            long startTime = player.getTag().getNumber("TeleportAbilityStartTime").longValue();
+            long startTime = player.getTag().getLong("TeleportAbilityStartTime");
             player.getTag().remove("TeleportAbilityStartTime");
 
             long deltaTime = System.currentTimeMillis() - startTime;

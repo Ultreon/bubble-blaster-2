@@ -4,14 +4,16 @@ import com.ultreon.bubbles.common.holders.ListDataHolder;
 import com.ultreon.commons.exceptions.TODO;
 import com.ultreon.commons.function.primitive.BiDouble2DoubleFunction;
 import com.ultreon.commons.function.primitive.Double2DoubleFunction;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import com.ultreon.data.types.ListType;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.ListType;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 @SuppressWarnings({"DuplicatedCode", "unused"})
-public class AttributeContainer implements ListDataHolder<CompoundTag> {
+public class AttributeContainer implements ListDataHolder<MapType> {
     private final Map<Attribute, Double> map = new HashMap<>();
     private final Map<Attribute, List<AttributeModifier>> modifierMap = new HashMap<>();
 
@@ -75,10 +77,10 @@ public class AttributeContainer implements ListDataHolder<CompoundTag> {
         }
     }
 
-    public ListTag<CompoundTag> save() {
-        ListTag<CompoundTag> list = new ListTag<>(CompoundTag.class);
+    public ListType<MapType> save() {
+        ListType<MapType> list = new ListType<>();
         for (Map.Entry<Attribute, Double> entry : this.map.entrySet()) {
-            CompoundTag tag = new CompoundTag();
+            MapType tag = new MapType();
             tag.putString("name", entry.getKey().name());
             tag.putDouble("value", entry.getValue());
             list.add(tag);
@@ -86,12 +88,12 @@ public class AttributeContainer implements ListDataHolder<CompoundTag> {
         return list;
     }
 
-    public ListTag<CompoundTag> saveModifiers() {
-        ListTag<CompoundTag> list = new ListTag<>(CompoundTag.class);
+    public ListType<MapType> saveModifiers() {
+        ListType<MapType> list = new ListType<>();
         for (Map.Entry<Attribute, List<AttributeModifier>> entry : this.modifierMap.entrySet()) {
-            CompoundTag tag = new CompoundTag();
+            MapType tag = new MapType();
 
-            ListTag<CompoundTag> modifiersTag = new ListTag<>(CompoundTag.class);
+            ListType<MapType> modifiersTag = new ListType<>();
             for (AttributeModifier modifier : entry.getValue()) {
                 modifiersTag.add(modifier.serialize());
             }
@@ -104,12 +106,12 @@ public class AttributeContainer implements ListDataHolder<CompoundTag> {
         return list;
     }
 
-    public ListTag<CompoundTag> loadModifiers() {
+    public ListType<MapType> loadModifiers() {
         throw new TODO("Not yet implemented"); // TODO: Implement load modifiers in attribute container.
     }
 
-    public void load(ListTag<CompoundTag> list) {
-        for (CompoundTag tag : list) {
+    public void load(ListType<MapType> list) {
+        for (MapType tag : list) {
             Attribute key = Attribute.fromName(tag.getString("name"));
             if (key == null) continue;
             double value = tag.getDouble("value");

@@ -26,7 +26,8 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -284,18 +285,17 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     public abstract void onGameOver();
 
     @Override
-    public final CompoundTag saveDefaults() {
-        return new CompoundTag();
+    public final MapType saveDefaults() {
+        return new MapType();
     }
 
     /**
      * Get State from the Game-type to a Bson Document
      * Dumps the game-type's state to a bson document.
      */
-    @NonNull
     @Override
-    public CompoundTag save() {
-        return new CompoundTag();
+    public @NonNull MapType save() {
+        return new MapType();
     }
 
     /**
@@ -305,12 +305,12 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * @param tag the bson document containing the game-type data.
      */
     @Override
-    public void load(@NonNull CompoundTag tag) {
+    public void load(MapType tag) {
 
     }
 
     @Nullable
-    public static Gamemode getFromNbt(@NonNull CompoundTag nbt) {
+    public static Gamemode getFromNbt(@NonNull MapType nbt) {
         try {
             return Registry.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
         } catch (IllegalArgumentException e) {

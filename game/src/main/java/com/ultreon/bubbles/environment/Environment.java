@@ -1,22 +1,25 @@
 package com.ultreon.bubbles.environment;
 
-import com.ultreon.bubbles.entity.*;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.Constants;
-import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
+import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
 import com.ultreon.bubbles.common.random.Rng;
+import com.ultreon.bubbles.entity.Bubble;
+import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.LivingEntity;
+import com.ultreon.bubbles.entity.SpawnInformation;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.game.Constants;
+import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
 import com.ultreon.bubbles.registry.Registry;
@@ -30,9 +33,9 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.time.DateTime;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
+import com.ultreon.data.types.ListType;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.StringType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
@@ -128,7 +131,7 @@ public final class Environment {
     public void load(GameSave save, Messenger messenger) throws IOException {
         this.gamemode.onLoad(this, save, messenger);
 
-        loadEnvironment(save, save.load("Environment.dat", true));
+        loadEnvironment(save, save.load("environment", true));
 
         this.initialized = true;
     }
@@ -138,7 +141,7 @@ public final class Environment {
 
         dumpRegistries(save, messenger);
         dumpPlayers(save, messenger);
-        save.dump("Environment", saveEnvironment(), true);
+        save.dump("environment", saveEnvironment(), true);
     }
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
@@ -149,13 +152,13 @@ public final class Environment {
     }
 
     private void dumpPlayer(GameSave save, Player player) throws IOException {
-        CompoundTag data = player.save();
+        MapType data = player.save();
         UUID uniqueId = player.getUniqueId();
         save.dump("Players/" + uniqueId, data, true);
     }
 
     private void loadPlayer(GameSave save, UUID uuid) throws IOException {
-        CompoundTag data = save.load("Players/" + uuid, true);
+        MapType data = save.load("Players/" + uuid, true);
         Player player = new Player(this);
         player.load(data);
         players.add(player);
@@ -171,21 +174,21 @@ public final class Environment {
 
     @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
     private <T> void dumpRegistryData(GameSave gameSave, Registry<T> registry) throws IOException {
-        CompoundTag tag = new CompoundTag();
-        ListTag<StringTag> entriesTag = new ListTag<>(StringTag.class);
+        MapType tag = new MapType();
+        ListType<StringType> entriesTag = new ListType<>();
 
         for (T type : registry.values()) {
-            entriesTag.add(new StringTag(registry.getKey(type).toString()));
+            entriesTag.add(new StringType(registry.getKey(type).toString()));
         }
         tag.put("Entries", entriesTag);
 
-        gameSave.createFolders("Registries/" + registry.id().location() + "/");
-        gameSave.dump("Registries/" + registry.id().location() + "/" + registry.id().path().replaceAll("/", "-"), tag);
+        gameSave.createFolders("registries/" + registry.id().location() + "/");
+        gameSave.dump("registries/" + registry.id().location() + "/" + registry.id().path().replaceAll("/", "-"), tag);
     }
 
-    private void loadEnvironment(GameSave save, CompoundTag tag) throws IOException {
-        ListTag<CompoundTag> entitiesTag = tag.getListTag("Entities").asCompoundTagList();
-        for (CompoundTag entityTag : entitiesTag) {
+    private void loadEnvironment(GameSave save, MapType tag) throws IOException {
+        ListType<MapType> entitiesTag = tag.getList("Entities");
+        for (MapType entityTag : entitiesTag) {
             this.entities.add(Entity.loadFully(this, entityTag));
         }
         this.name = tag.getString("name", "INVALID SAVE NAME");
@@ -200,9 +203,9 @@ public final class Environment {
         }
     }
 
-    private CompoundTag saveEnvironment() {
-        CompoundTag tag = new CompoundTag();
-        ListTag<CompoundTag> entitiesTag = new ListTag<>(CompoundTag.class);
+    private MapType saveEnvironment() {
+        MapType tag = new MapType();
+        ListType<MapType> entitiesTag = new ListType<>();
         for (Entity entity : entities) {
             entitiesTag.add(entity.save());
         }
@@ -431,7 +434,7 @@ public final class Environment {
      *
      * @param entityData the data create the entity to spawn.
      */
-    public void spawnEntityFromState(CompoundTag entityData) {
+    public void spawnEntityFromState(MapType entityData) {
         if (!BubbleBlaster.getInstance().isOnTickingThread()) {
             BubbleBlaster.runLater(() -> loadAndSpawnEntity(entityData));
             return;
@@ -439,7 +442,7 @@ public final class Environment {
         loadAndSpawnEntity(entityData);
     }
 
-    private void loadAndSpawnEntity(CompoundTag tag) {
+    private void loadAndSpawnEntity(MapType tag) {
         String type = tag.getString("Type");
         EntityType<?> entityType = Registry.ENTITIES.getValue(Identifier.parse(type));
         Entity entity = entityType.create(this, tag);
@@ -627,7 +630,7 @@ public final class Environment {
     }
 
     public void prepareCreation(GameSave save) throws IOException {
-        save.createFolders("Registry");
+        save.createFolders("registries");
     }
 
     @Nullable

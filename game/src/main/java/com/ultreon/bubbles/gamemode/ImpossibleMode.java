@@ -13,7 +13,8 @@ import com.ultreon.bubbles.util.ExceptionUtils;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.lang.Messenger;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -84,14 +85,14 @@ public class ImpossibleMode extends Gamemode {
 
     @Override
     @Deprecated
-    public @NonNull CompoundTag save() {
+    public @NonNull MapType save() {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.save."));
-        return new CompoundTag();
+        return new MapType();
     }
 
     @Override
     @Deprecated
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.load."));
     }
 
