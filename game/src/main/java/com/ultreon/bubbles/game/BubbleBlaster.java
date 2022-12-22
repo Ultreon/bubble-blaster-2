@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -1464,9 +1463,6 @@ public final class BubbleBlaster {
     private void wrappedRender(int fps) {
         BufferStrategy bs;
         Renderer mainRender;
-        BufferRender bufferRender = new BufferRender(getBounds().getSize(), this.getObserver());
-        Renderer render = bufferRender.getRenderer();
-
         // Set filter gotten from filter event-handlers.
         try {
             // Buffer strategy (triple buffering).
@@ -1481,48 +1477,49 @@ public final class BubbleBlaster {
             // Get GraphicsProcessor and GraphicsProcessor objects.
             mainRender = new Renderer(bs.getDrawGraphics(), getObserver());
         } catch (IllegalStateException e) {
-            cachedImage = bufferRender.done();
+//            cachedImage = bufferRender.done();
             this.window.finalSetup();
             return;
         }
 
         if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled())
-            render.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            mainRender.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
-            render.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            mainRender.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        render.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        render.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        render.hint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        mainRender.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        mainRender.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        mainRender.hint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
         List<BufferedImageOp> filters = BubbleBlaster.instance.getCurrentFilters();
 
-        profiler.section("renderGame", () -> this.render(render, gameFrameTime));
+        profiler.section("renderGame", () -> this.render(mainRender, gameFrameTime));
 
         profiler.section("draw", () -> {
-            bufferRender.setFilters(List.of());
-
             // Clear background.
-            profiler.section("Clear", () -> {
-                mainRender.clearColor(Color.BLACK);
-                mainRender.clearRect(0, 0, getWidth(), getHeight());
-            });
-            AffineTransform transform = new AffineTransform();
-            transform.setToScale(getWidth(), getHeight());
-            transform.setToTranslation(0, 0);
-
-            // Draw filtered image.
-            mainRender.renderedImage(bufferRender.done(), transform);
+//            profiler.section("Clear", () -> {
+//                mainRender.clearColor(Color.BLACK);
+//                mainRender.clearRect(0, 0, getWidth(), getHeight());
+//            });
+//            AffineTransform transform = new AffineTransform();
+//            profiler.section("transformDraw", () -> {
+//                transform.setToScale(getWidth(), getHeight());
+//                transform.setToTranslation(0, 0);
+//            });
+//            profiler.section("renderBuffer", () -> {
+//                // Draw filtered image.
+//                AtomicReference<RenderedImage> buf = new AtomicReference<>();
+//                profiler.section("finalizeBuffer", () -> {
+//                    buf.set(bufferRender.done());
+//                });
+//                mainRender.renderedImage(buf.get(), transform);
+//            });
         });
 
         this.fps = fps;
 
-        // Dispose and show.
-        profiler.section("dispose", render::dispose);
-
         try {
             bs.show();
             mainRender.dispose();
-            render.dispose();
             hasRendered = true;
         } catch (IllegalStateException ignored) {
 

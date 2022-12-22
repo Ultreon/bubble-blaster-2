@@ -21,7 +21,6 @@ public class SoundInstance {
     private final ThrowingSupplier<InputStream, IOException> factory;
     private final String name;
     private boolean playing = false;
-    private boolean stopped = false;
     private Player player;
 
     public SoundInstance(File file) {
@@ -76,6 +75,7 @@ public class SoundInstance {
     private void playClip() throws IOException,
             UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
         new Thread(THREAD_GROUP, () -> {
+            playing = true;
             try (BufferedInputStream stream = new BufferedInputStream(factory.get())) {
                 this.player = new Player(stream);
                 try {
@@ -89,6 +89,7 @@ public class SoundInstance {
                 stop();
                 throw new SoundLoadException(e);
             }
+            playing = false;
         }, "AudioPlayer").start();
     }
 
@@ -106,7 +107,7 @@ public class SoundInstance {
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException | InterruptedException e) {
             throw new SoundLoadException(e);
         }
-        stopped = false;
+        playing = true;
     }
 
     public synchronized void stop() {
@@ -114,7 +115,6 @@ public class SoundInstance {
             player.close();
             player = null;
         }
-        stopped = true;
         playing = false;
     }
 
@@ -127,7 +127,7 @@ public class SoundInstance {
     }
 
     public boolean isStopped() {
-        return stopped;
+        return !playing;
     }
 
     public boolean isPlaying() {
