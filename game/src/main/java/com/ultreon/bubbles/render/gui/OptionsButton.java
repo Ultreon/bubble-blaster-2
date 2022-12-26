@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
+import com.ultreon.bubbles.animation.Animation;
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
@@ -18,6 +19,10 @@ import java.awt.geom.Rectangle2D;
 @SuppressWarnings("unused")
 public class OptionsButton extends AbstractButton implements GuiElement {
     protected TextObject text;
+    private final Animation grayAnim = new Animation(0x80);
+    private final Animation borderAnim = new Animation(0);
+    private boolean wasHovered;
+    private double transitionSpeed = 0.2;
 
     public void setText(String text) {
         this.text = new LiteralText(text);
@@ -78,6 +83,14 @@ public class OptionsButton extends AbstractButton implements GuiElement {
         super(x, y, width, height);
     }
 
+    public double getTransitionSpeed() {
+        return transitionSpeed;
+    }
+
+    public void setTransitionSpeed(double transitionSpeed) {
+        this.transitionSpeed = transitionSpeed;
+    }
+
     @Override
     public void mouseEnter(int x, int y) {
         super.mouseEnter(x, y);
@@ -93,6 +106,23 @@ public class OptionsButton extends AbstractButton implements GuiElement {
     public void render(Renderer renderer) {
         com.ultreon.bubbles.render.screen.gui.Rectangle bounds = getBounds();
 
+        boolean hovered = isHovered();
+        if (hovered != wasHovered) {
+            wasHovered = hovered;
+            if (hovered) {
+                grayAnim.goTo(0xa0, transitionSpeed);
+                borderAnim.goTo(2, transitionSpeed);
+            } else {
+                grayAnim.goTo(0x80, transitionSpeed);
+                borderAnim.goTo(0, transitionSpeed);
+            }
+        }
+
+        var i = (int)grayAnim.get();
+
+        renderer.color(new Color(i, i, i));
+        renderer.fill(bounds);
+
         Color textColor;
         if (isPressed() && isWithinBounds(MouseInput.getPos())) {
             // Border
@@ -103,22 +133,16 @@ public class OptionsButton extends AbstractButton implements GuiElement {
             renderer.paint(old);
 
             textColor = Color.white;
-        } else if (isHovered()) {
-            renderer.color(new Color(128, 128, 128));
-            renderer.fill(bounds);
-
+        } else if (hovered) {
             // Border
             double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
             GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, new Color(0, 192, 255), x + (float) shiftX, 0f, new Color(0, 255, 192), true);
-            Border border = new Border(0, 0, 2, 0);
+            Border border = new Border(0, 0, (int) borderAnim.get(), 0);
             border.setPaint(p);
             border.paintBorder(renderer, x, y, width, height);
 
             textColor = new Color(255, 255, 255);
         } else {
-            renderer.color(new Color(128, 128, 128));
-            renderer.fill(bounds);
-
             textColor = new Color(192, 192, 192);
         }
 

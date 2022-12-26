@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
+import com.ultreon.bubbles.animation.Animation;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.text.LiteralText;
@@ -14,6 +15,10 @@ import java.awt.*;
 @SuppressWarnings("unused")
 public class TitleButton extends AbstractButton {
     private TextObject text;
+    private final Animation grayAnim = new Animation(0x80);
+    private final Animation borderAnim = new Animation(0);
+    private boolean wasHovered;
+    private double transitionSpeed = 0.2;
 
     public void setText(String text) {
         this.text = new LiteralText(text);
@@ -83,6 +88,23 @@ public class TitleButton extends AbstractButton {
         renderer.color(new Color(96, 96, 96));
         renderer.fill(getBounds());
 
+        boolean hovered = isHovered();
+        if (hovered != wasHovered) {
+            wasHovered = hovered;
+            if (hovered) {
+                grayAnim.goTo(128, transitionSpeed);
+                borderAnim.goTo(2, transitionSpeed);
+            } else {
+                grayAnim.goTo(96, transitionSpeed);
+                borderAnim.goTo(0, transitionSpeed);
+            }
+        }
+
+        var i = (int)grayAnim.get();
+
+        renderer.color(new Color(i, i, i));
+        renderer.fill(getBounds());
+
         if (isPressed() && isWithinBounds(MouseInput.getPos())) {
             // Shadow
             Paint old = renderer.getPaint();
@@ -120,5 +142,13 @@ public class TitleButton extends AbstractButton {
     @SuppressWarnings("EmptyMethod")
     public void tick(Gamemode gamemode) {
 
+    }
+
+    public double getTransitionSpeed() {
+        return transitionSpeed;
+    }
+
+    public void setTransitionSpeed(double transitionSpeed) {
+        this.transitionSpeed = transitionSpeed;
     }
 }
