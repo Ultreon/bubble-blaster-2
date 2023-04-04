@@ -50,6 +50,8 @@ import com.ultreon.preloader.PreClassLoader;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
@@ -194,6 +196,8 @@ public final class BubbleBlaster {
         BubbleBlaster.BootOptions bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions(this));
+
+        EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
 
         // Assign instance.
         instance = this;
