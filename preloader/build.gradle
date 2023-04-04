@@ -72,6 +72,16 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
 }
 
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+
+    exclude "*.pdn", "*.xcf", "*.ps"
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'QBubbles',

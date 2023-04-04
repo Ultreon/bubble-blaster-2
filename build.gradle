@@ -1,4 +1,5 @@
 //file:noinspection GroovyUnusedCatchParameter
+import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -38,6 +39,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id "org.panteleyev.jpackageplugin" version "1.5.0"
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
 }
 
 apply plugin: 'java'
@@ -163,22 +165,25 @@ allprojects {
         implementation("net.fabricmc:fabric-loader:0.14.19")
 
         // fabric-loader dependencies
-        api "org.ow2.asm:asm:${project.asm_version}"
-        api "org.ow2.asm:asm-analysis:${project.asm_version}"
-        api "org.ow2.asm:asm-commons:${project.asm_version}"
-        api "org.ow2.asm:asm-tree:${project.asm_version}"
-        api "org.ow2.asm:asm-util:${project.asm_version}"
+        implementation "org.ow2.asm:asm:${project.asm_version}"
+        implementation "org.ow2.asm:asm-analysis:${project.asm_version}"
+        implementation "org.ow2.asm:asm-commons:${project.asm_version}"
+        implementation "org.ow2.asm:asm-tree:${project.asm_version}"
+        implementation "org.ow2.asm:asm-util:${project.asm_version}"
 
-        api("net.fabricmc:sponge-mixin:${project.mixin_version}") {
+        implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
             exclude module: 'launchwrapper'
             exclude module: 'guava'
         }
-        api 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
-        api 'net.fabricmc:tiny-remapper:0.8.2'
-        api 'net.fabricmc:access-widener:2.1.0'
+        implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
+        implementation 'net.fabricmc:tiny-remapper:0.8.2'
+        implementation 'net.fabricmc:dev-launch-injector:0.2.1+build.8'
+        implementation 'net.fabricmc:access-widener:2.1.0'
 
         implementation 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
         implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
+        implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
+        implementation("xerces:xercesImpl:2.12.2")
     }
 
     publish.dependsOn build
@@ -358,3 +363,46 @@ println("OS: " + System.getProperty("os.name") + " Version: " + System.getProper
 println("Current version: " + version)
 println("Project: " + group + ":" + archivesBaseName)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")
+
+mkdir("$buildDir/bubbles")
+def ps = System.getProperty("path.separator")
+def files = configurations.runtimeClasspath
+def strm = (files.toList()).stream()
+def rcl = String.join(ps, strm.map {
+    it.path
+}.filter{it != null }.toList())
+//\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
+def conf = """
+commonProperties
+\tfabric.development=true
+\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":preloader").buildDir}/classes/java/main/$ps${project(":preloader").buildDir}/resources/main/$ps$rcl
+\tlog4j2.formatMsgNoLookups=true
+\tfabric.log.disableAnsi=false
+"""
+
+def launchFile = file("$buildDir/bubbles/launch.cfg")
+Files.writeString(launchFile.toPath(), conf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+
+def cp = "$rcl"
+
+def cpFile = file("$buildDir.absolutePath/bubbles/classpath.txt")
+Files.writeString(cpFile.toPath(), cp, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+
+idea{
+    project{
+        settings {
+            withIDEADir { File dir ->
+                println("Callback 1 executed with: " + dir.absolutePath)
+            }
+
+            runConfigurations {
+                "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
+                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
+                    mainClass = 'net.fabricmc.devlaunchinjector.Main'
+                    moduleName = idea.module.name + ".main"
+                    workingDirectory = "$projectDir/run/"
+                }
+            }
+        }
+    }
+}
