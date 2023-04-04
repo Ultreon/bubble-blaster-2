@@ -194,8 +194,6 @@ public class BB2GameProvider implements GameProvider {
             }
         }
 
-        setupLogHandler(launcher, true);
-
         transformer.locateEntrypoints(launcher, new ArrayList<>());
     }
 
