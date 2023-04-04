@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.game;
 
 import com.google.common.annotations.Beta;
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
@@ -24,7 +23,6 @@ import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.media.SoundPlayer;
 import com.ultreon.bubbles.mod.loader.GameJar;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
-import com.ultreon.bubbles.mod.loader.Scanner;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
@@ -33,7 +31,6 @@ import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.screen.*;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
 import com.ultreon.bubbles.render.screen.splash.SplashScreen;
-import com.ultreon.bubbles.resources.Resource;
 import com.ultreon.bubbles.resources.ResourceManager;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.helpers.MathHelper;
@@ -44,7 +41,6 @@ import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.lang.ProgressMessenger;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.FileUtils;
-import com.ultreon.dev.DevClassPath;
 import com.ultreon.dev.GameDevMain;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
@@ -75,7 +71,10 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOError;
+import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.List;
@@ -146,7 +145,7 @@ public final class BubbleBlaster {
     private final BufferedImage background = null;
     private final Object rpcUpdateLock = new Object();
     private final Ticker ticker = new Ticker();
-    private final ScannerResult scanResults;
+//    private final ScannerResult scanResults;
     // Utility objects.
     public InputController input;
     // Environment
@@ -205,8 +204,8 @@ public final class BubbleBlaster {
 
         gameFile = BubbleBlaster.class.getProtectionDomain().getCodeSource().getLocation();
 
-        var scanner = new Scanner(true, getClassLoader(), getGameFile());
-        scanResults = scanner.scan();
+//        var scanner = new Scanner(true, getClassLoader(), getGameFile());
+//        scanResults = scanner.scan();
 
         // Set game properties.
         this.tps = bootOptions.tps;
@@ -1821,8 +1820,9 @@ public final class BubbleBlaster {
         return tps;
     }
 
+    @Deprecated
     public ScannerResult getScanResults() {
-        return scanResults;
+        return new ScannerResult(new HashMap<>());
     }
 
     public boolean isStopping() {
