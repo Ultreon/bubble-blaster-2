@@ -86,7 +86,7 @@ public class BB2GameProvider implements GameProvider {
     @Override
     public boolean locateGame(FabricLauncher launcher, String[] args) {
         try {
-            this.clazz = Class.forName("com.ultreon.dev.GameDevMain");
+            this.clazz = Class.forName("com.ultreon.preloader.PreGameLoader");
             this.args = args;
             return true;
         } catch (Throwable t) {
