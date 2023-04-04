@@ -102,7 +102,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public boolean requiresUrlClassLoader() {
-        return true;
+        return false;
     }
 
     @Override
