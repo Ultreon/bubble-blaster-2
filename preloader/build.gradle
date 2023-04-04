@@ -65,10 +65,10 @@ dependencies {
 }
 
 processResources {
-    inputs.property "project_version", project.project_version
+    inputs.property "version", project.project_version
 
     filesMatching("fabric.mod.json") {
-        expand project_version: project.project_version
+        expand "version": project.version
     }
 
     exclude "*.pdn", "*.xcf", "*.ps"
