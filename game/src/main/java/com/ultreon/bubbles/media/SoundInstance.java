@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SoundInstance {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("GameAudio");
@@ -22,6 +24,7 @@ public class SoundInstance {
     private final String name;
     private boolean playing = false;
     private Player player;
+    private static final Set<SoundInstance> ALL = new HashSet<>();
 
     public SoundInstance(File file) {
         this(file, "");
@@ -72,12 +75,17 @@ public class SoundInstance {
         this.name = name;
     }
 
+    public static void stopAll() {
+        ALL.forEach(SoundInstance::stop);
+    }
+
     private void playClip() throws IOException,
             UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
-        new Thread(THREAD_GROUP, () -> {
+        Thread audioPlayer = new Thread(THREAD_GROUP, () -> {
             playing = true;
             try (BufferedInputStream stream = new BufferedInputStream(factory.get())) {
                 this.player = new Player(stream);
+                ALL.add(this);
                 try {
                     playThread(player);
                 } catch (Exception e) {
@@ -89,8 +97,11 @@ public class SoundInstance {
                 stop();
                 throw new SoundLoadException(e);
             }
+            ALL.remove(this);
             playing = false;
-        }, "AudioPlayer").start();
+        }, "AudioPlayer");
+        audioPlayer.setDaemon(false);
+        audioPlayer.start();
     }
 
     private void playThread(Player player) throws JavaLayerException {
@@ -111,11 +122,11 @@ public class SoundInstance {
     }
 
     public synchronized void stop() {
+        playing = false;
         if (player != null) {
             player.close();
             player = null;
         }
-        playing = false;
     }
 
     public void setVolume(double v) {

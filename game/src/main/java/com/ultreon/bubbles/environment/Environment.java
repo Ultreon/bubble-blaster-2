@@ -581,7 +581,7 @@ public final class Environment {
         this.gameEventHandlerThread.start();
     }
 
-    public void quit() {
+    public void shutdown() {
         if (gameEventHandlerThread != null) {
             this.gameEventHandlerThread.interrupt();
         }

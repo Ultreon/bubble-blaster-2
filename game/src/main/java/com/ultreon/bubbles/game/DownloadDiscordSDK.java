@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.game;
 
+import com.ultreon.bubbles.common.IDownloader;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -12,8 +14,8 @@ import java.util.zip.ZipInputStream;
  * An examples showing how to automatically download, extract and load
  * Discord's native library.
  */
-class DownloadDiscordSDK {
-    static File download() throws IOException {
+class DownloadDiscordSDK implements IDownloader {
+    public File download() throws IOException {
         // Find out which name Discord's library has (.dll for Windows, .so for Linux)
         String name = "discord_game_sdk";
         String suffix;
