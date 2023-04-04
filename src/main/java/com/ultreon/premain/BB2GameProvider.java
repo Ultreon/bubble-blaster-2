@@ -11,7 +11,9 @@ import net.fabricmc.loader.impl.launch.FabricLauncher;
 import net.fabricmc.loader.impl.metadata.BuiltinModMetadata;
 import net.fabricmc.loader.impl.util.Arguments;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
+import net.fabricmc.loader.impl.util.SystemProperties;
 import net.fabricmc.loader.impl.util.log.Log;
+import net.fabricmc.loader.impl.util.log.LogHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.util.Map;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BB2GameProvider implements GameProvider {
+    private static final String[] ALLOWED_EARLY_CLASS_PREFIXES = { "org.apache.logging.log4j.", "com.ultreon.preloader.", "com.ultreon.premain." };
     private Class<?> clazz;
     private String[] args;
 
@@ -178,7 +181,53 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public void initialize(FabricLauncher launcher) {
+        launcher.setValidParentClassPath(validParentClassPath);
+
+        // Load the logger libraries on the platform CL when in a unit test
+        if (!logJars.isEmpty() && !Boolean.getBoolean(SystemProperties.UNIT_TEST)) {
+            for (Path jar : logJars) {
+                if (gameJars.contains(jar)) {
+                    launcher.addToClassPath(jar, ALLOWED_EARLY_CLASS_PREFIXES);
+                } else {
+                    launcher.addToClassPath(jar);
+                }
+            }
+        }
+
+        setupLogHandler(launcher, true);
+
         transformer.locateEntrypoints(launcher, new ArrayList<>());
+    }
+
+    private void setupLogHandler(FabricLauncher launcher, boolean useTargetCl) {
+        System.setProperty("log4j2.formatMsgNoLookups", "true"); // lookups are not used by mc and cause issues with older log4j2 versions
+
+        try {
+            final String logHandlerClsName;
+
+            if (log4jAvailable) {
+                logHandlerClsName = "net.fabricmc.loader.impl.game.minecraft.Log4jLogHandler";
+            } else if (slf4jAvailable) {
+                logHandlerClsName = "net.fabricmc.loader.impl.game.minecraft.Slf4jLogHandler";
+            } else {
+                return;
+            }
+
+            ClassLoader prevCl = Thread.currentThread().getContextClassLoader();
+            Class<?> logHandlerCls;
+
+            if (useTargetCl) {
+                Thread.currentThread().setContextClassLoader(launcher.getTargetClassLoader());
+                logHandlerCls = launcher.loadIntoTarget(logHandlerClsName);
+            } else {
+                logHandlerCls = Class.forName(logHandlerClsName);
+            }
+
+            Log.init((LogHandler) logHandlerCls.getConstructor().newInstance());
+            Thread.currentThread().setContextClassLoader(prevCl);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -208,14 +257,6 @@ public class BB2GameProvider implements GameProvider {
             if (lib.toString().contains("fabric-loader")) {
                 System.out.println("lib = " + lib);
             }
-            launcher.addToClassPath(lib);
-        }
-
-        for (var lib : logJars) {
-            launcher.addToClassPath(lib);
-        }
-
-        for (var lib : validParentClassPath) {
             launcher.addToClassPath(lib);
         }
     }
