@@ -51,17 +51,10 @@ apply plugin: 'bubbles-gradle'
 // Setting up main properties //
 //****************************//
 
-// Project properties.
-def projectId = property("project_id")
-def projectName = property("project_name")
-def projectVersion = property("project_version")
-def appName1 = property("app_name")
+version project_version
+group project_group
 
-version "${project_version}+${getenv("GITHUB_BUILD_NUMBER") == null ? "local" : getenv("GITHUB_BUILD_NUMBER")}"
-group 'com.ultreon.bubbles' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "premain"
-
-def packageVersion = ((String) version).replaceAll("\\+local", ".0").replaceAll("\\+", ".")
+archivesBaseName = archives_base_name
 
 java {
     withSourcesJar()
@@ -197,7 +190,7 @@ task replaceResources(type: Copy) {
         false
     }
 
-    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', version.toString()) }
+    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', project_version.project_version()) }
     into new File(processResources.destinationDir, "META-INF")
 }
 
@@ -214,7 +207,7 @@ jar {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': project.version,
+                project_version: project.project_version,
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }
@@ -269,7 +262,7 @@ task packedJar(type: Jar) {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'QBubbles',
                 'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': "1.0-indev1",
+                project_version: "1.0-indev1",
                 'Main-Class': 'com.ultreon.premain.PreMain',
                 'Multi-Release': 'true'
     }
@@ -360,7 +353,7 @@ task("copyJar", type: Copy) {
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
 
-println("Current version: " + version)
+println("Current version: " + project_version)
 println("Project: " + group + ":" + archivesBaseName)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")
 
@@ -378,6 +371,7 @@ commonProperties
 \tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":preloader").buildDir}/classes/java/main/$ps${project(":preloader").buildDir}/resources/main/$ps$rcl
 \tlog4j2.formatMsgNoLookups=true
 \tfabric.log.disableAnsi=false
+\tlog4j.configurationFile=$projectDir/log4j.xml
 """
 
 def launchFile = file("$buildDir/bubbles/launch.cfg")

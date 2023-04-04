@@ -11,7 +11,7 @@ class Dependency @JvmOverloads constructor(
     @field:SerializedName("name")
     private val name: String,
 
-    @field:SerializedName("version")
+    @field:SerializedName("project_version")
     private val version: String,
 
     @field:SerializedName("platform")
