@@ -3,6 +3,7 @@ package com.ultreon.bubbles;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.preloader.PreClassLoader;
 import com.ultreon.preloader.PreGameLoader;
+import net.fabricmc.loader.impl.util.Arguments;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
@@ -19,16 +20,13 @@ public class Main {
 
     // Main (static) method. Game starts from here.
     @SuppressWarnings("unused")
-    public static void main(String[] args, PreClassLoader launchClassLoader) throws InterruptedException, InvocationTargetException {
+    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.z
         SwingUtilities.invokeAndWait(() -> {
-            mainClassLoader = launchClassLoader;
-
             try {
-//                Class<?> gameClass = mainClassLoader.loadClass(BubbleBlaster.class.getName());
-//                Method launchMethod = gameClass.getMethod("main", String[].class, PreClassLoader.class);
-//                launchMethod.invoke(null, args, mainClassLoader);
-                BubbleBlaster.main(args, launchClassLoader);
+                Arguments arguments = new Arguments();
+                arguments.parse(args);
+                BubbleBlaster.launch(arguments);
             } catch (Exception e) {
                 System.err.println("Cannot invoke launch method.");
                 System.err.println("Cannot load Game class: " + BubbleBlaster.class);

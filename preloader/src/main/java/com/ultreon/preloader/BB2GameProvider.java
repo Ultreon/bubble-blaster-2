@@ -1,4 +1,4 @@
-package com.ultreon.premain;
+package com.ultreon.preloader;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
@@ -13,14 +13,12 @@ import net.fabricmc.loader.impl.util.Arguments;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
 import net.fabricmc.loader.impl.util.SystemProperties;
 import net.fabricmc.loader.impl.util.log.Log;
-import net.fabricmc.loader.impl.util.log.LogHandler;
+import net.fabricmc.loader.impl.util.log.LogCategory;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,42 +116,36 @@ public class BB2GameProvider implements GameProvider {
 
 
         try {
-            var classifier = new LibClassifier<>(GameLibrary.class, envType, this);
-            var gameLib = GameLibrary.BB_MAIN;
-            var preloaderLib = GameLibrary.BB_PRELOADER;
-            var gameJar = GameProviderHelper.getCommonGameJar();
+            LibClassifier<GameLibrary> classifier = new LibClassifier<>(GameLibrary.class, envType, this);
+            GameLibrary gameLib = GameLibrary.BB_MAIN;
+            Path gameJar = GameProviderHelper.getCommonGameJar();
+            boolean commonGameJarDeclared = gameJar != null;
 
-            if (gameJar != null) {
+            if (commonGameJarDeclared) {
                 classifier.process(gameJar);
             }
 
-            if (gameJar == null) gameJar = classifier.getOrigin(GameLibrary.BB_MAIN);
-
             classifier.process(launcher.getClassPath());
 
-            preloaderJar = classifier.getOrigin(GameLibrary.BB_PRELOADER);
-            premainJar = classifier.getOrigin(GameLibrary.BB_PREMAIN);
-            devJar = classifier.getOrigin(GameLibrary.BB_DEV);
+            gameJar = classifier.getOrigin(GameLibrary.BB_MAIN);
 
-            gameJar = classifier.getOrigin(gameLib);
-            if (gameJar == null) return false;
-
-            gameJars.add(gameJar);
-
-            if (!gameJar.equals(preloaderJar)) {
-                System.out.println("preloaderJar = " + preloaderJar);
-                gameJars.add(preloaderJar);
+            if (commonGameJarDeclared && gameJar == null) {
+                Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
             }
 
-            entrypoint = classifier.getClassName(preloaderLib);
+            if (gameJar != null) {
+                gameJars.add(gameJar);
+            }
+
+            entrypoint = classifier.getClassName(gameLib);
             log4jAvailable = classifier.has(GameLibrary.LOG4J_API) && classifier.has(GameLibrary.LOG4J_CORE);
             slf4jAvailable = classifier.has(GameLibrary.SLF4J_API) && classifier.has(GameLibrary.SLF4J_CORE);
-            var hasLogLib = log4jAvailable || slf4jAvailable;
+            boolean hasLogLib = log4jAvailable || slf4jAvailable;
 
             Log.configureBuiltin(hasLogLib, !hasLogLib);
 
-            for (var lib : GameLibrary.LOGGING) {
-                var path = classifier.getOrigin(lib);
+            for (GameLibrary lib : GameLibrary.LOGGING) {
+                Path path = classifier.getOrigin(lib);
 
                 if (path != null) {
                     if (hasLogLib) {
@@ -165,7 +157,6 @@ public class BB2GameProvider implements GameProvider {
             }
 
             miscGameLibraries.addAll(classifier.getUnmatchedOrigins());
-            System.out.println("miscGameLibraries = " + miscGameLibraries);
             validParentClassPath = classifier.getSystemLibraries();
         } catch (IOException e) {
             throw ExceptionUtil.wrap(e);
@@ -197,37 +188,6 @@ public class BB2GameProvider implements GameProvider {
         transformer.locateEntrypoints(launcher, new ArrayList<>());
     }
 
-    private void setupLogHandler(FabricLauncher launcher, boolean useTargetCl) {
-        System.setProperty("log4j2.formatMsgNoLookups", "true"); // lookups are not used by mc and cause issues with older log4j2 versions
-
-        try {
-            final String logHandlerClsName;
-
-            if (log4jAvailable) {
-                logHandlerClsName = "net.fabricmc.loader.impl.game.minecraft.Log4jLogHandler";
-            } else if (slf4jAvailable) {
-                logHandlerClsName = "net.fabricmc.loader.impl.game.minecraft.Slf4jLogHandler";
-            } else {
-                return;
-            }
-
-            ClassLoader prevCl = Thread.currentThread().getContextClassLoader();
-            Class<?> logHandlerCls;
-
-            if (useTargetCl) {
-                Thread.currentThread().setContextClassLoader(launcher.getTargetClassLoader());
-                logHandlerCls = launcher.loadIntoTarget(logHandlerClsName);
-            } else {
-                logHandlerCls = Class.forName(logHandlerClsName);
-            }
-
-            Log.init((LogHandler) logHandlerCls.getConstructor().newInstance());
-            Thread.currentThread().setContextClassLoader(prevCl);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public GameTransformer getEntrypointTransformer() {
         return transformer;
@@ -246,15 +206,9 @@ public class BB2GameProvider implements GameProvider {
             } else {
                 launcher.addToClassPath(gameJar);
             }
-//            if (gameJar.toString().contains("fabric-loader")) {
-//                System.out.println("lib = " + lib);
-//            }
         }
 
         for (var lib : miscGameLibraries) {
-            if (lib.toString().contains("fabric-loader")) {
-                System.out.println("lib = " + lib);
-            }
             launcher.addToClassPath(lib);
         }
     }

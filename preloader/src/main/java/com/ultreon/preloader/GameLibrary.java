@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ultreon.premain;
+package com.ultreon.preloader;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.impl.game.LibClassifier.LibraryType;

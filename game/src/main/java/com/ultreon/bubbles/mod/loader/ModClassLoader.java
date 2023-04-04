@@ -35,7 +35,7 @@ public class ModClassLoader extends URLClassLoader {
         this.modInfo = modInfo;
         this.classLoader = preClassLoader;
 
-        this.scanner = new Scanner(false, urls, this);
+        this.scanner = new Scanner(false, this, urls);
     }
 
     private static URL[] getUrls(List<URL> urls) {

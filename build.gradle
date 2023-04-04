@@ -365,10 +365,10 @@ def rcl = String.join(ps, strm.map {
     it.path
 }.filter{it != null }.toList())
 //\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
+//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":preloader").buildDir}/classes/java/main/$ps${project(":preloader").buildDir}/resources/main/$ps$rcl
 def conf = """
 commonProperties
 \tfabric.development=true
-\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":preloader").buildDir}/classes/java/main/$ps${project(":preloader").buildDir}/resources/main/$ps$rcl
 \tlog4j2.formatMsgNoLookups=true
 \tfabric.log.disableAnsi=false
 \tlog4j.configurationFile=$projectDir/log4j.xml
@@ -393,7 +393,7 @@ idea{
                 "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
                     jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
-                    moduleName = idea.module.name + ".main"
+                    moduleName = idea.module.name + ".game.main"
                     workingDirectory = "$projectDir/run/"
                 }
             }
