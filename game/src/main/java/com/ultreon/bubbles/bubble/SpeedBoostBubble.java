@@ -5,16 +5,10 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-
-import java.awt.*;
 
 public class SpeedBoostBubble extends BubbleType {
-//    public Color[] colors;
-
     public SpeedBoostBubble() {
-//        colors = ColorUtils.multiConvertHexToRgb("#ffffff");
-        colors = new Color[]{new Color(0, 128, 255), new Color(64, 160, 255), new Color(128, 192, 255), new Color(192, 224, 255), new Color(255, 255, 255)};
+        setColors("#0080ff,#40a0ff,#80c0ff,#c0e0ff,#ffffff");
 
         setPriority(460000L);
         setRadius(Range.between(21, 55));
@@ -23,8 +17,6 @@ public class SpeedBoostBubble extends BubbleType {
         setAttack(0.0f);
         setScore(0);
         setHardness(1.0d);
-
-//        BubbleInit.BUBBLES.add(this);
     }
 
     @Override

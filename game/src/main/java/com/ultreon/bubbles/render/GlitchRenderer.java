@@ -1,16 +1,12 @@
 package com.ultreon.bubbles.render;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.Ticker;
 
 import java.awt.*;
 import java.security.SecureRandom;
 import java.util.Random;
 
 public class GlitchRenderer {
-    private final BubbleBlaster game;
-    private final Ticker ticker = new Ticker();
-    @SuppressWarnings("SpellCheckingInspection")
     private final char[] chars = " ~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=`1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final int matrixW;
     private final int matrixH;
@@ -21,7 +17,6 @@ public class GlitchRenderer {
     private final int charH;
 
     public GlitchRenderer(BubbleBlaster game) {
-        this.game = game;
         charW = game.getFontMetrics(font).charWidth('A') + 4;
         charH = game.getFontMetrics(font).getHeight() + 4;
         matrixW = game.getWidth() / charW;
@@ -59,7 +54,7 @@ public class GlitchRenderer {
                 if (matrix != 0) {
                     renderer.rect(xi, yi, charW, charH);
                 }
-                renderer.color(new Color(cMatrix[x][y]));
+                renderer.color(Color.rgb(cMatrix[x][y]));
                 renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
             }
         }

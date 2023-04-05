@@ -8,12 +8,12 @@ import net.fabricmc.loader.impl.game.GameProviderHelper;
 import net.fabricmc.loader.impl.game.LibClassifier;
 import net.fabricmc.loader.impl.game.patch.GameTransformer;
 import net.fabricmc.loader.impl.launch.FabricLauncher;
-import net.fabricmc.loader.impl.metadata.BuiltinModMetadata;
 import net.fabricmc.loader.impl.util.Arguments;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
 import net.fabricmc.loader.impl.util.SystemProperties;
 import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
+import net.fabricmc.loader.impl.util.log.LogHandler;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
@@ -22,8 +22,8 @@ import java.lang.invoke.MethodType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BB2GameProvider implements GameProvider {
@@ -67,20 +67,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public Collection<BuiltinMod> getBuiltinMods() {
-        return List.of(
-            new BuiltinMod(List.of(), new BuiltinModMetadata.Builder("bubbles", "0.1.0")
-                .addAuthor("Ultreon Team", Map.of(
-                        "discord", "https://discord.gg/dtdc46g6ry",
-                        "github", "https://github.com/Ultreon",
-                        "website", "https://ultreonteam.tk"
-                ))
-                .addAuthor("Qboi", Map.of(
-                        "github", "https://github.com/Qboi123",
-                        "website", "https://qboi.tk"
-                ))
-                .addLicense("Ultreon API License v1.2")
-                .build())
-        );
+        return Collections.emptyList();
     }
 
     @Override
@@ -116,10 +103,10 @@ public class BB2GameProvider implements GameProvider {
 
 
         try {
-            LibClassifier<GameLibrary> classifier = new LibClassifier<>(GameLibrary.class, envType, this);
-            GameLibrary gameLib = GameLibrary.BB_MAIN;
-            Path gameJar = GameProviderHelper.getCommonGameJar();
-            boolean commonGameJarDeclared = gameJar != null;
+            var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, envType, this);
+            var gameLib = GameLibrary.BB_MAIN;
+            var gameJar = GameProviderHelper.getCommonGameJar();
+            var commonGameJarDeclared = gameJar != null;
 
             if (commonGameJarDeclared) {
                 classifier.process(gameJar);
@@ -140,12 +127,12 @@ public class BB2GameProvider implements GameProvider {
             entrypoint = classifier.getClassName(gameLib);
             log4jAvailable = classifier.has(GameLibrary.LOG4J_API) && classifier.has(GameLibrary.LOG4J_CORE);
             slf4jAvailable = classifier.has(GameLibrary.SLF4J_API) && classifier.has(GameLibrary.SLF4J_CORE);
-            boolean hasLogLib = log4jAvailable || slf4jAvailable;
+            var hasLogLib = log4jAvailable || slf4jAvailable;
 
             Log.configureBuiltin(hasLogLib, !hasLogLib);
 
-            for (GameLibrary lib : GameLibrary.LOGGING) {
-                Path path = classifier.getOrigin(lib);
+            for (var lib : GameLibrary.LOGGING) {
+                var path = classifier.getOrigin(lib);
 
                 if (path != null) {
                     if (hasLogLib) {
@@ -176,7 +163,7 @@ public class BB2GameProvider implements GameProvider {
 
         // Load the logger libraries on the platform CL when in a unit test
         if (!logJars.isEmpty() && !Boolean.getBoolean(SystemProperties.UNIT_TEST)) {
-            for (Path jar : logJars) {
+            for (var jar : logJars) {
                 if (gameJars.contains(jar)) {
                     launcher.addToClassPath(jar, ALLOWED_EARLY_CLASS_PREFIXES);
                 } else {
@@ -185,7 +172,32 @@ public class BB2GameProvider implements GameProvider {
             }
         }
 
+        setupLogHandler(launcher, true);
+
         transformer.locateEntrypoints(launcher, new ArrayList<>());
+    }
+
+    private void setupLogHandler(FabricLauncher launcher, boolean useTargetCl) {
+        System.setProperty("log4j2.formatMsgNoLookups", "true"); // lookups are not used by mc and cause issues with older log4j2 versions
+
+        try {
+            final var logHandlerClsName = "com.ultreon.preloader.BB2LogHandler";
+
+            var prevCl = Thread.currentThread().getContextClassLoader();
+            Class<?> logHandlerCls;
+
+            if (useTargetCl) {
+                Thread.currentThread().setContextClassLoader(launcher.getTargetClassLoader());
+                logHandlerCls = launcher.loadIntoTarget(logHandlerClsName);
+            } else {
+                logHandlerCls = Class.forName(logHandlerClsName);
+            }
+
+            Log.init((LogHandler) logHandlerCls.getConstructor().newInstance());
+            Thread.currentThread().setContextClassLoader(prevCl);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

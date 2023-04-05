@@ -126,12 +126,12 @@ public final class CrashLog extends CrashCategory {
     }
 
     public void defaultSave() {
-        File file = new File("Game-Crashes");
+        File file = new File("game-crashes");
         if (!file.exists()) {
             try {
                 Files.createDirectories(file.toPath());
             } catch (IOException e) {
-                throw new IOError(e);
+                throw new RuntimeException(e);
             }
         }
 

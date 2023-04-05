@@ -10,22 +10,24 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.commons.lang.Pair;
+import com.ultreon.commons.util.ColorUtils;
 import org.apache.commons.lang3.Range;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.awt.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
 
 /**
  * @see EntityType
  */
 @SuppressWarnings({"unused", "SameParameterValue", "SameReturnValue"})
 public abstract class BubbleType implements Serializable, com.ultreon.bubbles.common.text.translation.Translatable {
-    public Color[] colors;
+    private List<Color> colors;
     private double priority;
 
     private Range<Integer> radius;
@@ -177,39 +179,43 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
         return hardness;
     }
 
-    protected void setPriority(double priority) {
+    public List<Color> getColors() {
+        return colors;
+    }
+
+    protected final void setPriority(double priority) {
         this.priority = priority;
     }
 
-    protected void setRadius(Range<Integer> radius) {
+    protected final void setRadius(Range<Integer> radius) {
         this.radius = radius;
     }
 
-    protected void setSpeed(Range<Double> speed) {
+    protected final void setSpeed(Range<Double> speed) {
         this.speed = speed;
     }
 
-    protected void setBounceAmount(float bounceAmount) {
+    protected final void setBounceAmount(float bounceAmount) {
         this.bounceAmount = bounceAmount;
     }
 
-    protected void setScore(float score) {
+    protected final void setScore(float score) {
         this.score = score;
     }
 
-    protected void setDefense(float defense) {
+    protected final void setDefense(float defense) {
         this.defense = defense;
     }
 
-    protected void setAttack(float attack) {
+    protected final void setAttack(float attack) {
         this.attack = attack;
     }
 
-    protected void setHardness(double hardness) {
+    protected final void setHardness(double hardness) {
         this.hardness = hardness;
     }
 
-    protected void setRarity(int rarity) {
+    protected final void setRarity(int rarity) {
         this.rarity = rarity;
     }
 
@@ -217,18 +223,18 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
         return rarity;
     }
 
-    public Color[] getColors() {
-        return colors;
+    protected final void setColors(Color... colors) {
+        this.colors = List.of(colors);
     }
 
-    protected void setColors(Color[] colors) {
-        this.colors = colors;
+    protected final void setColors(String hexList) {
+        this.colors = List.of(ColorUtils.parseHexList(hexList));
     }
 
     @Override
     public String toString() {
         return "Bubble{" +
-                "colors=" + Arrays.toString(colors) +
+                "colors=" + colors +
                 ", priority=" + priority +
                 ", radius=" + radius +
                 ", speed=" + speed +
@@ -294,7 +300,7 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
                 bubbleType.setBounceAmount(bounceAmount);
             }
 
-            bubbleType.colors = colors;
+            bubbleType.colors = List.of(colors);
 
             for (Pair<Integer, AiTask> aiTask : aiTasks) {
                 bubbleType.addAiTask(aiTask.getFirst(), aiTask.getSecond());
@@ -365,6 +371,11 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
         // Arrays (Dynamic)
         public Builder colors(Color... _colors) {
             this.colors = _colors;
+            return this;
+        }
+
+        public Builder colors(String hexList) {
+            this.colors = ColorUtils.parseHexList(hexList);
             return this;
         }
 

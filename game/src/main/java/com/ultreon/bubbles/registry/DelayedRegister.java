@@ -27,7 +27,7 @@ public class DelayedRegister<@NonNull T> {
     }
 
     public <@NonNull C extends T> RegistrySupplier<C> register(@NonNull String key, @NonNull Supplier<@NonNull C> supplier) {
-        Identifier id = new Identifier(key, modId);
+        Identifier id = new Identifier(modId, key);
 
         objects.add(new HashMap.SimpleEntry<>(id, supplier::get));
 

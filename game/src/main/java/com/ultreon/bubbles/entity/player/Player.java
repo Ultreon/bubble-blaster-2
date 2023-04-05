@@ -19,11 +19,14 @@ import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.MessengerScreen;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.vector.Vec2d;
+import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.time.TimeProcessor;
 import net.querz.nbt.tag.CompoundTag;
 import org.apache.commons.lang3.SystemUtils;
@@ -31,7 +34,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
@@ -172,8 +178,8 @@ public class Player extends LivingEntity implements InputController {
         if ((currentScene == null && BubbleBlaster.getInstance().isInGame()) ||
                 currentScene instanceof MessengerScreen) {
             Rectangle2D gameBounds = environment.game().getGameBounds();
-            this.x = (float) MathHelper.clamp(x, gameBounds.getMinX(), gameBounds.getMaxX());
-            this.y = (float) MathHelper.clamp(y, gameBounds.getMinY(), gameBounds.getMaxY());
+            this.x = (float) Mth.clamp(x, gameBounds.getMinX(), gameBounds.getMaxX());
+            this.y = (float) Mth.clamp(y, gameBounds.getMinY(), gameBounds.getMaxY());
             make();
         }
     }
@@ -269,8 +275,8 @@ public class Player extends LivingEntity implements InputController {
      * @return the center position.
      */
     @SuppressWarnings("unused")
-    public Point getCenter() {
-        return new Point((int) getBounds().getCenterX(), (int) getBounds().getCenterY());
+    public Vec2i getCenter() {
+        return new Vec2i((int) getBounds().getCenterX(), (int) getBounds().getCenterY());
     }
 
     /**
@@ -372,8 +378,8 @@ public class Player extends LivingEntity implements InputController {
         Rectangle2D gameBounds = loadedGame.getGamemode().getGameBounds();
         this.prevX = x;
         this.prevY = y;
-        this.x = (float) MathHelper.clamp(this.x, gameBounds.getMinX() + this.size() / 2, gameBounds.getMaxX() - size() / 2);
-        this.y = (float) MathHelper.clamp(this.y, gameBounds.getMinY() + this.size() / 2, gameBounds.getMaxY() - size() / 2);
+        this.x = (float) Mth.clamp(this.x, gameBounds.getMinX() + this.size() / 2, gameBounds.getMaxX() - size() / 2);
+        this.y = (float) Mth.clamp(this.y, gameBounds.getMinY() + this.size() / 2, gameBounds.getMaxY() - size() / 2);
 
         // Leveling up.
         if (score / Constants.LEVEL_THRESHOLD > level) {
@@ -474,7 +480,7 @@ public class Player extends LivingEntity implements InputController {
      * @param velocity the amount velocity for bounce.
      * @param delta    the delta change.
      */
-    public void applyForce(Point2D velocity, double delta) {
+    public void applyForce(Vec2d velocity, double delta) {
         this.applyForce(velocity.getX(), velocity.getY(), delta);
     }
 

@@ -1,12 +1,10 @@
 //file:noinspection GroovyUnusedCatchParameter
 
-import java.nio.file.Files
-import java.nio.file.Paths
+
 import com.ultreon.bubbles.gradle.VersionType
 
-import java.nio.file.StandardOpenOption
-
-import static java.lang.System.getenv
+import java.nio.file.Files
+import java.nio.file.Paths
 
 buildscript {
     repositories {
@@ -138,12 +136,18 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-jcl:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-jul:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-web:$log4j_version"
-    implementation "org.apache.xmlgraphics:batik-svg-dom:$batik_version"
-    implementation "org.apache.xmlgraphics:batik-dom:$batik_version"
-    implementation "org.apache.xmlgraphics:batik-all:$batik_version"
-    implementation "org.apache.xmlgraphics:batik-util:$batik_version"
-    implementation "org.apache.xmlgraphics:batik-swing:$batik_version"
-    implementation "org.apache.xmlgraphics:batik-awt-util:$batik_version"
+    implementation("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    implementation("org.apache.xmlgraphics:batik-dom:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    implementation("org.apache.xmlgraphics:batik-swing:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
 
     // SLF4J
     implementation "org.slf4j:slf4j-api:[1.7, 1.8)!!"
@@ -190,22 +194,18 @@ dependencies {
     // MP3 Sounds
     implementation "javazoom:jlayer:1.0.1"
     implementation "javax.media:jmf:2.1.1e"
-}
-
-// task to add addons.json to all relevant folders
-task replaceResources(type: Copy) {
-    from("src/main/resources/META-INF/addons.json")
-    outputs.upToDateWhen {
-        false
-    }
-
-    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', project_version.project_version()) }
-    into new File(processResources.destinationDir, "META-INF")
+    implementation 'org.w3c.dom:svg:1.1.0'
+    implementation 'org.w3c.css:sac:1.3'
 }
 
 processResources {
-    exclude 'META-INF/addons.json'
-    finalizedBy replaceResources
+    inputs.property "version", version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": version
+    }
+
+    exclude "*.pdn", "*.xcf", "*.ps"
 }
 
 jar {

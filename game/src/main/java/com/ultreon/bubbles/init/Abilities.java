@@ -23,7 +23,7 @@ public class Abilities {
      *
      * @since 0.0.0
      */
-    public static final RegistrySupplier<AbilityType<TeleportAbility>> TELEPORT_ABILITY = register("Teleport", () -> new AbilityType<>(TeleportAbility::new));
+    public static final RegistrySupplier<AbilityType<TeleportAbility>> TELEPORT_ABILITY = register("teleport", () -> new AbilityType<>(TeleportAbility::new));
 
     /**
      * Register an ability.

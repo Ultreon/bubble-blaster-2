@@ -152,6 +152,11 @@ allprojects {
             url = "https://maven.fabricmc.net"
             name = "FabricMC"
         }
+
+        maven {
+            name "Jabylon"
+            url "https://jabylon.org/maven/"
+        }
     }
 
     dependencies {
@@ -176,7 +181,7 @@ allprojects {
         implementation 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
         implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
         implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
-        implementation("xerces:xercesImpl:2.12.2")
+//        implementation("xerces:xercesImpl:2.12.2")
     }
 
     publish.dependsOn build

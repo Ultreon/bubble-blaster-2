@@ -6,6 +6,7 @@ import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.event.v2.FilterBuilder;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.resources.Resource;
 import com.ultreon.bubbles.util.helpers.SvgHelper;
@@ -15,22 +16,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class StatusEffect {
     // Empty Image.
-    private static final Image FALLBACK_IMAGE;
+    private static final BufferedImage FALLBACK_IMAGE;
 
     static {
         FALLBACK_IMAGE = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        Renderer renderer = new Renderer(FALLBACK_IMAGE.getGraphics(), BubbleBlaster.getInstance().getObserver());
-        renderer.clearColor(new Color(0, 0, 0, 0));
+        Renderer renderer = new Renderer(FALLBACK_IMAGE.createGraphics(), BubbleBlaster.getInstance().getObserver());
+        renderer.clearColor(0, 0, 0, 0);
         renderer.clearRect(0, 0, 32, 32);
     }
 
-    private final Map<String, Object> cache = new ConcurrentHashMap<>();
     private Image cachedImage = null;
 
     public StatusEffect() {

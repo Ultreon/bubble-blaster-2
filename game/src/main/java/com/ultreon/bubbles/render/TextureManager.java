@@ -6,28 +6,26 @@ import com.ultreon.bubbles.resources.Resource;
 import com.ultreon.bubbles.resources.ResourceManager;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class TextureManager {
     private static final TextureManager instance = new TextureManager();
-    private static final Resource DEFAULT_TEXTURE;
+    public static final Resource DEFAULT_TEXTURE;
 
     static {
         DEFAULT_TEXTURE = new Resource(() -> {
             BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            Graphics graphics = image.getGraphics();
-            graphics.setColor(new Color(0xffbb00));
-            graphics.fillRect(0, 0, 16, 16);
-            graphics.setColor(new Color(0x333333));
-            graphics.fillRect(0, 8, 8, 8);
-            graphics.fillRect(8, 0, 8, 8);
+            Renderer graphics = new Renderer(image.getGraphics(), BubbleBlaster.getInstance().getObserver());
+            graphics.color(Color.rgb(0xffbb00));
+            graphics.rect(0, 0, 16, 16);
+            graphics.color(Color.rgb(0x333333));
+            graphics.rect(0, 8, 8, 8);
+            graphics.rect(8, 0, 8, 8);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(image, ".png", out);
             graphics.dispose();

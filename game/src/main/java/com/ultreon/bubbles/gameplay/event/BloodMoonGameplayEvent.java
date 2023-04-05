@@ -8,10 +8,10 @@ import com.ultreon.bubbles.event.v2.FilterBuilder;
 import com.ultreon.bubbles.event.v2.TickEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.commons.time.Date;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.commons.time.Time;
-import com.ultreon.commons.util.ColorUtils;
 
 import java.time.DayOfWeek;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public BloodMoonGameplayEvent() {
         super();
 
-        setBackgroundColor(ColorUtils.unpackHex("#af0000"));
+        setBackgroundColor(Color.hex("#af0000"));
 
         TickEvents.TICK_GAME.listen(this::onUpdate);
     }

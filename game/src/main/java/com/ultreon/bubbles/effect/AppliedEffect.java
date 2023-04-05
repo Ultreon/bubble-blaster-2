@@ -1,11 +1,10 @@
 package com.ultreon.bubbles.effect;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
@@ -56,18 +55,13 @@ public class AppliedEffect implements TagHolder {
 
     public final void start(Entity entity) {
         onStart(entity);
-        BubbleBlaster.getEventBus().subscribe(this);
 
         active = true;
     }
 
     public final void stop(Entity entity) {
         onStop(entity);
-        try {
-            BubbleBlaster.getEventBus().unsubscribe(this);
-        } catch (IllegalArgumentException ignored) {
-
-        }
+        entity.removeEffect(this);
 
         active = false;
     }
@@ -101,28 +95,28 @@ public class AppliedEffect implements TagHolder {
     public void addStrength() {
         int old = getStrength();
         byte output = (byte) (this.strength + 1);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         updateStrength(old, getStrength());
     }
 
     public void addStrength(byte amount) {
         int old = getStrength();
         byte output = (byte) (this.strength + amount);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         updateStrength(old, getStrength());
     }
 
     public void removeStrength() {
         int old = getStrength();
         byte output = (byte) (this.strength - 1);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         updateStrength(old, getStrength());
     }
 
     public void removeStrength(byte amount) {
         int old = getStrength();
         byte output = (byte) (this.strength - amount);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         updateStrength(old, getStrength());
     }
 

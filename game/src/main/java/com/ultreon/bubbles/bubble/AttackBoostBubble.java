@@ -5,16 +5,10 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-
-import java.awt.*;
 
 public class AttackBoostBubble extends BubbleType {
-//    public Color[] colors;
-
     public AttackBoostBubble() {
-//        colors = ColorUtils.multiConvertHexToRgb("#ffffff");
-        colors = new Color[]{new Color(128, 64, 32), new Color(160, 126, 92), new Color(192, 188, 152), new Color(224, 216, 208), new Color(255, 255, 255)};
+        setColors("804020,a07e5c,c0bc98,e0d8d0,ffffff");
 
         setPriority(98_304);
         setRadius(Range.between(21, 70));

@@ -18,7 +18,7 @@ import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import net.querz.nbt.tag.CompoundTag;
@@ -227,7 +227,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.colors);
+        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.getColors());
     }
 
     /**

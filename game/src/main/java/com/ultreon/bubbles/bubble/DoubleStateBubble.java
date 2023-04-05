@@ -5,16 +5,10 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-
-import java.awt.*;
 
 public class DoubleStateBubble extends BubbleType {
-//    public Color[] colors;
-
     public DoubleStateBubble() {
-//        colors = ColorUtils.multiConvertHexToRgb("#ffffff");
-        colors = new Color[]{new Color(255, 192, 0), new Color(255, 192, 0), new Color(0, 0, 0, 0), new Color(255, 192, 0)};
+        setColors("#ffc000,#ffc000,#00000000,#ffc000");
 
         setPriority(460000L);
         setRadius(Range.between(21, 55));

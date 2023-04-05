@@ -2,8 +2,8 @@ package com.ultreon.bubbles.core.input;
 
 import com.ultreon.bubbles.event.v2.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.screen.Screen;
-import com.ultreon.bubbles.render.screen.ScreenManager;
+import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import com.ultreon.bubbles.vector.Vec2i;
 
 import java.awt.*;
@@ -171,7 +171,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
     public final void mouseWheelMoved(MouseWheelEvent e) {
         currentLocationOnScreen = e.getLocationOnScreen() != null ? e.getLocationOnScreen() : currentLocationOnScreen;
         currentPoint = e.getPoint() != null ? e.getPoint() : currentPoint;
-
+        
         InputEvents.MOUSE_SCROLL.factory().onMouseScroll(e.getX(), e.getY(), e.getPreciseWheelRotation());
 
         ScreenManager screenManager = game.getScreenManager();
@@ -181,7 +181,6 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
                 currentScreen.mouseWheel(e.getX(), e.getY(), e.getPreciseWheelRotation(), e.getScrollAmount(), e.getUnitsToScroll());
             }
         }
-
     }
 
     protected Vec2i getCurrentLocationOnScreen() {

@@ -24,7 +24,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
-import java.util.NoSuchElementException;
 
 /**
  * @author Qboi123
@@ -35,7 +34,6 @@ import java.util.NoSuchElementException;
 public class ClassicMode extends Gamemode {
     // Hud and events-active flag.
     private ClassicModeHud hud;
-    private boolean valid;
 
     // Threads
     private Thread spawner;
@@ -205,22 +203,7 @@ public class ClassicMode extends Gamemode {
 
     @Override
     public void onQuit() {
-        this.hud = null;
-    }
 
-    public void make() {
-        BubbleBlaster.getEventBus().subscribe(this);
-        this.valid = true;
-    }
-
-    public void destroy() throws NoSuchElementException {
-        BubbleBlaster.getEventBus().unsubscribe(this);
-        this.valid = false;
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
     }
 
     public Thread getSpawner() {
