@@ -6,10 +6,12 @@ import com.ultreon.bubbles.render.Renderer;
 public abstract class RenderEvent extends Event {
     private final Renderer renderer;
 
+    @Deprecated()
     public RenderEvent(Renderer renderer) {
         this.renderer = renderer;
     }
 
+    @Deprecated()
     public Renderer getRenderer() {
         return renderer;
     }

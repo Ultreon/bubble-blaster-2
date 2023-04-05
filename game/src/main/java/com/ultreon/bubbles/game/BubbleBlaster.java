@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.game;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Suppliers;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
@@ -12,10 +13,7 @@ import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.event.v2.GameEvents;
-import com.ultreon.bubbles.event.v2.InputEvents;
-import com.ultreon.bubbles.event.v2.RenderEvents;
-import com.ultreon.bubbles.event.v2.TickEvents;
+import com.ultreon.bubbles.event.v2.*;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
 import com.ultreon.bubbles.sound.LogoSound;
@@ -28,13 +26,14 @@ import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.*;
-import com.ultreon.bubbles.render.screen.*;
-import com.ultreon.bubbles.render.screen.gui.GuiElement;
-import com.ultreon.bubbles.render.screen.splash.SplashScreen;
+import com.ultreon.bubbles.render.gui.GuiStateListener;
+import com.ultreon.bubbles.render.gui.screen.*;
+import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceManager;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.crash.ApplicationCrash;
 import com.ultreon.commons.crash.CrashLog;
@@ -48,8 +47,13 @@ import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.fabricmc.loader.impl.util.Arguments;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
@@ -78,7 +82,6 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOError;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
@@ -88,6 +91,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import static com.ultreon.bubbles.core.input.KeyboardInput.Map.*;
+import static org.apache.logging.log4j.MarkerManager.getMarker;
 
 /**
  * The Bubble Blaster game main class.
@@ -115,6 +119,12 @@ public final class BubbleBlaster {
     private static BubbleBlaster instance;
     private static boolean hasRendered;
     private static LibraryJar jar;
+    private static final Supplier<ModContainer> FABRIC_LOADER_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer("fabricloader").orElseThrow());
+    private static final Supplier<ModMetadata> FABRIC_LOADER_META = Suppliers.memoize(() -> FABRIC_LOADER_CONTAINER.get().getMetadata());
+    private static final Supplier<Version> FABRIC_LOADER_VERSION = Suppliers.memoize(() -> FABRIC_LOADER_META.get().getVersion());
+    private static final Supplier<ModContainer> GAME_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow());
+    private static final Supplier<ModMetadata> GAME_META = Suppliers.memoize(() -> GAME_CONTAINER.get().getMetadata());
+    private static final Supplier<Version> GAME_VERSION = Suppliers.memoize(() -> GAME_META.get().getVersion());
     private static final Identifier EMPTY_ID = BubbleBlaster.id("missingno");
     public final Profiler profiler = new Profiler();
     private final URL gameFile;
@@ -205,6 +215,11 @@ public final class BubbleBlaster {
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions(this));
 
+        // Hook output for logger.
+        System.setErr(new RedirectPrintStream(Level.ERROR, LogManager.getLogger("STD"), getMarker("Output")));
+        System.setOut(new RedirectPrintStream(Level.INFO, LogManager.getLogger("STD"), getMarker("Error")));
+
+        // Invoke entry points.
         EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
 
         // Assign instance.
@@ -297,12 +312,12 @@ public final class BubbleBlaster {
         var defCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         var defCurPly = new Polygon(new int[]{0, 10, 5, 0}, new int[]{0, 12, 12, 16}, 4);
 
-        var defCurGfx = defCurImg.createGraphics();
-        defCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        defCurGfx.setColor(Color.black);
-        defCurGfx.fillPolygon(defCurPly);
-        defCurGfx.setColor(Color.white);
-        defCurGfx.drawPolygon(defCurPly);
+        var defCurGfx = new Renderer(defCurImg.createGraphics(), getObserver());
+        defCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        defCurGfx.color(Color.black);
+        defCurGfx.polygon(defCurPly);
+        defCurGfx.color(Color.white);
+        defCurGfx.polygonLine(defCurPly);
         defCurGfx.dispose();
 
         // Create a new blank cursor.
@@ -313,18 +328,18 @@ public final class BubbleBlaster {
         var pntCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         var pntCurPly = new Polygon(new int[]{10, 20, 15, 10}, new int[]{10, 22, 22, 26}, 4);
 
-        var pntCurGfx = pntCurImg.createGraphics();
-        pntCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        pntCurGfx.setColor(Color.white);
-        pntCurGfx.drawOval(0, 0, 20, 20);
-        pntCurGfx.setColor(Color.white);
-        pntCurGfx.drawOval(2, 2, 16, 16);
-        pntCurGfx.setColor(Color.black);
-        pntCurGfx.fillPolygon(pntCurPly);
-        pntCurGfx.setColor(Color.white);
-        pntCurGfx.drawPolygon(pntCurPly);
-        pntCurGfx.setColor(Color.black);
-        pntCurGfx.drawOval(1, 1, 18, 18);
+        var pntCurGfx = new Renderer(pntCurImg.createGraphics(), getObserver());
+        pntCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        pntCurGfx.color(Color.white);
+        pntCurGfx.ovalLine(0, 0, 20, 20);
+        pntCurGfx.color(Color.white);
+        pntCurGfx.ovalLine(2, 2, 16, 16);
+        pntCurGfx.color(Color.black);
+        pntCurGfx.polygon(pntCurPly);
+        pntCurGfx.color(Color.white);
+        pntCurGfx.polygonLine(pntCurPly);
+        pntCurGfx.color(Color.black);
+        pntCurGfx.ovalLine(1, 1, 18, 18);
         pntCurGfx.dispose();
 
         // Create a new blank cursor.
@@ -333,16 +348,16 @@ public final class BubbleBlaster {
 
         // Transparent 16 x 16 pixel cursor image.
         var txtCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        var txtCurGfx = txtCurImg.createGraphics();
-        txtCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        txtCurGfx.setColor(Color.white);
-        txtCurGfx.drawLine(0, 1, 0, 24);
-        txtCurGfx.setColor(Color.white);
-        txtCurGfx.drawLine(1, 0, 1, 25);
-        txtCurGfx.setColor(Color.white);
-        txtCurGfx.drawLine(2, 1, 2, 24);
-        txtCurGfx.setColor(Color.black);
-        txtCurGfx.drawLine(1, 1, 1, 24);
+        var txtCurGfx = new Renderer(txtCurImg.createGraphics(), getObserver());
+        txtCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        txtCurGfx.color(Color.white);
+        txtCurGfx.line(0, 1, 0, 24);
+        txtCurGfx.color(Color.white);
+        txtCurGfx.line(1, 0, 1, 25);
+        txtCurGfx.color(Color.white);
+        txtCurGfx.line(2, 1, 2, 24);
+        txtCurGfx.color(Color.black);
+        txtCurGfx.line(1, 1, 1, 24);
         txtCurGfx.dispose();
 
         // Create a new blank cursor.
@@ -439,7 +454,7 @@ public final class BubbleBlaster {
     }
 
     public static Identifier id(String path) {
-        return new Identifier(path, NAMESPACE);
+        return new Identifier(NAMESPACE, path);
     }
 
     /**
@@ -581,9 +596,10 @@ public final class BubbleBlaster {
     /**
      * Game Events getter.
      *
+     * @deprecated use normal events instead.
      * @return The game event manager.
      */
-    @Deprecated
+    @Deprecated()
     public static com.ultreon.bubbles.event.v1.bus.GameEvents getEventBus() {
         return com.ultreon.bubbles.event.v1.bus.GameEvents.get();
     }
@@ -621,6 +637,14 @@ public final class BubbleBlaster {
             }
         }
         return jar;
+    }
+
+    public static Version getFabricLoaderVersion() {
+        return FABRIC_LOADER_VERSION.get();
+    }
+
+    public static Version getGameVersion() {
+        return GAME_VERSION.get();
     }
 
     public static Identifier emptyId() {
@@ -705,17 +729,17 @@ public final class BubbleBlaster {
                     collection.set(identifier, new ITexture() {
                         @Override
                         public void render(Renderer renderer) {
-                            EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, bubble.colors);
+                            EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, bubble.getColors());
                         }
 
                         @Override
                         public int width() {
-                            return finalI + bubble.getColors().length * 2;
+                            return finalI + bubble.getColors().size() * 2;
                         }
 
                         @Override
                         public int height() {
-                            return finalI + bubble.getColors().length * 2;
+                            return finalI + bubble.getColors().size() * 2;
                         }
                     });
                 }
@@ -863,13 +887,13 @@ public final class BubbleBlaster {
             Hydro.get().registerFont(font);
             return font;
         } catch (IOException | FontFormatException e) {
-            throw new IOError(e);
+            throw new RuntimeException(e);
         }
     }
 
-    private Font loadFont(Identifier font) {
-        var identifier = new Identifier("fonts/" + font.path() + ".ttf", font.location());
-        var resource = resourceManager.getResource(new Identifier("fonts/" + font.path() + ".ttf", font.location()));
+    public Font loadFont(Identifier font) {
+        var identifier = new Identifier(font.location(), "fonts/" + font.path() + ".ttf");
+        var resource = resourceManager.getResource(new Identifier(font.location(), "fonts/" + font.path() + ".ttf"));
         if (resource != null) {
             try {
                 return resource.loadFont();
@@ -947,7 +971,7 @@ public final class BubbleBlaster {
     }
 
     private void checkForExitEvents() {
-        GameEvents.GAME_EXIT.factory().onExit(this);
+        LifecycleEvents.GAME_EXIT.factory().onExit(this);
     }
 
     /**
@@ -1603,9 +1627,9 @@ public final class BubbleBlaster {
         if (fadeIn) {
             final var timeDiff = System.currentTimeMillis() - fadeInStart;
             if (timeDiff <= fadeInDuration) {
-                var clamp = (int) MathHelper.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
-                var color = new Color(0, 0, 0, clamp);
-                GuiElement.fill(renderer, 0, 0, getWidth(), getHeight(), color);
+                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
+                var color = Color.rgba(0, 0, 0, clamp);
+                GuiStateListener.fill(renderer, 0, 0, getWidth(), getHeight(), color);
             }
         }
     }

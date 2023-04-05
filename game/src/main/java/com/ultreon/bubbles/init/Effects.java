@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.effect.*;
+import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.registry.DelayedRegister;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
@@ -28,7 +28,7 @@ public class Effects {
     public static final RegistrySupplier<BlindnessEffect> BLINDNESS = register("blindness", BlindnessEffect::new);
     public static final RegistrySupplier<ParalyzeEffect> PARALYZE = register("paralyze", ParalyzeEffect::new);
     public static final RegistrySupplier<PoisonEffect> POISON = register("poison", PoisonEffect::new);
-    public static final RegistrySupplier<LuckEffect> LUCK = register("Luck", LuckEffect::new);
+    public static final RegistrySupplier<LuckEffect> LUCK = register("luck", LuckEffect::new);
 
     private static <T extends StatusEffect> RegistrySupplier<T> register(String name, Supplier<T> effectSupplier) {
         return REGISTER.register(name, effectSupplier);

@@ -4,8 +4,6 @@ import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
-import com.ultreon.commons.util.ColorUtils;
-import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.Range;
 
 public class BubbleFreezeBubble extends BubbleType {
@@ -15,7 +13,7 @@ public class BubbleFreezeBubble extends BubbleType {
         setSpeed(Range.between(4.115d, 6.845d));
         setScore(1.3125f);
         setEffect((source, target) -> (new AppliedEffect(Effects.BUBBLE_FREEZE.get(), source.getRadius() / 8, (byte) ((byte) source.getSpeed() * 4))));
-        setColors(ColorUtils.parseColorString("#ff0000,#ff7f00,#ffff00,#ffff7f,#ffffff", false));
+        setColors("#ff0000,#ff7f00,#ffff00,#ffff7f,#ffffff");
     }
 
     @Override

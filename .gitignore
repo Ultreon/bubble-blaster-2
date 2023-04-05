@@ -70,7 +70,6 @@ desktop.ini
 /**/.gradle/
 /**/.idea/workspace.xml
 /**/build/
-/run/Logs/
 /**/out/
 /**/run/
 
@@ -103,3 +102,4 @@ lombok.config
 
 # Removed
 /docs/
+/run/

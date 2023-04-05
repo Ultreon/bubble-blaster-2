@@ -1,7 +1,3 @@
-import groovy.xml.MarkupBuilder
-
-import static java.lang.System.getenv
-
 buildscript {
     repositories {
         mavenLocal()
@@ -65,10 +61,10 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.project_version
+    inputs.property "version", version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": version
     }
 
     exclude "*.pdn", "*.xcf", "*.ps"

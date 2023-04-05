@@ -1,19 +1,23 @@
 package com.ultreon.bubbles.environment;
 
-import com.ultreon.bubbles.debug.Profiler;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.renderer.IRenderer;
+import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.BufferRender;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class EnvironmentRenderer implements IRenderer {
+    private static final Color UPPER_COLOR = Color.argb(0xff008EDA);
+    private static final Color LOWER_COLOR = Color.argb(0xff004BA1);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = game.profiler;
     private BufferedImage cached;
@@ -32,7 +36,7 @@ public class EnvironmentRenderer implements IRenderer {
      * @param radius the bubble radius (full width.).
      * @param colors the bubble colors (on sequence).
      */
-    public static void drawBubble(Renderer renderer, double x, double y, int radius, Color... colors) {
+    public static void drawBubble(Renderer renderer, double x, double y, int radius, List<com.ultreon.bubbles.render.Color> colors) {
         // Define ellipse-depth (pixels).
         double i = 0f;
 
@@ -40,12 +44,12 @@ public class EnvironmentRenderer implements IRenderer {
         for (Color color : colors) {
             // Set stroke width.
             if (i == 0) {
-                if (colors.length > 1) {
+                if (colors.size() > 1) {
                     renderer.stroke(new BasicStroke(1.4f));
                 } else {
                     renderer.stroke(new BasicStroke(1.2f));
                 }
-            } else if (i == colors.length - 1) {
+            } else if (i == colors.size() - 1) {
                 renderer.stroke(new BasicStroke(1.2f));
             } else {
                 renderer.stroke(new BasicStroke(1.4f));
@@ -89,9 +93,8 @@ public class EnvironmentRenderer implements IRenderer {
     @Override
     public void render(Renderer renderer) {
         Environment environment = getEnvironment();
-        if (environment == null) {
-            return;
-        }
+        if (environment == null) return;
+        if (environment.shuttingDown) return;
 
         profiler.section("Render BG", () -> {
             GameplayEvent currentGameplayEvent = environment.getCurrentGameEvent();
@@ -102,8 +105,8 @@ public class EnvironmentRenderer implements IRenderer {
                 if (cached == null) {
                     BufferRender bufferRender = new BufferRender(new Dimension(game.getWidth(), game.getHeight()), game.getObserver());
                     Renderer buffered = bufferRender.getRenderer();
-                    buffered.color(new Color(0, 96, 128));
-                    buffered.paint(new GradientPaint(0f, 0f, new Color(0x008EDA), 0f, BubbleBlaster.getInstance().getHeight(), new Color(0x004BA1)));
+                    buffered.color(0xff006080);
+                    buffered.paint(new GradientPaint(0f, 0f, UPPER_COLOR.toAwt(), 0f, BubbleBlaster.getInstance().getHeight(), LOWER_COLOR.toAwt()));
                     buffered.rect(0, 0, game.getWidth(), game.getHeight());
                     cached = bufferRender.done();
                 }

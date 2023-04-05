@@ -13,8 +13,8 @@
         <!--=======================-->
         <!--    Normal log file    -->
         <!--=======================-->
-        <RollingRandomAccessFile name="LatestFile" fileName="Logs/latest.log"
-                                 filePattern="Logs/%d{yyyy-MM-dd}-%i.log.gz">
+        <RollingRandomAccessFile name="LatestFile" fileName="logs/latest.log"
+                                 filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] (%logger) %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
@@ -25,7 +25,7 @@
         <!--======================-->
         <!--    Debug log file    -->
         <!--======================-->
-        <RollingRandomAccessFile name="DebugFile" fileName="Logs/debug.log" filePattern="Logs/debug-%i.log.gz">
+        <RollingRandomAccessFile name="DebugFile" fileName="logs/debug.log" filePattern="logs/debug-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] (%logger) %msg%n"/>
 
             <!--========================-->

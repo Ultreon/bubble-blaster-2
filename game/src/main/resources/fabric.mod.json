@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "name": "Bubble Blaster",
+  "id": "bubbles",
+  "description": "The base game.",
+  "authors": [
+    {
+      "name": "Ultreon Team",
+      "contact": {
+        "homepage": "https://ultreonteam.tk/",
+        "discord": "https://discord.gg/dtdc46g6ry",
+        "github": "https://github.com/Ultreon",
+        "youtube": "https://youtube.com/@ultreon"
+      }
+    },
+    {
+      "name": "Qboi",
+      "contact": {
+        "homepage": "https://qboi.tk/",
+        "github": "https://github.com/Qboi123",
+        "youtube": "https://youtube.com/@qboi"
+      }
+    }
+  ],
+  "depends": {
+    "bb-preloader": "*"
+  },
+  "license": "Ultreon-API-v1.2",
+  "icon": "assets/bubbles/icon.png",
+  "version": "${version}"
+}

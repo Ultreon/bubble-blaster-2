@@ -6,7 +6,7 @@ import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.event.v2.EventResult;
 import com.ultreon.bubbles.event.v2.GameEvents;
-import com.ultreon.bubbles.render.screen.PauseScreen;
+import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.exceptions.OneTimeUseException;
@@ -23,7 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.ImageObserver;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -93,7 +92,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
             this.frame.setLocationRelativeTo(null);
         }
         this.frame.setResizable(false);
-        try (InputStream inputStream = BubbleBlaster.getGameJar().openStream("icon.png")) {
+        try (InputStream inputStream = BubbleBlaster.getGameJar().openStream("assets/bubbles/icon.png")) {
             this.frame.setIconImage(ImageIO.read(inputStream));
         } catch (Exception e) {
             BubbleBlaster.getLogger().error(MARKER, "Failed to load game icon:", e);
@@ -315,9 +314,6 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
 
         BubbleBlaster.getLogger().info(MARKER, "Post-init stage of game window.");
 
-        KeyboardInput.listen(this.frame);
-        MouseInput.listen(this.frame);
-
         KeyboardInput.listen(this.canvas);
         MouseInput.listen(this.canvas);
 
@@ -333,12 +329,12 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
-        Identifier textureEntry = new Identifier("textures/cursors/" + identifier.path(), identifier.location());
+        Identifier textureEntry = new Identifier(identifier.location(), "textures/cursors/" + identifier.path());
         Image image;
         try (InputStream assetAsStream = game().getResourceManager().openResourceStream(textureEntry)) {
             image = ImageIO.read(assetAsStream);
         } catch (IOException e) {
-            throw new IOError(e);
+            throw new RuntimeException(e);
         }
 
         return toolkit.createCustomCursor(image, new Point(hotSpotX, hotSpotY), identifier.toString());

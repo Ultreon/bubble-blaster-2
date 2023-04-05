@@ -1,27 +1,30 @@
 package com.ultreon.bubbles.environment;
 
-import com.ultreon.bubbles.entity.*;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.Constants;
-import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
+import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
 import com.ultreon.bubbles.common.random.Rng;
+import com.ultreon.bubbles.entity.Bubble;
+import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.LivingEntity;
+import com.ultreon.bubbles.entity.SpawnInformation;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.game.Constants;
+import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.ValueAnimator;
-import com.ultreon.bubbles.render.screen.GameOverScreen;
+import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
@@ -102,6 +105,7 @@ public final class Environment {
     private static final BubbleBlaster game = BubbleBlaster.getInstance();
     private String name = "UNKNOWN WORLD";
     private int freezeTicks;
+    boolean shuttingDown;
     /// Constructors.
 
     public Environment(GameSave save, Gamemode gamemode, int seed) {
@@ -582,6 +586,7 @@ public final class Environment {
     }
 
     public void shutdown() {
+        this.shuttingDown = true;
         if (gameEventHandlerThread != null) {
             this.gameEventHandlerThread.interrupt();
         }

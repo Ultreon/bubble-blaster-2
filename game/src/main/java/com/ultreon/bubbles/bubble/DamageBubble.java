@@ -4,13 +4,10 @@ import com.ultreon.bubbles.entity.ai.AiAttack;
 import com.ultreon.bubbles.entity.ai.AiTarget;
 import com.ultreon.bubbles.init.Entities;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-
-import java.awt.*;
 
 public class DamageBubble extends BubbleType {
     public DamageBubble() {
-        colors = new Color[]{new Color(255, 0, 0), new Color(255, 96, 0), new Color(255, 0, 0)};
+        setColors("ff0000,ff6000,ff0000");
 
         setPriority(20_000_000d);
         setRadius(Range.between(17, 70));

@@ -171,4 +171,12 @@ public class Vec2i implements Externalizable, Cloneable {
         this.x = in.readInt();
         this.y = in.readInt();
     }
+
+    public Dimension toAwtDimension() {
+        return new Dimension(x, y);
+    }
+
+    public Point toAwtPoint() {
+        return new Point(x, y);
+    }
 }

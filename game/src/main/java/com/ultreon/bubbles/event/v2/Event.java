@@ -57,18 +57,41 @@ public final class Event<T> {
         return withResult((Class<T>) typeGetter.getClass().getComponentType());
     }
 
-    @SuppressWarnings({"UnstableApiUsage", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     public static <T> Event<T> withResult(Class<T> clazz) {
         return new Event<>(listeners -> (T) Proxy.newProxyInstance(Event.class.getClassLoader(), new Class[]{clazz}, new AbstractInvocationHandler() {
             @Override
             protected Object handleInvocation(@NotNull Object proxy, @NotNull Method method, Object @NotNull [] args) throws Throwable {
                 for (T listener : listeners) {
-                    EventResult<?> result = (EventResult<?>) Objects.requireNonNull(invokeMethod(listener, method, args));
+                    EventResult<?> result = Objects.requireNonNull(invokeMethod(listener, method, args));
                     if (result.isInterrupted()) {
                         return result;
                     }
                 }
                 return EventResult.pass();
+            }
+        }));
+    }
+
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    public static <T> Event<T> withCancel(T... typeGetter) {
+        if (typeGetter.length != 0) throw new IllegalStateException("The array shouldn't contain anything!");
+        return withCancel((Class<T>) typeGetter.getClass().getComponentType());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static <T> Event<T> withCancel(Class<T> clazz) {
+        return new Event<>(listeners -> (T) Proxy.newProxyInstance(Event.class.getClassLoader(), new Class[]{clazz}, new AbstractInvocationHandler() {
+            @Override
+            protected Object handleInvocation(@NotNull Object proxy, @NotNull Method method, Object @NotNull [] args) throws Throwable {
+                for (T listener : listeners) {
+                    boolean result = Objects.requireNonNull(invokeMethod(listener, method, args));
+                    if (result) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }));
     }

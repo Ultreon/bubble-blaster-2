@@ -41,6 +41,8 @@
     "screen": {
       "title": {
         "start": "Start Game",
+        "mods": "Mods",
+        "saves": "Saves",
         "options": "Options",
         "language": "Language"
       },

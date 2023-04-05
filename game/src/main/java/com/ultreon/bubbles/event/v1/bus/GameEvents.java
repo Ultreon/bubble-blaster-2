@@ -4,17 +4,17 @@ import com.ultreon.bubbles.event.v1.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Deprecated
+@Deprecated()
 public class GameEvents extends AbstractEvents<Event> {
-    @Deprecated
+    @Deprecated()
     private static final GameEvents instance = new GameEvents(LogManager.getLogger("Game-Events"));
 
-    @Deprecated
+    @Deprecated()
     public GameEvents(Logger logger) {
         super(logger);
     }
 
-    @Deprecated
+    @Deprecated()
     public static GameEvents get() {
         return instance;
     }

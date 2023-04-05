@@ -5,27 +5,18 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.Effects;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-
-import java.awt.*;
 
 public class BlindnessBubble extends BubbleType {
-//    public Color[] colors;
-
     public BlindnessBubble() {
-//        colors = ColorUtils.multiConvertHexToRgb("#ffffff");
-        colors = new Color[]{new Color(0, 0, 0), new Color(32, 32, 32), new Color(64, 64, 64), new Color(96, 96, 96), new Color(128, 128, 128)};
+        setColors("000000,202020,404040,606060,808080");
 
         setPriority(640_000L);
-//        setPriority(640_000_000L);
         setRadius(Range.between(21, 70));
         setSpeed(Range.between(7.4, 12.6));
         setDefense(0.2369f);
         setAttack(0.0f);
         setScore(2);
         setHardness(1.0d);
-
-//        BubbleInit.BUBBLES.add(this);
     }
 
     @Override
