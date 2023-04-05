@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.game;
 
 import com.google.common.annotations.Beta;
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
@@ -23,8 +22,8 @@ import com.ultreon.bubbles.sound.LogoSound;
 import com.ultreon.bubbles.sound.Sound;
 import com.ultreon.bubbles.sound.SoundInstance;
 import com.ultreon.bubbles.sound.SoundPlayer;
+import com.ultreon.bubbles.mod.loader.GameJar;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
-import com.ultreon.bubbles.mod.loader.Scanner;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
@@ -33,7 +32,6 @@ import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.screen.*;
 import com.ultreon.bubbles.render.screen.gui.GuiElement;
 import com.ultreon.bubbles.render.screen.splash.SplashScreen;
-import com.ultreon.bubbles.resources.Resource;
 import com.ultreon.bubbles.resources.ResourceManager;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.helpers.MathHelper;
@@ -44,12 +42,14 @@ import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.lang.ProgressMessenger;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.FileUtils;
-import com.ultreon.dev.DevClassPath;
 import com.ultreon.dev.GameDevMain;
-import com.ultreon.preloader.PreClassLoader;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
+import net.fabricmc.loader.impl.util.Arguments;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
@@ -61,6 +61,7 @@ import org.checkerframework.common.value.qual.IntRange;
 import org.checkerframework.common.value.qual.IntVal;
 import org.fusesource.jansi.AnsiConsole;
 import org.jdesktop.swingx.util.OS;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import paulscode.sound.*;
@@ -70,13 +71,15 @@ import paulscode.sound.libraries.LibraryJavaSound;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOError;
+import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.List;
@@ -148,7 +151,7 @@ public final class BubbleBlaster {
     private final BufferedImage background = null;
     private final Object rpcUpdateLock = new Object();
     private final Ticker ticker = new Ticker();
-    private final ScannerResult scanResults;
+//    private final ScannerResult scanResults;
     private final SoundSystem soundSystem;
     // Utility objects.
     public InputController input;
@@ -197,18 +200,20 @@ public final class BubbleBlaster {
      */
     public BubbleBlaster() throws IOException {
         SoundSystem soundSystem;
-        GameWindow.Properties windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720)/*.fullscreen()*/;
-        BubbleBlaster.BootOptions bootOptions = new BootOptions().tps(TPS);
+        var windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720).close(BubbleBlaster::dispose)/*.fullscreen()*/;
+        var bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions(this));
+
+        EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
 
         // Assign instance.
         instance = this;
 
         gameFile = BubbleBlaster.class.getProtectionDomain().getCodeSource().getLocation();
 
-        Scanner scanner = new Scanner(true, List.of(getGameFile()), getClassLoader());
-        scanResults = scanner.scan();
+//        var scanner = new Scanner(true, getClassLoader(), getGameFile());
+//        scanResults = scanner.scan();
 
         // Set game properties.
         this.tps = bootOptions.tps;
@@ -239,7 +244,7 @@ public final class BubbleBlaster {
         BubbleBlaster.instance = this;
 
         setActivity(() -> {
-            Activity activity = new Activity();
+            var activity = new Activity();
             activity.setState("Loading game.");
             return activity;
         });
@@ -257,11 +262,11 @@ public final class BubbleBlaster {
 
         environmentRenderer = new EnvironmentRenderer();
 
-        DevClassPath classPath = GameDevMain.getClassPath();
+        var classPath = GameDevMain.getClassPath();
         try {
-            URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+            var location = getClass().getProtectionDomain().getCodeSource().getLocation();
             if (Objects.equals(location.getProtocol(), "file")) {
-                File file = new File(location.toURI());
+                var file = new File(location.toURI());
                 if (file.isDirectory()) {
                     resourceManager.importResources(new File(file, "../../../resources/main"));
                 } else {
@@ -282,17 +287,17 @@ public final class BubbleBlaster {
         FileUtils.setCwd(References.GAME_DIR);
 
         // Transparent 16 x 16 pixel cursor image.
-        BufferedImage nulCurImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        var nulCurImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 
         // Create a new blank cursor.
         blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 nulCurImg, new Point(0, 0), "blank cursor");
 
         // Transparent 16 x 16 pixel cursor image.
-        BufferedImage defCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        Polygon defCurPly = new Polygon(new int[]{0, 10, 5, 0}, new int[]{0, 12, 12, 16}, 4);
+        var defCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+        var defCurPly = new Polygon(new int[]{0, 10, 5, 0}, new int[]{0, 12, 12, 16}, 4);
 
-        Graphics2D defCurGfx = defCurImg.createGraphics();
+        var defCurGfx = defCurImg.createGraphics();
         defCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         defCurGfx.setColor(Color.black);
         defCurGfx.fillPolygon(defCurPly);
@@ -305,10 +310,10 @@ public final class BubbleBlaster {
                 defCurImg, new Point(1, 1), "default cursor");
 
         // Transparent 16 x 16 pixel cursor image.
-        BufferedImage pntCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        Polygon pntCurPly = new Polygon(new int[]{10, 20, 15, 10}, new int[]{10, 22, 22, 26}, 4);
+        var pntCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+        var pntCurPly = new Polygon(new int[]{10, 20, 15, 10}, new int[]{10, 22, 22, 26}, 4);
 
-        Graphics2D pntCurGfx = pntCurImg.createGraphics();
+        var pntCurGfx = pntCurImg.createGraphics();
         pntCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         pntCurGfx.setColor(Color.white);
         pntCurGfx.drawOval(0, 0, 20, 20);
@@ -327,8 +332,8 @@ public final class BubbleBlaster {
                 pntCurImg, new Point(11, 11), "pointer cursor");
 
         // Transparent 16 x 16 pixel cursor image.
-        BufferedImage txtCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D txtCurGfx = txtCurImg.createGraphics();
+        var txtCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+        var txtCurGfx = txtCurImg.createGraphics();
         txtCurGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         txtCurGfx.setColor(Color.white);
         txtCurGfx.drawLine(0, 1, 0, 24);
@@ -403,13 +408,13 @@ public final class BubbleBlaster {
         InputEvents.MOUSE_CLICK.listen(this::onMouseClick);
 
         // Register Game Font.
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        var ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
         // Start scene-manager.
         try {
             Objects.requireNonNull(this.getScreenManager()).start();
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Oops, game crashed!", t);
+            var crashLog = new CrashLog("Oops, game crashed!", t);
             crash(t);
         }
 
@@ -441,31 +446,16 @@ public final class BubbleBlaster {
      * Launch method.
      * Contains argument parsing.
      */
-    public static void main(String[] args, PreClassLoader classLoader) throws IOException {
+    public static void launch(Arguments args) throws IOException {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
+
         // Get game-directory.
-        for (String arg : args) {
-            if (arg.startsWith("gameDir=")) {
-                BubbleBlaster.gameDir = new File(arg.substring(8));
-            }
-            if (arg.equals("--debug")) {
-                BubbleBlaster.debugMode = true;
-            }
-            if (arg.equals("--dev")) {
-                BubbleBlaster.devMode = true;
-            }
-        }
+        final var defaultGameDir = new File(getAppData(), "Bubble Blaster 2");
+        gameDir = !args.containsKey("gameDir") ? defaultGameDir : new File(args.get("gameDir"));
+        debugMode = args.getExtraArgs().contains("--debug");
+        devMode = FabricLoader.getInstance().isDevelopmentEnvironment();
 
-        // Quick Fix
-        BubbleBlaster.gameDir = new File(getAppData(), "Bubble Blaster 2");
-
-        // Check if game-dir is assigned, if not the game-dir is not specified in the arguments.
-        if (getGameDir() == null) {
-            System.err.println("Game Directory is not specified!");
-            System.exit(1);
-        }
-
-        BubbleBlaster.classLoader = classLoader;
+        BubbleBlaster.classLoader = getClassLoader();
 
         // Boot the game.
         BubbleBlaster.initEngine(BubbleBlaster.debugMode, BubbleBlaster.devMode);
@@ -584,7 +574,7 @@ public final class BubbleBlaster {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isPaused() {
-        Screen currentScreen = getInstance().getCurrentScreen();
+        var currentScreen = getInstance().getCurrentScreen();
         return currentScreen != null && currentScreen.doesPauseGame();
     }
 
@@ -623,7 +613,12 @@ public final class BubbleBlaster {
 
     public static LibraryJar getGameJar() {
         if (jar == null) {
-            jar = new LibraryJar(getJarUrl());
+            var jarUrl = getJarUrl();
+            if  (!Objects.equals(jarUrl.getProtocol(), "libraryjar")) {
+                jar = new GameJar(jarUrl);
+            } else {
+                jar = new LibraryJar(jarUrl);
+            }
         }
         return jar;
     }
@@ -633,10 +628,10 @@ public final class BubbleBlaster {
     }
 
     private void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding) {
-        final LoadedGame loadedGame = this.loadedGame;
+        final var loadedGame = this.loadedGame;
 
         if (loadedGame != null) {
-            final Environment environment = loadedGame.getEnvironment();
+            final var environment = loadedGame.getEnvironment();
 
             if (!holding) {
                 if (keyCode == KeyEvent.VK_SLASH && hasScreenOpen()) {
@@ -653,7 +648,7 @@ public final class BubbleBlaster {
             } else if (keyCode == KeyEvent.VK_F5 && BubbleBlaster.isDevMode()) {
                 Objects.requireNonNull(environment.getPlayer()).addScore(1000);
             } else if (keyCode == KeyEvent.VK_F6 && BubbleBlaster.isDevMode()) {
-                Player player = loadedGame.getGamemode().getPlayer();
+                var player = loadedGame.getGamemode().getPlayer();
 
                 if (player != null) {
                     Objects.requireNonNull(player).setHealth(player.getMaxHealth());
@@ -679,7 +674,7 @@ public final class BubbleBlaster {
     }
 
     private void onMouseClick(int x, int y, int button, int clicks) {
-        LoadedGame loadedGame = this.loadedGame;
+        var loadedGame = this.loadedGame;
         if (isDevMode()) {
             if (loadedGame != null && button == 1) {
                 if (KeyboardInput.isDown(KEY_F1)) {
@@ -696,17 +691,17 @@ public final class BubbleBlaster {
      */
     public void onCollectTextures(TextureCollection collection) {
         if (collection == TextureCollections.BUBBLE_TEXTURES.get()) {
-            Collection<BubbleType> bubbles = Registry.BUBBLES.values();
-            LoadScreen loadScreen = LoadScreen.get();
+            var bubbles = Registry.BUBBLES.values();
+            var loadScreen = LoadScreen.get();
 
             if (loadScreen == null) {
                 throw new IllegalStateException("Load scene is not available.");
             }
-            for (BubbleType bubble : bubbles) {
-                for (int i = 0; i <= bubble.getMaxRadius(); i++) {
-                    Identifier id = Registry.BUBBLES.getKey(bubble);
-                    TextureCollection.Index identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i);
-                    final int finalI = i;
+            for (var bubble : bubbles) {
+                for (var i = 0; i <= bubble.getMaxRadius(); i++) {
+                    var id = Registry.BUBBLES.getKey(bubble);
+                    var identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i);
+                    final var finalI = i;
                     collection.set(identifier, new ITexture() {
                         @Override
                         public void render(Renderer renderer) {
@@ -735,7 +730,7 @@ public final class BubbleBlaster {
     @SuppressWarnings("BusyWait")
     private void rpc() throws IOException {
         try {
-            File discordLibrary = DownloadDiscordSDK.download();
+            var discordLibrary = new DownloadDiscordSDK().download();
             if (discordLibrary == null) {
                 System.err.println("Error downloading Discord SDK.");
                 return;
@@ -748,14 +743,14 @@ public final class BubbleBlaster {
         }
 
         // Set parameters for the Core
-        try (CreateParams params = new CreateParams()) {
+        try (var params = new CreateParams()) {
             params.setClientID(933147296311427144L);
             params.setFlags(CreateParams.getDefaultFlags());
 
             // Create the Core
-            try (Core core = new Core(params)) {
+            try (var core = new Core(params)) {
                 // Create the Activity
-                try (Activity activity = new Activity()) {
+                try (var activity = new Activity()) {
                     activity.setDetails("Developer mode");
                     activity.setState("RPC Testing");
 
@@ -805,7 +800,7 @@ public final class BubbleBlaster {
     public void setActivity(Supplier<Activity> activity) {
         synchronized (rpcUpdateLock) {
             this.activity = () -> {
-                Activity ret = activity.get();
+                var ret = activity.get();
                 ret.assets().setLargeImage("icon");
                 return ret;
             };
@@ -823,17 +818,17 @@ public final class BubbleBlaster {
 
     @SuppressWarnings("DuplicatedCode")
     private void tickThread() {
-        double tickCap = 1f / (double) getTps();
+        var tickCap = 1f / (double) getTps();
 
-        double time = TimeProcessor.now();
+        var time = TimeProcessor.now();
         double unprocessed = 0;
 
         try {
             while (running) {
-                boolean canTick = false;
+                var canTick = false;
 
-                double time2 = TimeProcessor.now();
-                double passed = time2 - time;
+                var time2 = TimeProcessor.now();
+                var passed = time2 - time;
                 unprocessed += passed;
 
                 time = time2;
@@ -848,25 +843,23 @@ public final class BubbleBlaster {
                     try {
                         internalTick();
                     } catch (Throwable t) {
-                        CrashLog crashLog = new CrashLog("Game being ticked.", t);
+                        var crashLog = new CrashLog("Game being ticked.", t);
                         crash(crashLog.createCrash());
                     }
                 }
             }
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Running game loop.", t);
+            var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
         }
-
-        close();
     }
 
     private Font loadFontInternally(Identifier location) {
-        try (InputStream inputStream = getClass().getResourceAsStream("/assets/" + location.location() + "/fonts/" + location.path() + ".ttf")) {
+        try (var inputStream = getClass().getResourceAsStream("/assets/" + location.location() + "/fonts/" + location.path() + ".ttf")) {
             if (inputStream == null) {
                 throw new ResourceNotFoundException("Font resource " + location + " doesn't exists.");
             }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            var font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             Hydro.get().registerFont(font);
             return font;
         } catch (IOException | FontFormatException e) {
@@ -875,8 +868,8 @@ public final class BubbleBlaster {
     }
 
     private Font loadFont(Identifier font) {
-        Identifier identifier = new Identifier("fonts/" + font.path() + ".ttf", font.location());
-        Resource resource = resourceManager.getResource(new Identifier("fonts/" + font.path() + ".ttf", font.location()));
+        var identifier = new Identifier("fonts/" + font.path() + ".ttf", font.location());
+        var resource = resourceManager.getResource(new Identifier("fonts/" + font.path() + ".ttf", font.location()));
         if (resource != null) {
             try {
                 return resource.loadFont();
@@ -911,27 +904,37 @@ public final class BubbleBlaster {
      */
     @RequiresNonNull({"ticking", "rendering", "gcThread"})
     public synchronized void stop() {
-        try {
-            renderingThread.join();
-            tickingThread.join();
-            garbageCollector.join();
-            running = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void onClose() {
         // Shut-down game.
         logger.info("Shutting down Bubble Blaster");
-        rpcThread.interrupt();
 
-        try {
-            rpcThread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        this.renderingThread.interrupt();
+        this.tickingThread.interrupt();
+        this.garbageCollector.interrupt();
+        this.rpcThread.interrupt();
+
+        final var loadedGame = this.loadedGame;
+        if (loadedGame != null) {
+            loadedGame.shutdown();
         }
 
+        final var environment = this.environment;
+        if (environment != null) {
+            environment.shutdown();
+        }
+
+        SoundInstance.stopAll();
+
+        try {
+            this.renderingThread.join();
+            this.tickingThread.join();
+            this.garbageCollector.join();
+            this.rpcThread.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         checkForExitEvents();
     }
 
@@ -1043,8 +1046,8 @@ public final class BubbleBlaster {
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void loadGame(GameSave save) throws IOException {
-        long seed = save.getSeed();
-        Gamemode gamemode = save.getGamemode();
+        var seed = save.getSeed();
+        var gamemode = save.getGamemode();
         startGame(seed, gamemode, save, true);
     }
 
@@ -1054,12 +1057,12 @@ public final class BubbleBlaster {
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void startGame(long seed, Gamemode gamemode, GameSave save, boolean create) {
         // Start loading.
-        MessengerScreen screen = new MessengerScreen();
+        var screen = new MessengerScreen();
 
         // Show environment loader screen.
         showScreen(screen);
         try {
-            File directory = save.getDirectory();
+            var directory = save.getDirectory();
             if (create && directory.exists()) {
                 org.apache.commons.io.FileUtils.deleteDirectory(directory);
             }
@@ -1070,7 +1073,7 @@ public final class BubbleBlaster {
                 }
             }
 
-            Environment environment = this.environment = new Environment(save, gamemode, seed);
+            var environment = this.environment = new Environment(save, gamemode, seed);
 
             if (create) {
                 screen.setDescription("Preparing creation");
@@ -1089,13 +1092,13 @@ public final class BubbleBlaster {
                 environment.load(save, screen.getMessenger());
             }
 
-            LoadedGame loadedGame = new LoadedGame(save, this.environment);
+            var loadedGame = new LoadedGame(save, this.environment);
             loadedGame.start();
 
             this.loadedGame = loadedGame;
         } catch (Throwable t) {
             t.printStackTrace();
-            CrashLog crashLog = new CrashLog("Game save being loaded", t);
+            var crashLog = new CrashLog("Game save being loaded", t);
             crashLog.add("Save Directory", save.getDirectory());
             crashLog.add("Current Description", screen.getDescription());
             crashLog.add("Create Flag", create);
@@ -1112,7 +1115,7 @@ public final class BubbleBlaster {
      * Quit game environment and loaded game.
      */
     public void quitLoadedGame() {
-        LoadedGame loadedGame = getLoadedGame();
+        var loadedGame = getLoadedGame();
         if (loadedGame != null) {
             loadedGame.quit();
         }
@@ -1192,7 +1195,7 @@ public final class BubbleBlaster {
     }
 
     public @Nullable GameSave getCurrentSave() {
-        LoadedGame loadedGame = getLoadedGame();
+        var loadedGame = getLoadedGame();
         if (loadedGame != null) {
             return loadedGame.getGameSave();
         }
@@ -1328,10 +1331,10 @@ public final class BubbleBlaster {
 
     @SuppressWarnings("DuplicatedCode")
     private void ticking() {
-        double tickCap = 1000.0 / (double) tps;
-        double tickTime = 0d;
-        double gameFrameTime = 0d;
-        int ticksPassed = 0;
+        var tickCap = 1000.0 / (double) tps;
+        var tickTime = 0d;
+        var gameFrameTime = 0d;
+        var ticksPassed = 0;
 
         double time = System.currentTimeMillis();
 
@@ -1339,10 +1342,10 @@ public final class BubbleBlaster {
 
         try {
             while (running) {
-                boolean canTick = false;
+                var canTick = false;
 
                 double time2 = System.currentTimeMillis();
-                double passed = time2 - time;
+                var passed = time2 - time;
                 gameFrameTime += passed;
                 tickTime += passed;
 
@@ -1359,7 +1362,7 @@ public final class BubbleBlaster {
                     try {
                         internalTick();
                     } catch (Throwable t) {
-                        CrashLog crashLog = new CrashLog("Game being ticked.", t);
+                        var crashLog = new CrashLog("Game being ticked.", t);
                         crash(crashLog.createCrash());
                     }
                 }
@@ -1370,26 +1373,26 @@ public final class BubbleBlaster {
                     tickTime = 0;
                 }
 
-                for (Runnable task : new ArrayList<>(tasks)) {
+                for (var task : new ArrayList<>(tasks)) {
                     task.run();
                     tasks.remove(task);
                 }
                 Thread.sleep(8);
             }
+        } catch (InterruptedException e) {
+            logger.info("Ticking interrupted.");
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Running game loop.", t);
+            var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
         }
-
-        close();
     }
 
     private void rendering() {
-        double tickCap = 1f / (double) tps;
-        double frameTime = 0d;
+        var tickCap = 1f / (double) tps;
+        var frameTime = 0d;
         double frames = 0;
 
-        double time = TimeProcessor.now();
+        var time = TimeProcessor.now();
         this.gameFrameTime = 0;
 
         initialGameTick();
@@ -1397,10 +1400,10 @@ public final class BubbleBlaster {
         try {
             while (running) {
                 profiler.start();
-                boolean canTick = false;
+                var canTick = false;
 
-                double time2 = TimeProcessor.now();
-                double passed = time2 - time;
+                var time2 = TimeProcessor.now();
+                var passed = time2 - time;
                 this.gameFrameTime += passed;
                 frameTime += passed;
 
@@ -1424,34 +1427,34 @@ public final class BubbleBlaster {
                     wrappedRender(fps);
                     profiler.endSection("render");
                 } catch (Throwable t) {
-                    CrashLog crashLog = new CrashLog("Game being rendered.", t);
+                    var crashLog = new CrashLog("Game being rendered.", t);
                     crash(crashLog.createCrash());
                 }
 
                 lastProfile = profiler.end();
                 Thread.sleep(8);
             }
+        } catch (InterruptedException e) {
+            logger.info("Shut down renderer");
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Running game loop.", t);
+            var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
         }
-
-        close();
     }
 
     @SuppressWarnings("DuplicatedCode")
     private void renderLoop() {
-        double frameTime = 0d;
+        var frameTime = 0d;
         double frames = 0;
 
-        double time = TimeProcessor.now();
+        var time = TimeProcessor.now();
         this.gameFrameTime = 0;
 
         try {
             while (running) {
 
-                double time2 = TimeProcessor.now();
-                double passed = time2 - time;
+                var time2 = TimeProcessor.now();
+                var passed = time2 - time;
                 this.gameFrameTime += passed;
                 frameTime += passed;
 
@@ -1468,22 +1471,20 @@ public final class BubbleBlaster {
                 try {
                     wrappedRender(fps);
                 } catch (Throwable t) {
-                    CrashLog crashLog = new CrashLog("Game being rendered.", t);
+                    var crashLog = new CrashLog("Game being rendered.", t);
                     crash(crashLog.createCrash());
                 }
 
-                for (Runnable task : tasks) {
+                for (var task : tasks) {
                     task.run();
                 }
 
                 tasks.clear();
             }
         } catch (Throwable t) {
-            CrashLog crashLog = new CrashLog("Running game loop.", t);
+            var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
         }
-
-        close();
     }
 
     /**
@@ -1511,10 +1512,7 @@ public final class BubbleBlaster {
      */
     private void wrappedRender(int fps) {
         BufferStrategy bs;
-        Renderer mainRender;
-        BufferRender bufferRender = new BufferRender(getBounds().getSize(), this.getObserver());
-        Renderer render = bufferRender.getRenderer();
-
+        Renderer renderer;
         // Set filter gotten from filter event-handlers.
         try {
             // Buffer strategy (triple buffering).
@@ -1527,53 +1525,31 @@ public final class BubbleBlaster {
             }
 
             // Get GraphicsProcessor and GraphicsProcessor objects.
-            mainRender = new Renderer(bs.getDrawGraphics(), getObserver());
+            renderer = new Renderer(bs.getDrawGraphics(), getObserver());
         } catch (IllegalStateException e) {
-            cachedImage = bufferRender.done();
             this.window.finalSetup();
             return;
         }
 
         if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled())
-            render.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
-            render.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        renderer.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        render.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        render.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        render.hint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-        List<BufferedImageOp> filters = BubbleBlaster.instance.getCurrentFilters();
+        var filters = BubbleBlaster.instance.getCurrentFilters();
 
-        profiler.section("renderGame", () -> this.render(render, gameFrameTime));
-
-        profiler.section("draw", () -> {
-            bufferRender.setFilters(List.of());
-
-            // Clear background.
-            profiler.section("Clear", () -> {
-                mainRender.clearColor(Color.BLACK);
-                mainRender.clearRect(0, 0, getWidth(), getHeight());
-            });
-            AffineTransform transform = new AffineTransform();
-            transform.setToScale(getWidth(), getHeight());
-            transform.setToTranslation(0, 0);
-
-            // Draw filtered image.
-            mainRender.renderedImage(bufferRender.done(), transform);
-        });
+        profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
 
         this.fps = fps;
 
-        // Dispose and show.
-        profiler.section("dispose", render::dispose);
-
         try {
             bs.show();
-            mainRender.dispose();
-            render.dispose();
+            renderer.dispose();
             hasRendered = true;
-        } catch (IllegalStateException ignored) {
-
+        } catch (IllegalStateException e) {
+            logger.warn("Illegal state in frame flip: " + e.getMessage());
         }
     }
 
@@ -1625,10 +1601,10 @@ public final class BubbleBlaster {
         }
 
         if (fadeIn) {
-            final long timeDiff = System.currentTimeMillis() - fadeInStart;
+            final var timeDiff = System.currentTimeMillis() - fadeInStart;
             if (timeDiff <= fadeInDuration) {
-                int clamp = (int) MathHelper.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
-                Color color = new Color(0, 0, 0, clamp);
+                var clamp = (int) MathHelper.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
+                var color = new Color(0, 0, 0, clamp);
                 GuiElement.fill(renderer, 0, 0, getWidth(), getHeight(), color);
             }
         }
@@ -1643,10 +1619,10 @@ public final class BubbleBlaster {
             return;
         }
 
-        final Environment env = this.environment;
-        final Player player = this.player;
+        final var env = this.environment;
+        final var player = this.player;
         if (env != null && !isPaused()) {
-            final Gamemode gamemode = env.getGamemode();
+            final var gamemode = env.getGamemode();
             if (gamemode != null) {
                 if (player != null) {
                     if (player.getLevel() > 255) {
@@ -1658,7 +1634,7 @@ public final class BubbleBlaster {
             env.tick();
         }
 
-        final Screen screen = this.getCurrentScreen();
+        final var screen = this.getCurrentScreen();
         if (screen != null) {
             screen.tick();
         }
@@ -1674,16 +1650,16 @@ public final class BubbleBlaster {
             if (LoadScreen.isDone()) {
                 if (isInMainMenus()) {
                     setActivity(() -> {
-                        Activity activity = new Activity();
+                        var activity = new Activity();
                         activity.setState("In the menus");
                         return activity;
                     });
                 } else if (isInGame()) {
                     setActivity(() -> {
-                        Activity activity = new Activity();
+                        var activity = new Activity();
                         activity.setState("In-Game");
                         if (player != null) {
-                            double score = player.getScore();
+                            var score = player.getScore();
                             activity.setDetails("Score: " + (int) score);
                         } else {
                             activity.setDetails("?? ERROR ??");
@@ -1692,7 +1668,7 @@ public final class BubbleBlaster {
                     });
                 } else {
                     setActivity(() -> {
-                        Activity activity = new Activity();
+                        var activity = new Activity();
                         activity.setState("Is nowhere to be found");
                         return activity;
                     });
@@ -1708,7 +1684,7 @@ public final class BubbleBlaster {
             debugGuiOpen = !debugGuiOpen;
             logger.debug("Toggling debug gui");
         } else if (keyCode == KEY_F10 && (debugMode || devMode)) {
-            Environment env = environment;
+            var env = environment;
             if (env != null) {
                 env.triggerBloodMoon();
             }
@@ -1774,7 +1750,7 @@ public final class BubbleBlaster {
     }
 
     public SoundInstance getSound(Identifier identifier) {
-        Resource resource = resourceManager.getResource(identifier);
+        var resource = resourceManager.getResource(identifier);
 
         return null;
     }
@@ -1782,7 +1758,7 @@ public final class BubbleBlaster {
     @CanIgnoreReturnValue
     public synchronized SoundInstance playSound(Sound sound) {
         try {
-            SoundInstance instance = new SoundInstance(sound, sound.getId());
+            var instance = new SoundInstance(sound, sound.getId());
             instance.play();
             return instance;
         } catch (Exception e) {
@@ -1793,7 +1769,7 @@ public final class BubbleBlaster {
     @CanIgnoreReturnValue
     public synchronized SoundInstance playSound(Sound sound, float volume) {
         try {
-            SoundInstance instance = new SoundInstance(sound, sound.getId());
+            var instance = new SoundInstance(sound, sound.getId());
             instance.setVolume(volume);
             instance.play();
             return instance;
@@ -1822,7 +1798,7 @@ public final class BubbleBlaster {
     }
 
     public void loadPlayEnvironment() {
-        Player player = createPlayer();
+        var player = createPlayer();
         this.input = player;
         this.playerController = new PlayerController(this.input);
         this.player = player;
@@ -1885,8 +1861,9 @@ public final class BubbleBlaster {
         return tps;
     }
 
+    @Deprecated
     public ScannerResult getScanResults() {
-        return scanResults;
+        return new ScannerResult(new HashMap<>());
     }
 
     public boolean isStopping() {
@@ -1899,18 +1876,12 @@ public final class BubbleBlaster {
     public void shutdown() {
         this.stopping = true;
         this.running = false;
-        try {
-            tickingThread.join();
-            renderingThread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        close();
+        this.window.dispose();
     }
 
-    void close() {
-        onClose();
-        window.close();
+    @ApiStatus.Internal
+    public static void dispose() {
+        instance.onClose();
         if (crashed) {
             System.exit(1);
         }
@@ -1926,7 +1897,7 @@ public final class BubbleBlaster {
         var crashLog = crash.getCrashLog();
         crashed = true;
 
-        boolean overridden = false;
+        var overridden = false;
         try {
             GameEvents.CRASH.factory().onCrash(crash);
         } catch (Throwable t) {
@@ -1939,7 +1910,6 @@ public final class BubbleBlaster {
         }
 
         instance.shutdown();
-        instance.close();
     }
 
     @EnsuresNonNull({"ticking"})
@@ -1948,20 +1918,22 @@ public final class BubbleBlaster {
         this.running = true;
 
         this.tickingThread = new Thread(BubbleBlaster.this::ticking, "Ticker");
+        this.tickingThread.setDaemon(false);
         this.tickingThread.start();
 
         this.renderingThread = new Thread(BubbleBlaster.this::rendering, "Renderer");
+        this.renderingThread.setDaemon(false);
         this.renderingThread.start();
 
         this.garbageCollector = new GarbageCollector(this);
-        this.garbageCollector.setDaemon(true);
+        this.garbageCollector.setDaemon(false);
         this.garbageCollector.start();
 
         BubbleBlaster.getLogger().info("Game threads started!");
     }
 
     public void crash(Throwable t) {
-        CrashLog crashLog = new CrashLog("Unknown source", t);
+        var crashLog = new CrashLog("Unknown source", t);
         crash(crashLog.createCrash());
     }
 
@@ -1975,8 +1947,8 @@ public final class BubbleBlaster {
         LanguageManager.INSTANCE.register(new Locale("fy"), "Frisk");
         LanguageManager.INSTANCE.register(new Locale("zh"), "Chinese");
 
-        Set<Locale> locales = LanguageManager.INSTANCE.getLocales();
-        for (Locale locale : locales) {
+        var locales = LanguageManager.INSTANCE.getLocales();
+        for (var locale : locales) {
             LanguageManager.INSTANCE.load(locale, LanguageManager.INSTANCE.getLanguageID(locale), BubbleBlaster.getInstance().getResourceManager());
         }
     }

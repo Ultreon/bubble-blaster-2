@@ -26,28 +26,20 @@ buildscript {
 
 plugins {
     id "groovy"
+    id "eclipse"
 }
 
-apply plugin: 'eclipse'
+version project_version
+group project_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
-def calendar = Calendar.getInstance()
-def date = String.format("%01dy%02dm%02dd", calendar.get(Calendar.YEAR) - 2000, calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-def time = String.format("%01dh%02dm%02ds", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND))
-version = "$date+$time"
-if ((getenv "BUILD_NUMBER") != null) {
-    def buildNr = getenv "BUILD_NUMBER"
-    version = "$project_version-$buildNr"
-}
-
-group = 'com.ultreon.bubbles' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'preloader'
+archivesBaseName = archives_base_name
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16' // Need this here so eclipse task generates correctly.
 
 //GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
 //shell.run(file, arguments);
 
-println("Current version: $version")
+println("Current version: $project_version")
 println("Project: $group:$archivesBaseName")
 println("Bulding a Java $compileJava.targetCompatibility project...")
 
@@ -72,11 +64,21 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
 }
 
+processResources {
+    inputs.property "version", project.project_version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+
+    exclude "*.pdn", "*.xcf", "*.ps"
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'QBubbles',
                 'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': "1.0-indev1",
+                project_version: "1.0-indev1",
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }

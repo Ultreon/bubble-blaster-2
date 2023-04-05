@@ -50,15 +50,8 @@ apply plugin: 'bubbles-gradle'
 //****************************//
 
 // Project properties.
-def projectId = property("project_id")
-def projectName = property("project_name")
-def projectVersion = property("project_version")
-def appName1 = property("app_name")
-
-version "${project_version}+${getenv("GITHUB_BUILD_NUMBER") == null ? "local" : getenv("GITHUB_BUILD_NUMBER")}"
-group 'com.ultreon.bubbles' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
-def packageVersion = ((String) version).replaceAll("\\+local", ".0").replaceAll("\\+", ".")
+version project_version
+group project_group
 
 java {
     withSourcesJar()
@@ -184,7 +177,7 @@ task replaceResources(type: Copy) {
         false
     }
 
-    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', version.toString()) }
+    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', project_version.project_version()) }
     into new File(processResources.destinationDir, "META-INF")
 }
 
@@ -201,7 +194,7 @@ jar {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': project.version,
+                project_version: project.project_version,
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }
@@ -300,6 +293,6 @@ task("copyJar", type: Copy) {
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
 
-println("Current version: " + version)
+println("Current version: " + project_version)
 println("Project: " + group + ":" + archivesBaseName)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")

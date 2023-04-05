@@ -22,5 +22,6 @@ public class GarbageCollector extends Thread {
         } catch (InterruptedException ignored) {
             BubbleBlaster.getLogger().warn(marker, "Unexpected interruption in garbage collector");
         }
+        BubbleBlaster.getLogger().info("Shutting down garbage collector.");
     }
 }

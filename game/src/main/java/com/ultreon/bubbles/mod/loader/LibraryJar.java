@@ -15,7 +15,7 @@ public class LibraryJar {
     private final URL libraryUrl;
 
     public LibraryJar(URL url) {
-        if (!Objects.equals(url.getProtocol(), "libraryjar")) {
+        if (!Objects.equals(url.getProtocol(), "libraryjar") && !(this instanceof GameJar)) {
             throw new IllegalArgumentException("Url protocol isn't 'libraryjar': " + url);
         }
         this.libraryName = url.getHost();

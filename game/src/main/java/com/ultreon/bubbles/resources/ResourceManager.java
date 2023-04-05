@@ -198,7 +198,7 @@ public class ResourceManager {
                     ThrowingSupplier<InputStream, IOException> sup = () -> jarFile.getInputStream(jarEntry);
 
                     URL srcUrl = file.toURI().toURL();
-                    URL url = new URL("jar:" + srcUrl.getProtocol(), srcUrl.getHost(), srcUrl.getPath() + "!/" + name);
+                    URL url = new URL("jar", "", srcUrl.getProtocol() + ":/" + srcUrl.getHost() + "/" + srcUrl.getPath() + "!/" + name);
 
                     // Check if it isn't a directory, because we want a file.
                     if (!jarEntry.isDirectory()) {

@@ -14,6 +14,7 @@ public class PreMain {
     private static LibraryJarManager manager;
 
     public static void main(String[] args) {
+        System.out.println("loader = " + loader);
         try {
             Class<PreMain> c = PreMain.class;
             String files;
@@ -37,6 +38,10 @@ public class PreMain {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void preLaunch() {
+
     }
 
     static URLClassLoader getLoader() {
