@@ -1,12 +1,11 @@
 package com.ultreon.bubbles.render.gui.screen.splash;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.LoadScreen;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.sound.LogoSound;
+import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.Vec2f;
 
 import javax.imageio.ImageIO;

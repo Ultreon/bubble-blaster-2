@@ -949,7 +949,7 @@ public final class BubbleBlaster {
             environment.shutdown();
         }
 
-        SoundInstance.stopAll();
+//        soundSystem.stop(soundSystem.playing());
 
         try {
             this.renderingThread.join();
