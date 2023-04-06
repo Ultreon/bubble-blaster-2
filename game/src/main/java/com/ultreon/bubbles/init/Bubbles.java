@@ -8,10 +8,9 @@ import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.registry.DelayedRegister;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
-import com.ultreon.commons.util.ColorUtils;
+import com.ultreon.bubbles.render.Color;
 import org.apache.commons.lang3.Range;
 
-import java.awt.*;
 import java.util.function.Supplier;
 
 /**
@@ -37,7 +36,7 @@ public class Bubbles {
             .priority(4_600_000L)
             .radius(Range.between(24, 75))
             .speed(Range.between(8.0, 17.4))
-            .colors(Color.orange, Color.orange)
+            .colors(Color.gold, Color.gold)
             .score(2f)
             .build());
     public static final RegistrySupplier<BubbleType> TRIPLE = register("triple", () -> BubbleType.builder()
@@ -52,7 +51,7 @@ public class Bubbles {
             .radius(Range.between(15, 85))
             .speed(Range.between(3.215d, 4.845d))
             .score(0.625f)
-            .colors(ColorUtils.parseColorString("#ff0000,#ff3f00,#ff7f00,#ffbf00")) // Color.decode("#ff0000"), Color.decode("#ff3f00"), Color.decode("#ff7f00"), Color.decode("#ffaf00"))
+            .colors("#ff0000,#ff3f00,#ff7f00,#ffbf00")
             .bounceAmount(50f)
             .build());
     public static final RegistrySupplier<BubbleType> BUBBLE_FREEZE = register("bubble_freeze", BubbleFreezeBubble::new);
@@ -62,10 +61,9 @@ public class Bubbles {
             .speed(Range.between(1.215d, 2.845d))
             .score(0.325f)
             .effect((source, target) -> (new AppliedEffect(Effects.PARALYZE.get(), source.getRadius() / 16, (byte) 1)))
-            .colors(ColorUtils.parseColorString("#ffff00,#ffff5f,#ffffdf,#ffffff"))
+            .colors("#ffff00,#ffff5f,#ffffdf,#ffffff")
             .difficulty(10)
             .build());
-    //    public static final BubbleType DAMAGE_BUBBLE = new BubbleType.Builder().priority(8850000L).radius(Range.between(15, 85)).speed(Range.between(3.215d, 4.845d)).colors(Color.red, new Color(255, 63, 0), Color.red).attackMod(1d).build();
     public static final RegistrySupplier<DamageBubble> DAMAGE = register("damage", DamageBubble::new);
 
     public static final RegistrySupplier<BubbleType> POISON = register("poison", () -> BubbleType.builder()
@@ -76,7 +74,7 @@ public class Bubbles {
             .attack(0.0f)
             .score(0.375f)
             .hardness(1.0d)
-            .colors(ColorUtils.parseColorString("#7fff00,#9faf1f,#bf7f3f,#df3f5f,#ff007f")) // new Color[]{new Color(128, 255, 0), new Color(160, 192, 32), new Color(192, 128, 64), new Color(224, 64, 96), new Color(255, 0, 128)})
+            .colors("#7fff00,#9faf1f,#bf7f3f,#df3f5f,#ff007f")
             .effect((source, target) -> (new AppliedEffect(Effects.POISON.get(), source.getRadius() / 8, 4)))
             .addAiTask(0, new AiAttack())
             .addAiTask(1, new AiTarget(Entities.PLAYER.get()))

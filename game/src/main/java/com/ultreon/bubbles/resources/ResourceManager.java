@@ -7,7 +7,7 @@ import com.ultreon.commons.exceptions.SyntaxException;
 import com.ultreon.commons.function.ThrowingSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -92,6 +92,10 @@ public class ResourceManager {
         }
     }
 
+    public void importResources(Path path) {
+        importResources(path.toFile());
+    }
+
     public void importResources(File file) {
         if (!file.exists()) {
             BubbleBlaster.getInstance().crash(new IOException("Resources file doesn't exists: " + file.getAbsolutePath()));
@@ -153,9 +157,9 @@ public class ResourceManager {
                             // Create resource entry/
                             Identifier entry;
                             try {
-                                entry = new Identifier(s, namespace);
+                                entry = new Identifier(namespace, s);
                             } catch (SyntaxException e) {
-                                logger.error("Invalid resource identifier.", e);
+                                logger.error("Invalid resource identifier:", e);
                                 continue;
                             }
 
@@ -227,7 +231,7 @@ public class ResourceManager {
 
                 try {
                     // Entry
-                    Identifier entry = new Identifier(path, namespace);
+                    Identifier entry = new Identifier(namespace, path);
 
                     // Add (entry -> resource) mapping.
                     map.put(entry, resource);

@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.ultreon.commons.exceptions.UnsafeOperationException;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -91,7 +91,7 @@ public class GoogleSearch implements Iterable<GoogleResult>, Serializable {
 //     * @return the google result iterator.
 //     */
 //    @SuppressWarnings("Convert2Diamond")
-//    @NonNull
+//    @NotNull
 //    @Override
 //    public Iterator<GoogleResult> iterator() {
 //        GoogleSearch googleSearch = new GoogleSearch(query, 1, 1, safeSearch);
@@ -113,7 +113,7 @@ public class GoogleSearch implements Iterable<GoogleResult>, Serializable {
 //        };
 //    }
 
-    @NonNull
+    @NotNull
     @Override
     public Iterator<GoogleResult> iterator() {
         return null;

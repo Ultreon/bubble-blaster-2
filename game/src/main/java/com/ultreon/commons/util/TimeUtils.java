@@ -1,6 +1,6 @@
 package com.ultreon.commons.util;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,7 +24,7 @@ public class TimeUtils {
         return formatDuration(minute, second, hourDouble);
     }
 
-    @NonNull
+    @NotNull
     public static String formatDuration(int minute, int second, double hourDouble) {
         hourDouble -= (double) minute / 60;
         hourDouble -= (double) second / 60 / 60;

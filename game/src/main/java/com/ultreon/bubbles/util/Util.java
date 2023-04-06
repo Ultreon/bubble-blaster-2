@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.util;
 
 import com.google.common.annotations.Beta;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.References;
-import com.ultreon.bubbles.render.screen.ScreenManager;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 public class Util {
+    @Deprecated
     public static ScreenManager getSceneManager() {
         return BubbleBlaster.getInstance().getScreenManager();
     }

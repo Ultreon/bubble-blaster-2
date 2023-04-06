@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.util;
 
 import com.ultreon.bubbles.registry.object.ObjectHolder;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class RegistryUtils {
     @Nullable

@@ -1,7 +1,7 @@
 package com.ultreon.commons.crash;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -56,7 +56,7 @@ public final class CrashLog extends CrashCategory {
         return addCrashLog(crashLog1);
     }
 
-    @NonNull
+    @NotNull
     public Throwable getThrowable() {
         return throwable;
     }
@@ -126,12 +126,12 @@ public final class CrashLog extends CrashCategory {
     }
 
     public void defaultSave() {
-        File file = new File("Game-Crashes");
+        File file = new File("game-crashes");
         if (!file.exists()) {
             try {
                 Files.createDirectories(file.toPath());
             } catch (IOException e) {
-                throw new IOError(e);
+                throw new RuntimeException(e);
             }
         }
 

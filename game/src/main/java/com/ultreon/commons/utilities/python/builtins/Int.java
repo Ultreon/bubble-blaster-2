@@ -1,6 +1,6 @@
 package com.ultreon.commons.utilities.python.builtins;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 
@@ -13,7 +13,7 @@ public class Int extends BigInteger {
         super(val, radix);
     }
 
-    public Int(@NonNull String val) {
+    public Int(@NotNull String val) {
         super(val);
     }
 }

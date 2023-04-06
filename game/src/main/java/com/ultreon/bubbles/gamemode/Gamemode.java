@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.StateListener;
@@ -14,12 +13,14 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.vector.Vec2f;
@@ -28,8 +29,8 @@ import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.MapType;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
@@ -61,6 +62,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     protected boolean initialized = false;
     private BubbleType defaultBubble = Bubbles.NORMAL.get();
     protected GameHud hud;
+    private boolean valid;
 
     // Random & seeding.
     public PseudoRandom getRNG() {
@@ -260,7 +262,18 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         return missing;
     }
 
-    public abstract boolean isValid();
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public void make() {
+        valid = true;
+    }
+
+    public void destroy() {
+        valid = false;
+    }
 
     /**
      * Get a Random Bubble
@@ -293,8 +306,9 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * Get State from the Game-type to a Bson Document
      * Dumps the game-type's state to a bson document.
      */
+    @NotNull
     @Override
-    public @NonNull MapType save() {
+    public MapType save() {
         return new MapType();
     }
 
@@ -304,13 +318,14 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      *
      * @param tag the bson document containing the game-type data.
      */
+    @NotNull
     @Override
     public void load(MapType tag) {
 
     }
 
     @Nullable
-    public static Gamemode getFromNbt(@NonNull MapType nbt) {
+    public static Gamemode getFromNbt(@NotNull MapType nbt) {
         try {
             return Registry.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
         } catch (IllegalArgumentException e) {
@@ -318,7 +333,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         }
     }
 
-    @NonNull
+    @NotNull
     public abstract Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry);
 
     public boolean doesSpawn(Entity entity) {
@@ -371,8 +386,6 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     }
 
     public abstract long getEntityId(Entity entity, Environment environment, long spawnIndex, int retry);
-
-    public abstract void destroy();
 
     public BubbleRandomizer createBubbleRandomizer(Environment environment, Rng rng) {
         return new BubbleRandomizer(environment, rng);

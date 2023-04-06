@@ -18,13 +18,13 @@ import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.MapType;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -187,6 +187,11 @@ public class Bubble extends AbstractBubbleEntity {
         return rectangle;
     }
 
+    @Override
+    public boolean isBad() {
+        return bubbleType.isBad();
+    }
+
     /**
      * Tick bubble entity.
      *
@@ -196,8 +201,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void tick(Environment environment) {
         // Check player and current scene.
         Player player = this.environment.getPlayer();
-        @Nullable Screen currentScreen = Util.getSceneManager().getCurrentScreen();
-        boolean gameLoaded = BubbleBlaster.getInstance().isInGame();
+        boolean gameLoaded = this.environment.game().isInGame();
 
         if (player == null || !gameLoaded) {
             return;
@@ -228,7 +232,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.colors);
+        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.getColors());
     }
 
     /**
@@ -312,8 +316,8 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     @Override
-    public @NonNull MapType save() {
-        @NonNull MapType data = super.save();
+    public @NotNull MapType save() {
+        @NotNull MapType data = super.save();
         data.putInt("radius", radius);
         data.putInt("baseRadius", baseRadius);
 

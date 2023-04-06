@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common.interfaces;
 
 import com.ultreon.data.types.MapType;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holder for a state that can be saved/loaded.
@@ -16,7 +16,7 @@ public interface StateHolder {
      * @author Qboi123
      * @since 0.0.0
      */
-    @NonNull
+    @NotNull
     MapType save();
 
     /**

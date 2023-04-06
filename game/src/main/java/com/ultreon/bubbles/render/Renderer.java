@@ -3,13 +3,10 @@
 /////////////////////
 package com.ultreon.bubbles.render;
 
-/////////////////////
-//     Imports     //
-/////////////////////
-
 import com.ultreon.bubbles.common.text.TextObject;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.vector.Vec4i;
-import com.ultreon.commons.util.ColorUtils;
 import com.ultreon.commons.util.StringUtils;
 
 import java.awt.*;
@@ -98,27 +95,27 @@ public class Renderer {
     }
 
     public void color(Color c) {
-        gfx.setColor(c);
+        gfx.setColor(c == null ? null : c.toAwt());
     }
 
     public void color(int r, int g, int b) {
-        gfx.setColor(new Color(r, g, b));
+        color(Color.rgb(r, g, b));
     }
 
     public void color(float r, float g, float b) {
-        gfx.setColor(new Color(r, g, b));
+        color(Color.rgb(r, g, b));
     }
 
     public void color(int r, int g, int b, int a) {
-        gfx.setColor(new Color(r, g, b, a));
+        color(Color.rgba(r, g, b, a));
     }
 
     public void color(float r, float g, float b, float a) {
-        gfx.setColor(new Color(r, g, b, a));
+        color(Color.rgba(r, g, b, a));
     }
 
-    public void color(int rgba) {
-        gfx.setColor(new Color(rgba, true));
+    public void color(int argb) {
+        color(Color.argb(argb));
     }
 
     /**
@@ -134,11 +131,35 @@ public class Renderer {
      * @param hex a color hex.
      */
     public void color(String hex) {
-        gfx.setColor(ColorUtils.unpackHex(hex));
+        color(Color.hex(hex));
     }
 
     public void clearColor(Color color) {
-        gfx.setBackground(color);
+        gfx.setBackground(color.toAwt());
+    }
+
+    public void clearColor(int red, int green, int blue) {
+        clearColor(Color.rgb(red, green, blue));
+    }
+
+    public void clearColor(float red, float green, float blue) {
+        clearColor(Color.rgb(red, green, blue));
+    }
+
+    public void clearColor(int red, int green, int blue, int alpha) {
+        clearColor(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void clearColor(float red, float green, float blue, float alpha) {
+        clearColor(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void clearColor(int argb) {
+        clearColor(Color.argb(argb));
+    }
+
+    public void clearColor(String hex) {
+        clearColor(Color.hex(hex));
     }
 
     public void paintMode() {
@@ -146,7 +167,31 @@ public class Renderer {
     }
 
     public void xorMode(Color c1) {
-        gfx.setXORMode(c1);
+        gfx.setXORMode(c1.toAwt());
+    }
+
+    public void xorMode(int red, int green, int blue) {
+        xorMode(Color.rgb(red, green, blue));
+    }
+
+    public void xorMode(float red, float green, float blue) {
+        xorMode(Color.rgb(red, green, blue));
+    }
+
+    public void xorMode(int red, int green, int blue, int alpha) {
+        xorMode(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void xorMode(float red, float green, float blue, float alpha) {
+        xorMode(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void xorMode(int argb) {
+        xorMode(Color.argb(argb));
+    }
+
+    public void xorMode(String hex) {
+        xorMode(Color.hex(hex));
     }
 
     public void hint(RenderingHints.Key hintKey, Object hintValue) {
@@ -196,7 +241,7 @@ public class Renderer {
         gfx.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
     }
 
-    public void fill(com.ultreon.bubbles.render.screen.gui.Rectangle r) {
+    public void fill(com.ultreon.bubbles.render.gui.widget.Rectangle r) {
         gfx.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
     }
 
@@ -280,11 +325,11 @@ public class Renderer {
     }
 
     public boolean image(Image img, int x, int y, Color backgroundColor) {
-        return gfx.drawImage(img, x, y, backgroundColor, observer);
+        return gfx.drawImage(img, x, y, backgroundColor.toAwt(), observer);
     }
 
     public boolean image(Image img, int x, int y, int width, int height, Color backgroundColor) {
-        return gfx.drawImage(img, x, y, width, height, backgroundColor, observer);
+        return gfx.drawImage(img, x, y, width, height, backgroundColor.toAwt(), observer);
     }
 
     public boolean image(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2) {
@@ -292,7 +337,7 @@ public class Renderer {
     }
 
     public boolean image(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color backgroundColor) {
-        return gfx.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, backgroundColor, observer);
+        return gfx.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, backgroundColor.toAwt(), observer);
     }
 
     public boolean image(Image img, AffineTransform xForm) {
@@ -454,7 +499,7 @@ public class Renderer {
     }
 
     public Color getClearColor() {
-        return gfx.getBackground();
+        return Color.awt(gfx.getBackground());
     }
 
     public Stroke getStroke() {
@@ -462,7 +507,7 @@ public class Renderer {
     }
 
     public Color getColor() {
-        return gfx.getColor();
+        return Color.awt(gfx.getColor());
     }
 
     public Font getFallbackFont() {
@@ -537,5 +582,21 @@ public class Renderer {
     ///////////////////////
     public String toString() {
         return gfx.toString();
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height) {
+        drawGradientBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height, Insets insets) {
+        drawGradientBox(x, y, width, height, insets, 10);
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height, Insets insets, int speed) {
+        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
+        GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
+        Border border = new Border(insets);
+        border.setPaint(p);
+        border.paintBorder(this, x, y, width, height);
     }
 }

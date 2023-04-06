@@ -1,13 +1,12 @@
 package com.ultreon.bubbles.common;
 
 import com.google.common.collect.Lists;
-import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.SyntaxException;
 import com.ultreon.commons.lang.Pair;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.checkerframework.common.reflection.qual.NewInstance;
 import org.checkerframework.common.value.qual.MinLen;
 import org.checkerframework.dataflow.qual.Pure;
@@ -30,52 +29,45 @@ import java.util.regex.Pattern;
 @MethodsReturnNonnullByDefault
 public final class Identifier {
     @SerializedName("id")
-    private final @NonNull String location;
+    private final @NotNull String location;
     @SerializedName("name")
-    private final @NonNull String path;
+    private final @NotNull String path;
 
-    public Identifier(
-            @NonNull String path,
-            @NonNull String location) {
-        if (!Pattern.matches("^[A-Za-z\\d_/.]*((\\.[a-z\\d_]*)?)$", path)) {
-            throw new SyntaxException("Path contains illegal characters: " + path);
-        }
-
-        if (!Pattern.matches("^([a-z][a-z\\d_]{2,})(\\.[a-z][a-z\\d_]{2,})*$", location)) {
+    public Identifier(@NotNull String location, @NotNull String path) {
+        if (!Pattern.matches("^[a-z\\d-_]{2,}$", location))
             throw new SyntaxException("Location contains illegal characters: " + location);
-        }
+
+        if (!Pattern.matches("^[a-z\\d_./]+$", path))
+            throw new SyntaxException("Path contains illegal characters: " + path);
 
         this.location = location;
         this.path = path;
     }
 
-    public Identifier(
-            @MinLen(3)
-            @NonNull String name) {
+    public Identifier(@MinLen(3) @NotNull String name) {
         String[] split = name.split("@", 1);
         if (split.length == 2) {
-            this.path = testPath(split[0]);
-            this.location = testLocation(split[1]);
+            this.location = testLocation(split[0]);
+            this.path = testPath(split[1]);
         } else {
-            this.path = testPath(name);
             this.location = BubbleBlaster.NAMESPACE;
+            this.path = testPath(name);
         }
     }
 
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract("_ -> new")
     public static Identifier parse(
-            @NonNull String name) {
+            @NotNull String name) {
         return new Identifier(name);
     }
 
     @Nullable
     @Contract("null -> null")
-    public static Identifier tryParse(
-            @MinLen(3)
-            @Nullable String name) {
+    public static Identifier tryParse(@MinLen(3) @Nullable String name) {
         if (name == null) return null;
+
         try {
             return new Identifier(name);
         } catch (Exception e) {
@@ -92,7 +84,7 @@ public final class Identifier {
     }
 
     @Contract("_ -> param1")
-    public static @NonNull String testPath(String path) {
+    public static @NotNull String testPath(String path) {
         if (!Pattern.matches("([a-z_.\\d]{2,})(/[a-z_.\\d]{2,})*", path)) {
             throw new SyntaxException("Path is invalid: " + path);
         }
@@ -114,19 +106,19 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @Override
     @NewInstance
     @Contract(pure = true)
     public String toString() {
-        return path + "@" + location;
+        return location + "@" + path;
     }
 
     /**
      * @return object location (the mod id / namespace).
      */
     @Pure
-    @NonNull
+    @NotNull
     @Contract(pure = true)
     public String location() {
         return location;
@@ -136,7 +128,7 @@ public final class Identifier {
      * @return object path.
      */
     @Pure
-    @NonNull
+    @NotNull
     @Contract(pure = true)
     public String path() {
         return path;
@@ -145,31 +137,31 @@ public final class Identifier {
     @NewInstance
     @Contract("_ -> new")
     public Identifier withLocation(String location) {
-        return new Identifier(path, location);
+        return new Identifier(location, path);
     }
 
     @NewInstance
     @Contract("_ -> new")
     public Identifier withPath(String path) {
-        return new Identifier(path, this.location);
+        return new Identifier(this.location, path);
     }
 
     @NewInstance
     @Contract("_ -> new")
     public Identifier mapLocation(Function<String, String> location) {
-        return new Identifier(this.path, location.apply(this.location));
+        return new Identifier(location.apply(this.location), this.path);
     }
 
     @NewInstance
     @Contract("_ -> new")
     public Identifier mapPath(Function<String, String> path) {
-        return new Identifier(path.apply(this.path), this.location);
+        return new Identifier(this.location, path.apply(this.path));
     }
 
     @NewInstance
     @Contract("_, _ -> new")
     public Identifier map(Function<String, String> path, Function<String, String> location) {
-        return new Identifier(path.apply(this.path), location.apply(this.location));
+        return new Identifier(location.apply(this.location), path.apply(this.path));
     }
 
     public <T> T reduce(BiFunction<String, String, T> func) {
@@ -177,7 +169,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Unmodifiable
     @Contract(value = "-> new", pure = true)
@@ -185,7 +177,7 @@ public final class Identifier {
         return List.of(location, path);
     }
 
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(" -> new")
     public ArrayList<String> toArrayList() {
@@ -193,7 +185,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @UnmodifiableView
     @Contract(pure = true)
     public Collection<String> toCollection() {
@@ -201,7 +193,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(value = " -> new", pure = true)
     public Pair<String, String> toPair() {
@@ -209,7 +201,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(value = " -> new", pure = true)
     public String[] toArray() {

@@ -1,7 +1,7 @@
 package com.ultreon.commons.crash;
 
 import com.ultreon.commons.util.StringUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.PrintWriter;

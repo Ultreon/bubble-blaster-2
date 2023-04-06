@@ -21,11 +21,10 @@ import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.MapType;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
-import java.util.NoSuchElementException;
 
 /**
  * @author Qboi123
@@ -36,7 +35,6 @@ import java.util.NoSuchElementException;
 public class ClassicMode extends Gamemode {
     // Hud and events-active flag.
     private ClassicModeHud hud;
-    private boolean valid;
 
     // Threads
     private Thread spawner;
@@ -128,7 +126,7 @@ public class ClassicMode extends Gamemode {
 
     @Override
     @Deprecated
-    public @NonNull MapType save() {
+    public @NotNull MapType save() {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.save."));
         return new MapType();
     }
@@ -197,7 +195,7 @@ public class ClassicMode extends Gamemode {
     }
 
     @Override
-    public @NonNull Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
+    public @NotNull Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
         return new Vec2f(
                 (int) getGameBounds().getMaxX() + entity.getBounds().width,
                 (int) entity.getYRng().getNumber(getGameBounds().getMinY() - entity.getBounds().height, getGameBounds().getMaxY() + entity.getBounds().height, usageId.toString().toCharArray(), spawnIndex, retry)
@@ -206,22 +204,7 @@ public class ClassicMode extends Gamemode {
 
     @Override
     public void onQuit() {
-        this.hud = null;
-    }
 
-    public void make() {
-        BubbleBlaster.getEventBus().subscribe(this);
-        this.valid = true;
-    }
-
-    public void destroy() throws NoSuchElementException {
-        BubbleBlaster.getEventBus().unsubscribe(this);
-        this.valid = false;
-    }
-
-    @Override
-    public boolean isValid() {
-        return valid;
     }
 
     public Thread getSpawner() {

@@ -2,7 +2,7 @@ package com.ultreon.bubbles.entity.bubble;
 
 import it.unimi.dsi.fastutil.doubles.DoubleIterable;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public record Range(double start, double end, double step) {
     public Range(double start, double end) {
@@ -17,7 +17,7 @@ public record Range(double start, double end, double step) {
         return (start <= value) && (end > value);
     }
 
-    public @NonNull DoubleIterator iterator() {
+    public @NotNull DoubleIterator iterator() {
         return new DoubleIterator() {
             private double current = start;
 

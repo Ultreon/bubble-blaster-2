@@ -1,12 +1,10 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.ultreon.bubbles.common.PolygonBuilder;
-import com.ultreon.bubbles.entity.Bullet;
-import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.entity.LivingEntity;
-import com.ultreon.bubbles.entity.SpawnInformation;
+import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
+import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.types.EntityType;
@@ -19,21 +17,24 @@ import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.MessengerScreen;
-import com.ultreon.bubbles.render.screen.Screen;
-import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.vector.Vec2d;
+import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.awt.geom.*;
-import java.util.Objects;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
 
@@ -169,14 +170,11 @@ public class Player extends LivingEntity implements InputController {
     @Override
     public void prepareSpawn(SpawnInformation information) {
         super.prepareSpawn(information);
-        @Nullable Screen currentScene = Objects.requireNonNull(Util.getSceneManager()).getCurrentScreen();
-        if ((currentScene == null && BubbleBlaster.getInstance().isInGame()) ||
-                currentScene instanceof MessengerScreen) {
-            Rectangle2D gameBounds = environment.game().getGameBounds();
-            this.x = (float) MathHelper.clamp(x, gameBounds.getMinX(), gameBounds.getMaxX());
-            this.y = (float) MathHelper.clamp(y, gameBounds.getMinY(), gameBounds.getMaxY());
-            make();
-        }
+        BubbleBlaster game = this.environment.game();
+        Rectangle2D gameBounds = game.getGameBounds();
+        this.x = (float) Mth.clamp(x, gameBounds.getMinX(), gameBounds.getMaxX());
+        this.y = (float) Mth.clamp(y, gameBounds.getMinY(), gameBounds.getMaxY());
+        make();
     }
 
     @Override
@@ -199,7 +197,7 @@ public class Player extends LivingEntity implements InputController {
         return new Ellipse2D.Double(x - 40 * scale / 2, y - 40 * scale / 2, 40 * scale, 40 * scale);
     }
 
-    @NonNull
+    @NotNull
     private Area transformArea(Area shipShape) {
         Area area = new Area(shipShape);
         AffineTransform transform = new AffineTransform();
@@ -211,7 +209,7 @@ public class Player extends LivingEntity implements InputController {
         return area;
     }
 
-    @NonNull
+    @NotNull
     private Area transformAreaRotated(Area shipShape) {
         Area area = new Area(shipShape);
         AffineTransform transform = new AffineTransform();
@@ -270,8 +268,8 @@ public class Player extends LivingEntity implements InputController {
      * @return the center position.
      */
     @SuppressWarnings("unused")
-    public Point getCenter() {
-        return new Point((int) getBounds().getCenterX(), (int) getBounds().getCenterY());
+    public Vec2i getCenter() {
+        return new Vec2i((int) getBounds().getCenterX(), (int) getBounds().getCenterY());
     }
 
     /**
@@ -373,8 +371,8 @@ public class Player extends LivingEntity implements InputController {
         Rectangle2D gameBounds = loadedGame.getGamemode().getGameBounds();
         this.prevX = x;
         this.prevY = y;
-        this.x = (float) MathHelper.clamp(this.x, gameBounds.getMinX() + this.size() / 2, gameBounds.getMaxX() - size() / 2);
-        this.y = (float) MathHelper.clamp(this.y, gameBounds.getMinY() + this.size() / 2, gameBounds.getMaxY() - size() / 2);
+        this.x = (float) Mth.clamp(this.x, gameBounds.getMinX() + this.size() / 2, gameBounds.getMaxX() - size() / 2);
+        this.y = (float) Mth.clamp(this.y, gameBounds.getMinY() + this.size() / 2, gameBounds.getMaxY() - size() / 2);
 
         // Leveling up.
         if (score / Constants.LEVEL_THRESHOLD > level) {
@@ -420,7 +418,30 @@ public class Player extends LivingEntity implements InputController {
 
     @Override
     public void onCollision(Entity other, double deltaTime) {
+        if (other.isBad()) return;
 
+        // Modifiers
+        if (other instanceof Bubble bubble) {
+            AttributeContainer attributeMap = bubble.getAttributes();
+            double scoreMultiplier = attributeMap.getBase(Attribute.SCORE);
+            double attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
+            double defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
+
+            // Attributes
+            double radius = bubble.getRadius();
+            double speed = bubble.getSpeed();
+
+            // Calculate score value.
+            double visibleValue = radius * speed;
+            double nonVisibleValue = attack * defense;
+            double scoreValue = ((visibleValue * (nonVisibleValue + 1)) * scoreMultiplier * scoreMultiplier) * getAttributes().getBase(Attribute.SCORE_MODIFIER) * deltaTime / Constants.BUBBLE_SCORE_REDUCTION_SELF;
+
+            // Add score.
+            addScore(scoreValue);
+        } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
+            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            addScore(score);
+        }
     }
 
     /**
@@ -475,7 +496,7 @@ public class Player extends LivingEntity implements InputController {
      * @param velocity the amount velocity for bounce.
      * @param delta    the delta change.
      */
-    public void applyForce(Point2D velocity, double delta) {
+    public void applyForce(Vec2d velocity, double delta) {
         this.applyForce(velocity.getX(), velocity.getY(), delta);
     }
 
@@ -538,8 +559,8 @@ public class Player extends LivingEntity implements InputController {
      * @return the player data.
      */
     @Override
-    public @NonNull MapType save() {
-        @NonNull MapType document = super.save();
+    public @NotNull MapType save() {
+        @NotNull MapType document = super.save();
 
         document.putDouble("score", score);
         document.putFloat("rotation", rotation);

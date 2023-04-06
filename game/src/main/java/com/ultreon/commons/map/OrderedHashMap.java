@@ -64,7 +64,7 @@ package com.ultreon.commons.map;
  * This was edited by Qboi123
  */
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -499,10 +499,10 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#keySet()}.
      */
-    public @NonNull Set<K> keySet() {
+    public @NotNull Set<K> keySet() {
         return new AbstractSet<K>() {
             // required impls
-            public @NonNull Iterator<K> iterator() {
+            public @NotNull Iterator<K> iterator() {
                 return new OrderedIterator<>(KEY);
             }
 
@@ -534,10 +534,10 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#values()}.
      */
-    public @NonNull Collection<V> values() {
+    public @NotNull Collection<V> values() {
         return new AbstractCollection<V>() {
             // required impl
-            public @NonNull Iterator<V> iterator() {
+            public @NotNull Iterator<V> iterator() {
                 return new OrderedIterator<>(VALUE);
             }
 
@@ -587,7 +587,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      *
      * @return
      */
-    public @NonNull Set<Map.Entry<K, V>> entrySet() {
+    public @NotNull Set<Map.Entry<K, V>> entrySet() {
         return new AbstractSet<Map.Entry<K, V>>() {
             // helper
             private Entry<K, V> findEntry(Map.Entry<K, V> o) {
@@ -603,7 +603,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // required impl
-            public @NonNull Iterator<Map.Entry<K, V>> iterator() {
+            public @NotNull Iterator<Map.Entry<K, V>> iterator() {
                 return new OrderedIterator<>(ENTRY);
             }
 

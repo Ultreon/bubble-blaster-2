@@ -1,12 +1,13 @@
 package com.ultreon.bubbles.bubble;
 
 import com.ultreon.bubbles.common.EntityPos;
-import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.util.position.AbsolutePosition;
 import com.ultreon.bubbles.util.position.Position;
+import com.ultreon.bubbles.vector.Vec2i;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -143,6 +144,7 @@ public class BubbleProperties extends EntityPos {
      * @return the bubble {@link Point position (AWT Point)}.
      * @see Point
      */
+    @Deprecated
     public Point getPoint() {
         return new Point(x, y);
     }
@@ -151,6 +153,7 @@ public class BubbleProperties extends EntityPos {
      * @return the bubble {@link Point2D.Float position (AWT 2D Point [float])}.
      * @see Point2D.Float
      */
+    @Deprecated
     public Point2D.Float getPoint2D() {
         return new Point2D.Float(x, y);
     }
@@ -159,8 +162,17 @@ public class BubbleProperties extends EntityPos {
      * @return the bubble {@link Position position}.
      * @see Position
      */
+    @Deprecated
     public Position getPosition() {
         return new AbsolutePosition(x, y);
+    }
+
+    /**
+     * @return the bubble {@link Position position}.
+     * @see Position
+     */
+    public Vec2i getPos() {
+        return new Vec2i(x, y);
     }
 
     /**

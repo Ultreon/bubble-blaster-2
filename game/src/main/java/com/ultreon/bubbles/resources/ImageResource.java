@@ -4,7 +4,6 @@ import com.ultreon.commons.function.ThrowingSupplier;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -21,7 +20,7 @@ public class ImageResource extends Resource {
         try (InputStream inputStream = opener.get()) {
             this.image = ImageIO.read(inputStream);
         } catch (IOException e) {
-            throw new IOError(e);
+            throw new RuntimeException(e);
         }
     }
 

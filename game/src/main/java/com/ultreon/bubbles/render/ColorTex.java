@@ -1,38 +1,37 @@
 package com.ultreon.bubbles.render;
 
-import java.awt.*;
-
 /**
  * @author Qboi
  * @since 1.0.141
  */
 public class ColorTex extends PaintTex {
     public ColorTex(Color color) {
-        super(color);
+        super(color.toAwt());
     }
 
     public ColorTex(int r, int g, int b) {
-        super(new Color(r, g, b));
+        this(Color.rgb(r, g, b));
     }
 
     public ColorTex(float r, float g, float b) {
-        super(new Color(r, g, b));
+        this(Color.rgb(r, g, b));
     }
 
     public ColorTex(int r, int g, int b, int a) {
-        super(new Color(r, g, b, a));
+        this(Color.rgba(r, g, b, a));
     }
 
     public ColorTex(float r, float g, float b, float a) {
-        super(new Color(r, g, b, a));
+        this(Color.rgba(r, g, b, a));
     }
 
-    public ColorTex(int rgb) {
-        super(new Color(rgb));
+    public ColorTex(int argb) {
+        this(Color.argb(argb));
     }
 
-    public ColorTex(int rgba, boolean includeAlpha) {
-        super(new Color(rgba, includeAlpha));
+    @Deprecated
+    public ColorTex(int argb, boolean includeAlpha) {
+        this(argb);
     }
 
     /**
@@ -44,6 +43,6 @@ public class ColorTex extends PaintTex {
      * @return the color texture created from the HSB value.
      */
     public static ColorTex fromHSB(float h, float s, float b) {
-        return new ColorTex(Color.getHSBColor(h, s, b));
+        return new ColorTex(Color.hsb(h, s, b));
     }
 }

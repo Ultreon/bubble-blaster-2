@@ -6,7 +6,7 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 
 public class RenderEvents {
     public static final Event<RenderGameBefore> RENDER_GAME_BEFORE = Event.create();

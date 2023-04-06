@@ -1,17 +1,16 @@
 package com.ultreon.bubbles.debug;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
+import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.core.input.MouseInput;
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 
 import java.awt.*;
 import java.text.DecimalFormat;

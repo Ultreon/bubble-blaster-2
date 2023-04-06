@@ -17,13 +17,13 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
@@ -479,7 +479,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the saved data in the form of a compound.
      */
     @Override
-    public @NonNull MapType save() {
+    public @NotNull MapType save() {
         // Save components.
         MapType state = new MapType();
         state.put("Tag", this.tag);
@@ -824,5 +824,9 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public double getSpeed() {
         return getAttributes().get(Attribute.SPEED);
+    }
+
+    public boolean isBad() {
+        return false;
     }
 }

@@ -3,17 +3,11 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.commons.util.ColorUtils;
-import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.Range;
 
 public class AccelerateBubble extends BubbleType {
     public AccelerateBubble() {
-        colors = ColorUtils.parseColorString("#00003f,#00007f,#0000af,#0000ff");
-
-//        BubbleInit.BUBBLES.add(this);
-
-//        setPriority(244000);
+        setColors("#00003f,#00007f,#0000af,#0000ff");
         setPriority(2440000);
         setRadius(Range.between(25, 54));
         setSpeed(Range.between(6.0, 28.0));

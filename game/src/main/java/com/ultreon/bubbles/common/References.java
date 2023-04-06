@@ -3,7 +3,6 @@ package com.ultreon.bubbles.common;
 import com.ultreon.bubbles.game.BubbleBlaster;
 
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 
 public class References {
@@ -19,7 +18,7 @@ public class References {
 
     static {
         if (!LOGS_DIR.exists() && !LOGS_DIR.mkdirs()) {
-            throw new IOError(new IOException("Couldn't make directories. " + LOGS_DIR.getAbsolutePath()));
+            throw new RuntimeException(new IOException("Couldn't make directories. " + LOGS_DIR.getAbsolutePath()));
         }
     }
 }

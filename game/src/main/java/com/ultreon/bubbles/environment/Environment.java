@@ -24,7 +24,7 @@ import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.ValueAnimator;
-import com.ultreon.bubbles.render.screen.GameOverScreen;
+import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
@@ -36,8 +36,8 @@ import com.ultreon.commons.time.DateTime;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.StringType;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.awt.*;
@@ -105,6 +105,7 @@ public final class Environment {
     private static final BubbleBlaster game = BubbleBlaster.getInstance();
     private String name = "UNKNOWN WORLD";
     private int freezeTicks;
+    boolean shuttingDown;
     /// Constructors.
 
     public Environment(GameSave save, Gamemode gamemode, int seed) {
@@ -373,7 +374,7 @@ public final class Environment {
      * @return The bubble type.
      * @see BubbleSystem#random(Rng, long, int, Environment)
      */
-    @NonNull
+    @NotNull
     public BubbleType getRandomBubble(long spawnIndex) {
         var bubbleType = gamemode.getRandomBubble(spawnIndex);
         if (bubbleType != null) {
@@ -478,7 +479,7 @@ public final class Environment {
     public void spawn(EntityType<?> entityType, SpawnInformation.SpawnReason reason, long spawnIndex, int retry) {
         BubbleBlaster.runOnMainThread(() -> {
             Entity entity = entityType.create(this);
-            @NonNull Vec2f pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
+            @NotNull Vec2f pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
             spawn(entity, pos);
         });
     }
@@ -585,6 +586,7 @@ public final class Environment {
     }
 
     public void shutdown() {
+        this.shuttingDown = true;
         if (gameEventHandlerThread != null) {
             this.gameEventHandlerThread.interrupt();
         }
