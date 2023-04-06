@@ -5,7 +5,8 @@ import com.ultreon.bubbles.ability.triggers.AbilityKeyTrigger;
 import com.ultreon.bubbles.ability.triggers.types.AbilityKeyTriggerType;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -93,15 +94,31 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
     }
 
     /**
+     * Save the ability instance.
+     *
+     * @return the compound nbt tag.
+     * @author Qboi123
+     * @since 0.0.0
+     */
+    @Override
+    public @NonNull MapType save() {
+        MapType data = new MapType();
+        data.putInt("cooldown", this.cooldown);
+        data.putInt("value", this.value);
+
+        return data;
+    }
+
+    /**
      * Load the entity from a compound tag.
      * @param tag the compound tag to load from.
      * @since 0.0.0
      * @author Qboi123
      */
     @Override
-    public void load(CompoundTag tag) {
-        this.cooldown = tag.getInt("Cooldown");
-        this.value = tag.getInt("Value");
+    public void load(MapType tag) {
+        this.cooldown = tag.getInt("cooldown");
+        this.value = tag.getInt("value");
     }
 
     /**

@@ -6,7 +6,6 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.commons.exceptions.InvalidValueException;
-import net.querz.nbt.io.SNBTUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -54,7 +53,7 @@ public class SpawnCommand implements CommandExecutor {
 
                 try {
 //                    Objects.requireNonNull(BubbleBlaster.getInstance().getEnvironment()).spawnEntityFromState(BsonDocument.parse(json));
-                    SNBTUtil.fromSNBT(json);
+//                    SNBTUtil.fromSNBT(json); // TODO: Allow deserializing a string to UBO data.
                 } catch (Exception e) {
                     e.printStackTrace();
                     player.sendMessage("Couldn't spawn entity.");

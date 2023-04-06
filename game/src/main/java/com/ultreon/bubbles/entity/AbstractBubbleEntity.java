@@ -3,7 +3,7 @@ package com.ultreon.bubbles.entity;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.vector.Vec2f;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 /**
  * ItemType Entity base class
@@ -32,7 +32,7 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         super.load(tag);
     }
 

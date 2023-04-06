@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Packed Jar" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/build/packed.jar" />
+    <option name="PROGRAM_PARAMETERS" value="--debug" />
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$\run" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">

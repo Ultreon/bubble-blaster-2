@@ -28,10 +28,10 @@ IEEE 754-2008, binary64 | | [ByteArrayTag](../../../src/main/java/net/querz/nbt/
 | [ArrayTag](../../../src/main/java/net/querz/nbt/tag/ArrayTag.java)     | 7 | `IntTag` payload *size*, then *
 size* `ByteTag` payloads | | [StringTag](../../../src/main/java/net/querz/nbt/tag/StringTag.java)
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 8 | `ShortTag` payload *length*, then a UTF-8
-string with size *length* | | [ListTag](../../../src/main/java/net/querz/nbt/tag/ListTag.java)
+string with size *length* | | [ListType](../../../src/main/java/net/querz/nbt/tag/ListType.java)
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 9 | `ByteTag` payload *tagId*, then `IntTag`
 payload *size*, then *size* tags' payloads, all of type *tagId* |
-| [CompoundTag](../../../src/main/java/net/querz/nbt/tag/CompoundTag.java)
+| [MapType](../../../src/main/java/net/querz/nbt/tag/MapType.java)
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 10 | Fully formed tags, followed by
 an `EndTag` | | [IntArrayTag](../../../src/main/java/net/querz/nbt/tag/IntArrayTag.java)
 | [ArrayTag](../../../src/main/java/net/querz/nbt/tag/ArrayTag.java)     | 11 | `IntTag` payload *size*, then *
@@ -39,7 +39,7 @@ size* `IntTag` payloads | | [LongArrayTag](../../../src/main/java/net/querz/nbt/
 | [ArrayTag](../../../src/main/java/net/querz/nbt/tag/ArrayTag.java)     | 12 | `IntTag` payload *size*, then *
 size* `LongTag` payloads |
 
-* The `EndTag` is only used to mark the end of a `CompoundTag` in its serialized state or an empty `ListTag`.
+* The `EndTag` is only used to mark the end of a `MapType` in its serialized state or an empty `ListType`.
 
 * The maximum depth of the NBT structure is 512. If the depth exceeds this restriction during serialization,
   deserialization or String conversion, a `MaxDepthReachedException` is thrown. This usually happens when a circular
@@ -93,20 +93,20 @@ Dependency:
 
 ### Example usage:
 
-The following code snippet shows how to create a `CompoundTag`:
+The following code snippet shows how to create a `MapType`:
 
 ```java
-CompoundTag ct = new CompoundTag();
+MapType ct = new MapType();
 
 ct.put("byte", new ByteTag((byte) 1));
 ct.put("double", new DoubleTag(1.234));
 ct.putString("string", "stringValue");
 ```
 
-An example how to use a `ListTag`:
+An example how to use a `ListType`:
 
 ```java
-ListTag<FloatTag> fl = new ListTag<>(FloatTag.class);
+ListType<FloatTag> fl = new ListType<>(FloatTag.class);
 
 fl.add(new FloatTag(1.234f);
 fl.addFloat(5.678f);
@@ -160,10 +160,10 @@ Each tag can be converted into an NBT String (SNBT) used in Minecraft commands.
 Example usage:
 
 ```java
-CompoundTag c = new CompoundTag();
+MapType c = new MapType();
 c.putByte("blah", (byte) 5);
 c.putString("foo", "bär");
-ListTag<StringTag> s = new ListTag<>(StringTag.class);
+ListType<StringTag> s = new ListType<>(StringTag.class);
 s.addString("test");
 s.add(new StringTag("text"));
 c.add("list", s);
@@ -189,13 +189,13 @@ Example:
 
 ```java
 // Retrieves block information from the MCA file
-CompoundTag blockState = mcaFile.getBlockStateAt(1090, 25, 1301);
+MapType blockState = mcaFile.getBlockStateAt(1090, 25, 1301);
 
 // Retrieves block information from a single chunk
-CompoundTag blockState = chunk.getBlockStateAt(2, 25, 5);
+MapType blockState = chunk.getBlockStateAt(2, 25, 5);
 
 // Set block information
-CompoundTag stone = new CompoundTag();
+MapType stone = new MapType();
 stone.putString("Name", "minecraft:stone");
 mcaFile.setBlockStateAt(1090, 25, 1301, stone, false);
 ```

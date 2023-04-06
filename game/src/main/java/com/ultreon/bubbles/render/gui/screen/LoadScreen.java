@@ -282,6 +282,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         try {
             GlobalSaveData.instance().load();
+            GlobalSaveData.instance().dump();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

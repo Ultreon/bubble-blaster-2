@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common;
 
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 public interface TagHolder {
-    CompoundTag getTag();
+    MapType getTag();
 }

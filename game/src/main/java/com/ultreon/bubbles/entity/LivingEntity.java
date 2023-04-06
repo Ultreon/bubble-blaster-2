@@ -7,7 +7,7 @@ import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EntityEvents;
 import com.ultreon.bubbles.util.helpers.Mth;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,8 +96,8 @@ public abstract class LivingEntity extends Entity {
     }
 
     @Override
-    public @NotNull CompoundTag save() {
-        @NotNull CompoundTag tag = super.save();
+    public @NotNull MapType save() {
+        @NotNull MapType tag = super.save();
 
         tag.putDouble("health", health);
 
@@ -105,7 +105,7 @@ public abstract class LivingEntity extends Entity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         super.load(tag);
 
         health = tag.getFloat("health");
