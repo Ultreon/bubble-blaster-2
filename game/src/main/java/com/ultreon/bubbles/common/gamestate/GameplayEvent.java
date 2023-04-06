@@ -6,13 +6,13 @@ import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.commons.time.DateTime;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"unused"})
 public abstract class GameplayEvent {
     private Color backgroundColor;
+    private final BubbleBlaster game = BubbleBlaster.getInstance();
 
     public GameplayEvent() {
 
@@ -20,7 +20,7 @@ public abstract class GameplayEvent {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isActive(DateTime dateTime) {
-        @Nullable Screen currentScene = Util.getSceneManager().getCurrentScreen();
+        @Nullable Screen currentScene = game.getCurrentScreen();
 
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {

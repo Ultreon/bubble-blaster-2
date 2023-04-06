@@ -5,8 +5,8 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.vector.Vec2f;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SpawnInformation {
     private SpawnReason reason;
@@ -28,7 +28,7 @@ public class SpawnInformation {
         this.environment = environment;
     }
 
-    public static SpawnInformation fromLoadSpawn(@NonNull CompoundTag tag) {
+    public static SpawnInformation fromLoadSpawn(@NotNull CompoundTag tag) {
         return new SpawnInformation(SpawnReason.LOAD, tag, null, null, BubbleBlaster.getInstance().environment);
     }
 

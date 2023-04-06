@@ -6,7 +6,7 @@ import com.ultreon.bubbles.ability.triggers.types.AbilityKeyTriggerType;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The ability class. Made for players to do stuff like {@linkplain TeleportAbility teleporting}.
@@ -72,7 +72,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @author Qboi123
      */
     @Override
-    public @NonNull CompoundTag save() {
+    public @NotNull CompoundTag save() {
         CompoundTag document = new CompoundTag();
         document.putInt("Cooldown", this.cooldown);
         document.putInt("Value", this.value);

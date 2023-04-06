@@ -28,8 +28,8 @@ import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
@@ -305,7 +305,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * Get State from the Game-type to a Bson Document
      * Dumps the game-type's state to a bson document.
      */
-    @NonNull
+    @NotNull
     @Override
     public CompoundTag save() {
         return new CompoundTag();
@@ -318,12 +318,12 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * @param tag the bson document containing the game-type data.
      */
     @Override
-    public void load(@NonNull CompoundTag tag) {
+    public void load(@NotNull CompoundTag tag) {
 
     }
 
     @Nullable
-    public static Gamemode getFromNbt(@NonNull CompoundTag nbt) {
+    public static Gamemode getFromNbt(@NotNull CompoundTag nbt) {
         try {
             return Registry.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
         } catch (IllegalArgumentException e) {
@@ -331,7 +331,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         }
     }
 
-    @NonNull
+    @NotNull
     public abstract Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry);
 
     public boolean doesSpawn(Entity entity) {

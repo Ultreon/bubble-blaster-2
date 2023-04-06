@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.Rectangle;
@@ -22,8 +23,11 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     protected int width;
     protected int height;
     private final long hash;
+    public boolean enabled = true;
+    public boolean visible = true;
     private boolean valid;
     protected Color backgroundColor;
+    protected final BubbleBlaster game = BubbleBlaster.getInstance();
 
     /**
      * @param x      position create the widget

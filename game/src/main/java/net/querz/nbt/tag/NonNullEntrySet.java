@@ -1,6 +1,6 @@
 package net.querz.nbt.tag;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,11 +12,11 @@ import java.util.Set;
  * that disallows setting null values.
  */
 @SuppressWarnings("ClassCanBeRecord")
-class NonNullEntrySet<K, V> implements Set<Map.Entry<K, V>> {
+class NotNullEntrySet<K, V> implements Set<Map.Entry<K, V>> {
 
     private final Set<Map.Entry<K, V>> set;
 
-    NonNullEntrySet(Set<Map.Entry<K, V>> set) {
+    NotNullEntrySet(Set<Map.Entry<K, V>> set) {
         this.set = set;
     }
 
@@ -37,7 +37,7 @@ class NonNullEntrySet<K, V> implements Set<Map.Entry<K, V>> {
 
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
-        return new NonNullEntrySetIterator(set.iterator());
+        return new NotNullEntrySetIterator(set.iterator());
     }
 
     @Override
@@ -85,11 +85,11 @@ class NonNullEntrySet<K, V> implements Set<Map.Entry<K, V>> {
         set.clear();
     }
 
-    class NonNullEntrySetIterator implements Iterator<Map.Entry<K, V>> {
+    class NotNullEntrySetIterator implements Iterator<Map.Entry<K, V>> {
 
         private final Iterator<Map.Entry<K, V>> iterator;
 
-        NonNullEntrySetIterator(Iterator<Map.Entry<K, V>> iterator) {
+        NotNullEntrySetIterator(Iterator<Map.Entry<K, V>> iterator) {
             this.iterator = iterator;
         }
 
@@ -100,33 +100,33 @@ class NonNullEntrySet<K, V> implements Set<Map.Entry<K, V>> {
 
         @Override
         public Map.Entry<K, V> next() {
-            return new NonNullEntry(iterator.next());
+            return new NotNullEntry(iterator.next());
         }
     }
 
-    class NonNullEntry implements Map.Entry<K, V> {
+    class NotNullEntry implements Map.Entry<K, V> {
 
         private final Map.Entry<K, V> entry;
 
-        NonNullEntry(Map.Entry<K, V> entry) {
+        NotNullEntry(Map.Entry<K, V> entry) {
             this.entry = entry;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public K getKey() {
             return entry.getKey();
         }
 
-        @NonNull
+        @NotNull
         @Override
         public V getValue() {
             return entry.getValue();
         }
 
-        @NonNull
+        @NotNull
         @Override
-        public V setValue(@NonNull V value) {
+        public V setValue(@NotNull V value) {
             if (value == null) {
                 throw new NullPointerException(getClass().getSimpleName() + " does not allow setting null");
             }

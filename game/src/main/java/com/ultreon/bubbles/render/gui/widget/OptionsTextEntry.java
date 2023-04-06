@@ -12,8 +12,8 @@ import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
 import org.checkerframework.checker.builder.qual.ReturnsReceiver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 
@@ -235,19 +235,19 @@ public class OptionsTextEntry extends GuiComponent {
         this.text = text == null ? "{null}" : text;
     }
 
-    @NonNull
+    @NotNull
     public String getText() {
         return text;
     }
 
-    public void setResponder(@NonNull Consumer<@NonNull String> responder) {
-        this.responder = (@NonNull String text) -> {
+    public void setResponder(@NotNull Consumer<@NotNull String> responder) {
+        this.responder = (@NotNull String text) -> {
             responder.accept(text);
             return true;
         };
     }
 
-    public void setResponder(@NonNull Predicate<@NonNull String> responder) {
+    public void setResponder(@NotNull Predicate<@NotNull String> responder) {
         this.responder = responder;
     }
 

@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.gui.style;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StateBundle<T> {
     protected T active;
@@ -9,11 +9,11 @@ public class StateBundle<T> {
     protected T normal;
     protected T pressed;
 
-    public StateBundle(@NonNull T hover, @NonNull T normal, @NonNull T pressed) {
+    public StateBundle(@NotNull T hover, @NotNull T normal, @NotNull T pressed) {
         this(hover, normal, pressed, null);
     }
 
-    public StateBundle(@NonNull T hover, @NonNull T normal, @NonNull T pressed, @Nullable T active) {
+    public StateBundle(@NotNull T hover, @NotNull T normal, @NotNull T pressed, @Nullable T active) {
         this.hover = hover;
         this.normal = normal;
         this.pressed = pressed;
@@ -30,30 +30,30 @@ public class StateBundle<T> {
         this.active = active;
     }
 
-    @NonNull
+    @NotNull
     public T getHover() {
         return hover;
     }
 
-    public void setHover(@NonNull T hover) {
+    public void setHover(@NotNull T hover) {
         this.hover = hover;
     }
 
-    @NonNull
+    @NotNull
     public T getNormal() {
         return normal;
     }
 
-    public void setNormal(@NonNull T normal) {
+    public void setNormal(@NotNull T normal) {
         this.normal = normal;
     }
 
-    @NonNull
+    @NotNull
     public T getPressed() {
         return pressed;
     }
 
-    public void setPressed(@NonNull T pressed) {
+    public void setPressed(@NotNull T pressed) {
         this.pressed = pressed;
     }
 }

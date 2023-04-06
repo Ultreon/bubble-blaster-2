@@ -11,8 +11,8 @@ import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -130,7 +130,7 @@ public class Bullet extends Entity {
     }
 
     @SuppressWarnings("unused")
-    public void setAmmoType(@NonNull AmmoType ammoType) {
+    public void setAmmoType(@NotNull AmmoType ammoType) {
         this.ammoType = ammoType;
         this.bases.setAll(ammoType.getDefaultAttributes());
         this.attributes.setAll(ammoType.getDefaultAttributes());

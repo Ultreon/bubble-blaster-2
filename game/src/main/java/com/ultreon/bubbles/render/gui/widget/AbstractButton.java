@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
@@ -17,7 +18,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (isWithinBounds(x, y) && button == 1) {
+        if (isWithinBounds(x, y) && button == 1 && enabled && visible) {
             this.pressed = true;
             return true;
         }
@@ -26,8 +27,9 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        this.pressed = false;
-        if (isWithinBounds(x, y) && button == 1) {
+        if (isWithinBounds(x, y) && button == 1 && enabled && visible) {
+            this.pressed = false;
+            Sounds.MENU_EVENT.get().play(0.2d);
             this.command.run();
             return true;
         }

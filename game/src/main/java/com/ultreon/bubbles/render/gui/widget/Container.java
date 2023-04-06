@@ -2,8 +2,9 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.Renderable;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.List;
@@ -26,12 +27,22 @@ public abstract class Container extends GuiComponent {
 
     protected void renderChildren(Renderer renderer) {
         for (GuiComponent child : this.children) {
-            child.render(renderer);
+            if (child.visible) {
+                child.render(renderer);
+            }
         }
     }
 
+    /**
+     * Adds a {@link GuiComponent gui component } to the screen, including initializing it with {@link GuiStateListener#make()}.
+     *
+     * @param child the gui component to add.
+     * @param <T>   the component's type.
+     * @return the same as the parameter.
+     */
     public <T extends GuiComponent> T add(T child) {
         this.children.add(child);
+        child.make();
         return child;
     }
 
@@ -41,9 +52,8 @@ public abstract class Container extends GuiComponent {
 
     @Nullable
     public GuiComponent getWidgetAt(int x, int y) {
-//        logger.info("Container[c7f17d76]: CHILDREN" + this.children);
         for (GuiComponent child : this.children) {
-//            logger.info("Container[b610e134]: X(" + x + ") : Y(" + y + ") : CONTAINS(" + child.getX() + "," + child.getY() + "," + child.isWithinBounds(x, y) + ")");
+            if (!child.enabled || !child.visible) continue;
             if (child.isWithinBounds(x, y)) return child;
         }
         return null;

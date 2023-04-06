@@ -14,8 +14,8 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.lang.Messenger;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
@@ -80,7 +80,7 @@ public class ImpossibleMode extends Gamemode {
 
     @Override
     @Deprecated
-    public @NonNull CompoundTag save() {
+    public @NotNull CompoundTag save() {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.save."));
         return new CompoundTag();
     }
@@ -149,7 +149,7 @@ public class ImpossibleMode extends Gamemode {
     }
 
     @Override
-    public @NonNull Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
+    public @NotNull Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
         return new Vec2f(
                 (int) getGameBounds().getMaxX() + entity.getBounds().width,
                 (int) entity.getYRng().getNumber(getGameBounds().getMinY() - entity.getBounds().height, getGameBounds().getMaxY() + entity.getBounds().height, usageId.toString().toCharArray(), spawnIndex, retry)

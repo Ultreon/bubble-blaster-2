@@ -78,7 +78,9 @@ public final class LoadScreen extends Screen implements Runnable {
 
     @Override
     public boolean onClose(Screen to) {
-        return isDone();
+        boolean done = isDone();
+        if (done) return super.onClose(to);
+        return false;
     }
 
     @Override
@@ -88,7 +90,7 @@ public final class LoadScreen extends Screen implements Runnable {
         }
 
         renderer.color(Color.rgb(0x484848));
-        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        renderer.rect(0, 0, width, height);
 
         int i = 0;
 
@@ -195,6 +197,19 @@ public final class LoadScreen extends Screen implements Runnable {
         LifecycleEvents.SETUP.factory().onSetup(game);
         this.progAlt = null;
 
+        // Set up components in registry.
+        this.progMain.send("Setting up components...");
+        this.progMain.increment();
+        Collection<Registry<?>> registries = Registry.getRegistries();
+        this.progAlt = new ProgressMessenger(msgAlt, registries.size());
+        for (Registry<?> registry : registries) {
+            this.progAlt.send(registry.id().toString());
+            this.progAlt.increment();
+            GameEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
+            registry.freeze();
+        }
+        this.progAlt = null;
+
         // Loading object holders
         this.progMain.sendNext("Loading the fonts...");
         game().loadFonts();
@@ -208,19 +223,6 @@ public final class LoadScreen extends Screen implements Runnable {
         LOGGER.info("Setup the game...");
         this.progMain.sendNext("Setting up the game...");
         this.game.setup();
-        this.progAlt = null;
-
-        // Set up components in registry.
-        this.progMain.send("Setting up components...");
-        this.progMain.increment();
-        Collection<Registry<?>> registries = Registry.getRegistries();
-        this.progAlt = new ProgressMessenger(msgAlt, registries.size());
-        for (Registry<?> registry : registries) {
-            this.progAlt.send(registry.id().toString());
-            this.progAlt.increment();
-            GameEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
-            registry.freeze();
-        }
         this.progAlt = null;
 
         this.progMain.send("");
@@ -247,7 +249,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         LoadScreen.done = true;
 
-        Util.getGame().getScreenManager().displayScreen(new TitleScreen());
+        game.finish();
     }
 
     private BubbleBlaster game() {
@@ -269,6 +271,7 @@ public final class LoadScreen extends Screen implements Runnable {
         CommandConstructor.add("heal", new HealCommand());
         CommandConstructor.add("level", new LevelCommand());
         CommandConstructor.add("health", new HealthCommand());
+        CommandConstructor.add("max-health", new MaxHealthCommand());
         CommandConstructor.add("score", new ScoreCommand());
         CommandConstructor.add("effect", new EffectCommand());
         CommandConstructor.add("spawn", new SpawnCommand());

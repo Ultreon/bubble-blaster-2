@@ -6,7 +6,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.SyntaxException;
 import com.ultreon.commons.lang.Pair;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.checkerframework.common.reflection.qual.NewInstance;
 import org.checkerframework.common.value.qual.MinLen;
 import org.checkerframework.dataflow.qual.Pure;
@@ -29,11 +29,11 @@ import java.util.regex.Pattern;
 @MethodsReturnNonnullByDefault
 public final class Identifier {
     @SerializedName("id")
-    private final @NonNull String location;
+    private final @NotNull String location;
     @SerializedName("name")
-    private final @NonNull String path;
+    private final @NotNull String path;
 
-    public Identifier(@NonNull String location, @NonNull String path) {
+    public Identifier(@NotNull String location, @NotNull String path) {
         if (!Pattern.matches("^[a-z\\d-_]{2,}$", location))
             throw new SyntaxException("Location contains illegal characters: " + location);
 
@@ -44,7 +44,7 @@ public final class Identifier {
         this.path = path;
     }
 
-    public Identifier(@MinLen(3) @NonNull String name) {
+    public Identifier(@MinLen(3) @NotNull String name) {
         String[] split = name.split("@", 1);
         if (split.length == 2) {
             this.location = testLocation(split[0]);
@@ -55,11 +55,11 @@ public final class Identifier {
         }
     }
 
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract("_ -> new")
     public static Identifier parse(
-            @NonNull String name) {
+            @NotNull String name) {
         return new Identifier(name);
     }
 
@@ -84,7 +84,7 @@ public final class Identifier {
     }
 
     @Contract("_ -> param1")
-    public static @NonNull String testPath(String path) {
+    public static @NotNull String testPath(String path) {
         if (!Pattern.matches("([a-z_.\\d]{2,})(/[a-z_.\\d]{2,})*", path)) {
             throw new SyntaxException("Path is invalid: " + path);
         }
@@ -106,7 +106,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @Override
     @NewInstance
     @Contract(pure = true)
@@ -118,7 +118,7 @@ public final class Identifier {
      * @return object location (the mod id / namespace).
      */
     @Pure
-    @NonNull
+    @NotNull
     @Contract(pure = true)
     public String location() {
         return location;
@@ -128,7 +128,7 @@ public final class Identifier {
      * @return object path.
      */
     @Pure
-    @NonNull
+    @NotNull
     @Contract(pure = true)
     public String path() {
         return path;
@@ -169,7 +169,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Unmodifiable
     @Contract(value = "-> new", pure = true)
@@ -177,7 +177,7 @@ public final class Identifier {
         return List.of(location, path);
     }
 
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(" -> new")
     public ArrayList<String> toArrayList() {
@@ -185,7 +185,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @UnmodifiableView
     @Contract(pure = true)
     public Collection<String> toCollection() {
@@ -193,7 +193,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(value = " -> new", pure = true)
     public Pair<String, String> toPair() {
@@ -201,7 +201,7 @@ public final class Identifier {
     }
 
     @Pure
-    @NonNull
+    @NotNull
     @NewInstance
     @Contract(value = " -> new", pure = true)
     public String[] toArray() {

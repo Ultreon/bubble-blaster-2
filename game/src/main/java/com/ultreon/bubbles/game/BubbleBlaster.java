@@ -2,6 +2,7 @@ package com.ultreon.bubbles.game;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Suppliers;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
@@ -56,8 +57,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.checkerframework.common.value.qual.IntRange;
 import org.checkerframework.common.value.qual.IntVal;
@@ -124,13 +125,13 @@ public final class BubbleBlaster {
     private final URL gameFile;
     @IntVal(20)
     private final int tps;
-    @NonNull
+    @NotNull
     private final ResourceManager resourceManager;
-    @NonNull
+    @NotNull
     private final GameWindow window;
-    @NonNull
+    @NotNull
     private final ScreenManager screenManager;
-    @NonNull
+    @NotNull
     private final RenderSettings renderSettings;
     // Tasks
     private final List<Runnable> tasks = new CopyOnWriteArrayList<>();
@@ -147,6 +148,7 @@ public final class BubbleBlaster {
     // Rendering
     private final DebugRenderer debugRenderer = new DebugRenderer(this);
     private final EnvironmentRenderer environmentRenderer;
+    private final GraphicsEnvironment graphicEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
     // Managers.
     private final TextureManager textureManager = TextureManager.instance();
     // Randomizers.
@@ -238,6 +240,8 @@ public final class BubbleBlaster {
         Bubbles.register();
         AmmoTypes.register();
         Entities.register();
+        Fonts.register();
+        Sounds.register();
         Effects.register();
         Abilities.register();
         GameplayEvents.register();
@@ -383,7 +387,7 @@ public final class BubbleBlaster {
 
         // Start scene-manager.
         try {
-            Objects.requireNonNull(this.getScreenManager()).start();
+            screenManager.start();
         } catch (Throwable t) {
             var crashLog = new CrashLog("Oops, game crashed!", t);
             crash(t);
@@ -610,7 +614,7 @@ public final class BubbleBlaster {
             final var environment = loadedGame.getEnvironment();
 
             if (!holding) {
-                if (keyCode == KeyEvent.VK_SLASH && hasScreenOpen()) {
+                if (keyCode == KeyEvent.VK_SLASH && !hasScreenOpen()) {
                     BubbleBlaster.getInstance().showScreen(new CommandScreen());
                 }
             }
@@ -836,7 +840,7 @@ public final class BubbleBlaster {
                 throw new ResourceNotFoundException("Font resource " + location + " doesn't exists.");
             }
             var font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            Hydro.get().registerFont(font);
+            this.registerFont(font);
             return font;
         } catch (IOException | FontFormatException e) {
             throw new RuntimeException(e);
@@ -845,7 +849,7 @@ public final class BubbleBlaster {
 
     public Font loadFont(Identifier font) {
         var identifier = new Identifier(font.location(), "fonts/" + font.path() + ".ttf");
-        var resource = resourceManager.getResource(new Identifier(font.location(), "fonts/" + font.path() + ".ttf"));
+        var resource = resourceManager.getResource(identifier);
         if (resource != null) {
             try {
                 return resource.loadFont();
@@ -1141,12 +1145,13 @@ public final class BubbleBlaster {
     //////////////////////
     //     Managers     //
     //////////////////////
-    @NonNull
+    @NotNull
+    @ApiStatus.Internal
     public ScreenManager getScreenManager() {
         return screenManager;
     }
 
-    @NonNull
+    @NotNull
     public ResourceManager getResourceManager() {
         return resourceManager;
     }
@@ -1219,7 +1224,7 @@ public final class BubbleBlaster {
     ///////////////////////
     //     Rendering     //
     ///////////////////////
-    @NonNull
+    @NotNull
     public RenderSettings getRenderSettings() {
         return renderSettings;
     }
@@ -1503,22 +1508,29 @@ public final class BubbleBlaster {
             return;
         }
 
-        if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled())
-            renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
-            renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        renderer.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        var filters = BubbleBlaster.instance.getCurrentFilters();
+        if (isGlitched) {
+            glitchRenderer.render(renderer);
+        } else {
+            if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled())
+                renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
+                renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            renderer.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+            renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
+            var filters = BubbleBlaster.instance.getCurrentFilters();
 
-        this.fps = fps;
+            profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
+
+            this.fps = fps;
+        }
 
         try {
             bs.show();
-            renderer.dispose();
+            if (!isGlitched) {
+                renderer.dispose();
+            }
             hasRendered = true;
         } catch (IllegalStateException e) {
             logger.warn("Illegal state in frame flip: " + e.getMessage());
@@ -1566,10 +1578,6 @@ public final class BubbleBlaster {
     private void postRender(Renderer renderer) {
         if (isDebugMode() || debugGuiOpen) {
             debugRenderer.render(renderer);
-        }
-
-        if (isGlitched) {
-            glitchRenderer.render(renderer);
         }
 
         if (fadeIn) {
@@ -1674,7 +1682,6 @@ public final class BubbleBlaster {
      * Starts loading the game.
      */
     public void startLoading() {
-        glitchRenderer = new GlitchRenderer(this);
         getGameWindow().init();
     }
 
@@ -1771,7 +1778,7 @@ public final class BubbleBlaster {
      *
      * @return list create buffered image operations.
      */
-    @NonNull
+    @NotNull
     public List<BufferedImageOp> getCurrentFilters() {
         return new ArrayList<>();
     }
@@ -1872,7 +1879,7 @@ public final class BubbleBlaster {
      *
      * @param crash the game crash.
      */
-    public static void crash(@NonNull ApplicationCrash crash) {
+    public static void crash(@NotNull ApplicationCrash crash) {
         var crashLog = crash.getCrashLog();
         crashed = true;
 
@@ -1944,6 +1951,16 @@ public final class BubbleBlaster {
         fadeIn = true;
         fadeInStart = System.currentTimeMillis();
         fadeInDuration = time;
+    }
+
+    @CanIgnoreReturnValue
+    public boolean registerFont(Font font) {
+        return graphicEnv.registerFont(font);
+    }
+
+    public void finish() {
+        glitchRenderer = new GlitchRenderer(this);
+        showScreen(new TitleScreen());
     }
 
     protected static class BootOptions {

@@ -8,7 +8,7 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EntityEvents;
 import com.ultreon.bubbles.util.helpers.Mth;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -96,8 +96,8 @@ public abstract class LivingEntity extends Entity {
     }
 
     @Override
-    public @NonNull CompoundTag save() {
-        @NonNull CompoundTag tag = super.save();
+    public @NotNull CompoundTag save() {
+        @NotNull CompoundTag tag = super.save();
 
         tag.putDouble("health", health);
 

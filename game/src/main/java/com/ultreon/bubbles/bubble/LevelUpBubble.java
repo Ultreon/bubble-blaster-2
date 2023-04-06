@@ -5,7 +5,7 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import org.apache.commons.lang3.Range;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Levelup Bubble
@@ -43,7 +43,7 @@ public class LevelUpBubble extends BubbleType {
     }
 
     @Override
-    public boolean canSpawn(@NonNull Environment environment) {
+    public boolean canSpawn(@NotNull Environment environment) {
         // If player is not spawned yet, the player cannot have any change. So return false.
         if (environment.getPlayer() == null) return false;
 

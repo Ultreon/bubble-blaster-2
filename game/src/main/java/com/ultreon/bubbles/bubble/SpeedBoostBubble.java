@@ -21,6 +21,7 @@ public class SpeedBoostBubble extends BubbleType {
 
     @Override
     public AppliedEffect getEffect(Bubble source, Entity target) {
-        return new AppliedEffect(Effects.SPEED_BOOST.get(), source.getRadius() / 8, (byte) (source.getSpeed() / 3.2d));
+//        return new AppliedEffect(Effects.SPEED_BOOST.get(), source.getRadius() / 8, (byte) (source.getSpeed() / 3.2d));
+        return null;
     }
 }

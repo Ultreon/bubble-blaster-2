@@ -6,7 +6,7 @@ import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.exceptions.TODO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
@@ -252,7 +252,7 @@ public final class Scanner {
         }
     }
 
-    @NonNull
+    @NotNull
     private String getRelativePath(File file) {
         int length = pathLength(file);
 

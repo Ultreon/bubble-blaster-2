@@ -6,7 +6,7 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.render.gui.widget.Rectangle;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -45,7 +45,7 @@ public class ScrollView extends View {
     }
 
     @Override
-    public void render(@NonNull Renderer renderer) {
+    public void render(@NotNull Renderer renderer) {
         this.containerGraphics = renderer.subInstance(outerBounds.getX(), outerBounds.getY(), outerBounds.getWidth(), outerBounds.getHeight());
         for (GuiComponent child : this.children) {
             child.render(this.containerGraphics);

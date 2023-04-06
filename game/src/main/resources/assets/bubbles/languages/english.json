@@ -44,7 +44,8 @@
         "mods": "Mods",
         "saves": "Saves",
         "options": "Options",
-        "language": "Language"
+        "language": "Language",
+        "quit": "Quit Game"
       },
       "options": {
         "Language": "Language"

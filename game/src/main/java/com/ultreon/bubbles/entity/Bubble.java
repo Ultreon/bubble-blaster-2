@@ -22,8 +22,8 @@ import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -186,6 +186,11 @@ public class Bubble extends AbstractBubbleEntity {
         return rectangle;
     }
 
+    @Override
+    public boolean isBad() {
+        return bubbleType.isBad();
+    }
+
     /**
      * Tick bubble entity.
      *
@@ -195,8 +200,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void tick(Environment environment) {
         // Check player and current scene.
         Player player = this.environment.getPlayer();
-        @Nullable Screen currentScreen = Util.getSceneManager().getCurrentScreen();
-        boolean gameLoaded = BubbleBlaster.getInstance().isInGame();
+        boolean gameLoaded = this.environment.game().isInGame();
 
         if (player == null || !gameLoaded) {
             return;
@@ -311,8 +315,8 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     @Override
-    public @NonNull CompoundTag save() {
-        @NonNull CompoundTag document = super.save();
+    public @NotNull CompoundTag save() {
+        @NotNull CompoundTag document = super.save();
         document.putInt("radius", radius);
         document.putInt("baseRadius", baseRadius);
 

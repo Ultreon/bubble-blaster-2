@@ -15,7 +15,7 @@ import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.commons.lang.Pair;
 import com.ultreon.commons.util.ColorUtils;
 import org.apache.commons.lang3.Range;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -130,11 +130,15 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Other     //
     ///////////////////
+    public boolean isBad() {
+        return getAttack() > 0;
+    }
+
     public double getModifiedPriority(double localDifficulty) {
         return getPriority();
     }
 
-    public boolean canSpawn(@NonNull Environment environment) {
+    public boolean canSpawn(@NotNull Environment environment) {
         return true;
     }
 
@@ -256,7 +260,7 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
         private Long priority = null;
         private float score = 1f;
         private float defense = Float.MIN_NORMAL;
-        private float attack = 0.2f;
+        private float attack = 0f;
         private Range<Integer> radius = Range.between(21, 80);
         private Range<Double> speed = Range.between(1d, 2.5d);
         private int rarity;

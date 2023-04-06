@@ -24,14 +24,14 @@ public class ScrollBar extends GuiComponent {
     @Override
     public void render(Renderer renderer) {
         setWidth(SIZE);
-        renderer.color(0xff222222);
+        renderer.color(0x40000000);
         renderer.fill(getBounds());
         renderer.color(0xff555555);
         renderer.fill(getThumbBounds());
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(getX(), (int) (percent * (getHeight() - scale())), SIZE, (int) (scale()));
+        return new Rectangle(getX() + getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
     }
 
     private double scale() {

@@ -6,7 +6,7 @@ import com.ultreon.bubbles.event.v1.Subscriber;
 import com.ultreon.commons.lang.ICancellable;
 import com.ultreon.commons.lang.Pair;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

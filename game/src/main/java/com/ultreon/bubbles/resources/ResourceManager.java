@@ -7,7 +7,7 @@ import com.ultreon.commons.exceptions.SyntaxException;
 import com.ultreon.commons.function.ThrowingSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.net.URISyntaxException;

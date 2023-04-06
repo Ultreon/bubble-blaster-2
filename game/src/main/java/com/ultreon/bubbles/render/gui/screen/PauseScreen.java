@@ -78,23 +78,11 @@ public class PauseScreen extends Screen {
     }
 
     private void previousPage() {
-        if (helpIndex > 0) {
-            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
-            focusChangeSFX.setVolume(0.1d);
-            focusChangeSFX.play();
-        }
-
         helpIndex = Mth.clamp(helpIndex - 1, 0, differentBubbles - 1);
         tickPage();
     }
 
     private void nextPage() {
-        if (helpIndex < differentBubbles - 1) {
-            SoundInstance focusChangeSFX = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/sfx/ui/button/focus_change.wav")), "focusChange");
-            focusChangeSFX.setVolume(0.1d);
-            focusChangeSFX.play();
-        }
-
         helpIndex = Mth.clamp(helpIndex + 1, 0, differentBubbles - 1);
         tickPage();
     }
@@ -103,15 +91,19 @@ public class PauseScreen extends Screen {
         bubble = new ArrayList<>(Registry.BUBBLES.values()).get(helpIndex);
 
         if (helpIndex >= differentBubbles - 1 && nextButton.isValid()) {
-            nextButton.destroy();
+            nextButton.enabled = false;
+            nextButton.visible = false;
         } else if (!nextButton.isValid()) {
-            nextButton.make();
+            nextButton.enabled = true;
+            nextButton.visible = true;
         }
 
         if (helpIndex <= 0 && prevButton.isValid()) {
-            prevButton.destroy();
+            prevButton.enabled = false;
+            prevButton.visible = false;
         } else if (!prevButton.isValid()) {
-            prevButton.make();
+            prevButton.enabled = true;
+            prevButton.visible = true;
         }
     }
 

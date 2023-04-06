@@ -1,8 +1,8 @@
 package net.querz.nbt.tag;
 
 import net.querz.io.MaxDepthIO;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntVal;
 import org.jetbrains.annotations.Contract;
 
@@ -54,28 +54,28 @@ public class CompoundTag extends Tag<Map<String, Tag<?>>>
         return getValue().containsValue(value);
     }
 
-    @NonNull
+    @NotNull
     public Collection<Tag<?>> values() {
         return getValue().values();
     }
 
-    @NonNull
+    @NotNull
     public Set<String> keySet() {
         return getValue().keySet();
     }
 
-    @NonNull
+    @NotNull
     public Set<Map.Entry<String, Tag<?>>> entrySet() {
-        return new NonNullEntrySet<>(getValue().entrySet());
+        return new NotNullEntrySet<>(getValue().entrySet());
     }
 
-    @NonNull
+    @NotNull
     @Override
     public Iterator<Map.Entry<String, Tag<?>>> iterator() {
         return entrySet().iterator();
     }
 
-    public void forEach(@NonNull BiConsumer<String, Tag<?>> action) {
+    public void forEach(@NotNull BiConsumer<String, Tag<?>> action) {
         getValue().forEach(action);
     }
 
@@ -221,7 +221,7 @@ public class CompoundTag extends Tag<Map<String, Tag<?>>>
         return t == null ? def : t.asDouble();
     }
 
-    @NonNull
+    @NotNull
     public String getString(String key) {
         StringTag t = getStringTag(key);
         return t == null ? StringTag.ZERO_VALUE : t.getValue();
@@ -233,104 +233,104 @@ public class CompoundTag extends Tag<Map<String, Tag<?>>>
         return t == null ? def : t.getValue();
     }
 
-    public byte @NonNull [] getByteArray(String key) {
+    public byte @NotNull [] getByteArray(String key) {
         ByteArrayTag t = getByteArrayTag(key);
         return t == null ? ByteArrayTag.ZERO_VALUE : t.getValue();
     }
 
-    public byte @NonNull [] getByteArray(String key, byte @NonNull [] def) {
+    public byte @NotNull [] getByteArray(String key, byte @NotNull [] def) {
         ByteArrayTag t = getByteArrayTag(key);
         return t == null ? def : t.getValue();
     }
 
-    public int @NonNull [] getIntArray(String key) {
+    public int @NotNull [] getIntArray(String key) {
         IntArrayTag t = getIntArrayTag(key);
         return t == null ? IntArrayTag.ZERO_VALUE : t.getValue();
     }
 
-    public int @NonNull [] getIntArray(String key, int @NonNull [] def) {
+    public int @NotNull [] getIntArray(String key, int @NotNull [] def) {
         IntArrayTag t = getIntArrayTag(key);
         return t == null ? def : t.getValue();
     }
 
-    public long @NonNull [] getLongArray(String key) {
+    public long @NotNull [] getLongArray(String key) {
         LongArrayTag t = getLongArrayTag(key);
         return t == null ? LongArrayTag.ZERO_VALUE : t.getValue();
     }
 
-    public long @NonNull [] getLongArray(String key, long @NonNull [] def) {
+    public long @NotNull [] getLongArray(String key, long @NotNull [] def) {
         LongArrayTag t = getLongArrayTag(key);
         return t == null ? def : t.getValue();
     }
 
-    public Tag<?> put(@NonNull String key, @NonNull Tag<?> tag) {
+    public Tag<?> put(@NotNull String key, @NotNull Tag<?> tag) {
         return getValue().put(Objects.requireNonNull(key), Objects.requireNonNull(tag));
     }
 
-    public Tag<?> putIfNonNull(String key, Tag<?> tag) {
+    public Tag<?> putIfNotNull(String key, Tag<?> tag) {
         if (tag == null) {
             return this;
         }
         return put(key, tag);
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putBoolean(String key, boolean value) {
         return put(key, new ByteTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putByte(String key, byte value) {
         return put(key, new ByteTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putShort(String key, short value) {
         return put(key, new ShortTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putInt(String key, int value) {
         return put(key, new IntTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putLong(String key, long value) {
         return put(key, new LongTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putFloat(String key, float value) {
         return put(key, new FloatTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putDouble(String key, double value) {
         return put(key, new DoubleTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putString(String key, String value) {
         return put(key, new StringTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putByteArray(String key, byte[] value) {
         return put(key, new ByteArrayTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putIntArray(String key, int[] value) {
         return put(key, new IntArrayTag(value));
     }
 
-    @NonNull
+    @NotNull
     public Tag<?> putLongArray(String key, long[] value) {
         return put(key, new LongArrayTag(value));
     }
 
     @Override
-    @NonNull
+    @NotNull
     public String valueToString(int maxDepth) {
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
@@ -367,7 +367,7 @@ public class CompoundTag extends Tag<Map<String, Tag<?>>>
         return Integer.compare(size(), o.getValue().size());
     }
 
-    @NonNull
+    @NotNull
     @Override
     public CompoundTag clone() {
         // Choose initial capacity based on default load factor (0.75) so all entries fit in map without resizing

@@ -96,14 +96,7 @@ public class OptionsScreen extends Screen {
         renderBackground(game, renderer);
 
         cancelButton.setText(Language.translate("bubbles/other/cancel"));
-        cancelButton.render(renderer);
-
         languageButton.setText(Language.translate("bubbles/screen/options/language"));
-        languageButton.render(renderer);
-
-        maxBubblesOption.render(renderer);
-
-        saveButton.render(renderer);
         saveButton.setText(Language.translate("bubbles/other/save"));
     }
 

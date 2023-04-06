@@ -25,6 +25,7 @@ public class SplashScreen extends Screen {
     private double zoom;
     private long startTime;
     private Resizer resizer;
+    private boolean ended;
 
     //from https://www.java2s.com
     public static double interpolate(double a, double b, double d) {
@@ -82,6 +83,7 @@ public class SplashScreen extends Screen {
 //        }
 
         if (timeDiff >= DURATION) {
+            ended = true;
             game.showScreen(new LoadScreen(), true);
             game.fadeIn(1000f);
         }
@@ -89,5 +91,10 @@ public class SplashScreen extends Screen {
 
     public double getZoom() {
         return zoom;
+    }
+
+    @Override
+    public boolean onClose(Screen to) {
+        return ended;
     }
 }

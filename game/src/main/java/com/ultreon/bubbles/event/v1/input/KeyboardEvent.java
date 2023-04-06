@@ -4,7 +4,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.event.v1.Event;
 import com.ultreon.bubbles.event.v1.type.KeyEventType;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class KeyboardEvent extends Event {
      * @param event      The {@linkplain KeyEvent keyboard event} instance.
      * @param type       One create the {@linkplain KeyEventType keyboard event type} constants.
      */
-    public KeyboardEvent(BubbleBlaster main, @NonNull KeyboardInput controller, KeyEvent event, KeyEventType type) {
+    public KeyboardEvent(BubbleBlaster main, @NotNull KeyboardInput controller, KeyEvent event, KeyEventType type) {
         this.main = main;
         this.type = type;
         this.controller = controller;

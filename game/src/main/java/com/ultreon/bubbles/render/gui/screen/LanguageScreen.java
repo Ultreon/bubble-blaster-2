@@ -62,7 +62,7 @@ public final class LanguageScreen extends Screen {
     }
 
     private void back() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(backScene);
+        game.showScreen(backScene);
     }
 
     public static void onPostInitialize() {
@@ -295,11 +295,6 @@ public final class LanguageScreen extends Screen {
 
         animRender.dispose();
         buttonsRender.dispose();
-
-        next.render(renderer);
-        prev.render(renderer);
-
-        cancelButton.render(renderer);
     }
 
     public void renderBackground(Renderer renderer) {

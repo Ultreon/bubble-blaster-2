@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.resources;
 
+import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.Hydro;
 import com.ultreon.commons.function.ThrowingSupplier;
 
@@ -61,7 +62,7 @@ public class Resource {
     public Font loadFont() throws FontFormatException {
         try (InputStream inputStream = opener.get()) {
             Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            Hydro.get().registerFont(font);
+            BubbleBlaster.getInstance().registerFont(font);
             return font;
         } catch (IOException e) {
             throw new RuntimeException(e);

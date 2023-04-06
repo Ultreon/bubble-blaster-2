@@ -1,6 +1,8 @@
 package com.ultreon.bubbles.render;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.font.Font;
 
 import java.awt.*;
 import java.security.SecureRandom;
@@ -10,15 +12,15 @@ public class GlitchRenderer {
     private final char[] chars = " ~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=`1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final int matrixW;
     private final int matrixH;
-    private final Font font = new Font("Press Start K", Font.PLAIN, 18);
+    private final Font font = Fonts.PRESS_START_K.get();
     private final char[][] matrix;
     private final int[][] cMatrix;
     private final int charW;
     private final int charH;
 
     public GlitchRenderer(BubbleBlaster game) {
-        charW = game.getFontMetrics(font).charWidth('A') + 4;
-        charH = game.getFontMetrics(font).getHeight() + 4;
+        charW = font.width(18, 'A') + 4;
+        charH = font.height(18) + 4;
         matrixW = game.getWidth() / charW;
         matrixH = game.getHeight() / charH;
         matrix = new char[matrixW][matrixH];
@@ -49,13 +51,13 @@ public class GlitchRenderer {
                 int xi = x * charW;
                 int yi = y * charH;
 
-                renderer.font(font);
                 renderer.color("#000");
                 if (matrix != 0) {
                     renderer.rect(xi, yi, charW, charH);
                 }
                 renderer.color(Color.rgb(cMatrix[x][y]));
-                renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
+                font.drawString(renderer, Character.toString(matrix), 18, xi + 2, yi + charH / 1.5f + 4);
+//                renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
             }
         }
     }

@@ -10,8 +10,8 @@ import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.exceptions.OneTimeUseException;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -36,21 +36,21 @@ import java.util.Objects;
 public class GameWindow implements WindowListener, WindowFocusListener, WindowStateListener, ComponentListener {
     private static final Marker MARKER = MarkerFactory.getMarker("GameWindow");
     // GUI Elements.
-    @NonNull
+    @NotNull
     private final JFrame frame;
-    @NonNull Canvas canvas;
+    @NotNull Canvas canvas;
 
     // AWT Toolkit.
-    @NonNull
+    @NotNull
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     // Graphics thingies.
-    @NonNull ImageObserver observer;
-    @NonNull
+    @NotNull ImageObserver observer;
+    @NotNull
     private final GraphicsEnvironment gfxEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    @NonNull
+    @NotNull
     private final GraphicsDevice device;
-    @NonNull
+    @NotNull
     final Properties properties;
     private boolean initialized = false;
 
@@ -65,7 +65,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      * @param properties window properties, not fully implemented yet. LOL
      */
     @SuppressWarnings("FunctionalExpressionCanBeFolded")
-    public GameWindow(@NonNull Properties properties) {
+    public GameWindow(@NotNull Properties properties) {
         this.properties = properties;
 
         // --- Set up window --- //
@@ -102,9 +102,10 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         // Set listeners.
-        this.frame.addComponentListener(this);
         this.frame.addWindowListener(this);
         this.frame.addWindowFocusListener(this);
+
+        this.frame.setLayout(new CardLayout());
 
         // --- Set up canvas --- //
         this.canvas = new Canvas(config) {
@@ -118,15 +119,17 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
             }
         };
 
-        if (properties.fullscreen) {
-            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
-            this.canvas.setSize(bounds.getSize());
-        } else {
-            this.canvas.setSize(properties.width, properties.height);
-        }
+        this.canvas.addComponentListener(this);
+
+//        if (properties.fullscreen) {
+//            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
+//            this.canvas.setSize(bounds.getSize());
+//        } else {
+//            this.canvas.setSize(properties.width, properties.height);
+//        }
 
         this.canvas.setBackground(new Color(72, 72, 72));
-        this.canvas.setSize(properties.width, properties.height);
+//        this.canvas.setSize(properties.width, properties.height);
 
         // --- Post setup --- //
         this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
@@ -174,7 +177,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void componentResized(ComponentEvent e) {
-        GameWindow.this.canvas.setSize(e.getComponent().getSize());
+//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
         BubbleBlaster game = BubbleBlaster.getInstance();
         game.resize(new IntSize(e.getComponent().getSize()));
     }
@@ -194,7 +197,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void componentShown(ComponentEvent e) {
-        GameWindow.this.canvas.setSize(e.getComponent().getSize());
+//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
         BubbleBlaster game = BubbleBlaster.getInstance();
         game.resize(new IntSize(e.getComponent().getSize()));
     }
@@ -214,7 +217,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowOpened(WindowEvent e) {
-        GameWindow.this.canvas.setSize(e.getComponent().getSize());
+//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
         BubbleBlaster game = BubbleBlaster.getInstance();
         game.resize(new IntSize(e.getComponent().getSize()));
     }
@@ -442,7 +445,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         private Runnable onClose = () -> {};
 
         @SuppressWarnings("ConstantConditions")
-        public Properties(@NonNull String title, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
+        public Properties(@NotNull String title, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
             if (width < 0) throw new IllegalArgumentException("Width is negative");
             if (height < 0) throw new IllegalArgumentException("Height is negative");
             Objects.requireNonNull(title, "Title is set to null");

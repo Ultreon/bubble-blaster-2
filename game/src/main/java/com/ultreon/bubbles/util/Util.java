@@ -18,6 +18,7 @@ import java.util.ArrayList;
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 public class Util {
+    @Deprecated
     public static ScreenManager getSceneManager() {
         return BubbleBlaster.getInstance().getScreenManager();
     }

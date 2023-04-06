@@ -36,8 +36,8 @@ import com.ultreon.commons.time.DateTime;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.StringTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.awt.*;
@@ -374,7 +374,7 @@ public final class Environment {
      * @return The bubble type.
      * @see BubbleSystem#random(Rng, long, int, Environment)
      */
-    @NonNull
+    @NotNull
     public BubbleType getRandomBubble(long spawnIndex) {
         var bubbleType = gamemode.getRandomBubble(spawnIndex);
         if (bubbleType != null) {
@@ -479,7 +479,7 @@ public final class Environment {
     public void spawn(EntityType<?> entityType, SpawnInformation.SpawnReason reason, long spawnIndex, int retry) {
         BubbleBlaster.runOnMainThread(() -> {
             Entity entity = entityType.create(this);
-            @NonNull Vec2f pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
+            @NotNull Vec2f pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
             spawn(entity, pos);
         });
     }

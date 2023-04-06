@@ -7,7 +7,7 @@ import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

@@ -4,6 +4,7 @@ import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -75,16 +76,6 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
 
     protected OptionsButton(int x, int y, int width, int height) {
         super(x, y, width, height);
-    }
-
-    @Override
-    public void mouseEnter(int x, int y) {
-        super.mouseEnter(x, y);
-        if (isWithinBounds(x, y)) {
-            SoundInstance focusChangeSFX = new SoundInstance(BubbleBlaster.id("sfx/ui/button/focus_change"), "focusChange");
-            focusChangeSFX.setVolume(0.2d);
-            focusChangeSFX.play();
-        }
     }
 
     @Override

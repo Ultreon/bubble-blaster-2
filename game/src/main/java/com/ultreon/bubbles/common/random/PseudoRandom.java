@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.random;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -591,7 +591,7 @@ public class PseudoRandom {
     /**
      * returns a number given by a range, determined by the given input.
      */
-    @NonNull
+    @NotNull
     public <T extends Number> T getNumber(Range<T> r, byte[] input) {
         byte[] dig;
         synchronized (md) {
@@ -606,7 +606,7 @@ public class PseudoRandom {
     /**
      * returns a number given by a range, determined by the given input.
      */
-    @NonNull
+    @NotNull
     public <T extends Number> T getNumber(Range<T> r, int... input) {
         byte[] dig;
         synchronized (md) {
@@ -623,7 +623,7 @@ public class PseudoRandom {
     /**
      * returns a number given by a range, determined by the given input.
      */
-    @NonNull
+    @NotNull
     public <T extends Number> T getNumber(Range<T> r, long... input) {
         byte[] dig;
         synchronized (md) {

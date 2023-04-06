@@ -51,6 +51,9 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @author Qboi
      */
     public boolean onClose(Screen to) {
+        for (GuiComponent child : children) {
+            child.destroy();
+        }
         return true;
     }
 
@@ -143,27 +146,6 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
         renderBackground(renderer);
         renderChildren(renderer);
-    }
-
-    @Override
-    protected void renderChildren(Renderer renderer) {
-        for (GuiComponent inputWidget : this.children) {
-            inputWidget.render(renderer);
-        }
-    }
-
-    /**
-     * Adds a {@link GuiComponent controllable widget} to the screen, including initializing it with {@link GuiStateListener#make()}.
-     *
-     * @param widget the widget to add.
-     * @param <T>    the widget's type.
-     * @return the same widget as the parameter.
-     */
-    @Override
-    public final <T extends GuiComponent> T add(T widget) {
-        this.children.add(widget);
-        widget.make();
-        return widget;
     }
 
     /**

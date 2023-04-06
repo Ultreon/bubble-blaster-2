@@ -17,8 +17,4 @@ public class Hydro {
     public GraphicsEnvironment getEnvironment() {
         return environment;
     }
-
-    public boolean registerFont(Font font) {
-        return environment.registerFont(font);
-    }
 }

@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.mod.loader;
 
 import com.google.gson.annotations.SerializedName;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.Collections;
@@ -9,17 +9,17 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ModInfo {
-    @NonNull
+    @NotNull
     @SerializedName("mod-id")
     private final String modId;
 
-    @NonNull
+    @NotNull
     private final String name;
 
-    @NonNull
+    @NotNull
     private final String[] author;
 
-    @NonNull
+    @NotNull
     private final String license;
 
     @SerializedName("repository")
@@ -35,11 +35,11 @@ public class ModInfo {
 
     private String credits = "";
 
-    @NonNull
+    @NotNull
     @SerializedName("entry-points")
     private final Map<String, String> entryPoints;
 
-    ModInfo(@NonNull String modId, @NonNull String name, @NonNull String[] author, @NonNull String license, @NonNull Map<String, String> entryPoints) {
+    ModInfo(@NotNull String modId, @NotNull String name, @NotNull String[] author, @NotNull String license, @NotNull Map<String, String> entryPoints) {
         this.modId = modId;
         this.name = name;
         this.author = author;
@@ -47,7 +47,7 @@ public class ModInfo {
         this.entryPoints = entryPoints;
     }
 
-    public ModInfo(@NonNull String modId, @NonNull String name, @NonNull String[] author, @NonNull String license, String repo, URL website, URL issueTracker, String[] contributors, String credits, @NonNull Map<String, String> entryPoints) {
+    public ModInfo(@NotNull String modId, @NotNull String name, @NotNull String[] author, @NotNull String license, String repo, URL website, URL issueTracker, String[] contributors, String credits, @NotNull Map<String, String> entryPoints) {
         this.modId = modId;
         this.name = name;
         this.author = author;
@@ -60,22 +60,22 @@ public class ModInfo {
         this.entryPoints = entryPoints;
     }
 
-    @NonNull
+    @NotNull
     public String getModId() {
         return modId;
     }
 
-    @NonNull
+    @NotNull
     public String getName() {
         return name;
     }
 
-    @NonNull
+    @NotNull
     public String[] getAuthor() {
         return author;
     }
 
-    @NonNull
+    @NotNull
     public String getLicense() {
         return license;
     }
@@ -100,7 +100,7 @@ public class ModInfo {
         return credits;
     }
 
-    @NonNull
+    @NotNull
     public Map<String, String> getEntryPoints() {
         return Collections.unmodifiableMap(entryPoints);
     }

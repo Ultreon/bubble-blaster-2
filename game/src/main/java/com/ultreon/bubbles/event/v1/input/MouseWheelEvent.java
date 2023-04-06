@@ -6,7 +6,7 @@ import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.event.v1.Event;
 import com.ultreon.bubbles.event.v1.type.KeyEventType;
 import com.ultreon.bubbles.event.v1.type.MouseEventType;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
 @Deprecated
 public class MouseWheelEvent extends Event {
     private final BubbleBlaster main;
-    private final @NonNull MouseInput controller;
+    private final @NotNull MouseInput controller;
     private final java.awt.event.MouseEvent parentEvent;
     private final MouseEventType type;
 
@@ -36,7 +36,7 @@ public class MouseWheelEvent extends Event {
      * @param event      The {@link KeyEvent} instance.
      * @param type       One create the {@link KeyEventType} constants.
      */
-    public MouseWheelEvent(BubbleBlaster main, @NonNull MouseInput controller, MouseEvent event, MouseEventType type) {
+    public MouseWheelEvent(BubbleBlaster main, @NotNull MouseInput controller, MouseEvent event, MouseEventType type) {
         this.main = main;
         this.type = type;
         this.controller = controller;
@@ -57,7 +57,7 @@ public class MouseWheelEvent extends Event {
      *
      * @return The KeyboardController instance.
      */
-    public @NonNull MouseInput getController() {
+    public @NotNull MouseInput getController() {
         return controller;
     }
 

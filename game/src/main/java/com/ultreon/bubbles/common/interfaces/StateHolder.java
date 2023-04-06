@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common.interfaces;
 
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holder for a state that can be saved/loaded.
@@ -15,7 +15,7 @@ public interface StateHolder {
      * @since 0.0.0
      * @author Qboi123
      */
-    @NonNull
+    @NotNull
     CompoundTag save();
 
     /**

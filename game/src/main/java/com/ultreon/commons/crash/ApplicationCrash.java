@@ -1,14 +1,14 @@
 package com.ultreon.commons.crash;
 
 import com.ultreon.commons.util.StringUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ApplicationCrash {
     private static final List<Runnable> crashHandlers = new ArrayList<>();
-    @NonNull
+    @NotNull
     private final CrashLog crashLog;
 
     ApplicationCrash(CrashLog crashLog) {
@@ -33,7 +33,7 @@ public final class ApplicationCrash {
         crashHandlers.add(handler);
     }
 
-    @NonNull
+    @NotNull
     public CrashLog getCrashLog() {
         return crashLog;
     }
