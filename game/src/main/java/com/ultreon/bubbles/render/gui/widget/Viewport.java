@@ -8,7 +8,8 @@ import java.awt.*;
 
 public class Viewport extends Container {
     private final Rectangle viewportRect;
-    private double yScroll;
+    protected double xScroll;
+    protected double yScroll;
 
     public Viewport(Rectangle viewportRect, int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -49,6 +50,10 @@ public class Viewport extends Container {
         this.viewportRect.setSize(size.width, size.height);
     }
 
+    public void setViewportSize(int width, int height) {
+        this.viewportRect.setSize(width, height);
+    }
+
     public Dimension getViewportSize() {
         return viewportRect.getSize().toAwtDimension();
     }
@@ -65,7 +70,7 @@ public class Viewport extends Container {
         int width = getBounds().width;
         int viewportWidth = viewportRect.width;
         if (viewportWidth > width) {
-            viewportRect.x = Mth.clamp((int) (viewportWidth * xScroll / width), 0, viewportWidth - width);
+            viewportRect.x = (int) (this.xScroll = Mth.clamp(xScroll, 0, viewportWidth - height));
         }
     }
 
@@ -73,8 +78,7 @@ public class Viewport extends Container {
         int height = getBounds().height;
         int viewportHeight = viewportRect.height;
         if (viewportHeight > height) {
-            viewportRect.y = Mth.clamp((int) yScroll * viewportHeight, 0, viewportHeight);
-            this.yScroll = Mth.clamp(yScroll * (viewportHeight - height), 0, viewportHeight - height);
+            this.viewportRect.y = (int) (this.yScroll = Mth.clamp(yScroll, 0, viewportHeight - height));
         }
     }
 
@@ -82,7 +86,7 @@ public class Viewport extends Container {
         int width = getBounds().width;
         int viewportWidth = viewportRect.width;
         if (viewportWidth > width) {
-            return ((double) viewportRect.x / (double) viewportWidth * width) / width;
+            return xScroll;
         } else {
             return 0;
         }
@@ -92,9 +96,17 @@ public class Viewport extends Container {
         int height = getBounds().height;
         int viewportHeight = viewportRect.height;
         if (viewportHeight > height) {
-            return yScroll / (viewportHeight - height);
+            return yScroll;
         } else {
             return 0;
         }
+    }
+
+    public double getXPercent() {
+        return xScroll / (viewportRect.width - width);
+    }
+
+    public double getYPercent() {
+        return yScroll / (viewportRect.height - height);
     }
 }

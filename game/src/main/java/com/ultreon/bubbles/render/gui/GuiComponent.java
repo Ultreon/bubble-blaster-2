@@ -307,7 +307,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * @return true if the x and y position given is withing the bounds create the widget
      */
     public boolean isWithinBounds(int x, int y) {
-        return x >= this.x && y >= this.y && x <= this.x + width && y <= this.y + height;
+        return x >= this.getX() && y >= this.getY() && x <= this.getX() + getWidth() && y <= this.getY() + getHeight();
     }
 
     /**
@@ -317,7 +317,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * @return true if the x and y position given is withing the bounds create the widget
      */
     public boolean isWithinBounds(Vec2i pos) {
-        return pos.x >= this.x && pos.y >= this.y && pos.x <= this.x + width && pos.y <= this.y + height;
+        return pos.getX() >= this.getX() && pos.getY() >= this.getY() && pos.getX() <= this.getX() + getWidth() && pos.getY() <= this.getY() + getHeight();
     }
 
     public void renderComponent(Renderer renderer) {

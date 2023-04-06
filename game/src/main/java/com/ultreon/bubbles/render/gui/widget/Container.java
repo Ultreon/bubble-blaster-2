@@ -14,6 +14,8 @@ public abstract class Container extends GuiComponent {
     protected final List<GuiComponent> children = new CopyOnWriteArrayList<>();
     protected final List<Renderable> statics = new CopyOnWriteArrayList<>();
     protected GuiComponent hoveredInteractable;
+    int innerXOffset;
+    int innerYOffset;
 
     public Container(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         super(x, y, width, height);
@@ -28,9 +30,17 @@ public abstract class Container extends GuiComponent {
     protected void renderChildren(Renderer renderer) {
         for (GuiComponent child : this.children) {
             if (child.visible) {
-                child.render(renderer);
+                child.render(renderer.subInstance(this.x, this.y, this.width, this.height));
             }
         }
+    }
+
+    public GuiComponent getExactWidgetAt(int x, int y) {
+        GuiComponent widgetAt = getWidgetAt(x, y);
+        if (widgetAt instanceof Container container) {
+            return container.getExactWidgetAt(x, y);
+        }
+        return widgetAt;
     }
 
     /**
@@ -52,7 +62,11 @@ public abstract class Container extends GuiComponent {
 
     @Nullable
     public GuiComponent getWidgetAt(int x, int y) {
-        for (GuiComponent child : this.children) {
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
+        List<GuiComponent> guiComponents = this.children;
+        for (int i = guiComponents.size() - 1; i >= 0; i--) {
+            GuiComponent child = guiComponents.get(i);
             if (!child.enabled || !child.visible) continue;
             if (child.isWithinBounds(x, y)) return child;
         }
@@ -62,33 +76,41 @@ public abstract class Container extends GuiComponent {
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
         GuiComponent inputWidget = getWidgetAt(x, y);
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
         return inputWidget != null && inputWidget.mouseClick(x, y, button, count);
     }
 
     @Override
     public boolean mousePress(int x, int y, int button) {
         GuiComponent inputWidget = getWidgetAt(x, y);
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
         return inputWidget != null && inputWidget.mousePress(x, y, button);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
         GuiComponent inputWidget = getWidgetAt(x, y);
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
         return inputWidget != null && inputWidget.mouseRelease(x, y, button);
     }
 
     @Override
     public void mouseMove(int x, int y) {
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         boolean widgetChanged = false;
         if (this.hoveredInteractable != null && !this.hoveredInteractable.isWithinBounds(x, y)) {
             this.hoveredInteractable.mouseExit();
         }
 
-        GuiComponent inputWidgetAt = this.getWidgetAt(x, y);
-        if (inputWidgetAt != this.hoveredInteractable) widgetChanged = true;
-        this.hoveredInteractable = inputWidgetAt;
+        if (widgetAt != this.hoveredInteractable) widgetChanged = true;
+        this.hoveredInteractable = widgetAt;
 
         if (this.hoveredInteractable != null) {
+            x -= this.x + this.innerXOffset;
+            y -= this.y + this.innerYOffset;
             this.hoveredInteractable.mouseMove(x, y);
 
             if (widgetChanged) {
@@ -99,8 +121,10 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        GuiComponent inputWidget = getWidgetAt(x, y);
-        if (inputWidget != null) inputWidget.mouseDrag(x, y, nx, ny, button);
+        GuiComponent widgetAt = getWidgetAt(x, y);
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
+        if (widgetAt != null) widgetAt.mouseDrag(x, y, nx, ny, button);
     }
 
     @Override
@@ -113,15 +137,17 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseWheel(int x, int y, double rotation, int amount, int units) {
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
         GuiComponent inputWidget = getWidgetAt(x, y);
         if (inputWidget != null) inputWidget.mouseWheel(x, y, rotation, amount, units);
     }
 
     protected final void clearWidgets() {
-        for (GuiComponent widget : children) {
+        for (GuiComponent widget : this.children) {
             widget.destroy();
         }
-        children.clear();
+        this.children.clear();
     }
 
     public GuiComponent getHoveredWidget() {

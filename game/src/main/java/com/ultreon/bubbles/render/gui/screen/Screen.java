@@ -105,7 +105,6 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
         GuiComponent inputWidget = getWidgetAt(x, y);
         if (inputWidget != null) {
             focused = inputWidget;
-            return true;
         }
         return super.mousePress(x, y, button);
     }
