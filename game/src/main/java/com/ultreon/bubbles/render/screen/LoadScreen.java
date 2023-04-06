@@ -1,13 +1,10 @@
 package com.ultreon.bubbles.render.screen;
 
-import com.ultreon.bubbles.Main;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.mod.loader.ModLoader;
-import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.TextureCollection;
@@ -26,7 +23,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public final class LoadScreen extends Screen implements Runnable {
@@ -46,7 +42,7 @@ public final class LoadScreen extends Screen implements Runnable {
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
-    private final ModLoader modLoader = new ModLoader(Main.mainClassLoader);
+//    private final ModLoader modLoader = new ModLoader(Main.mainClassLoader);
 
     public LoadScreen() {
         instance = this;
@@ -145,27 +141,27 @@ public final class LoadScreen extends Screen implements Runnable {
             }
         }
 
-        LOGGER.info("Loading mods...");
-        this.progMain.sendNext("Loading mods...");
-        modLoader.scanForJars();
-        this.progAlt = null;
+//        LOGGER.info("Loading mods...");
+//        this.progMain.sendNext("Loading mods...");
+//        modLoader.scanForJars();
+//        this.progAlt = null;
 
-        LOGGER.info("Scanning mods...");
-        this.progMain.sendNext("Scanning mods...");
-        modLoader.scan(msgAlt, new AtomicReference<>(progAlt));
-        this.progAlt = null;
+//        LOGGER.info("Scanning mods...");
+//        this.progMain.sendNext("Scanning mods...");
+//        modLoader.scan(msgAlt, new AtomicReference<>(progAlt));
+//        this.progAlt = null;
 
         LOGGER.info("Loading resources...");
         this.progMain.sendNext("Loading resources...");
         game().getResourceManager().importResources(game.getGameFile());
-        for (File file : modLoader.getFiles()) {
-            game().getResourceManager().importResources(file);
-        }
+//        for (File file : modLoader.getFiles()) {
+//            game().getResourceManager().importResources(file);
+//        }
         this.progAlt = null;
 
         LOGGER.info("Setting up mods...");
         this.progMain.sendNext("Setting up mods...");
-        modLoader.init(msgAlt, new AtomicReference<>(progAlt));
+//        modLoader.init(msgAlt, new AtomicReference<>(progAlt));
         this.progAlt = null;
 
         // Loading object holders

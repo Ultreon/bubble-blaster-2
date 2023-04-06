@@ -15,14 +15,16 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SoundInstance {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("GameAudio");
     private final ThrowingSupplier<InputStream, IOException> factory;
     private final String name;
     private boolean playing = false;
-    private boolean stopped = false;
     private Player player;
+    private static final Set<SoundInstance> ALL = new HashSet<>();
 
     public SoundInstance(File file) {
         this(file, "");
@@ -73,11 +75,17 @@ public class SoundInstance {
         this.name = name;
     }
 
+    public static void stopAll() {
+        ALL.forEach(SoundInstance::stop);
+    }
+
     private void playClip() throws IOException,
             UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
-        new Thread(THREAD_GROUP, () -> {
+        Thread audioPlayer = new Thread(THREAD_GROUP, () -> {
+            playing = true;
             try (BufferedInputStream stream = new BufferedInputStream(factory.get())) {
                 this.player = new Player(stream);
+                ALL.add(this);
                 try {
                     playThread(player);
                 } catch (Exception e) {
@@ -89,7 +97,11 @@ public class SoundInstance {
                 stop();
                 throw new SoundLoadException(e);
             }
-        }, "AudioPlayer").start();
+            ALL.remove(this);
+            playing = false;
+        }, "AudioPlayer");
+        audioPlayer.setDaemon(false);
+        audioPlayer.start();
     }
 
     private void playThread(Player player) throws JavaLayerException {
@@ -106,16 +118,15 @@ public class SoundInstance {
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException | InterruptedException e) {
             throw new SoundLoadException(e);
         }
-        stopped = false;
+        playing = true;
     }
 
     public synchronized void stop() {
+        playing = false;
         if (player != null) {
             player.close();
             player = null;
         }
-        stopped = true;
-        playing = false;
     }
 
     public void setVolume(double v) {
@@ -127,7 +138,7 @@ public class SoundInstance {
     }
 
     public boolean isStopped() {
-        return stopped;
+        return !playing;
     }
 
     public boolean isPlaying() {

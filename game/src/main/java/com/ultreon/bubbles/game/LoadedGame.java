@@ -57,7 +57,7 @@ public class LoadedGame {
 
     // Flags.
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean gameActive = false;
+    private boolean running = false;
 
     // Save
     private final GameSave gameSave;
@@ -78,16 +78,18 @@ public class LoadedGame {
     private void run() {
         Util.setCursor(BubbleBlaster.getInstance().getBlankCursor());
 
-        activate();
+        startup();
 
         this.environment.getGamemode().start();
 
         autoSaver.start();
 
         this.collisionThread = new Thread(this::collisionThread, "Collision");
+        this.collisionThread.setDaemon(false);
         this.collisionThread.start();
 
         this.ambientAudioThread = new Thread(this::ambientAudioThread, "audio-Thread");
+        this.ambientAudioThread.setDaemon(false);
         this.ambientAudioThread.start();
     }
 
@@ -98,7 +100,7 @@ public class LoadedGame {
 
         // Unbind events.
         gamemode.destroy();
-        deactivate();
+        shutdown();
 
         ambientAudio.stop();
 
@@ -107,7 +109,7 @@ public class LoadedGame {
         if (ambientAudioThread != null) ambientAudioThread.interrupt();
         if (gameEventHandlerThread != null) gameEventHandlerThread.interrupt();
 
-        environment.quit();
+        environment.shutdown();
 
         // Hide cursor.
         Util.setCursor(BubbleBlaster.getInstance().getDefaultCursor());
@@ -119,7 +121,7 @@ public class LoadedGame {
     //     Thread methods     //
     ////////////////////////////
     private void ambientAudioThread() {
-        while (this.gameActive) {
+        while (this.running) {
             if (this.ambientAudio == null) {
                 if (!this.environment.isBloodMoonActive() && this.nextAudio < System.currentTimeMillis()) {
                     if (new PseudoRandom(System.nanoTime()).getNumber(0, 5, -1) == 0) {
@@ -160,7 +162,7 @@ public class LoadedGame {
         double ns = 1000000000 / amountOfUpdates;
         double delta;
 
-        while (this.gameActive) {
+        while (this.running && game.isRunning()) {
             // Calculate tick delta-time.
             long now = System.nanoTime();
             delta = (now - lastTime) / ns;
@@ -217,17 +219,16 @@ public class LoadedGame {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Event Binding     //
     ///////////////////////////
-    public void activate() {
-        BubbleBlaster.getEventBus().subscribe(this);
-        this.gameActive = true;
+    public void startup() {
+        this.running = true;
     }
 
-    public void deactivate() {
-        this.gameActive = false;
+    public void shutdown() {
+        this.running = false;
     }
 
-    public boolean isGameActive() {
-        return this.gameActive;
+    public boolean isRunning() {
+        return this.running;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

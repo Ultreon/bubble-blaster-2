@@ -1,0 +1,6 @@
+{
+  "name": "Game Preloader",
+  "id": "bubbles-preloader",
+  "version": "${version}",
+  "schemaVersion": 1
+}

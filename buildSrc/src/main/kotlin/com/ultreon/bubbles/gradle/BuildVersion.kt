@@ -5,7 +5,7 @@ import java.util.*
 
 @Suppress("unused")
 class BuildVersion(
-    @field:SerializedName("version")
+    @field:SerializedName("project_version")
     val version: String,
 
     @field:SerializedName("name")

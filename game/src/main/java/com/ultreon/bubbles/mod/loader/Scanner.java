@@ -40,7 +40,17 @@ public final class Scanner {
     private HashMap<Class<? extends Annotation>, ArrayList<Class<?>>> classes;
 
     @ApiStatus.Internal
-    public Scanner(boolean isGame, List<URL> urls, ClassLoader classLoader) {
+    public Scanner(boolean isGame, ClassLoader classLoader, URL... urls) {
+        this(isGame, classLoader, List.of(urls));
+    }
+
+    @ApiStatus.Internal
+    public Scanner(boolean isGame, ClassLoader classLoader, Collection<URL> urls) {
+        this(isGame, classLoader, List.copyOf(urls));
+    }
+
+    @ApiStatus.Internal
+    public Scanner(boolean isGame, ClassLoader classLoader, List<URL> urls) {
         this.classLoader = classLoader;
         this.urls = urls;
         this.isGame = isGame;

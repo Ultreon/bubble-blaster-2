@@ -229,7 +229,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         EventResult<Boolean> booleanEventResult = GameEvents.WINDOW_CLOSING.factory().onWindowClosing(this);
         Boolean cancel = booleanEventResult.getValue();
         if (cancel == null || !cancel) {
-            game().close();
+            game().shutdown();
         }
     }
 
@@ -239,7 +239,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowClosed(WindowEvent e) {
-
+        properties.onClose.run();
     }
 
     /**
@@ -330,7 +330,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         game().windowLoaded();
     }
 
-    void close() {
+    void dispose() {
         this.frame.dispose(); // Window#dispose() closes the awt-based window.
     }
 
@@ -443,6 +443,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         private final int height;
         private final String title;
         private boolean fullscreen;
+        private Runnable onClose = () -> {};
 
         @SuppressWarnings("ConstantConditions")
         public Properties(@NonNull String title, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
@@ -458,6 +459,11 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         @Contract("->this")
         public Properties fullscreen() {
             this.fullscreen = true;
+            return this;
+        }
+
+        public Properties close(Runnable onClose) {
+            this.onClose = onClose;
             return this;
         }
     }
