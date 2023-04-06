@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.event.v1.screen;
 
-import com.ultreon.bubbles.render.screen.Screen;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 
 @Deprecated
 public class OpenScreenEvent extends ScreenEvent {

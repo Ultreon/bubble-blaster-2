@@ -6,7 +6,7 @@ import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.registry.Registry;
 import net.querz.nbt.tag.CompoundTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public final class Item implements IItemProvider, StateHolder, TagHolder {
     private ItemType type;
@@ -26,7 +26,7 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     }
 
     @Override
-    public @NonNull CompoundTag save() {
+    public @NotNull CompoundTag save() {
         CompoundTag document = new CompoundTag();
         document.put("Tag", tag);
         document.putString("type", Registry.ITEMS.getKey(type).toString());

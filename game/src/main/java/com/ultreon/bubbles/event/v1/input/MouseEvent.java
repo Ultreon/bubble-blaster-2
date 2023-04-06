@@ -4,7 +4,7 @@ import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.event.v1.Event;
 import com.ultreon.bubbles.event.v1.type.MouseEventType;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -30,7 +30,7 @@ public class MouseEvent extends Event {
     private final int yOnScreen;
 
     private final BubbleBlaster game;
-    private final @NonNull MouseInput controller;
+    private final @NotNull MouseInput controller;
     private final java.awt.event.MouseEvent parentEvent;
     private final MouseEventType type;
 
@@ -42,7 +42,7 @@ public class MouseEvent extends Event {
      * @param event      The {@linkplain java.awt.event.MouseEvent (awt) mouse event} instance.
      * @param type       One create the {@linkplain MouseEventType mouse event type} constants.
      */
-    public MouseEvent(BubbleBlaster game, @NonNull MouseInput controller, java.awt.event.MouseEvent event, MouseEventType type) {
+    public MouseEvent(BubbleBlaster game, @NotNull MouseInput controller, java.awt.event.MouseEvent event, MouseEventType type) {
         this.game = game;
         this.type = type;
         this.button = event.getButton();
@@ -71,7 +71,7 @@ public class MouseEvent extends Event {
      *
      * @return The KeyboardController instance.
      */
-    public @NonNull MouseInput getController() {
+    public @NotNull MouseInput getController() {
         return controller;
     }
 

@@ -20,9 +20,9 @@ class RenderState {
 
     RenderState(Renderer renderer) {
         this.renderer = renderer;
-        this.clearColor = this.renderer.gfx.getBackground();
+        this.clearColor = this.renderer.getClearColor();
         this.transform = this.renderer.gfx.getTransform();
-        this.color = this.renderer.gfx.getColor();
+        this.color = this.renderer.getColor();
         this.paint = this.renderer.gfx.getPaint();
         this.font = this.renderer.gfx.getFont();
         this.clip = this.renderer.gfx.getClip();

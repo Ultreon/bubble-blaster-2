@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.event.v1;
 
 import com.ultreon.commons.lang.ICancellable;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -21,7 +21,7 @@ public class LanguageChangeEvent extends Event implements ICancellable {
         return from;
     }
 
-    @NonNull
+    @NotNull
     public Locale getTo() {
         return to;
     }

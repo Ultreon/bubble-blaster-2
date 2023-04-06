@@ -162,6 +162,19 @@ public final class SvgHelper {
      *
      * @param width  desired width, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by height.
      * @param height desired height, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by width.
+     * @return image create the rendered svg.'
+     * TODO: modify to also give a image that preserves aspects but matches
+     * width or height individually.
+     */
+    public Image getColoredImage(int width, int height, com.ultreon.bubbles.render.Color fill) {
+        return getColoredImage(width, height, fill.toAwt());
+    }
+
+    /**
+     * Renders and returns the svg based image.
+     *
+     * @param width  desired width, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by height.
+     * @param height desired height, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by width.
      * @param fill   desired fill color.
      * @return image create the rendered svg.'
      * TODO: modify to also give a image that preserves aspects but matches
@@ -169,6 +182,19 @@ public final class SvgHelper {
      */
     public Image getColoredImage(int width, int height, Color fill) {
         return getColoredImage(width, height, fill, null);
+    }
+
+    /**
+     * Renders and returns the svg based image.
+     *
+     * @param width  desired width, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by height.
+     * @param height desired height, if it is less than or equal to 0 aspect ratio is preserved and the size is determined by width.
+     * @return image create the rendered svg.'
+     * TODO: modify to also give a image that preserves aspects but matches
+     * width or height individually.
+     */
+    public Image getColoredImage(int width, int height, com.ultreon.bubbles.render.Color fill, com.ultreon.bubbles.render.Color outline) {
+        return getColoredImage(width, height, fill.toAwt(), outline.toAwt());
     }
 
     /**

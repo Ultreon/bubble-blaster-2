@@ -2,8 +2,8 @@ package com.ultreon.commons.utilities.web;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -109,7 +109,7 @@ public final class GoogleResults extends ArrayList<GoogleResult> implements Seri
         return new GoogleSearchInformation(jsonObject.getAsJsonObject("searchInformation"));
     }
 
-    public @NonNull GoogleSpelling getCorrectedSpelling() {
+    public @NotNull GoogleSpelling getCorrectedSpelling() {
         return new GoogleSpelling(jsonObject.getAsJsonObject("spelling"));
     }
 

@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.versioning;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,7 +78,7 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
     }
 
     @Override
-    public int compareTo(@NonNull UltreonOldVersion o) {
+    public int compareTo(@NotNull UltreonOldVersion o) {
         int cmp = Integer.compare(this.version, o.version);
         if (cmp == 0) {
             int cmp1 = Integer.compare(this.subversion, o.subversion);

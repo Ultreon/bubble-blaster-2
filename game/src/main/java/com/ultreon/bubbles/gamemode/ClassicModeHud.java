@@ -5,14 +5,15 @@ import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.Texture;
 import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.util.TimeUtils;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Objects;
@@ -36,12 +37,12 @@ public class ClassicModeHud extends GameHud {
     private static final Stroke HEALTH_LINE = new BasicStroke(1);
 
     // Colors
-    private static final Color LEVEL_UP_COLOR = new Color(0xffbb00);
-    private static final Color TOP_BAR_BG_COLOR = new Color(0x7f000000, true);
-    private static final Color HEALTH_LINE_BG_COLOR = new Color(0x7ffffff, true);
-    private static final Color GAME_OVER_DETAILS_COLOR = new Color(0xffffff);
-    private static final Color GAME_OVER_COLOR_NORMAL = new Color(0xff0000);
-    private static final Color GAME_OVER_COLOR_FLASH = new Color(0xff8000);
+    private static final Color LEVEL_UP_COLOR = Color.rgb(0xffbb00);
+    private static final Color TOP_BAR_BG_COLOR = Color.argb(0x7f000000);
+    private static final Color HEALTH_LINE_BG_COLOR = Color.argb(0x7ffffff);
+    private static final Color GAME_OVER_DETAILS_COLOR = Color.rgb(0xffffff);
+    private static final Color GAME_OVER_COLOR_NORMAL = Color.rgb(0xff0000);
+    private static final Color GAME_OVER_COLOR_FLASH = Color.rgb(0xff8000);
     private boolean showLevelUp;
     private long hideLevelUpTime;
     private int level;
@@ -93,8 +94,8 @@ public class ClassicModeHud extends GameHud {
 
     private void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
-        renderer.color(new Color(0, 165, 220, 127));
-        GraphicsUtils.drawRightAnchoredString(renderer, ((Integer) game.getFps()).toString(), new Point2D.Double(game.getWidth() - 10, 10), 20, INFO_TITLE_FONT);
+        renderer.color(Color.argb(0x7f00a5dc));
+        GraphicsUtils.drawRightAnchoredString(renderer, ((Integer) game.getFps()).toString(), new Vec2i(game.getWidth() - 10, 10), 20, INFO_TITLE_FONT);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ClassicModeHud extends GameHud {
 
             Rectangle2D gameBounds = gamemode.getGameBounds();
 
-            renderer.color(new Color(0x7f000000, true));
+            renderer.color(Color.argb(0x7f000000));
 
             renderer.rect(
                     (int)(gameBounds.getX() + gameBounds.getWidth() - width) / 2,
@@ -150,8 +151,8 @@ public class ClassicModeHud extends GameHud {
      */
     private void drawPlayerDetails(Renderer renderer, BubbleBlaster game, Player player) {
         // Assign colors for title and description.
-        Color titleColor = new Color(255, 128, 0);
-        Color valueColor = new Color(255, 255, 255);
+        Color titleColor = Color.rgb(255, 128, 0);
+        Color valueColor = Color.rgb(255, 255, 255);
 
         // As long the player isn't game over.
         if (!gameOver) {
@@ -183,21 +184,21 @@ public class ClassicModeHud extends GameHud {
         double playerDamage = player.getHealth();
 
         // Calculate colors based on damage and max damage.
-        playerDamage = MathHelper.clamp(playerDamage, 0, player.getMaxHealth());
+        playerDamage = Mth.clamp(playerDamage, 0, player.getMaxHealth());
         double max = playerMaxDamage / 2;
         if (playerDamage > playerMaxDamage / 2) {
             redValue = (int) ((max - (((playerDamage) - max))) * 255 / max);
-            redValue = (int) MathHelper.clamp((double) redValue, 0, 255);
+            redValue = (int) Mth.clamp((double) redValue, 0, 255);
             greenValue = 255;
         } else {
             greenValue = (int) ((playerDamage) * 255 / (max / 2));
-            greenValue = (int) MathHelper.clamp((double) greenValue, 0, 255);
+            greenValue = (int) Mth.clamp((double) greenValue, 0, 255);
             redValue = 255;
         }
 
         // Render health bar.
         renderer.stroke(HEALTH_LINE);
-        renderer.color(new Color(redValue, greenValue, 0));
+        renderer.color(Color.rgb(redValue, greenValue, 0));
         renderer.line(0, 69, (int) (game.getWidth() * playerDamage / playerMaxDamage), 69);
     }
 
@@ -259,11 +260,11 @@ public class ClassicModeHud extends GameHud {
                 effectImage.render(render, 0, 0, 192, 38);
 
                 // EffectInstance icon.
-                render.image(appliedEffect.getType().getIcon(32, 32, new Color(0, 191, 191)), 5, 3);
-                render.color(new Color(255, 255, 255, 192));
+                render.image(appliedEffect.getType().getIcon(32, 32, Color.rgb(0, 191, 191)), 5, 3);
+                render.color(Color.rgba(255, 255, 255, 192));
 
                 // Time. 0:00:00
-                GraphicsUtils.drawLeftAnchoredString(render, time, new Point2D.Double(56, 2), 35, new Font(game.getFont().getFontName(), Font.BOLD, 16));
+                GraphicsUtils.drawLeftAnchoredString(render, time, new Vec2i(56, 2), 35, new Font(game.getFont().getFontName(), Font.BOLD, 16));
                 render.dispose();
 
                 // Next
@@ -286,7 +287,7 @@ public class ClassicModeHud extends GameHud {
         Rectangle2D topShade = new Rectangle2D.Double(0, 71, game.getWidth(), 30);
         Paint old = renderer.getPaint();
 
-        GradientPaint paint = new GradientPaint(0f, 71f, new Color(0, 0, 0, 48), 0f, 100f, new Color(0, 0, 0, 0));
+        GradientPaint paint = new GradientPaint(0f, 71f, Color.argb(0x30000000).toAwt(), 0f, 100f, Color.transparent.toAwt());
         renderer.paint(paint);
         renderer.fill(topShade);
         renderer.outline(topShade);
@@ -319,7 +320,7 @@ public class ClassicModeHud extends GameHud {
         Paint old = renderer.getPaint();
 
         // Gradient.
-        GradientPaint gp = new GradientPaint(0f, 0f, new Color(0, 0, 0, 0), 0f, 70f, new Color(0, 0, 0, 24));
+        GradientPaint gp = new GradientPaint(0f, 0f, Color.transparent.toAwt(), 0f, 70f, Color.argb(0x18000000).toAwt());
         renderer.paint(gp);
         renderer.fill(topBar);
         renderer.outline(topBar);

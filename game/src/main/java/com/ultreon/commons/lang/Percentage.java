@@ -1,6 +1,6 @@
 package com.ultreon.commons.lang;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -31,7 +31,7 @@ public final class Percentage implements Serializable, Comparable<Percentage> {
     }
 
     @Override
-    public int compareTo(@NonNull Percentage o) {
+    public int compareTo(@NotNull Percentage o) {
         return Double.compare(percentage, o.percentage);
     }
 

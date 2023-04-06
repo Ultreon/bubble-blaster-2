@@ -1,6 +1,28 @@
 {
+  "schemaVersion": 1,
   "name": "Game Preloader",
-  "id": "bubbles-preloader",
+  "id": "bb-preloader",
   "version": "${version}",
-  "schemaVersion": 1
+  "description": "Preloader for the Bubble Blaster game.",
+  "authors": [
+    {
+      "name": "Ultreon Team",
+      "contact": {
+        "homepage": "https://ultreonteam.tk/",
+        "discord": "https://discord.gg/dtdc46g6ry",
+        "github": "https://github.com/Ultreon",
+        "youtube": "https://youtube.com/@ultreon"
+      }
+    },
+    {
+      "name": "Qboi",
+      "contact": {
+        "homepage": "https://ultreonteam.tk/",
+        "github": "https://github.com/Qboi123",
+        "youtube": "https://youtube.com/@qboi"
+      }
+    }
+  ],
+  "license": "Ultreon-API-v1.2",
+  "icon": "assets/bb-preloader/icon.png"
 }

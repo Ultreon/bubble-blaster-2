@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.event.v1;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Deprecated
 public class ExitEvent extends Event {

@@ -1,6 +1,6 @@
 {
   "bubbles": {
-    "Other": {
+    "other": {
       "prev": "Vorige",
       "next": "Volgende",
       "true": "Ja",
@@ -15,46 +15,48 @@
     },
     "status_effect": {
       "poison": {
-        "Name": "Vergiftigd"
+        "name": "Vergiftigd"
       },
       "blindness": {
-        "Name": "Verblind"
+        "name": "Verblind"
       },
       "multi_score": {
-        "Name": "Meer-score"
+        "name": "Meer-score"
       },
       "speed_boost": {
-        "Name": "Snelheid-boost"
+        "name": "Snelheid-boost"
       },
       "attack_boost": {
-        "Name": "Aanval-boost"
+        "name": "Aanval-boost"
       },
-      "DefenseBoost": {
-        "Name": "Verdediging-boost"
+      "defense_boost": {
+        "name": "Verdediging-boost"
       }
     },
-    "Info": {
-      "Score": "Score",
-      "Level": "Level",
-      "Health": "Health"
+    "info": {
+      "score": "Score",
+      "level": "Level",
+      "health": "Health"
     },
-    "Screen": {
-      "Title": {
-        "Start": "Start Spel",
+    "screen": {
+      "title": {
+        "start": "Start Spel",
+        "mods": "Modificaties",
+        "saves": "Saves",
         "Options": "Opties",
         "Language": "Taal"
       },
-      "Options": {
+      "options": {
         "Language": "Taal"
       },
-      "Saves": {
-        "New": "Nieuw",
-        "Duplicate": "Dupliceer",
-        "Edit": "Bewerk",
-        "Rename": "Hernoem",
-        "Reset": "Reset",
-        "Open": "Open",
-        "Delete": "Verwijder"
+      "saves": {
+        "new": "Nieuw",
+        "duplicate": "Dupliceer",
+        "edit": "Bewerk",
+        "rename": "Hernoem",
+        "reset": "Reset",
+        "open": "Open",
+        "delete": "Verwijder"
       },
       "pause": {
         "text": "Pauze",
@@ -73,7 +75,7 @@
         "attack_modifier": "Aanval Modifier:",
         "defense_modifier": "Verdediging Modifier:",
         "can_spawn": "Kan nu ontstaan:",
-        "Description": "Beschrijving:"
+        "description": "Beschrijving:"
       }
     },
     "bubble": {

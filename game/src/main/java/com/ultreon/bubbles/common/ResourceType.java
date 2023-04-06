@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common;
 
 import com.google.common.annotations.Beta;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Not yet used.

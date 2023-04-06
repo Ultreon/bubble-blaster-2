@@ -1,6 +1,6 @@
 package com.ultreon.commons.util;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -119,7 +119,7 @@ public class PolygonUtils {
         return path;
     }
 
-    @NonNull
+    @NotNull
     private static ArrayList<Point2D> pointsAsList(Double[] xPoints, Double[] yPoints) {
         ArrayList<Point2D> list = new ArrayList<>();
         for (int i = 0; i < yPoints.length; i++) {

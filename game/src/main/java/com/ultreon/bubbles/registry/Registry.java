@@ -14,11 +14,12 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
 import com.ultreon.bubbles.media.Sound;
 import com.ultreon.bubbles.render.TextureCollection;
+import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.commons.map.OrderedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.*;
@@ -45,6 +46,7 @@ public class Registry<T> {
     public static final Registry<ItemType> ITEMS = Registry.create(new Identifier("item"));
     public static final Registry<TextureCollection> TEXTURE_COLLECTIONS = Registry.create(new Identifier("texture_collection"));
     public static final Registry<Sound> SOUNDS = Registry.create(new Identifier("sound"));
+    public static final Registry<Font> FONTS = Registry.create(new Identifier("font"));
 
     protected Registry(Class<T> clazz, Identifier id) throws IllegalStateException {
         this.id = id;
@@ -67,7 +69,7 @@ public class Registry<T> {
 
     @SafeVarargs
     @SuppressWarnings("unchecked")
-    public static <T> Registry<T> create(Identifier registryName, @NonNull T... type) {
+    public static <T> Registry<T> create(Identifier registryName, @NotNull T... type) {
         Class<T> componentType = (Class<T>) type.getClass().getComponentType();
         if (registries.containsKey(componentType)) {
             throw new IllegalStateException();
@@ -77,6 +79,17 @@ public class Registry<T> {
         registries.put(componentType, registry);
 
         return registry;
+    }
+
+    /**
+     * Returns the identifier of the given registered instance.
+     *
+     * @param obj the registered instance.
+     * @return the identifier of it.
+     */
+    @Nullable
+    public Identifier getKey(T obj) {
+        return valueMap.get(obj);
     }
 
     /**
@@ -177,9 +190,5 @@ public class Registry<T> {
 
     public boolean isFrozen() {
         return frozen;
-    }
-
-    public Identifier getKey(T obj) {
-        return valueMap.get(obj);
     }
 }

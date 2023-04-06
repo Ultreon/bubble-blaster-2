@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.ammo.BasicAmmoType;
+import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.registry.DelayedRegister;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class AmmoTypes {
     private static final DelayedRegister<AmmoType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.AMMO_TYPES);
 
-    public static final RegistrySupplier<BasicAmmoType> BASIC = register("Basic", BasicAmmoType::new);
+    public static final RegistrySupplier<BasicAmmoType> BASIC = register("basic", BasicAmmoType::new);
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends AmmoType> RegistrySupplier<T> register(String name, Supplier<T> supplier) {

@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.init;
 
 import com.ultreon.bubbles.game.InternalMod;
-import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gamemode.ClassicMode;
+import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.registry.DelayedRegister;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class Gamemodes {
     private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.GAMEMODES);
 
-    public static final RegistrySupplier<ClassicMode> CLASSIC = register("Classic", ClassicMode::new);
+    public static final RegistrySupplier<ClassicMode> CLASSIC = register("classic", ClassicMode::new);
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends Gamemode> RegistrySupplier<T> register(String name, Supplier<T> supplier) {

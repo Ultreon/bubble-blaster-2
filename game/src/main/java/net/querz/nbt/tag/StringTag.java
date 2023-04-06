@@ -1,6 +1,6 @@
 package net.querz.nbt.tag;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.checkerframework.common.value.qual.IntVal;
 
 public class StringTag extends Tag<String> implements Comparable<StringTag> {
@@ -12,7 +12,7 @@ public class StringTag extends Tag<String> implements Comparable<StringTag> {
         super(ZERO_VALUE);
     }
 
-    public StringTag(@NonNull String value) {
+    public StringTag(@NotNull String value) {
         super(value);
     }
 
@@ -22,18 +22,18 @@ public class StringTag extends Tag<String> implements Comparable<StringTag> {
         return ID;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String getValue() {
         return super.getValue();
     }
 
     @Override
-    public void setValue(@NonNull String value) {
+    public void setValue(@NotNull String value) {
         super.setValue(value);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String valueToString(int maxDepth) {
         return escapeString(getValue(), false);

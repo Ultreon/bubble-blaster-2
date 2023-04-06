@@ -2,8 +2,8 @@ package com.ultreon.bubbles.game;
 
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.PseudoRandom;
-import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.damage.DamageSourceType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
@@ -11,15 +11,16 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EntityEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.screen.MessengerScreen;
+import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
+import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.util.CollisionUtil;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -281,11 +282,11 @@ public class LoadedGame {
         for (String s : activeMessages) {
             Renderer subInstance = renderer.subInstance(0, 71 + (32 * i), 1000, 32);
 
-            subInstance.color(new Color(0, 0, 0, 128));
+            subInstance.color(Color.argb(0x80000000));
             subInstance.rect(0, 0, 1000, 32);
 
-            subInstance.color(new Color(255, 255, 255, 255));
-            GraphicsUtils.drawLeftAnchoredString(subInstance, s, new Point2D.Double(2, 2), 28, defaultFont);
+            subInstance.color(Color.argb(0xffffffff));
+            GraphicsUtils.drawLeftAnchoredString(subInstance, s, new Vec2i(2, 2), 28.0, defaultFont);
 
             subInstance.dispose();
             i++;

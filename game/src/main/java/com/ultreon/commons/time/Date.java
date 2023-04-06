@@ -1,6 +1,6 @@
 package com.ultreon.commons.time;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;
@@ -149,7 +149,7 @@ public class Date implements Serializable, Comparable<Date> {
     }
 
     @Override
-    public int compareTo(@NonNull Date o) {
+    public int compareTo(@NotNull Date o) {
         return Long.compare(toEpochDay(), toEpochDay());
     }
 

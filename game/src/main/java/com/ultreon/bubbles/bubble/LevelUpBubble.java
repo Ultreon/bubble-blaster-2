@@ -4,10 +4,8 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.commons.util.ColorUtils;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.lang3.Range;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Levelup Bubble
@@ -18,7 +16,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class LevelUpBubble extends BubbleType {
     public LevelUpBubble() {
         // Color & key.
-        colors = ColorUtils.parseColorString("#ffff00,#ffffff,#ff9f00");
+        setColors("#ffff00,#ffffff,#ff9f00");
 
         // Set initial data values.
         setPriority(131_072L);
@@ -45,7 +43,7 @@ public class LevelUpBubble extends BubbleType {
     }
 
     @Override
-    public boolean canSpawn(@NonNull Environment environment) {
+    public boolean canSpawn(@NotNull Environment environment) {
         // If player is not spawned yet, the player cannot have any change. So return false.
         if (environment.getPlayer() == null) return false;
 

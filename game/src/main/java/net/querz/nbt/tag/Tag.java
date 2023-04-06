@@ -1,7 +1,7 @@
 package net.querz.nbt.tag;
 
 import net.querz.io.MaxDepthReachedException;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.checkerframework.common.reflection.qual.NewInstance;
 import org.checkerframework.common.value.qual.IntVal;
 
@@ -179,10 +179,10 @@ public abstract class Tag<T> implements Cloneable {
      *                the end create the string.
      * @return The escaped string.
      */
-    @NonNull
+    @NotNull
     @NewInstance
     @SuppressWarnings("SameParameterValue")
-    protected static String escapeString(@NonNull String s, boolean lenient) {
+    protected static String escapeString(@NotNull String s, boolean lenient) {
         StringBuilder sb = new StringBuilder();
         Matcher m = ESCAPE_PATTERN.matcher(s);
         while (m.find()) {

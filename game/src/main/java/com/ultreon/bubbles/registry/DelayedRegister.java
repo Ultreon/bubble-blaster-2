@@ -4,20 +4,20 @@ import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import org.apache.logging.log4j.LogManager;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
-public class DelayedRegister<@NonNull T> {
-    @NonNull
+public class DelayedRegister<@NotNull T> {
+    @NotNull
     private final String modId;
-    @NonNull
+    @NotNull
     private final Registry<T> registry;
     private final ArrayList<HashMap.Entry<Identifier, Supplier<T>>> objects = new ArrayList<>();
 
-    protected DelayedRegister(@NonNull String modId, @NonNull Registry<T> registry) {
+    protected DelayedRegister(@NotNull String modId, @NotNull Registry<T> registry) {
         this.modId = modId;
         this.registry = registry;
     }
@@ -26,8 +26,8 @@ public class DelayedRegister<@NonNull T> {
         return new DelayedRegister<>(modId, registry);
     }
 
-    public <@NonNull C extends T> RegistrySupplier<C> register(@NonNull String key, @NonNull Supplier<@NonNull C> supplier) {
-        Identifier id = new Identifier(key, modId);
+    public <@NotNull C extends T> RegistrySupplier<C> register(@NotNull String key, @NotNull Supplier<@NotNull C> supplier) {
+        Identifier id = new Identifier(modId, key);
 
         objects.add(new HashMap.SimpleEntry<>(id, supplier::get));
 

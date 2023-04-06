@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common.random;
 
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.bubble.BubbleProperties;
+import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.environment.Environment;
@@ -89,7 +89,7 @@ public class BubbleRandomizer extends EntityRandomizer {
         int x = xRng.getNumber((int) bounds.getMinX(), (int) bounds.getMaxX(), spawnIndex, retry);
         int y = yRng.getNumber((int) bounds.getMinY(), (int) bounds.getMaxY(), spawnIndex, retry);
 
-        int rad = radius + (type.colors.length * 3) + 4;
+        int rad = radius + (type.getColors().size() * 3) + 4;
         float defense = type.getDefense(environment, defenseRng);
         float attack = type.getAttack(environment, attackRng);
         float score = type.getScore(environment, scoreMultiplierRng);

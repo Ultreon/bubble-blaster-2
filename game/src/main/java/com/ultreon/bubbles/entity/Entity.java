@@ -17,8 +17,8 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -481,7 +481,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the saved data in the form of a compound.
      */
     @Override
-    public @NonNull CompoundTag save() {
+    public @NotNull CompoundTag save() {
         // Save components.
         CompoundTag state = new CompoundTag();
         state.put("Tag", this.tag);
@@ -826,5 +826,9 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public double getSpeed() {
         return getAttributes().get(Attribute.SPEED);
+    }
+
+    public boolean isBad() {
+        return false;
     }
 }

@@ -6,15 +6,13 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.Effects;
-import com.ultreon.commons.util.ColorUtils;
-import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.Range;
 
 import java.util.ArrayList;
 
 public class UltraBubble extends BubbleType {
     public UltraBubble() {
-        colors = ColorUtils.parseColorString("#007fff,#0000ff,#7f00ff,#ff00ff,#ff007f");
+        setColors("#007fff,#0000ff,#7f00ff,#ff00ff,#ff007f");
 
         setPriority(4600d);
         setRadius(Range.between(21, 55));
