@@ -1,12 +1,12 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.border.Border;
-import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2i;
 
 import java.awt.*;
 
@@ -184,42 +184,35 @@ public class OptionsNumberInput extends OptionsTextEntry {
             renderer.fill(getBounds());
         }
 
-        Renderer gg1 = renderer.subInstance(x, y, width, height);
-        gg1.color(Color.argb(0xffffffff));
-
-        cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
-        GraphicsUtils.drawLeftAnchoredString(gg1, text, new Vec2i(8, height - (height - 5)), height - 5, defaultFont);
-
-        FontMetrics fontMetrics = renderer.fontMetrics(defaultFont);
-
-        upButton.render(renderer);
-        downButton.render(renderer);
+        Renderer subRender = renderer.subInstance(x, y, width, height);
+        subRender.color(Color.rgb(0xffffffff));
+        Fonts.DEFAULT.draw(subRender, text, 24, 2, getHeight() / 2f, Anchor.W);
 
         int cursorX;
-        gg1.color(Color.argb(0xff00c0c0));
+        subRender.color(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
             if (text.length() != 0) {
-                cursorX = fontMetrics.stringWidth(text.substring(0, cursorIndex)) + 8;
+                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + 2;
             } else {
-                cursorX = 10;
+                cursorX = 0;
             }
 
-            gg1.line(cursorX, 2, cursorX, height - 5);
-            gg1.line(cursorX + 1, 2, cursorX + 1, height - 5);
+            cursorX += getX();
+
+            subRender.line(cursorX, 2, cursorX, getHeight() - 2);
+            subRender.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
         } else {
             if (text.length() != 0) {
-                cursorX = fontMetrics.stringWidth(text.substring(0, cursorIndex)) + 8;
+                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + getX();
             } else {
-                cursorX = 10;
+                cursorX = getX();
             }
 
-            int width = fontMetrics.charWidth(text.charAt(cursorIndex));
+            int width = Fonts.DEFAULT.width(24, text.charAt(cursorIndex));
 
-            gg1.line(cursorX, height - 5, cursorX + width, height - 5);
-            gg1.line(cursorX, height - 4, cursorX + width, height - 4);
+            subRender.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
+            subRender.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
         }
-
-        gg1.dispose();
     }
 
     public int getValue() {

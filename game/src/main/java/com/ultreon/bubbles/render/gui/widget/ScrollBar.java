@@ -3,6 +3,7 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
 public class ScrollBar extends GuiComponent {
@@ -10,6 +11,9 @@ public class ScrollBar extends GuiComponent {
 
     private double percent = 0.0;
     private double scale;
+    private ScrollHandler scrollHandler;
+    private boolean dragging;
+    private int draggingFrom;
 
     /**
      * @param x      position create the widget
@@ -43,7 +47,7 @@ public class ScrollBar extends GuiComponent {
     }
 
     public void setPercent(double percent) {
-        this.percent = percent;
+        this.percent = Mth.clamp(percent, 0.0, 1.0);
     }
 
     @Override
@@ -58,5 +62,38 @@ public class ScrollBar extends GuiComponent {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public void setOnScroll(ScrollHandler scrollHandler) {
+        this.scrollHandler = scrollHandler;
+    }
+
+    @Override
+    public void mouseDrag(int x, int y, int nx, int ny, int button) {
+        if (dragging) {
+            float percent = (float)ny / this.getHeight();
+            this.setPercent(percent);
+            this.scrollHandler.onScroll(percent);
+        }
+    }
+
+    @Override
+    public boolean mousePress(int x, int y, int button) {
+        if (this.scrollHandler != null) {
+            if (!this.getThumbBounds().contains(x, y)) {
+                float percent = (float) y / this.getHeight();
+                this.setPercent(percent);
+                this.scrollHandler.onScroll(percent);
+            } else {
+                this.dragging = true;
+                this.draggingFrom = y;
+            }
+        }
+        return true;
+    }
+
+    @FunctionalInterface
+    public interface ScrollHandler {
+        void onScroll(double percent);
     }
 }

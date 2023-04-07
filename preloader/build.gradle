@@ -46,6 +46,9 @@ repositories {
 configurations {
     // configuration that holds jars to include in the jar
     implementation
+    addToJar {
+        canBeResolved true
+    }
 }
 
 dependencies {
@@ -58,6 +61,12 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+
+
+    addToJar("net.fabricmc:fabric-loader:0.14.19") {
+        exclude group: "org.ow2.asm"
+        exclude group: "org.ow2.sat4j"
+    }
 }
 
 processResources {
@@ -78,6 +87,9 @@ jar {
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }
+    from(configurations.addToJar.collect {
+        zipTree(it)
+    })
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 test {

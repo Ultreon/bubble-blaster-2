@@ -84,7 +84,7 @@ public class TitleButton extends AbstractButton {
         renderer.color(Color.rgb(0x606060));
         renderer.fill(getBounds());
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             // Shadow
             Paint old = renderer.getPaint();
 

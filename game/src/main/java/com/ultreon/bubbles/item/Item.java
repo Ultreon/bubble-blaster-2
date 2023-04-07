@@ -5,12 +5,13 @@ import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.registry.Registry;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
 public final class Item implements IItemProvider, StateHolder, TagHolder {
     private ItemType type;
-    private CompoundTag tag;
+    private MapType tag;
 
     @Override
     public ItemType getItem() {
@@ -26,8 +27,8 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     }
 
     @Override
-    public @NotNull CompoundTag save() {
-        CompoundTag document = new CompoundTag();
+    public @NotNull MapType save() {
+        MapType document = new MapType();
         document.put("Tag", tag);
         document.putString("type", Registry.ITEMS.getKey(type).toString());
 
@@ -35,13 +36,13 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        this.tag = tag.getCompoundTag("Tag");
+    public void load(MapType tag) {
+        this.tag = tag.getMap("Tag");
         this.type = Registry.ITEMS.getValue(Identifier.parse(tag.getString("type")));
     }
 
     @Override
-    public CompoundTag getTag() {
+    public MapType getTag() {
         return tag;
     }
 

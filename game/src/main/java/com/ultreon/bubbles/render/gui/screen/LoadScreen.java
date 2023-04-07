@@ -8,12 +8,9 @@ import com.ultreon.bubbles.event.v2.LifecycleEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.Color;
-import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.TextureCollection;
-import com.ultreon.bubbles.render.TextureManager;
 import com.ultreon.bubbles.resources.Resource;
-import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.lang.Pair;
@@ -26,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -102,7 +98,7 @@ public final class LoadScreen extends Screen implements Runnable {
             // Draw current 1st line message.
             if (curMainMsg != null) {
                 renderer.color(Color.rgb(0x808080));
-                GraphicsUtils.drawCenteredString(renderer, curMainMsg, new Rectangle2D.Double(0, (double) BubbleBlaster.getInstance().getHeight() / 2 - 15, BubbleBlaster.getInstance().getWidth(), 30), new Font(game.getSansFontName(), Font.PLAIN, 20));
+                font.draw(renderer, curMainMsg, 20, width / 2f, height / 2f, Anchor.CENTER);
             }
 
             renderer.color(Color.rgb(0x808080));
@@ -119,7 +115,7 @@ public final class LoadScreen extends Screen implements Runnable {
                 // Draw current 2nd line message.
                 if (curAltMsg != null) {
                     renderer.color(Color.rgb(0x808080));
-                    GraphicsUtils.drawCenteredString(renderer, curAltMsg, new Rectangle2D.Double(0, (double) BubbleBlaster.getInstance().getHeight() / 2 + 60, BubbleBlaster.getInstance().getWidth(), 30), new Font(game.getSansFontName(), Font.PLAIN, 20));
+                    font.draw(renderer, curAltMsg, 20, width / 2f, height / 2f + 75, Anchor.CENTER);
                 }
 
                 renderer.color(Color.rgb(0x808080));
@@ -190,7 +186,7 @@ public final class LoadScreen extends Screen implements Runnable {
         try {
             Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/java.png"));
             if (resource == null) resource = TextureManager.DEFAULT_TEXTURE;
-            System.out.println("ModDataManager.setIcon(container, ImageIO.read(resource.getUrl())) = " + ModDataManager.setIcon(container, ImageIO.read(resource.getUrl())));
+            ModDataManager.setIcon(container, ImageIO.read(resource.getUrl()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -282,6 +278,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         try {
             GlobalSaveData.instance().load();
+            GlobalSaveData.instance().dump();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

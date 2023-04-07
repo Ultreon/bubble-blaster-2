@@ -5,53 +5,40 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
-import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.vector.Vec2i;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.awt.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class TitleScreen extends Screen {
-    private static final Font INFO_FONT = new Font(BubbleBlaster.getInstance().getMonospaceFontName(), Font.PLAIN, 11);
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated(since = "0.0.3213", forRemoval = true)
-    private static TitleScreen instance;
     private TitleButton startButton;
     private TitleButton languageButton;
     private TitleButton savesButton;
     private TitleButton modsButton;
     private TitleButton optionsButton;
+    private TitleButton quitButton;
     private float ticks;
 
     public TitleScreen() {
-        instance = this;
+
     }
 
     private void openSavesSelection() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new SavesScreen(this));
+        game.showScreen(new SavesScreen(this));
     }
 
     private void openModList() {
         game.showScreen(new ModListScreen());
     }
 
-    @Deprecated(since = "0.0.3213", forRemoval = true)
-    public static TitleScreen instance() {
-        return instance;
-    }
-
     private void openLanguageSettings() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new LanguageScreen(this));
+        game.showScreen(new LanguageScreen(this));
     }
 
     private void openOptions() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new OptionsScreen(this));
+        game.showScreen(new OptionsScreen(this));
     }
 
     private void startGame() {
@@ -89,7 +76,7 @@ public class TitleScreen extends Screen {
                 .text(new TranslationText("bubbles/screen/title/language"))
                 .command(this::openLanguageSettings)
                 .build());
-        languageButton = add(new TitleButton.Builder()
+        quitButton = add(new TitleButton.Builder()
                 .bounds(width / 2 + 10, 460, 190, 60)
                 .text(new TranslationText("bubbles/screen/title/quit"))
                 .command(game::shutdown)
@@ -114,11 +101,10 @@ public class TitleScreen extends Screen {
         renderer.color(0xffffffff);
         Fonts.QUANTUM.get().drawString(renderer, "Bubble Blaster", 86, BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
 
-        renderer.font(INFO_FONT);
         renderer.color(0xffffffff);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), new Vec2i(10, 10), 12, INFO_FONT);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), new Vec2i(10, 22), 12, INFO_FONT);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), new Vec2i(10, 34), 12, INFO_FONT);
+        monospaced.get().draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
+        monospaced.get().draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
+        monospaced.get().draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
 
         this.renderChildren(renderer);
     }

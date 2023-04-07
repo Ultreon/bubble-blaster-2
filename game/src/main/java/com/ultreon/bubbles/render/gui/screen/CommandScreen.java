@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.*;
 
 public class CommandScreen extends Screen {
-    private final Font defaultFont = new Font(Util.getGame().getPixelFontName(), Font.PLAIN, 32);
+    private final Font defaultFont = new Font(Font.MONOSPACED, Font.BOLD, 30);
     private String currentText = "/";
     private int cursorIndex = 1;
 
@@ -159,13 +159,13 @@ public class CommandScreen extends Screen {
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
         renderer.color(Color.argb(0x40000000));
-        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), height);
 
         renderer.color(Color.argb(0x80000000));
-        renderer.rect(0, BubbleBlaster.getInstance().getHeight() - 32, BubbleBlaster.getInstance().getWidth(), 32);
+        renderer.rect(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
 
         renderer.color(Color.argb(0xffffffff));
-        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, BubbleBlaster.getInstance().getHeight() - 28), 28, defaultFont);
+        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, height - 28), 28, defaultFont);
 
         FontMetrics fontMetrics = renderer.fontMetrics(defaultFont);
 
@@ -179,8 +179,8 @@ public class CommandScreen extends Screen {
                 cursorX = 0;
             }
 
-            renderer.line(cursorX, BubbleBlaster.getInstance().getHeight() - 30, cursorX, BubbleBlaster.getInstance().getHeight() - 2);
-            renderer.line(cursorX + 1, BubbleBlaster.getInstance().getHeight() - 30, cursorX + 1, BubbleBlaster.getInstance().getHeight() - 2);
+            renderer.line(cursorX, height - 30, cursorX, height - 2);
+            renderer.line(cursorX + 1, height - 30, cursorX + 1, height - 2);
         } else {
             if (currentText.length() != 0) {
                 cursorX = fontMetrics.stringWidth(currentText.substring(0, cursorIndex));
@@ -189,8 +189,8 @@ public class CommandScreen extends Screen {
             }
 
             int width = fontMetrics.charWidth(currentText.charAt(cursorIndex));
-            renderer.line(cursorX, BubbleBlaster.getInstance().getHeight() - 2, cursorX + width, BubbleBlaster.getInstance().getHeight() - 2);
-            renderer.line(cursorX, BubbleBlaster.getInstance().getHeight() - 1, cursorX + width, BubbleBlaster.getInstance().getHeight() - 1);
+            renderer.line(cursorX, height - 2, cursorX + width, height - 2);
+            renderer.line(cursorX, height - 1, cursorX + width, height - 1);
         }
     }
 }

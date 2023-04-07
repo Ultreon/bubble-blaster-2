@@ -78,7 +78,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     public void render(Renderer renderer) {
         Color textColor;
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             Paint old = renderer.getPaint();
             GradientPaint p = new GradientPaint(0, y, Color.rgb(0xff0000).toAwt(), width, y + height, Color.rgb(0xff4000).toAwt());
             renderer.paint(p);

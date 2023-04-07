@@ -4,6 +4,8 @@
 package com.ultreon.bubbles.render;
 
 import com.ultreon.bubbles.common.text.TextObject;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.vector.Vec4i;
 import com.ultreon.commons.util.StringUtils;
 
@@ -580,5 +582,21 @@ public class Renderer {
     ///////////////////////
     public String toString() {
         return gfx.toString();
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height) {
+        drawGradientBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height, Insets insets) {
+        drawGradientBox(x, y, width, height, insets, 10);
+    }
+
+    public void drawGradientBox(int x, int y, int width, int height, Insets insets, int speed) {
+        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
+        GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
+        Border border = new Border(insets);
+        border.setPaint(p);
+        border.paintBorder(this, x, y, width, height);
     }
 }

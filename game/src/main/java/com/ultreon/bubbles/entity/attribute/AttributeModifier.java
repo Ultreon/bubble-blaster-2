@@ -1,24 +1,23 @@
 package com.ultreon.bubbles.entity.attribute;
 
 import com.ultreon.bubbles.util.EnumUtils;
-import com.ultreon.bubbles.util.NbtUtils;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public record AttributeModifier(UUID id, Type type, double value) {
-    public CompoundTag serialize() {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putLongArray("id", NbtUtils.saveUuid(id));
+    public MapType serialize() {
+        MapType nbt = new MapType();
+        nbt.putUUID("id", id);
         nbt.putString("type", type.name());
         nbt.putDouble("value", value);
 
         return nbt;
     }
 
-    public static AttributeModifier deserialize(CompoundTag tag) {
-        UUID id = NbtUtils.loadUuid(tag.getLongArray("id"));
+    public static AttributeModifier deserialize(MapType tag) {
+        UUID id = tag.getUUID("id");
         Type type = EnumUtils.byName(tag.getString("type"), Type.ADD);
         double value = tag.getDouble("value");
 

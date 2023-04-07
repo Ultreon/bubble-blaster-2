@@ -1,12 +1,12 @@
 package com.ultreon.bubbles.entity;
 
-import com.ultreon.bubbles.entity.ai.AiTask;
-import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.entity.ai.AiTask;
+import com.ultreon.bubbles.entity.attribute.Attribute;
+import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
@@ -15,8 +15,8 @@ import com.ultreon.bubbles.game.GameObject;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import com.ultreon.data.types.ListType;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,13 +70,13 @@ public abstract class Entity extends GameObject implements StateHolder {
     protected final Environment environment;
 
     // Tag
-    private CompoundTag tag = new CompoundTag();
+    private MapType tag = new MapType();
 
     // Fields.
     protected float rotation = 0;
 
     // Abilities.
-    private final HashMap<AbilityType<?>, CompoundTag> abilities = new HashMap<>();
+    private final HashMap<AbilityType<?>, MapType> abilities = new HashMap<>();
     private boolean willBeDeleted;
     protected Rng xRng;
     protected Rng yRng;
@@ -383,7 +383,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @see #toSimpleString()
      */
     public final String toAdvancedString() {
-        CompoundTag nbt = save();
+        @NonNull MapType nbt = save();
         String data = nbt.toString();
 
         return id() + ":" + data;
@@ -434,7 +434,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the loaded entity.
      */
     @Nullable
-    public static Entity loadFully(Environment environment, CompoundTag tags) {
+    public static Entity loadFully(Environment environment, MapType tags) {
         Identifier type = Identifier.tryParse(tags.getString("type"));
         if (type == null) return null;
         EntityType<?> entityType = Registry.ENTITIES.getValue(type);
@@ -446,68 +446,66 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param tag the compound to load from.
      */
     @Override
-    public void load(CompoundTag tag) {
-        this.tag = tag.getCompoundTag("Tag");
-        this.attributes.load(tag.getListTag("Attributes").asCompoundTagList());
-        this.bases.load(tag.getListTag("AttributeBases").asCompoundTagList());
+    public void load(MapType tag) {
+        this.tag = tag.getMap("Tag");
+        this.attributes.load(tag.getList("Attributes"));
+        this.bases.load(tag.getList("AttributeBases"));
 
-        CompoundTag positionTag = tag.getCompoundTag("Position");
+        MapType positionTag = tag.getMap("Position");
         this.x = positionTag.getFloat("x");
         this.y = positionTag.getFloat("y");
 
-        CompoundTag previousTag = tag.getCompoundTag("PrevPosition");
+        MapType previousTag = tag.getMap("PrevPosition");
         this.prevX = previousTag.getFloat("x");
         this.prevY = previousTag.getFloat("y");
 
-        CompoundTag velocityTag = tag.getCompoundTag("Velocity");
+        MapType velocityTag = tag.getMap("Velocity");
         this.velX = velocityTag.getFloat("x");
         this.velY = velocityTag.getFloat("y");
 
-        ListTag<CompoundTag> activeEffectsTag = new ListTag<>(CompoundTag.class);
+        ListType<MapType> activeEffectsTag = new ListType<>();
         for (AppliedEffect instance : activeEffects) {
             activeEffectsTag.add(instance.save());
         }
 
         this.entityId = tag.getLong("id");
-
-        long[] uuidArray = tag.getLongArray("uuid");
-        this.uniqueId = new UUID(uuidArray[0], uuidArray[1]);
-
+        this.uniqueId = tag.getUUID("uuid");
         this.rotation = tag.getFloat("rotation");
     }
 
     /**
      * Save the entity to a compound nbt tag.
+     *
      * @return the saved data in the form of a compound.
      */
     @Override
-    public @NotNull CompoundTag save() {
+    public @NotNull MapType save() {
         // Save components.
-        CompoundTag state = new CompoundTag();
+        MapType state = new MapType();
         state.put("Tag", this.tag);
         state.put("Attributes", this.attributes.save());
         state.put("AttributesModifiers", this.attributes.saveModifiers());
 
         // Save position.
-        CompoundTag positionTag = new CompoundTag();
+        MapType positionTag = new MapType();
         positionTag.putFloat("x", x);
         positionTag.putFloat("y", y);
         state.put("Position", positionTag);
 
-        CompoundTag previousTag = new CompoundTag();
+        MapType previousTag = new MapType();
         previousTag.putDouble("x", prevX);
         previousTag.putDouble("y", prevY);
         state.put("PrevPosition", previousTag);
 
         // Velocity.
-        CompoundTag velocityTag = new CompoundTag();
+        MapType velocityTag = new MapType();
         velocityTag.putDouble("x", velX);
         velocityTag.putDouble("y", velY);
         state.put("Velocity", velocityTag);
 
         // Other properties.
         state.putLong("id", this.entityId);
-        state.putLongArray("uuid", new long[]{this.uniqueId.getMostSignificantBits(), this.uniqueId.getLeastSignificantBits()});
+        state.putUUID("uuid", this.uniqueId);
         state.putDouble("scale", this.scale);
 
         state.putString("type", Registry.ENTITIES.getKey(this.type).toString());
@@ -535,7 +533,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param type the ability type.
      * @return the data tag (can be null if it wasn't created yet)
      */
-    public CompoundTag getAbilityTag(AbilityType<?> type) {
+    public MapType getAbilityTag(AbilityType<?> type) {
         return this.abilities.get(type);
     }
 
@@ -544,15 +542,15 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param type the ability type.
      * @return the data tag.
      */
-    public CompoundTag getOrCreateAbilityTag(AbilityType<?> type) {
-        return this.abilities.computeIfAbsent(type, $ -> new CompoundTag());
+    public MapType getOrCreateAbilityTag(AbilityType<?> type) {
+        return this.abilities.computeIfAbsent(type, $ -> new MapType());
     }
 
     /**
      * Get persistent data tag.
      * @return the data tag.
      */
-    public CompoundTag getTag() {
+    public MapType getTag() {
         return tag;
     }
 

@@ -28,6 +28,10 @@ import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.*;
+import com.ultreon.bubbles.render.font.FontInfo;
+import com.ultreon.bubbles.render.font.FontStyle;
+import com.ultreon.bubbles.render.font.SystemFont;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
@@ -137,7 +141,7 @@ public final class BubbleBlaster {
     private final List<Runnable> tasks = new CopyOnWriteArrayList<>();
     private final Thread rpcThread;
     // Fonts.
-    private final Font sansFont;
+    private SystemFont sansFont;
     // Cursors
     private final Cursor blankCursor;
     private final Cursor defaultCursor;
@@ -182,9 +186,9 @@ public final class BubbleBlaster {
     private GarbageCollector garbageCollector;
     private float gameFrameTime;
     private boolean stopping;
-    private Font monospaceFont;
-    private Font pixelFont;
-    private Font gameFont;
+    private SystemFont monospaceFont;
+    private SystemFont pixelFont;
+    private SystemFont logoFont;
     // Loaded game.
     @Nullable
     private LoadedGame loadedGame;
@@ -236,6 +240,8 @@ public final class BubbleBlaster {
 
         // Prepare for loading.
         this.prepare();
+
+        sansFont = new SystemFont("Helvetica");
 
         Bubbles.register();
         AmmoTypes.register();
@@ -373,8 +379,6 @@ public final class BubbleBlaster {
 
         // Font Name
         fontName = "Chicle Regular";
-
-        sansFont = loadFont(id("arial_unicode"));
 
         // Register events.
         GameEvents.COLLECT_TEXTURES.listen(this::onCollectTextures);
@@ -847,17 +851,54 @@ public final class BubbleBlaster {
         }
     }
 
-    public Font loadFont(Identifier font) {
-        var identifier = new Identifier(font.location(), "fonts/" + font.path() + ".ttf");
+    public FontInfo loadFont(Identifier fontId) {
+        var identifier = new Identifier(fontId.location(), "fonts/" + fontId.path() + ".ttf");
         var resource = resourceManager.getResource(identifier);
         if (resource != null) {
             try {
-                return resource.loadFont();
-            } catch (FontFormatException e) {
+                Font font = resource.loadFont();
+                FontInfo.Builder builder = FontInfo.builder();
+                builder.set(Thickness.REGULAR, FontStyle.PLAIN, font);
+                builder.set(Thickness.REGULAR, FontStyle.ITALIC, new Font(font.getName(), Font.ITALIC, 1));
+                builder.set(Thickness.BOLD, FontStyle.PLAIN, new Font(font.getName(), Font.BOLD, 1));
+                builder.set(Thickness.BOLD, FontStyle.ITALIC, new Font(font.getName(), Font.ITALIC, 1));
+                return builder.build();
+            } catch (Exception e) {
                 throw new FontLoadException(e);
             }
         } else {
-            throw new NullPointerException("Resource is null: " + identifier);
+            var regularId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_regular.ttf");
+            var regularRes = resourceManager.getResource(regularId);
+            if (regularRes != null) {
+                try {
+                    Font font1 = regularRes.loadFont();
+                    FontInfo.Builder builder = FontInfo.builder();
+
+                    for (var thickness : Thickness.values()) {
+                        var thicknessId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_" + thickness.name().toLowerCase() + ".ttf");
+                        var thicknessRes = resourceManager.getResource(thicknessId);
+                        if (thicknessRes != null) {
+                            var thicknessFont = thicknessRes.loadFont();
+                            builder.set(thickness, FontStyle.PLAIN, thicknessFont);
+
+                            for (var style : FontStyle.values()) {
+                                if (style == FontStyle.PLAIN) continue;
+                                var thicknessStyleId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_" + thickness.name().toLowerCase() + "_" + style.name().toLowerCase() + ".ttf");
+                                var thicknessStyleRes = resourceManager.getResource(thicknessStyleId);
+                                if (thicknessStyleRes != null) {
+                                    var thicknessStyleFont = thicknessStyleRes.loadFont();
+                                    builder.set(thickness, FontStyle.ITALIC, thicknessStyleFont);
+                                }
+                            }
+                        }
+                    }
+                    return builder.build();
+                } catch (Exception e) {
+                    throw new FontLoadException(e);
+                }
+            } else {
+                throw new FontLoadException("Font resource not found: " + identifier);
+            }
         }
     }
 
@@ -867,12 +908,12 @@ public final class BubbleBlaster {
 
     public void loadFonts() {
         try {
-            gameFont = loadFont(id("chicle"));
-            pixelFont = loadFont(id("pixel"));
-            monospaceFont = loadFont(id("dejavu/dejavu_sans_mono"));
-        } catch (NullPointerException e) {
-            System.err.println("Couldn't load fonts.");
-            e.printStackTrace();
+            this.sansFont = new SystemFont(loadFont(id("roboto/roboto")));
+            this.logoFont = new SystemFont(loadFont(id("chicle")));
+            this.pixelFont = new SystemFont(loadFont(id("pixel")));
+            this.monospaceFont = new SystemFont(loadFont(id("roboto/roboto_mono")));
+        } catch (FontLoadException e) {
+            this.crash(e);
         }
     }
 
@@ -1182,20 +1223,20 @@ public final class BubbleBlaster {
     ///////////////////
     //     Fonts     //
     ///////////////////
-    public Font getSansFont() {
+    public SystemFont getSansFont() {
         return sansFont;
     }
 
-    public Font getMonospaceFont() {
+    public SystemFont getMonospaceFont() {
         return monospaceFont;
     }
 
-    public Font getPixelFont() {
+    public SystemFont getPixelFont() {
         return pixelFont;
     }
 
-    public Font getGameFont() {
-        return gameFont;
+    public SystemFont getLogoFont() {
+        return logoFont;
     }
 
     /////////////////////
@@ -1688,36 +1729,8 @@ public final class BubbleBlaster {
     /**
      * @return get the default font.
      */
-    public Font getFont() {
+    public SystemFont getFont() {
         return getSansFont();
-    }
-
-    /**
-     * @return the name create the game font.
-     */
-    public String getGameFontName() {
-        return getGameFont().getFontName();
-    }
-
-    /**
-     * @return the name create the pixel font.
-     */
-    public String getPixelFontName() {
-        return getPixelFont().getFontName();
-    }
-
-    /**
-     * @return the name create the monospace font.
-     */
-    public String getMonospaceFontName() {
-        return getMonospaceFont().getFontName();
-    }
-
-    /**
-     * @return the name create the sans font.
-     */
-    public String getSansFontName() {
-        return getSansFont().getFontName();
     }
 
     public FontMetrics getFontMetrics(Font font) {
