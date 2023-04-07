@@ -80,4 +80,28 @@ public class Mth {
         int alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
         return Color.rgba(redPart, greenPart, bluePart, alphaPart);
     }
+
+    public static byte diff(byte from, byte to) {
+        return (byte) (Math.max(from, to) - Math.min (from, to));
+    }
+
+    public static short diff(short from, short to) {
+        return (short) (Math.max(from, to) - Math.min (from, to));
+    }
+
+    public static int diff(int from, int to) {
+        return Math.max(from, to) - Math.min (from, to);
+    }
+
+    public static long diff(long from, long to) {
+        return Math.max(from, to) - Math.min (from, to);
+    }
+
+    public static float diff(float from, float to) {
+        return Math.max(from, to) - Math.min (from, to);
+    }
+
+    public static double diff(double from, double to) {
+        return Math.max(from, to) - Math.min (from, to);
+    }
 }

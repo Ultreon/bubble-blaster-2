@@ -9,6 +9,8 @@ import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.logger.Logger;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.commons.exceptions.InvalidValueException;
@@ -418,8 +420,8 @@ public abstract class BubbleType implements Serializable, com.ultreon.bubbles.co
             try {
                 source.setEffectApplied(true);
                 player.addEffect(appliedEffect);
-            } catch (InvalidValueException valueError) {
-                valueError.printStackTrace();
+            } catch (InvalidValueException exception) {
+                BubbleBlaster.getLogger().error("Failed to apply effect:", exception);
             }
         }
     }

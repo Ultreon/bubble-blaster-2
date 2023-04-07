@@ -1,7 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +19,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     private boolean selectable;
     private EntryRenderer<T> entryRenderer;
     private ListEntry<T, ? extends T> selected;
+    private List<SelectHandler<T>> selectHandlers = new ArrayList<>();
 
     public ObjectList(List<T> items, int entryHeight, int gap, int x, int y, int width, int height) {
         super(new Rectangle(0, 0, width, calculateViewHeight(items, entryHeight, gap)), x, y, width, height);
@@ -42,13 +45,21 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         items.forEach(this::addItem);
     }
 
+    public void addSelectHandler(SelectHandler<T> handler) {
+        selectHandlers.add(handler);
+    }
+
+    public void removeSelectHandler(SelectHandler<T> handler) {
+        selectHandlers.remove(handler);
+    }
+
     private static int calculateViewHeight(List<?> entries, int entryHeight, int gap) {
         return entries.size() * (entryHeight + gap) - gap;
     }
 
     private void recalculateViewport() {
         int viewHeight = calculateViewHeight(entries, entryHeight, gap);
-        this.getViewport().setViewportSize(width, viewHeight);
+        this.getViewport().setViewportSize(width - SCROLLBAR_WIDTH, viewHeight);
         listContent.setHeight(viewHeight);
     }
 
@@ -68,6 +79,10 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         return selected;
     }
 
+    public void setSelected(ListEntry<T, ? extends T> selected) {
+        this.selected = selected;
+    }
+
     public Class<?> getEntryType() {
         return entryType;
     }
@@ -78,6 +93,11 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         listContent.add(entry);
         recalculateViewport();
         return entry;
+    }
+
+    @Override
+    public boolean mousePress(int x, int y, int button) {
+        return super.mousePress(x, y, button);
     }
 
     @SuppressWarnings("unchecked")
@@ -152,9 +172,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         void render(Renderer renderer, int width, int height, T entry, boolean b);
     }
 
-    private static class ListEntry<T, C extends T> extends GuiComponent {
+    public static class ListEntry<T, C extends T> extends GuiComponent {
         private final ObjectList<T> list;
-        private final C value;
+        public final C value;
 
         /**
          * @param value  value of the list entry
@@ -176,6 +196,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         @Override
         public boolean mousePress(int x, int y, int button) {
             list.selected = this;
+            list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
             return super.mousePress(x, y, button);
         }
 
@@ -183,5 +204,10 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         public boolean mouseClick(int x, int y, int button, int count) {
             return super.mouseClick(x, y, button, count);
         }
+    }
+
+    @FunctionalInterface
+    public interface SelectHandler<T> {
+        void onSelect(ListEntry<T, ? extends T> entry);
     }
 }

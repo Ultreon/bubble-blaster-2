@@ -3,6 +3,7 @@ package com.ultreon.bubbles.util;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.render.font.SystemFont;
 import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
@@ -27,8 +28,9 @@ public class Util {
         return BubbleBlaster.getInstance();
     }
 
-    public static Font getGameFont() {
-        return BubbleBlaster.getInstance().getGameFont();
+    @Deprecated
+    public static SystemFont getGameFont() {
+        return BubbleBlaster.getInstance().getLogoFont();
     }
 
     public static void setCursor(Cursor cursor) {
