@@ -69,16 +69,17 @@ public class ScreenManager {
             screen = new TitleScreen();
         }
         EventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(screen);
-        this.currentScreen = result.isInterrupted() ? result.getValue() : screen;
+        var newScreen = result.isInterrupted() ? result.getValue() : screen;
 
         game.getGameWindow().setCursor(screen != null ? screen.getDefaultCursor() : game.getDefaultCursor());
 
-        if (currentScreen != null) {
-            ScreenEvents.INIT.factory().onInit(this.currentScreen);
-            this.currentScreen.init();
+        if (newScreen != null) {
+            ScreenEvents.INIT.factory().onInit(newScreen);
+            newScreen.init();
         } else {
             LOGGER.debug("Showing <<NO-SCENE>>");
         }
+        this.currentScreen = newScreen;
         return true;
     }
 

@@ -76,7 +76,7 @@ public class IngameButton extends AbstractButton {
     public void render(Renderer renderer) {
         Color textColor;
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             Paint old = renderer.getPaint();
             GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + height, Color.rgb(0x00ff80).toAwt());
             renderer.paint(p);

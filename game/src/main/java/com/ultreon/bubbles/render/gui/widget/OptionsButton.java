@@ -2,18 +2,16 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Sounds;
-import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.border.Border;
-import com.ultreon.bubbles.util.GraphicsUtils;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 @SuppressWarnings("unused")
 public class OptionsButton extends AbstractButton implements GuiStateListener {
@@ -84,7 +82,7 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
         Rectangle bounds = getBounds();
 
         Color textColor;
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             // Border
             Paint old = renderer.getPaint();
             GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + height, Color.rgb(0x00ff80).toAwt());
@@ -116,9 +114,9 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     }
 
     static void paint0a(Renderer renderer, Color textColor, Rectangle bounds, TextObject text) {
-        Renderer gg1 = renderer.subInstance(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
-        gg1.color(textColor);
-        GraphicsUtils.drawCenteredString(gg1, text, new Rectangle2D.Double(0, 0, bounds.width - 2, bounds.height - 2), new Font(BubbleBlaster.getInstance().getFont().getName(), Font.BOLD, 16));
-        gg1.dispose();
+        Renderer subRender = renderer.subInstance(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
+        subRender.color(textColor);
+        Fonts.DEFAULT.draw(subRender, text, 16, (bounds.width - 2) / 2f, (bounds.height - 2) / 2f, Thickness.BOLD, Anchor.CENTER);
+        subRender.dispose();
     }
 }

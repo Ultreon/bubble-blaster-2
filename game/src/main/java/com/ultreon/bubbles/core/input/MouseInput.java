@@ -5,6 +5,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import com.ultreon.bubbles.vector.Vec2i;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,7 +31,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
     // Other fields.
     private final Map<Integer, Boolean> buttonMap = new HashMap<>();
     private final BubbleBlaster game;
-    private final HashMap<Integer, Vec2i> dragStarts = new HashMap<>();
+    private final Int2ReferenceArrayMap<Vec2i> dragStarts = new Int2ReferenceArrayMap<>();
 
     /**
      *
@@ -114,6 +115,14 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
         currentPoint = e.getPoint() != null ? e.getPoint() : currentPoint;
 
         InputEvents.MOUSE_ENTER_WINDOW.factory().onMouseEnterWindow(e.getX(), e.getY());
+
+        ScreenManager screenManager = game.getScreenManager();
+        if (screenManager != null) {
+            Screen currentScreen = screenManager.getCurrentScreen();
+            if (currentScreen != null) {
+                currentScreen.mouseEnter(e.getX(), e.getY());
+            }
+        }
     }
 
     @Override
@@ -138,23 +147,23 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
         currentPoint = e.getPoint() != null ? e.getPoint() : currentPoint;
 
         InputEvents.MOUSE_DRAG.factory().onMouseDrag(e.getX(), e.getY(), e.getButton());
+
+        for (var entry : dragStarts.int2ReferenceEntrySet()) {
+            ScreenManager screenManager = game.getScreenManager();
+            if (screenManager != null) {
+                Screen currentScreen = screenManager.getCurrentScreen();
+                if (currentScreen != null) {
+                    Vec2i vec = entry.getValue();
+                    currentScreen.mouseDrag(vec.x, vec.y, e.getX(), e.getY(), entry.getIntKey());
+                }
+            }
+        }
     }
 
     @Override
     public final void mouseMoved(MouseEvent e) {
         currentLocationOnScreen = e.getLocationOnScreen() != null ? e.getLocationOnScreen() : currentLocationOnScreen;
         currentPoint = e.getPoint() != null ? e.getPoint() : currentPoint;
-
-        for (Map.Entry<Integer, Vec2i> entry : dragStarts.entrySet()) {
-            ScreenManager screenManager = game.getScreenManager();
-            if (screenManager != null) {
-                Screen currentScreen = screenManager.getCurrentScreen();
-                if (currentScreen != null) {
-                    Vec2i vec = entry.getValue();
-                    currentScreen.mouseDrag(e.getX(), e.getY(), vec.x, vec.y, entry.getKey());
-                }
-            }
-        }
 
         InputEvents.MOUSE_MOVE.factory().onMouseMove(e.getX(), e.getY());
 

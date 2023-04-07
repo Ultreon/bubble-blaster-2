@@ -10,14 +10,13 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EntityEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.util.CollisionUtil;
 
 import java.awt.*;
@@ -28,10 +27,6 @@ import java.util.Objects;
 import java.util.Random;
 
 public class LoadedGame {
-
-    // Fonts.
-    private final Font defaultFont = new Font(Util.getGame().getPixelFontName(), Font.PLAIN, 32);
-
     private static final BubbleBlaster game = BubbleBlaster.getInstance();
 
     // Types
@@ -286,7 +281,7 @@ public class LoadedGame {
             subInstance.rect(0, 0, 1000, 32);
 
             subInstance.color(Color.argb(0xffffffff));
-            GraphicsUtils.drawLeftAnchoredString(subInstance, s, new Vec2i(2, 2), 28.0, defaultFont);
+            Fonts.MONOSPACED.get().draw(subInstance, s, 32, 2, 16);
 
             subInstance.dispose();
             i++;

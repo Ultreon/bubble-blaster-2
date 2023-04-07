@@ -56,7 +56,7 @@ public class GlitchRenderer {
                     renderer.rect(xi, yi, charW, charH);
                 }
                 renderer.color(Color.rgb(cMatrix[x][y]));
-                font.drawString(renderer, Character.toString(matrix), 18, xi + 2, yi + charH / 1.5f + 4);
+                font.draw(renderer, Character.toString(matrix), 18, xi + 2, yi + charH / 1.5f + 4);
 //                renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
             }
         }

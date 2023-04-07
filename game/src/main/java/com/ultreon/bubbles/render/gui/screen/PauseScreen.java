@@ -9,19 +9,16 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.FontStyle;
 import com.ultreon.bubbles.render.gui.widget.IngameButton;
-import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.helpers.Mth;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class PauseScreen extends Screen {
     private final IngameButton exitButton;
@@ -47,14 +44,6 @@ public class PauseScreen extends Screen {
     private final TextObject boolTrue = new TranslationText("bubbles/other/true");
     private final TextObject boolFalse = new TranslationText("bubbles/other/False");
 
-    private final Font bubbleTitleFont = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.BOLD, 32);
-    private final Font bubbleValueFont = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.BOLD + Font.ITALIC, 16);
-    private final Font bubbleInfoFont = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.BOLD, 16);
-    private final Font fallbackTitleFont = new Font(BubbleBlaster.getInstance().getFont().getFontName(), Font.BOLD, 32);
-    private final Font fallbackValueFont = new Font(BubbleBlaster.getInstance().getFont().getFontName(), Font.BOLD + Font.ITALIC, 16);
-    private final Font fallbackInfoFont = new Font(BubbleBlaster.getInstance().getFont().getFontName(), Font.BOLD, 16);
-
-    private final Font pauseFont = new Font(BubbleBlaster.getInstance().getGameFontName(), Font.PLAIN, 75);
     private final int differentBubbles;
     private static int helpIndex = 0;
     private BubbleType bubble;
@@ -146,16 +135,12 @@ public class PauseScreen extends Screen {
         /////////////////////////////////
         renderer.color(Color.argb(0xc0000000));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
-        Font oldFont = renderer.getFont();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Pause text     //
         ////////////////////////
         renderer.color(Color.argb(0x80ffffff));
-        renderer.font(pauseFont);
-        GraphicsUtils.drawCenteredString(renderer, Language.translate("bubbles/screen/pause/text"), new Rectangle2D.Double(0, 90, BubbleBlaster.getInstance().getWidth(), renderer.fontMetrics(pauseFont).getHeight()), pauseFont);
-
-        renderer.font(oldFont);
+        game.getLogoFont().draw(renderer, Language.translate("bubbles/screen/pause/text"), 75, (float)width / 2, 90 + 75f / 2, Anchor.CENTER);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Exit button     //
@@ -184,9 +169,7 @@ public class PauseScreen extends Screen {
 
         // Bubble name.
         renderer.color(Color.argb(0xc0ffffff));
-        renderer.font(bubbleTitleFont);
-        renderer.fallbackFont(fallbackTitleFont);
-        renderer.text(Language.translate(bubble.getTranslationPath()), (int) BubbleBlaster.getMiddleX() - 470, 332);
+        font.draw(renderer, Language.translate(bubble.getTranslationPath()), 32, (int) BubbleBlaster.getMiddleX() - 470, 332, Anchor.W);
 
         // Bubble icon.
         EnvironmentRenderer.drawBubble(renderer, (int) (BubbleBlaster.getMiddleX() - 470), 350, 122, bubble.getColors());
@@ -196,27 +179,25 @@ public class PauseScreen extends Screen {
         ////////////////////////
 
         // Set color & font.
-        renderer.font(bubbleInfoFont);
-        renderer.fallbackFont(fallbackInfoFont);
         renderer.color(Color.argb(0xc0ffffff));
 
         // Left data.
-        renderer.text(minRadius, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 362);
-        renderer.text(maxRadius, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 382);
-        renderer.text(minSpeed, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 402);
-        renderer.text(maxSpeed, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 422);
-        renderer.text(defChance, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 442);
-        renderer.text(curChance, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 462);
+        font.draw(renderer, minRadius, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 362, Anchor.W);
+        font.draw(renderer, maxRadius, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 382, Anchor.W);
+        font.draw(renderer, minSpeed, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 402, Anchor.W);
+        font.draw(renderer, maxSpeed, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 422, Anchor.W);
+        font.draw(renderer, defChance, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 442, Anchor.W);
+        font.draw(renderer, curChance, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 462, Anchor.W);
 
         // Right data.
-        renderer.text(defTotPriority, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 322);
-        renderer.text(curTotPriority, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 342);
-        renderer.text(defPriority, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 362);
-        renderer.text(curPriority, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 382);
-        renderer.text(scoreMod, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 402);
-        renderer.text(attackMod, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 422);
-        renderer.text(defenseMod, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 442);
-        renderer.text(canSpawn, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 462);
+        font.draw(renderer, defTotPriority, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 322, Anchor.W);
+        font.draw(renderer, curTotPriority, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 342, Anchor.W);
+        font.draw(renderer, defPriority, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 362, Anchor.W);
+        font.draw(renderer, curPriority, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 382, Anchor.W);
+        font.draw(renderer, scoreMod, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 402, Anchor.W);
+        font.draw(renderer, attackMod, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 422, Anchor.W);
+        font.draw(renderer, defenseMod, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 442, Anchor.W);
+        font.draw(renderer, canSpawn, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 10, 462, Anchor.W);
 
         // Description
         renderer.text(description, (int) BubbleBlaster.getMiddleX() - 470, 502);
@@ -226,44 +207,40 @@ public class PauseScreen extends Screen {
         ////////////////////
 
         // Set color & font.
-        renderer.font(bubbleValueFont);
-        renderer.fallbackFont(fallbackValueFont);
         renderer.color(Color.argb(0x80ffffff));
 
         // Left data.
-        renderer.text(Integer.toString(bubble.getMinRadius()), (int) (BubbleBlaster.getMiddleX() - 326) + 200, 362);
-        renderer.text(Integer.toString(bubble.getMaxRadius()), (int) (BubbleBlaster.getMiddleX() - 326) + 200, 382);
-        renderer.text(Double.toString(Mth.round(bubble.getMinSpeed(), 5)), (int) (BubbleBlaster.getMiddleX() - 326) + 200, 402);
-        renderer.text(Double.toString(Mth.round(bubble.getMaxSpeed(), 5)), (int) (BubbleBlaster.getMiddleX() - 326) + 200, 422);
-        renderer.text(Mth.round((double) 100 * BubbleSystem.getDefaultPercentageChance(bubble), 5) + "%", (int) (BubbleBlaster.getMiddleX() - 326) + 200, 442);
-        renderer.text(Mth.round((double) 100 * BubbleSystem.getPercentageChance(bubble), 5) + "%", (int) (BubbleBlaster.getMiddleX() - 326) + 200, 462);
-        renderer.text(compress(BubbleSystem.getDefaultTotalPriority()), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 322);
-        renderer.text(compress(BubbleSystem.getTotalPriority()), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 342);
-        renderer.text(compress(BubbleSystem.getDefaultPriority(bubble)), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 362);
-        renderer.text(compress(BubbleSystem.getPriority(bubble)), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 382);
+        font.draw(renderer, Integer.toString(bubble.getMinRadius()), 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 362, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, Integer.toString(bubble.getMaxRadius()), 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 382, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, Double.toString(Mth.round(bubble.getMinSpeed(), 5)), 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 402, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, Double.toString(Mth.round(bubble.getMaxSpeed(), 5)), 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 422, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, Mth.round((double) 100 * BubbleSystem.getDefaultPercentageChance(bubble), 5) + "%", 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 442, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, Mth.round((double) 100 * BubbleSystem.getPercentageChance(bubble), 5) + "%", 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 462, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, compress(BubbleSystem.getDefaultTotalPriority()), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 322, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, compress(BubbleSystem.getTotalPriority()), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 342, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, compress(BubbleSystem.getDefaultPriority(bubble)), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 362, FontStyle.ITALIC, Anchor.W);
+        font.draw(renderer, compress(BubbleSystem.getPriority(bubble)), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 382, FontStyle.ITALIC, Anchor.W);
 
         // Right data
         if (bubble.isScoreRandom()) {
-            renderer.text(random, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 402);
+            font.draw(renderer, random, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 402, FontStyle.ITALIC);
         } else {
-            renderer.text(Double.toString(Mth.round(bubble.getScore(), 5)), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 402);
+            font.draw(renderer, Double.toString(Mth.round(bubble.getScore(), 5)), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 402, FontStyle.ITALIC, Anchor.W);
         }
         if (bubble.isAttackRandom()) {
-            renderer.text(random, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 422);
+            font.draw(renderer, random, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 422, FontStyle.ITALIC);
         } else {
-            renderer.text(Double.toString(Mth.round(bubble.getAttack(), 5)), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 422);
+            font.draw(renderer, Double.toString(Mth.round(bubble.getAttack(), 5)), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 422, FontStyle.ITALIC, Anchor.W);
         }
         if (bubble.isDefenseRandom()) {
-            renderer.text(random, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 442);
+            font.draw(renderer, random, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 442, FontStyle.ITALIC);
         } else {
-            renderer.text(Double.toString(Mth.round(bubble.getDefense(), 5)), (int) (BubbleBlaster.getMiddleX() + 72) + 200, 442);
+            font.draw(renderer, Double.toString(Mth.round(bubble.getDefense(), 5)), 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 442, FontStyle.ITALIC, Anchor.W);
         }
-        renderer.text(bubble.canSpawn(loadedGame.getEnvironment()) ? boolTrue : boolFalse, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 462);
+        font.draw(renderer, bubble.canSpawn(loadedGame.getEnvironment()) ? boolTrue : boolFalse, 16, (int) (BubbleBlaster.getMiddleX() + 72) + 200, 462, FontStyle.ITALIC, Anchor.W);
 
         // Description
-        renderer.wrappedText(Language.translate(bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), (int) BubbleBlaster.getMiddleX() - 470, 522, 940);
-
-        renderer.font(oldFont);
+        font.drawMultiline(renderer, font.wrap(16, Language.translate(bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), 940), 16, (int) BubbleBlaster.getMiddleX() - 470, 522, FontStyle.ITALIC, Anchor.NW);
     }
 
     private String compress(double totalPriority) {

@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -28,6 +29,9 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     private boolean valid;
     protected Color backgroundColor;
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
+    private boolean hovered = false;
+    private int lastMouseX;
+    private int lastMouseY;
 
     /**
      * @param x      position create the widget
@@ -113,7 +117,8 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * @param y the y position where the mouse moved to.
      */
     public void mouseMove(int x, int y) {
-
+        lastMouseX = x;
+        lastMouseY = y;
     }
 
     /**
@@ -134,7 +139,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * Called when the mouse exits the widget.
      */
     public void mouseExit() {
-
+        hovered = false;
     }
 
     /**
@@ -144,11 +149,11 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * @param y y position where it entered.
      */
     public void mouseEnter(int x, int y) {
-
+        hovered = true;
     }
 
-    public void mouseWheel(int x, int y, double rotation, int amount, int units) {
-
+    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
+        return false;
     }
 
     /**
@@ -341,5 +346,17 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     @Override
     public boolean isValid() {
         return valid;
+    }
+
+    public boolean isHovered() {
+        return hovered;
+    }
+
+    protected final int getLastMouseX() {
+        return lastMouseX;
+    }
+
+    protected final int getLastMouseY() {
+        return lastMouseY;
     }
 }

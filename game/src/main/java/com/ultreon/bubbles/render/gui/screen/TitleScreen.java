@@ -2,22 +2,16 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
-import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.vector.Vec2i;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class TitleScreen extends Screen {
-    private static final Font INFO_FONT = new Font(BubbleBlaster.getInstance().getMonospaceFontName(), Font.PLAIN, 11);
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated(since = "0.0.3213", forRemoval = true)
-    private static TitleScreen instance;
     private TitleButton startButton;
     private TitleButton languageButton;
     private TitleButton savesButton;
@@ -25,31 +19,22 @@ public class TitleScreen extends Screen {
     private float ticks;
 
     public TitleScreen() {
-        instance = this;
     }
 
     private void openSavesSelection() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new SavesScreen(this));
+        game.showScreen(new SavesScreen(this));
     }
 
     private void openModList() {
         game.showScreen(new ModListScreen());
     }
 
-    @Deprecated(since = "0.0.3213", forRemoval = true)
-    public static TitleScreen instance() {
-        return instance;
-    }
-
     private void openLanguageSettings() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new LanguageScreen(this));
+        game.showScreen(new LanguageScreen(this));
     }
 
     private void openOptions() {
-        ScreenManager screenManager = Util.getSceneManager();
-        screenManager.displayScreen(new OptionsScreen(this));
+        game.showScreen(new OptionsScreen(this));
     }
 
     private void startGame() {
@@ -124,13 +109,12 @@ public class TitleScreen extends Screen {
         renderer.rect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.color(0xffffffff);
-        GraphicsUtils.drawCenteredString(renderer, "Bubble Blaster", new Rectangle2D.Double(0, 0, BubbleBlaster.getInstance().getWidth(), 145), new Font(BubbleBlaster.getInstance().getGameFont().getFontName(), Font.PLAIN, 87));
+        game.getLogoFont().draw(renderer, "Bubble Blaster", 87, (float)width / 2, 72.5f, Anchor.CENTER);
 
-        renderer.font(INFO_FONT);
         renderer.color(0xffffffff);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), new Vec2i(10, 10), 12, INFO_FONT);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), new Vec2i(10, 22), 12, INFO_FONT);
-        GraphicsUtils.drawLeftAnchoredString(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), new Vec2i(10, 34), 12, INFO_FONT);
+        monospaced.get().draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
+        monospaced.get().draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
+        monospaced.get().draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
 
         this.renderChildren(renderer);
     }
