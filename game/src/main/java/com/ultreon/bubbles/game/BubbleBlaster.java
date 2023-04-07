@@ -675,15 +675,16 @@ public final class BubbleBlaster {
      */
     public void onCollectTextures(TextureCollection collection) {
         if (collection == TextureCollections.BUBBLE_TEXTURES.get()) {
-            var bubbles = Registry.BUBBLES.values();
             var loadScreen = LoadScreen.get();
 
             if (loadScreen == null) {
                 throw new IllegalStateException("Load scene is not available.");
             }
-            for (var bubble : bubbles) {
+            for (var e : Registry.BUBBLES.entries()) {
+                var bubble = e.getValue();
                 for (var i = 0; i <= bubble.getMaxRadius(); i++) {
-                    var id = Registry.BUBBLES.getKey(bubble);
+                    var id = e.getKey();
+                    assert id != null;
                     var identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i);
                     final var finalI = i;
                     collection.set(identifier, new ITexture() {
