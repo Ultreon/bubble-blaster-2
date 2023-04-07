@@ -5,6 +5,7 @@ import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.init.Sounds;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.border.Border;
@@ -92,7 +93,7 @@ public class TitleButton extends AbstractButton {
             renderer.color(Color.rgb(0x484848));
             renderer.fill(getBounds());
 
-            Border border = new Border(0, 0, 1, 0);
+            Border border = new Border(1, 1, 1, 1);
             border.setPaint(p);
             border.paintBorder(renderer, x, y, width, height);
 
@@ -103,7 +104,7 @@ public class TitleButton extends AbstractButton {
 
             double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
             GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
-            Border border = new Border(0, 0, 2, 0);
+            Border border = new Border(2, 2, 2, 2);
             border.setPaint(p);
             border.paintBorder(renderer, x, y, width, height);
 
