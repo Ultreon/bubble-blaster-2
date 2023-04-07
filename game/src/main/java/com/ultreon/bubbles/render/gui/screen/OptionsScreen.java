@@ -13,7 +13,6 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class OptionsScreen extends Screen {
-    private static OptionsScreen INSTANCE;
     private final OptionsNumberInput maxBubblesOption;
     private final OptionsButton languageButton;
     private final OptionsButton cancelButton;
@@ -23,18 +22,12 @@ public class OptionsScreen extends Screen {
     public OptionsScreen(Screen back) {
         super();
 
-        OptionsScreen.INSTANCE = this;
-
         this.back = back;
 
         this.maxBubblesOption = new OptionsNumberInput(0, 0, 321, 48, GameSettings.instance().getMaxBubbles(), 400, 2000);
         this.languageButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::showLanguages).build();
         this.cancelButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::back).build();
         this.saveButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::save).build();
-    }
-
-    public static OptionsScreen instance() {
-        return INSTANCE;
     }
 
     private void save() {
