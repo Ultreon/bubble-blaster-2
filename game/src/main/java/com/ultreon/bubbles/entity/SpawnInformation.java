@@ -4,14 +4,14 @@ import com.ultreon.bubbles.command.Command;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.vector.Vec2f;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnInformation {
     private SpawnReason reason;
     private @Nullable Vec2f pos;
-    private @Nullable CompoundTag tag;
+    private @Nullable MapType tag;
     @Nullable
     private Command command;
     private Environment environment;
@@ -20,7 +20,7 @@ public class SpawnInformation {
         LOAD, NATURAL, COMMAND
     }
 
-    private SpawnInformation(SpawnReason reason, @Nullable CompoundTag tag, @Nullable Vec2f pos, @Nullable Command command, Environment environment) {
+    private SpawnInformation(SpawnReason reason, @Nullable MapType tag, @Nullable Vec2f pos, @Nullable Command command, Environment environment) {
         this.pos = pos;
         this.tag = tag;
         this.reason = reason;
@@ -28,7 +28,7 @@ public class SpawnInformation {
         this.environment = environment;
     }
 
-    public static SpawnInformation fromLoadSpawn(@NotNull CompoundTag tag) {
+    public static SpawnInformation fromLoadSpawn(@NotNull MapType tag) {
         return new SpawnInformation(SpawnReason.LOAD, tag, null, null, BubbleBlaster.getInstance().environment);
     }
 
@@ -56,11 +56,11 @@ public class SpawnInformation {
         this.reason = reason;
     }
 
-    public @Nullable CompoundTag getTag() {
+    public @Nullable MapType getTag() {
         return tag;
     }
 
-    public void setTag(@Nullable CompoundTag tag) {
+    public void setTag(@Nullable MapType tag) {
         if (this.tag != null) {
             this.tag = tag;
         } else {

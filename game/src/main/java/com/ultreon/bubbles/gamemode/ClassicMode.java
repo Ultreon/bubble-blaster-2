@@ -19,7 +19,8 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -125,14 +126,14 @@ public class ClassicMode extends Gamemode {
 
     @Override
     @Deprecated
-    public @NotNull CompoundTag save() {
+    public @NotNull MapType save() {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.save."));
-        return new CompoundTag();
+        return new MapType();
     }
 
     @Override
     @Deprecated
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         BubbleBlaster.getLogger().warn(ExceptionUtils.getStackTrace("Deprecated call on Gamemode.load."));
     }
 

@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.interfaces;
 
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,12 +11,13 @@ import org.jetbrains.annotations.NotNull;
 public interface StateHolder {
     /**
      * Save the state.
+     *
      * @return the saved state.
-     * @since 0.0.0
      * @author Qboi123
+     * @since 0.0.0
      */
     @NotNull
-    CompoundTag save();
+    MapType save();
 
     /**
      * Load a previously saved state.
@@ -24,5 +25,5 @@ public interface StateHolder {
      * @since 0.0.0
      * @author Qboi123
      */
-    void load(CompoundTag tag);
+    void load(MapType tag);
 }

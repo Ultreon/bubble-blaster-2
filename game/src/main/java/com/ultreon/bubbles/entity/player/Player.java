@@ -25,7 +25,7 @@ import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.time.TimeProcessor;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -555,11 +555,12 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Save the player data.
+     *
      * @return the player data.
      */
     @Override
-    public @NotNull CompoundTag save() {
-        @NotNull CompoundTag document = super.save();
+    public @NotNull MapType save() {
+        @NotNull MapType document = super.save();
 
         document.putDouble("score", score);
         document.putFloat("rotation", rotation);
@@ -571,7 +572,7 @@ public class Player extends LivingEntity implements InputController {
      * @param tag the player data.
      */
     @Override
-    public void load(CompoundTag tag) {
+    public void load(MapType tag) {
         super.save();
 
         this.score = tag.getFloat("score");

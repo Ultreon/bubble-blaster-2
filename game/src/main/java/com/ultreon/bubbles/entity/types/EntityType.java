@@ -2,7 +2,7 @@ package com.ultreon.bubbles.entity.types;
 
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.environment.Environment;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 import java.util.Objects;
 
@@ -17,7 +17,7 @@ public class EntityType<T extends Entity> {
         return entityFactory.create(environment);
     }
 
-    public T create(Environment environment, CompoundTag document) {
+    public T create(Environment environment, MapType document) {
         T t = entityFactory.create(environment);
         t.load(document);
         return t;

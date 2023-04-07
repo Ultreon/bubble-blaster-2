@@ -153,6 +153,37 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        maven {
+            name "JitPack"
+            url 'https://jitpack.io'
+        }
+        maven {
+            name "Atlassian"
+            url "https://maven.atlassian.com/3rdparty/"
+        }
+        maven {
+            name "ImageJ"
+            url "https://maven.imagej.net/content/repositories/public/"
+        }
+        maven {
+            name "Maven Central"
+            url "https://repo1.maven.org/maven2/"
+        }
+        maven {
+            name "RuneLite"
+            url "https://repo.runelite.net/"
+        }
+        flatDir {
+            name "Project Libraries"
+            dirs "${projectDir}/libs"
+        }
+        flatDir {
+            name "Project Libraries"
+            dirs "${rootProject.projectDir}/libs"
+        }
         maven {
             url = "https://maven.fabricmc.net"
             name = "FabricMC"
@@ -200,7 +231,7 @@ task replaceResources(type: Copy) {
         false
     }
 
-    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', project_version.project_version()) }
+    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', version.toString()) }
     into new File(processResources.destinationDir, "META-INF")
 }
 
@@ -217,7 +248,7 @@ jar {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
-                project_version: project.project_version,
+                'Implementation-Version': project.version,
                 'Main-Class': 'com.ultreon.preloader.PreGameLoader',
                 'Multi-Release': 'true'
     }
@@ -276,7 +307,7 @@ task packedJar(type: Jar) {
         //noinspection GroovyAssignabilityCheck
         attributes 'Implementation-Title': 'QBubbles',
                 'Implementation-Vendor': 'Ultreon Team',
-                project_version: "1.0-indev1",
+                'Implementation-Version': "1.0-indev1",
                 'Main-Class': 'com.ultreon.premain.PreMain',
                 'Multi-Release': 'true'
     }
@@ -367,7 +398,7 @@ task("copyJar", type: Copy) {
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
 
-println("Current version: " + project_version)
+println("Current version: " + version)
 println("Project: " + group + ":" + archivesBaseName)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")
 

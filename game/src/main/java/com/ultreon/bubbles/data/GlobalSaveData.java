@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.data;
 
 import com.ultreon.bubbles.common.References;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ public final class GlobalSaveData extends GameData {
     private double highScore = 0.0;
     private long highScoreTime = 0L;
 
-    public static final File FILE = new File(References.GAME_DIR, "global.dat");
+    public static final File FILE = new File(References.GAME_DIR, "global.ubo");
 
     public static GlobalSaveData instance() {
         return instance;
@@ -23,7 +23,7 @@ public final class GlobalSaveData extends GameData {
     }
 
     @Override
-    protected void load(CompoundTag tag) {
+    protected void load(MapType tag) {
         highScore = tag.getDouble("HighScore");
         highScoreTime = tag.getLong("HighScoreTime");
     }
@@ -35,7 +35,7 @@ public final class GlobalSaveData extends GameData {
         this.load(FILE);
     }
 
-    public CompoundTag dump(CompoundTag tag) {
+    public MapType dump(MapType tag) {
         tag.putDouble("HighScore", highScore);
         tag.putLong("HighScoreTime", highScoreTime);
         return tag;

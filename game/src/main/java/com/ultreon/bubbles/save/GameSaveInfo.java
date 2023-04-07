@@ -4,7 +4,7 @@ import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.registry.Registry;
-import net.querz.nbt.tag.CompoundTag;
+import com.ultreon.data.types.MapType;
 
 public class GameSaveInfo {
     private final String name;
@@ -13,7 +13,7 @@ public class GameSaveInfo {
     private final Gamemode gamemode;
     private long seed;
 
-    public GameSaveInfo(CompoundTag tag) {
+    public GameSaveInfo(MapType tag) {
         this.name = tag.getString("name");
         this.savedTime = tag.getLong("savedTime");
         this.highScore = tag.getLong("highScore");
