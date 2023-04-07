@@ -201,6 +201,7 @@ public final class BubbleBlaster {
     private float fadeInDuration = Float.NEGATIVE_INFINITY;
     private boolean fadeIn = false;
     private long fadeInStart = 0L;
+    private boolean firstFrame = true;
 
     /**
      * Class constructor for Bubble Blaster.
@@ -1532,6 +1533,12 @@ public final class BubbleBlaster {
     private void wrappedRender(int fps) {
         BufferStrategy bs;
         Renderer renderer;
+
+        if (firstFrame) {
+            firstFrame = false;
+            this.window.finalSetup();
+        }
+
         // Set filter gotten from filter event-handlers.
         try {
             // Buffer strategy (triple buffering).
@@ -1546,7 +1553,6 @@ public final class BubbleBlaster {
             // Get GraphicsProcessor and GraphicsProcessor objects.
             renderer = new Renderer(bs.getDrawGraphics(), getObserver());
         } catch (IllegalStateException e) {
-            this.window.finalSetup();
             return;
         }
 
