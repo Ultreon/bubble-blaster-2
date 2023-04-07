@@ -61,11 +61,11 @@ public class SavesScreen extends Screen {
     }
 
     private void showLanguages() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(new LanguageScreen(this));
+        game.showScreen(new LanguageScreen(this));
     }
 
     private void back() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(backScreen);
+        game.showScreen(backScreen);
     }
 
     @Override
@@ -147,10 +147,5 @@ public class SavesScreen extends Screen {
     public void renderBackground(BubbleBlaster game, Renderer renderer) {
         renderer.color(Color.rgb(0x606060));
         renderer.rect(0, 0, game.getWidth(), game.getHeight());
-    }
-
-    @SuppressWarnings("EmptyMethod")
-    @SubscribeEvent
-    public void onUpdate(TickEvent evt) {
     }
 }

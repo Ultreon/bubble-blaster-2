@@ -7,9 +7,6 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.util.Util;
-
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class OptionsScreen extends Screen {
@@ -38,11 +35,11 @@ public class OptionsScreen extends Screen {
     }
 
     private void showLanguages() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(new LanguageScreen(this));
+        game.showScreen(new LanguageScreen(this));
     }
 
     private void back() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(back);
+        game.showScreen(back);
     }
 
     @Override

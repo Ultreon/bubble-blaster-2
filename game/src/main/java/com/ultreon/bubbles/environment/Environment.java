@@ -229,7 +229,7 @@ public final class Environment {
 
             gameOver = true;
             gamemode.onGameOver();
-            Util.getSceneManager().displayScreen(new GameOverScreen(this.getResultScore()));
+            game.showScreen(new GameOverScreen(this.getResultScore()));
         }
     }
 
