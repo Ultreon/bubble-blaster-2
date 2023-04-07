@@ -10,11 +10,10 @@ import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.exceptions.OneTimeUseException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -121,15 +120,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
 
         this.canvas.addComponentListener(this);
 
-//        if (properties.fullscreen) {
-//            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
-//            this.canvas.setSize(bounds.getSize());
-//        } else {
-//            this.canvas.setSize(properties.width, properties.height);
-//        }
-
         this.canvas.setBackground(new Color(72, 72, 72));
-//        this.canvas.setSize(properties.width, properties.height);
 
         // --- Post setup --- //
         this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
