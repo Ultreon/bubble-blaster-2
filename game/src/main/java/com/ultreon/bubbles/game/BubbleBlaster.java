@@ -138,7 +138,7 @@ public final class BubbleBlaster {
     @NotNull
     private final RenderSettings renderSettings;
     // Tasks
-    private final List<Runnable> tasks = new CopyOnWriteArrayList<>();
+    final Deque<Runnable> tasks = new ArrayDeque<>();
     private final Thread rpcThread;
     // Fonts.
     private SystemFont sansFont;
@@ -1392,10 +1392,10 @@ public final class BubbleBlaster {
                     tickTime = 0;
                 }
 
-                for (var task : new ArrayList<>(tasks)) {
-                    task.run();
-                    tasks.remove(task);
+                while(!tasks.isEmpty()) {
+                    tasks.pop().run();
                 }
+
                 Thread.sleep(8);
             }
         } catch (InterruptedException e) {
@@ -1779,7 +1779,7 @@ public final class BubbleBlaster {
     }
 
     public void scheduleTask(Runnable task) {
-        this.tasks.add(task);
+        this.tasks.push(task);
     }
 
     private void log(String text) {
