@@ -217,9 +217,9 @@ public class ClassicModeHud extends GameHud {
     private void drawScoreText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Score
         renderer.color(titleColor);
-        font.draw(renderer, Language.translate("bubbles/Info/Score"), 18, 90, 20, Thickness.BOLD, Anchor.CENTER);
+        font.draw(renderer, Language.translate("bubbles/Info/Score"), 18, 70, 20, Thickness.BOLD, Anchor.CENTER);
         renderer.color(valueColor);
-        font.draw(renderer, String.valueOf((int) player.getScore()), 18, 90, 50, Anchor.CENTER);
+        font.draw(renderer, String.valueOf((int) player.getScore()), 18, 70, 50, Anchor.CENTER);
     }
 
     /**
