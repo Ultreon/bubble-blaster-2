@@ -7,7 +7,8 @@ import com.ultreon.commons.function.ThrowingSupplier;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
