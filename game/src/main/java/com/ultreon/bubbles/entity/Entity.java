@@ -383,7 +383,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @see #toSimpleString()
      */
     public final String toAdvancedString() {
-        @NonNull MapType nbt = save();
+        @NotNull MapType nbt = save();
         String data = nbt.toString();
 
         return id() + ":" + data;

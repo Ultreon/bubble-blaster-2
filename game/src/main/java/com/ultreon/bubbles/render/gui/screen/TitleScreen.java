@@ -99,7 +99,7 @@ public class TitleScreen extends Screen {
         renderer.rect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.color(0xffffffff);
-        Fonts.QUANTUM.get().drawString(renderer, "Bubble Blaster", 86, BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
+        Fonts.QUANTUM.get().draw(renderer, "Bubble Blaster", 86, BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
 
         renderer.color(0xffffffff);
         monospaced.get().draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
