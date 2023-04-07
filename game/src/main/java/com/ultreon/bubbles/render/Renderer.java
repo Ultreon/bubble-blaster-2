@@ -565,6 +565,10 @@ public class Renderer {
         return new Renderer(gfx.create(x, y, width, height), observer);
     }
 
+    public Renderer subInstance(com.ultreon.bubbles.render.gui.widget.Rectangle bounds) {
+        return subInstance(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+
     public boolean hitClip(int x, int y, int width, int height) {
         return gfx.hitClip(x, y, width, height);
     }
