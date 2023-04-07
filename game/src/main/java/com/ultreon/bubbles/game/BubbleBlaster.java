@@ -1429,11 +1429,6 @@ public final class BubbleBlaster {
 
                 time = time2;
 
-                while (this.gameFrameTime >= tickCap) {
-                    this.gameFrameTime -= tickCap;
-
-                }
-
                 if (frameTime >= 1.0d) {
                     frameTime = 0;
                     fps = (int) Math.round(frames);
@@ -1443,9 +1438,11 @@ public final class BubbleBlaster {
                 frames++;
 
                 try {
-                    profiler.startSection("render");
-                    wrappedRender(fps);
-                    profiler.endSection("render");
+                    SwingUtilities.invokeAndWait(() -> {
+                        profiler.startSection("render");
+                        wrappedRender(fps);
+                        profiler.endSection("render");
+                    });
                 } catch (Throwable t) {
                     var crashLog = new CrashLog("Game being rendered.", t);
                     crash(crashLog.createCrash());
@@ -1489,14 +1486,19 @@ public final class BubbleBlaster {
                 frames++;
 
                 try {
-                    wrappedRender(fps);
+                    SwingUtilities.invokeAndWait(() -> {
+                        wrappedRender(fps);
+                    });
+                } catch (InterruptedException e) {
+                    shutdown();
+                    return;
                 } catch (Throwable t) {
                     var crashLog = new CrashLog("Game being rendered.", t);
                     crash(crashLog.createCrash());
                 }
 
-                for (var task : tasks) {
-                    task.run();
+                while(!tasks.isEmpty()) {
+                    tasks.pop().run();
                 }
 
                 tasks.clear();
