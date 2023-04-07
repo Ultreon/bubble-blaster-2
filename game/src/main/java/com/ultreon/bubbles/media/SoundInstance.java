@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SoundInstance {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("GameAudio");
@@ -24,7 +25,7 @@ public class SoundInstance {
     private final String name;
     private boolean playing = false;
     private Player player;
-    private static final Set<SoundInstance> ALL = new HashSet<>();
+    private static final Set<SoundInstance> ALL = new CopyOnWriteArraySet<>();
 
     public SoundInstance(File file) {
         this(file, "");
