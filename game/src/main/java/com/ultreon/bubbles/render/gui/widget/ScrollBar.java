@@ -3,7 +3,6 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
 public class ScrollBar extends GuiComponent {
@@ -13,7 +12,6 @@ public class ScrollBar extends GuiComponent {
     private double scale;
     private ScrollHandler scrollHandler;
     private boolean dragging;
-    private int draggingFrom;
 
     /**
      * @param x      position create the widget
@@ -28,14 +26,14 @@ public class ScrollBar extends GuiComponent {
     @Override
     public void render(Renderer renderer) {
         setWidth(SIZE);
-        renderer.color(0x40000000);
-        renderer.fill(getBounds());
-        renderer.color(0xff555555);
-        renderer.fill(getThumbBounds());
+
+        Rectangle thumbBounds = getThumbBounds();
+        fill(renderer, 0, 0, width, height, 0x40000000);
+        fill(renderer, thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 0xff555555);
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(getX() + getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
+        return new Rectangle(getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
     }
 
     private double scale() {
@@ -86,7 +84,6 @@ public class ScrollBar extends GuiComponent {
                 this.scrollHandler.onScroll(percent);
             } else {
                 this.dragging = true;
-                this.draggingFrom = y;
             }
         }
         return true;

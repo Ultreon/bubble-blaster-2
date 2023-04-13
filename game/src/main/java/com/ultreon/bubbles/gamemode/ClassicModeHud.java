@@ -12,11 +12,11 @@ import com.ultreon.bubbles.render.Texture;
 import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.util.TimeUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * The classic hud, the hud that's almost identical to older versions and editions create the game.
@@ -61,10 +61,14 @@ public class ClassicModeHud extends GameHud {
         Gamemode gamemode = loadedGame.getGamemode();
         Player player = gamemode.getPlayer();
 
-        preDrawTopBar(renderer, game);
-        drawPlayerDetails(renderer, game, player);
-        drawFpsCounter(renderer, game);
-        postDrawTopBar(renderer, game);
+        if (player == null) return;
+
+        if (!gameOver) {
+            preDrawTopBar(renderer, game);
+            drawPlayerDetails(renderer, game, player);
+            drawFpsCounter(renderer, game);
+            postDrawTopBar(renderer, game);
+        }
 
         drawMessages(renderer, game);
 
@@ -124,7 +128,7 @@ public class ClassicModeHud extends GameHud {
 
             renderer.color(LEVEL_UP_COLOR);
 
-            font.draw(renderer, text, 50, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2), Thickness.BOLD, Anchor.CENTER);
+            font.draw(renderer, text, 50, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2), Thickness.BOLD, Anchor.S);
         }
     }
 
@@ -135,7 +139,7 @@ public class ClassicModeHud extends GameHud {
      * @param game     the game instance.
      * @param player   the player to draw information for.
      */
-    private void drawPlayerDetails(Renderer renderer, BubbleBlaster game, Player player) {
+    private void drawPlayerDetails(@NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         // Assign colors for title and description.
         Color titleColor = Color.rgb(255, 128, 0);
         Color valueColor = Color.rgb(255, 255, 255);
@@ -143,13 +147,11 @@ public class ClassicModeHud extends GameHud {
         // As long the player isn't game over.
         if (!gameOver) {
             // As long the player exists.
-            if (player != null) {
-                // Draw player components.
-                drawStatusEffects(renderer, game, player);
-                drawScoreText(renderer, player, titleColor, valueColor);
-                drawLevelText(renderer, player, titleColor, valueColor);
-                drawHealthLineForeground(renderer, game, player);
-            }
+            // Draw player components.
+            drawStatusEffects(renderer, game, player);
+            drawScoreText(renderer, player, titleColor, valueColor);
+            drawLevelText(renderer, player, titleColor, valueColor);
+            drawHealthLineForeground(renderer, game, player);
         }
     }
 
@@ -229,13 +231,13 @@ public class ClassicModeHud extends GameHud {
      * @param game     the game instance/
      * @param player   the player, to get the information about the status effects from.
      */
-    private void drawStatusEffects(Renderer renderer, BubbleBlaster game, Player player) {
+    private void drawStatusEffects(@NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         try {
             // EffectInstance image.
             Texture effectImage = game.getTextureManager().getOrLoadTexture(BubbleBlaster.id("ui/effect_banner"));
 
             int i = 0;
-            for (AppliedEffect appliedEffect : Objects.requireNonNull(player).getActiveEffects()) {
+            for (AppliedEffect appliedEffect : player.getActiveEffects()) {
                 // GraphicsProcessor 2D
                 Renderer render = renderer.subInstance(320 + i * 196, 16, 192, 38);
 
@@ -243,10 +245,11 @@ public class ClassicModeHud extends GameHud {
                 String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
 
                 // EffectInstance bar.
-                effectImage.render(render, 0, 0, 192, 38);
+                effectImage.draw(render, 0, 0, 192, 38);
 
                 // EffectInstance icon.
-                render.image(appliedEffect.getType().getIcon(32, 32, Color.rgb(0, 191, 191)), 5, 3);
+                renderer.texture(appliedEffect.getType().getIconId());
+                appliedEffect.getType().getIcon().draw(renderer, 5, 3, 32, 32);
                 render.color(Color.rgba(255, 255, 255, 192));
 
                 // Time. 0:00:00

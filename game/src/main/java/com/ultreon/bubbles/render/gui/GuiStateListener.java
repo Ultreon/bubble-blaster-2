@@ -22,14 +22,4 @@ public interface GuiStateListener {
      * @return true if the gui element is valid, false if otherwise ofc.
      */
     boolean isValid();
-
-    static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
-        renderer.color(color);
-        renderer.rect(x, y, width, height);
-    }
-
-    static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
-        renderer.color(color);
-        renderer.rect(x, y, width, height);
-    }
 }

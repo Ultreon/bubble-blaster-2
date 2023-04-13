@@ -114,4 +114,12 @@ public abstract class LivingEntity extends Entity {
     public String toSimpleString() {
         return id() + "@(" + Math.round(getX()) + "," + Math.round(getY()) + ")";
     }
+
+    public boolean isInvincible() {
+        return invincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
+    }
 }

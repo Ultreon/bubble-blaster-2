@@ -1,5 +1,9 @@
 package com.ultreon.bubbles.render.font;
 
+import com.ultreon.commons.map.OrderedHashMap;
+
+import java.util.Map;
+
 public class SystemFont extends Font {
     public SystemFont(String name) {
         super();
@@ -20,5 +24,9 @@ public class SystemFont extends Font {
     @Deprecated
     public void register() {
 
+    }
+
+    public void alternative(String langCode, FontInfo font) {
+        this.alternatives.put(langCode, font);
     }
 }

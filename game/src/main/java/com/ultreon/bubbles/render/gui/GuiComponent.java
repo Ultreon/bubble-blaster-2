@@ -3,8 +3,11 @@ package com.ultreon.bubbles.render.gui;
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.bubbles.render.gui.widget.Rectangle;
 import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
@@ -29,6 +32,8 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     private boolean valid;
     protected Color backgroundColor;
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
+    public final Font font = Fonts.DEFAULT.get();
+    public final RegistrySupplier<Font> monospaced = Fonts.MONOSPACED;
     private boolean hovered = false;
     private int lastMouseX;
     private int lastMouseY;
@@ -358,5 +363,16 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
 
     protected final int getLastMouseY() {
         return lastMouseY;
+    }
+
+
+    public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
+        renderer.color(color);
+        renderer.rect(x, y, width, height);
+    }
+
+    public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
+        renderer.color(color);
+        renderer.rect(x, y, width, height);
     }
 }

@@ -7,7 +7,6 @@ import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import net.fabricmc.loader.api.FabricLoader;
@@ -51,8 +50,7 @@ public class ModListScreen extends Screen {
         detailsPane = add(new Container(calcWidth, 0, width - calcWidth, height) {
             @Override
             public void render(Renderer renderer) {
-                Renderer sub = renderer.subInstance(calcWidth, y, width, height);
-                renderComponent(sub);
+                renderComponent(renderer);
                 super.render(renderer);
             }
 
@@ -94,10 +92,10 @@ public class ModListScreen extends Screen {
         super.render(renderer);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, ModContainer entry, boolean selected) {
+    private void renderEntry(Renderer renderer, int width, int height, ModContainer entry, boolean selected, boolean hovered) {
         var metadata = entry.getMetadata();
 
-        GuiStateListener.fill(renderer, 0, 0, width, height, 0xff444444);
+        fill(renderer, 0, 0, width, height, hovered ? 0x40ffffff : 0x20ffffff);
 
         int iconSize = ENTRY_HEIGHT - 40;
         metadata.getIconPath(256).flatMap(entry::findPath).ifPresent(path1 -> {
@@ -108,7 +106,7 @@ public class ModListScreen extends Screen {
         });
 
         if (selected) {
-            renderer.drawGradientBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
+            renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
         }
 
         Collection<Person> authors = metadata.getAuthors();

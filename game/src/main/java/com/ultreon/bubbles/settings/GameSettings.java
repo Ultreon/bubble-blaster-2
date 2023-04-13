@@ -7,6 +7,7 @@ import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
@@ -65,8 +66,6 @@ public final class GameSettings implements Serializable {
             return save();
         }
 
-        BubbleBlaster.getLogger().info("Loading settings...");
-
         try {
             String json = Files.readString(References.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
@@ -74,7 +73,6 @@ public final class GameSettings implements Serializable {
                 instance.gamemode = Gamemodes.CLASSIC.id();
             }
             GameSettings.instance = instance;
-            BubbleBlaster.getLogger().info("Loaded settings");
         } catch (Exception e) {
             BubbleBlaster.getLogger().error("Failed to load settings from: " + References.SETTINGS_FILE.toPath());
             e.printStackTrace();
@@ -87,8 +85,6 @@ public final class GameSettings implements Serializable {
     public synchronized static boolean save() {
         File settingsFile = References.SETTINGS_FILE;
 
-        BubbleBlaster.getLogger().info("Saving settings...");
-
         String json = GSON.toJson(instance);
         try {
             Files.writeString(settingsFile.toPath(), json, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -97,8 +93,6 @@ public final class GameSettings implements Serializable {
             e.printStackTrace();
             return false;
         }
-
-        BubbleBlaster.getLogger().info("Settings saved!");
         return true;
     }
 
@@ -125,11 +119,19 @@ public final class GameSettings implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+        String oldLang = this.language;
+        Locale oldLocale = Locale.forLanguageTag(oldLang);
+        Locale newLocale = Locale.forLanguageTag(language);
+        GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, newLocale);
+
         save();
     }
 
-    public void setLanguage(Locale language) {
-        this.language = language.toString();
+    public void setLanguage(Locale locale) {
+        String oldLang = this.language;
+        Locale oldLocale = Locale.forLanguageTag(oldLang);
+        this.language = locale.toLanguageTag();
+        GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, locale);
         save();
     }
 

@@ -26,13 +26,22 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (isHovered() && button == 1 && enabled && visible) {
+        if (isHovered() && button == 1 && enabled && visible && pressed) {
             this.pressed = false;
             Sounds.MENU_EVENT.get().play(0.2d);
             this.command.run();
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void mouseDrag(int x, int y, int nx, int ny, int button) {
+        if (isHovered() && button == 1 && enabled && visible) {
+            pressed = true;
+            return;
+        }
+        super.mouseDrag(x, y, nx, ny, button);
     }
 
     @Override
@@ -52,6 +61,12 @@ public abstract class AbstractButton extends GuiComponent {
         if (this.isHovered()) {
             BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getDefaultCursor());
         }
+    }
+
+    @Override
+    public void mouseExit() {
+        pressed = false;
+        super.mouseExit();
     }
 
     public boolean isPressed() {

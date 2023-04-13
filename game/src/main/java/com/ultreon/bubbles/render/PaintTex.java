@@ -1,7 +1,9 @@
 package com.ultreon.bubbles.render;
 
 import java.awt.*;
+import java.awt.image.Raster;
 
+@Deprecated
 public class PaintTex extends Texture {
     private Paint paint;
     private final Mode mode = Mode.FILL;
@@ -15,12 +17,27 @@ public class PaintTex extends Texture {
     }
 
     @Override
-    public void render(Renderer renderer, int xf, int yf, int xs, int ys) {
+    protected int getWidth() {
+        return 0;
+    }
+
+    @Override
+    protected int getHeight() {
+        return 0;
+    }
+
+    @Override
+    public void draw(Renderer renderer, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight) {
         renderer.paint(paint);
         switch (mode) {
-            case DRAW -> renderer.rectLine(xf, yf, xs - xf, ys - yf);
-            case FILL -> renderer.rect(xf, yf, xs - xf, ys - yf);
+            case DRAW -> renderer.rectLine(x, y, width, height);
+            case FILL -> renderer.rect(x, y, width, height);
         }
+    }
+
+    @Override
+    public Raster getRaster() {
+        return null;
     }
 
     enum Mode {FILL, DRAW}

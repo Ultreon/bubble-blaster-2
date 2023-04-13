@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public enum Thickness {
-    BLACK(900), BOLD(700), SEMI_BOLD(600), MEDIUM(500), REGULAR(400), LIGHT(300), EXTRA_LIGHT(200), THIN(100);
+    BLACK(900), EXTRA_BOLD(800), BOLD(700), SEMI_BOLD(600), MEDIUM(500), REGULAR(400), LIGHT(300), EXTRA_LIGHT(200), THIN(100);
 
     final int amount;
 

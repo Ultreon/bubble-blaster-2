@@ -19,16 +19,18 @@ public class Viewport extends Container {
 
     @Override
     public void renderChildren(Renderer renderer) {
-        Renderer viewportGraphics = renderer.subInstance(0, 0, viewportRect.width, viewportRect.height);
-        viewportGraphics.translate(0, -yScroll);
+        Renderer viewportRender = renderer.subInstance(0, 0, viewportRect.width, viewportRect.height);
+        viewportRender.translate(0, -yScroll);
         for (GuiComponent child : children) {
-            child.render(viewportGraphics);
-            viewportGraphics.dispose();
+            child.render(viewportRender.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight()));
+            viewportRender.dispose();
         }
     }
 
     @Override
     public void render(Renderer renderer) {
+        this.innerYOffset = (int) yScroll;
+        this.innerXOffset = (int) xScroll;
         this.renderComponent(renderer);
 
 //        Renderer viewportGraphics = renderer.subInstance(0, 0, width, height);

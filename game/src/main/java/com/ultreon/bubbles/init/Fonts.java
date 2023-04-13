@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public class Fonts {
     private static final DelayedRegister<Font> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.FONTS);
 
-    public static final Font DEFAULT = BubbleBlaster.getInstance().getSansFont();
+    public static final Supplier<Font> DEFAULT = () -> BubbleBlaster.getInstance().getSansFont();
     public static final RegistrySupplier<Font> MONOSPACED = register("roboto/roboto_mono", Font::new);
     public static final RegistrySupplier<Font> QUANTUM = register("quantum", Font::new);
     public static final RegistrySupplier<Font> CHICLE = register("chicle", Font::new);

@@ -158,6 +158,14 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
                 }
             }
         }
+
+        ScreenManager screenManager = game.getScreenManager();
+        if (screenManager != null) {
+            Screen currentScreen = screenManager.getCurrentScreen();
+            if (currentScreen != null) {
+                currentScreen.mouseMove(e.getX(), e.getY());
+            }
+        }
     }
 
     @Override

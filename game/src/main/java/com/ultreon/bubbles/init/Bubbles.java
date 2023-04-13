@@ -48,6 +48,7 @@ public class Bubbles {
             .build());
     public static final RegistrySupplier<BubbleType> BOUNCY = register("bouncy", () -> BubbleType.builder()
             .priority(715_000L)
+            .invulnerable()
             .radius(Range.between(15, 85))
             .speed(Range.between(3.215d, 4.845d))
             .score(0.625f)

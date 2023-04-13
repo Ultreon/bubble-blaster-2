@@ -166,16 +166,30 @@ public class StringUtils {
         return strings;
     }
 
-    public static AttributedString createFallbackString(String text, Font mainFont) {
+    public static AttributedString createFallbackString(String text, Font mainFont, Font fallbackFont) {
         AttributedString result = new AttributedString(text);
 
         int textLength = text.length();
-
         if (textLength == 0) {
-            return new AttributedString(text);
+            return new AttributedString("");
         }
         result.addAttribute(TextAttribute.FONT, mainFont, 0, textLength);
 
+        boolean fallback = false;
+        int fallbackBegin = 0;
+        for (int i = 0; i < text.length(); i++) {
+            boolean curFallback = !mainFont.canDisplay(text.charAt(i));
+            if (curFallback != fallback) {
+                System.out.println("curFallback = " + curFallback);
+                System.out.println("fallbackFont = " + fallbackFont);
+                fallback = curFallback;
+                if (fallback) {
+                    fallbackBegin = i;
+                } else {
+                    result.addAttribute(TextAttribute.FONT, fallbackFont, fallbackBegin, i);
+                }
+            }
+        }
         return result;
     }
 

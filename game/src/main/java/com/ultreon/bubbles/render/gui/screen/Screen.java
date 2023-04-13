@@ -18,8 +18,6 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     private GuiComponent focused;
     @IntRange(from = 0)
     private int focusIndex = 0;
-    public final Font font = Fonts.DEFAULT;
-    public final RegistrySupplier<Font> monospaced = Fonts.MONOSPACED;
 
 
     public Screen() {
@@ -131,7 +129,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public void renderBackground(Renderer renderer) {
         if (game.environment != null) {
-            renderer.color(0x80ffffff);
+            renderer.color(0x80000000);
         } else {
             renderer.color(0xff222222);
         }
@@ -147,6 +145,11 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @param partialTicks partial ticks / frame time.
      */
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+        render(renderer);
+    }
+
+    @Override
+    public void render(Renderer renderer) {
         renderBackground(renderer);
         renderChildren(renderer);
     }

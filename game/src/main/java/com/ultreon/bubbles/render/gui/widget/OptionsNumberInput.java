@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -158,60 +158,52 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
     @Override
     public void render(Renderer renderer) {
-        upButton.setY(this.y);
-        upButton.setX(this.x + getBounds().width - 24);
+        upButton.setY(0);
+        upButton.setX(getBounds().width - 24);
         upButton.setHeight(getBounds().height / 2);
         upButton.setWidth(24);
         upButton.setText("+");
 
-        downButton.setY(this.y + getBounds().height / 2);
-        downButton.setX(this.x + getBounds().width - 24);
+        downButton.setY(getBounds().height / 2);
+        downButton.setX(getBounds().width - 24);
         downButton.setHeight(getBounds().height / 2);
         downButton.setWidth(24);
         downButton.setText("-");
 
         if (activated) {
             renderer.color(Color.rgb(0x808080));
-            renderer.fill(getBounds());
+            fill(renderer, 0, 0, width, height, 0xff808080);
 
-            Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(this.x, 0, Color.rgb(0x0080ff).toAwt(), this.x + getWidth(), 0, Color.rgb(0x00ff80).toAwt());
-            renderer.paint(p);
-            renderer.fill(new Rectangle(x, y + height - 2, width, 2));
-            renderer.paint(old);
+            renderer.drawEffectBox(0, 0, width, height, new Insets(0, 0, 2, 0));
         } else {
-            renderer.color(Color.rgb(0x505050));
-            renderer.fill(getBounds());
+            fill(renderer, 0, 0, width, height, 0xff505050);
         }
 
-        Renderer subRender = renderer.subInstance(x, y, width, height);
-        subRender.color(Color.rgb(0xffffffff));
-        Fonts.DEFAULT.draw(subRender, text, 24, 2, getHeight() / 2f, Anchor.W);
+        renderer.color(Color.rgb(0xffffffff));
+        font.draw(renderer, text, 24, 2, getHeight() / 2f, Anchor.W);
 
         int cursorX;
-        subRender.color(Color.rgb(0xff00c0c0));
+        renderer.color(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
             if (text.length() != 0) {
-                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + 2;
+                cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;
             } else {
                 cursorX = 0;
             }
 
-            cursorX += getX();
-
-            subRender.line(cursorX, 2, cursorX, getHeight() - 2);
-            subRender.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
+            renderer.line(cursorX, 2, cursorX, getHeight() - 2);
+            renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
         } else {
             if (text.length() != 0) {
-                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + getX();
+                cursorX = font.width(24, text.substring(0, cursorIndex));
             } else {
-                cursorX = getX();
+                cursorX = 0;
             }
 
-            int width = Fonts.DEFAULT.width(24, text.charAt(cursorIndex));
+            int width = font.width(24, text.charAt(cursorIndex));
 
-            subRender.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
-            subRender.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
+            renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
+            renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
         }
     }
 
@@ -283,7 +275,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
                 textColor = Color.rgb(0x808080);
             }
 
-            paint0a(renderer, textColor, getBounds(), text);
+            drawText(renderer, textColor, getSize(), text, font);
         }
 
         @Override

@@ -23,6 +23,7 @@
     }
   ],
   "depends": {
+    "fabricloader": "*",
     "bb-preloader": "*"
   },
   "license": "Ultreon-API-v1.2",

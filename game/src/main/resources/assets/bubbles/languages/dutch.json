@@ -40,14 +40,15 @@
     },
     "screen": {
       "title": {
-        "start": "Start Spel",
+        "start": "Start spel",
         "mods": "Modificaties",
         "saves": "Saves",
-        "Options": "Opties",
-        "Language": "Taal"
+        "options": "Opties",
+        "language": "Taal",
+        "quit": "Spel afsluiten"
       },
       "options": {
-        "Language": "Taal"
+        "language": "Taal"
       },
       "saves": {
         "new": "Nieuw",

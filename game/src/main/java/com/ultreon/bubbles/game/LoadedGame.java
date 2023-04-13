@@ -122,14 +122,14 @@ public class LoadedGame {
                 if (!this.environment.isBloodMoonActive() && this.nextAudio < System.currentTimeMillis()) {
                     if (new PseudoRandom(System.nanoTime()).getNumber(0, 5, -1) == 0) {
                         this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/submarine.mp3")), "ambient");
-                        this.ambientAudio.setVolume(0.5d);
+                        this.ambientAudio.setVolume(0.1d);
                         this.ambientAudio.play();
                     } else {
                         this.nextAudio = System.currentTimeMillis() + new Random().nextLong(1000, 2000);
                     }
                 } else if (this.environment.isBloodMoonActive()) {
                     this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
-                    this.ambientAudio.setVolume(0.4d);
+                    this.ambientAudio.setVolume(0.25d);
                     this.ambientAudio.play();
                 }
             } else if (this.ambientAudio.isStopped() && this.environment.isBloodMoonActive() && this.ambientAudio.getName().equals("blood_moon_state")) {

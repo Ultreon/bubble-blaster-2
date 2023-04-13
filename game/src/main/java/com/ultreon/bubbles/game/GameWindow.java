@@ -4,6 +4,7 @@ import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.core.CursorManager;
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
+import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v2.EventResult;
 import com.ultreon.bubbles.event.v2.GameEvents;
 import com.ultreon.bubbles.render.gui.screen.PauseScreen;
@@ -286,7 +287,8 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     @Override
     public void windowLostFocus(WindowEvent e) {
         BubbleBlaster game = game();
-        if (game != null && game.isInGame()) {
+        Environment environment = game.getEnvironment();
+        if (environment != null && game.isInGame() && environment.isAlive()) {
             game.showScreen(new PauseScreen());
         }
     }

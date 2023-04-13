@@ -18,13 +18,9 @@ import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -85,6 +81,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.bubbleType = properties.getType().canSpawn(environment) ? properties.getType() : Bubbles.NORMAL.get();
 
         // Dynamic values
+        this.invincible = properties.getType().isInvincible();
         this.radius = properties.getRadius();
         setSpeed(properties.getSpeed());
         this.baseRadius = properties.getRadius();
@@ -101,7 +98,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.bounceAmount = bubbleType.getBounceAmount();
 
         // Set velocity
-        this.velX = -getBaseSpeed();
+        this.velocityX = -getBaseSpeed();
 
         // Set attributes.
         this.attributes.setBase(Attribute.DEFENSE, 0.5f);
@@ -137,9 +134,9 @@ public class Bubble extends AbstractBubbleEntity {
     public void onCollision(Entity other, double deltaTime) {
         this.bubbleType.onCollision(this, other);
 
-        if (other instanceof Player player && bounceAmount > 0) {
-            player.bounceOff(this, bounceAmount / 10f, -0.01f);
-        }
+//        if (other instanceof Player player && bounceAmount > 0) {
+            other.bounceOff(this, bounceAmount / 10f, -0.01f);
+//        }
     }
 
     /**
@@ -308,6 +305,7 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public void damage(double value, EntityDamageSource source) {
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
+        if (invincible) return;
         if (isValid() && isVisible()) {
             BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3);
         }

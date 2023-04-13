@@ -440,6 +440,7 @@ idea{
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
                     moduleName = idea.module.name + ".game.main"
                     workingDirectory = "$projectDir/run/"
+                    programParameters = "--gameDir=."
                 }
             }
         }

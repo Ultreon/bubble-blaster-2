@@ -31,12 +31,12 @@ public class ScrollableView extends Container {
         this.viewport.setHeight(getHeight());
         this.viewport.setX(0);
         this.viewport.setY(0);
-        this.viewport.render(renderer);
+        this.viewport.render(renderer.subInstance(viewport.getBounds()));
         this.scrollBar.setWidth(SCROLLBAR_WIDTH);
         this.scrollBar.setHeight(getHeight());
         this.scrollBar.setX(getWidth() - SCROLLBAR_WIDTH);
         this.scrollBar.setY(0);
-        this.scrollBar.render(renderer);
+        this.scrollBar.render(renderer.subInstance(scrollBar.getBounds()));
     }
 
     @Override
@@ -45,12 +45,8 @@ public class ScrollableView extends Container {
         this.scrollBar.setPercent(this.viewport.getYPercent());
         this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().height - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().height));
 
-        Renderer componentRenderer = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderComponent(componentRenderer);
-        componentRenderer.dispose();
-        Renderer childRenderer = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderChildren(childRenderer);
-        childRenderer.dispose();
+        renderComponent(renderer);
+        renderChildren(renderer);
     }
 
     private void updateXYOffset() {
@@ -60,8 +56,7 @@ public class ScrollableView extends Container {
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.color(this.getBackgroundColor());
-        renderer.fill(this.getBounds());
+        fill(renderer, 0, 0, width, height, getBackgroundColor());
     }
 
     @Override

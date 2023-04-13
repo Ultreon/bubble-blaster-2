@@ -3,11 +3,13 @@
 /////////////////////
 package com.ultreon.bubbles.render;
 
+import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.vector.Vec4i;
 import com.ultreon.commons.util.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -22,6 +24,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +61,8 @@ public class Renderer {
     final Graphics2D gfx;
     final ImageObserver observer;
     private RenderState state;
+    private final BubbleBlaster game = BubbleBlaster.getInstance();
+    private Texture curTexture;
 
     //////////////////////////
     //     Constructors     //
@@ -360,19 +365,19 @@ public class Renderer {
     //     Text     //
     //////////////////
     public void text(String str, int x, int y) {
-        gfx.drawString(StringUtils.createFallbackString(str, getFont()).getIterator(), x, y);
+        gfx.drawString(StringUtils.createFallbackString(str, getFont(), fallbackFont).getIterator(), x, y);
     }
 
     public void text(String str, float x, float y) {
-        gfx.drawString(StringUtils.createFallbackString(str, getFont()).getIterator(), x, y);
+        gfx.drawString(StringUtils.createFallbackString(str, getFont(), fallbackFont).getIterator(), x, y);
     }
 
     public void text(TextObject str, int x, int y) {
-        gfx.drawString(StringUtils.createFallbackString(str.getText(), getFont()).getIterator(), x, y);
+        gfx.drawString(StringUtils.createFallbackString(str.getText(), getFont(), fallbackFont).getIterator(), x, y);
     }
 
     public void text(TextObject str, float x, float y) {
-        gfx.drawString(StringUtils.createFallbackString(str.getText(), getFont()).getIterator(), x, y);
+        gfx.drawString(StringUtils.createFallbackString(str.getText(), getFont(), fallbackFont).getIterator(), x, y);
     }
 
     public void text(AttributedCharacterIterator iterator, int x, int y) {
@@ -381,6 +386,14 @@ public class Renderer {
 
     public void text(AttributedCharacterIterator iterator, float x, float y) {
         gfx.drawString(iterator, x, y);
+    }
+
+    public void text(AttributedString iterator, int x, int y) {
+        gfx.drawString(iterator.getIterator(), x, y);
+    }
+
+    public void text(AttributedString iterator, float x, float y) {
+        gfx.drawString(iterator.getIterator(), x, y);
     }
 
     public void multiLineText(String str, int x, int y) {
@@ -588,19 +601,47 @@ public class Renderer {
         return gfx.toString();
     }
 
-    public void drawGradientBox(int x, int y, int width, int height) {
-        drawGradientBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    public void drawEffectBox(int x, int y, int width, int height) {
+        drawEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
     }
 
-    public void drawGradientBox(int x, int y, int width, int height, Insets insets) {
-        drawGradientBox(x, y, width, height, insets, 10);
+    public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
+        drawEffectBox(x, y, width, height, insets, 10);
     }
 
-    public void drawGradientBox(int x, int y, int width, int height, Insets insets, int speed) {
-        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
-        GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
+    public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+        GradientPaint p = getEffectPaint(x, width, speed);
         Border border = new Border(insets);
         border.setPaint(p);
         border.paintBorder(this, x, y, width, height);
+    }
+
+    public void fillEffect(int x, int y, int width, int height) {
+        fillEffect(x, y, width, height, 10);
+    }
+
+    public void fillEffect(int x, int y, int width, int height, int speed) {
+        GradientPaint p = getEffectPaint(x, width, speed);
+        Paint old = getPaint();
+        paint(p);
+        rect(x, y, width, height);
+        paint(old);
+    }
+
+    @NotNull
+    private GradientPaint getEffectPaint(int x, int width, int speed) {
+        int color1 = 0x00a0ff;
+        int color2 = 0x00ffa0;
+        width = game.getScaledWidth();
+        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
+        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
+    }
+
+    public void texture(Identifier iconId) {
+        this.curTexture = game.getTextureManager().getOrLoadTexture(iconId);
+    }
+
+    public void blit(int x, int y, int width, int height) {
+        this.curTexture.draw(this, x, y, width, height);
     }
 }

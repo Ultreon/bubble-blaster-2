@@ -15,6 +15,7 @@ public class AccelerateBubble extends BubbleType {
         setAttack(0.001f);
         setScore(1);
         setHardness(0.7d);
+        setInvincible(true);
     }
 
     @Override
@@ -24,8 +25,8 @@ public class AccelerateBubble extends BubbleType {
             double accelerateX = 0;
             double accelerateY = 0;
             if (player.isMobile()) {
-                accelerateX += Math.cos(Math.toRadians(player.getRotation())) * 0.625d;
-                accelerateY += Math.sin(Math.toRadians(player.getRotation())) * 0.625d;
+                accelerateX += Math.cos(Math.toRadians(player.getRotation())) * 0.375d;
+                accelerateY += Math.sin(Math.toRadians(player.getRotation())) * 0.375d;
             }
 
             // Set velocity X and Y.

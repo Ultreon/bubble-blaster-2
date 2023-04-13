@@ -83,11 +83,11 @@ public class OptionsScreen extends Screen {
         saveButton.setY((int) BubbleBlaster.getMiddleY() + 151);
         saveButton.setWidth(321);
 
-        renderBackground(game, renderer);
-
         cancelButton.setText(Language.translate("bubbles/other/cancel"));
         languageButton.setText(Language.translate("bubbles/screen/options/language"));
         saveButton.setText(Language.translate("bubbles/other/save"));
+
+        super.render(game, renderer, partialTicks);
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {

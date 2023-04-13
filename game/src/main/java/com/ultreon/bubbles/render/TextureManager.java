@@ -56,7 +56,7 @@ public final class TextureManager {
         return loadTexture(entry, new TextureSource() {
             @Override
             public Texture create() {
-                return new ImageTex() {
+                return new AwtImage() {
                     @Override
                     protected byte[] loadBytes() {
                         ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();

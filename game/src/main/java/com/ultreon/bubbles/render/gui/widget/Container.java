@@ -16,6 +16,7 @@ public abstract class Container extends GuiComponent {
     protected GuiComponent hoveredInteractable;
     int innerXOffset;
     int innerYOffset;
+    private GuiComponent pressingWidget;
 
     public Container(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         super(x, y, width, height);
@@ -23,14 +24,13 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void render(Renderer renderer) {
-        Renderer containment = renderer.subInstance(this.x, this.y, this.width, this.height);
-        renderChildren(containment);
+        renderChildren(renderer);
     }
 
     protected void renderChildren(Renderer renderer) {
         for (GuiComponent child : this.children) {
             if (child.visible) {
-                child.render(renderer.subInstance(this.x, this.y, this.width, this.height));
+                child.render(renderer.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight()));
             }
         }
     }
@@ -82,12 +82,13 @@ public abstract class Container extends GuiComponent {
         GuiComponent widgetAt = getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
+        pressingWidget = widgetAt;
         return widgetAt != null && widgetAt.mousePress(x - widgetAt.getX(), y - widgetAt.getY(), button);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = pressingWidget;
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         return widgetAt != null && widgetAt.mouseRelease(x - widgetAt.getX(), y - widgetAt.getY(), button);
@@ -140,6 +141,10 @@ public abstract class Container extends GuiComponent {
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
         GuiComponent widgetAt = getWidgetAt(x, y);
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
+        nx -= this.x + this.innerXOffset;
+        ny -= this.y + this.innerYOffset;
         if (widgetAt != null) widgetAt.mouseDrag(x - widgetAt.getX(), y - widgetAt.getY(), nx, ny, button);
     }
 

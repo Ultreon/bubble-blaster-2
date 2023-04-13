@@ -94,12 +94,10 @@ public class TitleScreen extends Screen {
 
         float shiftX = (float) BubbleBlaster.getInstance().getWidth() * 2f * ticks / ((float) BubbleBlaster.TPS * 10f);
 
-        GradientPaint p = new GradientPaint(shiftX - BubbleBlaster.getInstance().getWidth(), 0f, new Color(0, 192, 255), shiftX, 0f, new Color(0, 255, 192), true);
-        renderer.paint(p);
-        renderer.rect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
+        renderer.fillEffect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.color(0xffffffff);
-        Fonts.QUANTUM.get().draw(renderer, "Bubble Blaster", 86, BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
+        Fonts.QUANTUM.get().draw(renderer, "Bubble Blaster", 86, (float) BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
 
         renderer.color(0xffffffff);
         monospaced.get().draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);

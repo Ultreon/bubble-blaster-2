@@ -27,12 +27,13 @@ import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.font.FontInfo;
 import com.ultreon.bubbles.render.font.FontStyle;
 import com.ultreon.bubbles.render.font.SystemFont;
 import com.ultreon.bubbles.render.font.Thickness;
-import com.ultreon.bubbles.render.gui.GuiStateListener;
+import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceManager;
@@ -61,18 +62,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.ConfigurationScheduler;
 import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.checkerframework.common.value.qual.IntRange;
 import org.checkerframework.common.value.qual.IntVal;
 import org.fusesource.jansi.AnsiConsole;
 import org.jdesktop.swingx.util.OS;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
@@ -128,7 +130,7 @@ public final class BubbleBlaster {
     public final Profiler profiler = new Profiler();
     private final URL gameFile;
     @IntVal(20)
-    private final int tps;
+    final int tps;
     @NotNull
     private final ResourceManager resourceManager;
     @NotNull
@@ -138,7 +140,7 @@ public final class BubbleBlaster {
     @NotNull
     private final RenderSettings renderSettings;
     // Tasks
-    final Deque<Runnable> tasks = new ArrayDeque<>();
+    final List<Runnable> tasks = new CopyOnWriteArrayList<>();
     private final Thread rpcThread;
     // Fonts.
     private SystemFont sansFont;
@@ -171,8 +173,7 @@ public final class BubbleBlaster {
     public Player player;
     BufferedImage cachedImage;
     // Values
-    @IntRange(from = 0)
-    private int fps;
+    @IntRange(from = 0) int fps;
     private int currentTps;
     private PlayerController playerController;
     // Game states.
@@ -184,7 +185,7 @@ public final class BubbleBlaster {
     private Thread renderingThread;
     private Thread tickingThread;
     private GarbageCollector garbageCollector;
-    private float gameFrameTime;
+    float gameFrameTime;
     private boolean stopping;
     private SystemFont monospaceFont;
     private SystemFont pixelFont;
@@ -430,7 +431,7 @@ public final class BubbleBlaster {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
 
         // Get game-directory.
-        final var defaultGameDir = new File(getAppData(), "Bubble Blaster 2");
+        final var defaultGameDir = new File(".");
         gameDir = !args.containsKey("gameDir") ? defaultGameDir : new File(args.get("gameDir"));
         debugMode = args.getExtraArgs().contains("--debug");
         devMode = FabricLoader.getInstance().isDevelopmentEnvironment();
@@ -910,7 +911,11 @@ public final class BubbleBlaster {
 
     public void loadFonts() {
         try {
-            this.sansFont = new SystemFont(loadFont(id("roboto/roboto")));
+            this.sansFont = new SystemFont(loadFont(id("noto_sans/noto_sans")));
+            this.sansFont.alternative("zh", loadFont(id("noto_sans/noto_sans_zh")));
+            this.sansFont.alternative("ja", loadFont(id("noto_sans/noto_sans_ja")));
+            this.sansFont.alternative("ko", loadFont(id("noto_sans/noto_sans_ko")));
+            this.sansFont.alternative("ur", loadFont(id("noto_nastaliq/noto_nastaliq_urdu")));
             this.logoFont = new SystemFont(loadFont(id("chicle")));
             this.pixelFont = new SystemFont(loadFont(id("pixel")));
             this.monospaceFont = new SystemFont(loadFont(id("roboto/roboto_mono")));
@@ -1393,9 +1398,8 @@ public final class BubbleBlaster {
                     tickTime = 0;
                 }
 
-                while(!tasks.isEmpty()) {
-                    tasks.pop().run();
-                }
+                tasks.forEach(Runnable::run);
+                tasks.clear();
 
                 Thread.sleep(8);
             }
@@ -1437,6 +1441,8 @@ public final class BubbleBlaster {
 
                 frames++;
 
+                Thread.sleep(1);
+
                 try {
                     SwingUtilities.invokeAndWait(() -> {
                         profiler.startSection("render");
@@ -1453,56 +1459,6 @@ public final class BubbleBlaster {
             }
         } catch (InterruptedException e) {
             logger.info("Shut down renderer");
-        } catch (Throwable t) {
-            var crashLog = new CrashLog("Running game loop.", t);
-            crash(crashLog.createCrash());
-        }
-    }
-
-    @SuppressWarnings("DuplicatedCode")
-    private void renderLoop() {
-        var frameTime = 0d;
-        double frames = 0;
-
-        var time = TimeProcessor.now();
-        this.gameFrameTime = 0;
-
-        try {
-            while (running) {
-
-                var time2 = TimeProcessor.now();
-                var passed = time2 - time;
-                this.gameFrameTime += passed;
-                frameTime += passed;
-
-                time = time2;
-
-                if (frameTime >= 1.0d) {
-                    frameTime = 0;
-                    fps = (int) Math.round(frames);
-                    frames = 0;
-                }
-
-                frames++;
-
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                        wrappedRender(fps);
-                    });
-                } catch (InterruptedException e) {
-                    shutdown();
-                    return;
-                } catch (Throwable t) {
-                    var crashLog = new CrashLog("Game being rendered.", t);
-                    crash(crashLog.createCrash());
-                }
-
-                while(!tasks.isEmpty()) {
-                    tasks.pop().run();
-                }
-
-                tasks.clear();
-            }
         } catch (Throwable t) {
             var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
@@ -1532,7 +1488,7 @@ public final class BubbleBlaster {
      *
      * @param fps current game framerate.
      */
-    private void wrappedRender(int fps) {
+    void wrappedRender(int fps) {
         BufferStrategy bs;
         Renderer renderer;
 
@@ -1558,12 +1514,12 @@ public final class BubbleBlaster {
             return;
         }
 
-
         if (isGlitched) {
             glitchRenderer.render(renderer);
         } else {
-            if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled())
+            if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled()) {
                 renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            }
             if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
                 renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             renderer.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -1613,7 +1569,7 @@ public final class BubbleBlaster {
         profiler.section("Render Screen", () -> {
             if (screen != null) {
                 RenderEvents.RENDER_SCREEN_BEFORE.factory().onRenderScreenBefore(screen, renderer);
-                screen.render(this, renderer, getGameFrameTime());
+                screen.render(this, renderer, frameTime);
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
         });
@@ -1635,7 +1591,7 @@ public final class BubbleBlaster {
             if (timeDiff <= fadeInDuration) {
                 var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
                 var color = Color.rgba(0, 0, 0, clamp);
-                GuiStateListener.fill(renderer, 0, 0, getWidth(), getHeight(), color);
+                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
             }
         }
     }
@@ -1787,7 +1743,7 @@ public final class BubbleBlaster {
     }
 
     public void scheduleTask(Runnable task) {
-        this.tasks.push(task);
+        this.tasks.add(task);
     }
 
     private void log(String text) {
@@ -1946,14 +1902,35 @@ public final class BubbleBlaster {
     }
 
     public void setup() {
-        LanguageManager.INSTANCE.register(new Locale("af"), "African");
-        LanguageManager.INSTANCE.register(new Locale("el"), "Greek");
-        LanguageManager.INSTANCE.register(new Locale("it"), "Italian");
         LanguageManager.INSTANCE.register(new Locale("en"), "english");
-        LanguageManager.INSTANCE.register(new Locale("es"), "Spanish");
         LanguageManager.INSTANCE.register(new Locale("nl"), "dutch");
-        LanguageManager.INSTANCE.register(new Locale("fy"), "Frisk");
-        LanguageManager.INSTANCE.register(new Locale("zh"), "Chinese");
+        LanguageManager.INSTANCE.register(new Locale("fy"), "frisian");
+        LanguageManager.INSTANCE.register(new Locale("de"), "german");
+        LanguageManager.INSTANCE.register(new Locale("el"), "greek");
+        LanguageManager.INSTANCE.register(new Locale("it"), "italian");
+        LanguageManager.INSTANCE.register(new Locale("fr"), "french");
+        LanguageManager.INSTANCE.register(new Locale("es"), "spanish");
+        LanguageManager.INSTANCE.register(new Locale("pt"), "portuguese");
+        LanguageManager.INSTANCE.register(new Locale("pl"), "polish");
+        LanguageManager.INSTANCE.register(new Locale("hu"), "hungarian");
+        LanguageManager.INSTANCE.register(new Locale("fi"), "finnish");
+        LanguageManager.INSTANCE.register(new Locale("sv"), "swedish");
+        LanguageManager.INSTANCE.register(new Locale("da"), "danish");
+        LanguageManager.INSTANCE.register(new Locale("ro"), "romanian");
+        LanguageManager.INSTANCE.register(new Locale("af"), "african");
+        LanguageManager.INSTANCE.register(new Locale("zu"), "zulu");
+        LanguageManager.INSTANCE.register(new Locale("mi"), "maori");
+        LanguageManager.INSTANCE.register(new Locale("uk"), "ukrainian");
+        LanguageManager.INSTANCE.register(new Locale("ur"), "urdu");
+        LanguageManager.INSTANCE.register(new Locale("hi"), "hindi");
+        LanguageManager.INSTANCE.register(new Locale("sa"), "sanskrit");
+        LanguageManager.INSTANCE.register(new Locale("tr"), "turkish");
+        LanguageManager.INSTANCE.register(new Locale("ar"), "arabic");
+        LanguageManager.INSTANCE.register(new Locale("he"), "hebrew");
+        LanguageManager.INSTANCE.register(new Locale("ko"), "korean");
+        LanguageManager.INSTANCE.register(new Locale("ru"), "russian");
+        LanguageManager.INSTANCE.register(new Locale("zh"), "chinese");
+        LanguageManager.INSTANCE.register(new Locale("ja"), "japanese");
 
         var locales = LanguageManager.INSTANCE.getLocales();
         for (var locale : locales) {

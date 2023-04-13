@@ -59,9 +59,8 @@ public class GameOverScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        renderer.color(Color.argb(0x80000000));
-        renderer.rect(0, 0, game.getWidth(), game.getHeight());
+    public void renderBackground(Renderer renderer) {
+        super.renderBackground(renderer);
 
         if (isHighScore) {
             renderer.color(0xffffffff);
@@ -82,8 +81,6 @@ public class GameOverScreen extends Screen {
 
         renderer.color(0x7fffffff);
         font.draw(renderer, Long.toString(score), 32, game.getScaledWidth() / 2f, 280, Thickness.BOLD, Anchor.CENTER);
-
-        super.render(game, renderer, partialTicks);
     }
 
     public boolean isHighScore() {

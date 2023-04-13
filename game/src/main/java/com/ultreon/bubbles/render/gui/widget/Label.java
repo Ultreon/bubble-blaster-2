@@ -20,15 +20,12 @@ public class Label extends GuiComponent {
 
     @Override
     public void render(Renderer renderer) {
-        Renderer ngg1 = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderComponent(ngg1);
-        ngg1.dispose();
+        renderComponent(renderer);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.color(backgroundColor);
-        renderer.fill(getBounds());
+        fill(renderer, 0, 0, width, height, backgroundColor);
 
         renderer.color(foregroundColor);
 

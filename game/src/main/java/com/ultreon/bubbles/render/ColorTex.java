@@ -4,6 +4,7 @@ package com.ultreon.bubbles.render;
  * @author Qboi
  * @since 1.0.141
  */
+@Deprecated
 public class ColorTex extends PaintTex {
     public ColorTex(Color color) {
         super(color.toAwt());

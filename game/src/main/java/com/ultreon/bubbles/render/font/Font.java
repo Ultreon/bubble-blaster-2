@@ -7,14 +7,19 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.commons.util.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Font {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
+    protected final Map<String, FontInfo> alternatives = new HashMap<>();
+
     FontInfo info;
 
     public Font() {
@@ -214,8 +219,10 @@ public class Font {
             case SW -> y = y - (float) metrics.getHeight() / 2 + metrics.getDescent();
         }
 
-        renderer.font(getAwtFont(size, thickness, style));
-        renderer.text(text, x, y);
+        java.awt.Font fallback = getAwtFont(size, thickness, style, GameSettings.instance().getLanguage());
+        java.awt.Font font = getAwtFont(size, thickness, style);
+        renderer.font(font);
+        renderer.text(StringUtils.createFallbackString(text, font, fallback), x, y);
     }
 
     @ApiStatus.Internal
@@ -226,8 +233,25 @@ public class Font {
         this.info = BubbleBlaster.getInstance().loadFont(key);
     }
 
-    private java.awt.Font getAwtFont(int size, Thickness thickness, FontStyle style) {
+    @ApiStatus.Internal
+    public java.awt.Font getAwtFont(int size, Thickness thickness, FontStyle style) {
         java.awt.Font font = info.getFont(thickness, style);
+        if (thickness == Thickness.BOLD) {
+            if (style == FontStyle.ITALIC) {
+                return new java.awt.Font(font.getName(), java.awt.Font.BOLD + java.awt.Font.ITALIC, size);
+            }
+            return new java.awt.Font(font.getName(), java.awt.Font.BOLD, size);
+        } else if (style == FontStyle.ITALIC) {
+            return new java.awt.Font(font.getName(), java.awt.Font.ITALIC, size);
+        }
+        return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, size);
+    }
+
+    @ApiStatus.Internal
+    public java.awt.Font getAwtFont(int size, Thickness thickness, FontStyle style, String langCode) {
+        FontInfo fontInfo = alternatives.get(langCode);
+        if (fontInfo == null) return null;
+        java.awt.Font font = fontInfo.getFont(thickness, style);
         if (thickness == Thickness.BOLD) {
             if (style == FontStyle.ITALIC) {
                 return new java.awt.Font(font.getName(), java.awt.Font.BOLD + java.awt.Font.ITALIC, size);

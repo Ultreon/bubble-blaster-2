@@ -1,14 +1,11 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.api.event.keyboard.KeyboardModifiers;
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.event.v1.type.KeyEventType;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
@@ -129,46 +126,42 @@ public class OptionsTextEntry extends GuiComponent {
     @Override
     public void render(Renderer renderer) {
         if (activated) {
-            renderer.color(Color.rgb(0x808080));
-            renderer.fill(getBounds());
+            fill(renderer, 0, 0, width, height, 0xff808080);
 
             Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, this.y, Color.rgb(0x00c0ff).toAwt(), 0f, this.y + getHeight(), Color.rgb(0x00ffc0).toAwt());
+            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0x00c0ff).toAwt(), 0f, getHeight(), Color.rgb(0x00ffc0).toAwt());
             renderer.paint(p);
-            renderer.fill(new Rectangle(x, y + height, width, 4));
+            renderer.fill(new Rectangle(0, height, width, 4));
             renderer.paint(old);
         } else {
-            renderer.color(Color.rgb(0x404040));
-            renderer.fill(getBounds());
+            fill(renderer, 0, 0, width, height, 0xff404040);
         }
 
         renderer.color(Color.rgb(0xffffffff));
-        Fonts.DEFAULT.draw(renderer, text, 24, getX(), getY(), Anchor.W);
+        font.draw(renderer, text, 24, 0, 0, Anchor.W);
 
         int cursorX;
         renderer.color(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
             if (text.length() != 0) {
-                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + 2 + getX();
+                cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;
             } else {
-                cursorX = getX();
+                cursorX = 0;
             }
 
-            cursorX += getX();
-
-            renderer.line(cursorX, getY() + 2, cursorX, getY() + getHeight() - 2);
-            renderer.line(cursorX + 1, getY() + 2, cursorX + 1, getY() + getHeight() - 2);
+            renderer.line(cursorX, 2, cursorX, getHeight() - 2);
+            renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
         } else {
             if (text.length() != 0) {
-                cursorX = Fonts.DEFAULT.width(24, text.substring(0, cursorIndex)) + getX();
+                cursorX = font.width(24, text.substring(0, cursorIndex));
             } else {
-                cursorX = getX();
+                cursorX = 0;
             }
 
-            int width = Fonts.DEFAULT.width(24, text.charAt(cursorIndex));
+            int width = font.width(24, text.charAt(cursorIndex));
 
-            renderer.line(cursorX, getY() + getHeight() - 2, cursorX + width, getY() + getHeight() - 2);
-            renderer.line(cursorX, getY() + getHeight() - 1, cursorX + width, getY() + getHeight() - 1);
+            renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
+            renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
         }
     }
 

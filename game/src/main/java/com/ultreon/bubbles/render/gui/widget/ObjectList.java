@@ -28,7 +28,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         this.entryHeight = entryHeight;
         this.gap = gap;
 
-        this.listContent = this.getViewport().add(new Container(0, 0, width, getViewport().getHeight()) {
+        this.listContent = this.add(new Container(0, 0, width, getViewport().getHeight()) {
             @Override
             public void render(Renderer renderer) {
                 var y = 0;
@@ -93,11 +93,6 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         listContent.add(entry);
         recalculateViewport();
         return entry;
-    }
-
-    @Override
-    public boolean mousePress(int x, int y, int button) {
-        return super.mousePress(x, y, button);
     }
 
     @SuppressWarnings("unchecked")
@@ -169,7 +164,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @FunctionalInterface
     public interface EntryRenderer<T> {
-        void render(Renderer renderer, int width, int height, T entry, boolean b);
+        void render(Renderer renderer, int width, int height, T entry, boolean selected, boolean hovered);
     }
 
     public static class ListEntry<T, C extends T> extends GuiComponent {
@@ -190,14 +185,15 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         }
 
         public void render(Renderer renderer1) {
-            list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, value, list.selected == this && list.selectable);
+            list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, value, list.selected == this && list.selectable, isHovered());
         }
 
         @Override
         public boolean mousePress(int x, int y, int button) {
+            if (!list.selectable) return super.mousePress(x, y, button);
             list.selected = this;
             list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
-            return super.mousePress(x, y, button);
+            return true;
         }
 
         @Override
