@@ -1939,7 +1939,7 @@ public final class BubbleBlaster {
     }
 
     public void finalizeSetup() {
-        LanguageScreen.onPostInitialize();
+
     }
 
     public void resize(IntSize size) {

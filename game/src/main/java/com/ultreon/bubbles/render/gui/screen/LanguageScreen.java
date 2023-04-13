@@ -3,12 +3,8 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.common.text.translation.Language;
 import com.ultreon.bubbles.common.text.translation.LanguageManager;
-import com.ultreon.bubbles.event.v1.SubscribeEvent;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.font.FontStyle;
 import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
@@ -16,39 +12,18 @@ import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.commons.util.StringUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("FieldCanBeLocal")
 public final class LanguageScreen extends Screen {
     private static LanguageScreen INSTANCE;
     private final List<Language> languages;
     private ObjectList<Language> languageList;
-    private int languageIndex = 1;
-    private final OptionsButton button1 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton button2 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton button3 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton button4 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton button5 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton button6 = new OptionsButton.Builder().bounds(0, 0, 512, 48).build();
-    private final OptionsButton prev = new OptionsButton.Builder().bounds(0, 0, 64, 298).text(new TranslationText("bubbles/other/prev")).build();
-    private final OptionsButton next = new OptionsButton.Builder().bounds(0, 0, 64, 298).text(new TranslationText("bubbles/other/next")).build();
-
     private OptionsButton cancelButton;
-    private static final TreeMap<String, Locale> nameLocaleMap = new TreeMap<>();
     private Screen backScene;
-    private int deltaIndex;
-    private ValueAnimator valueAnimator1;
-    private ValueAnimator valueAnimator2;
-    private int deltaPage;
     private Locale oldLanguage;
     private OptionsButton okButton;
-
-    private class LanguageLoader {
-        @SubscribeEvent
-        public void onLoadComplete() {
-            LanguageScreen.this.onPostInitialize();
-        }
-    }
 
     public LanguageScreen(Screen backScene) {
         LanguageScreen.INSTANCE = this;
@@ -110,19 +85,6 @@ public final class LanguageScreen extends Screen {
 
     private void apply() {
         game.showScreen(backScene);
-    }
-
-    public static void onPostInitialize() {
-        for (Locale locale : LanguageManager.INSTANCE.getLocales()) {
-            String name;
-            if (!Objects.equals(locale.getDisplayCountry(), ""))
-                name = locale.getDisplayLanguage() + " (" + locale.getDisplayCountry() + ")";
-            else {
-                name = locale.getDisplayLanguage();
-            }
-
-            nameLocaleMap.put(name, locale);
-        }
     }
 
     public static LanguageScreen instance() {
