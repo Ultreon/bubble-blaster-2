@@ -2,18 +2,14 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Sounds;
-import com.ultreon.bubbles.media.SoundInstance;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Font;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
-import com.ultreon.bubbles.render.gui.border.Border;
-import com.ultreon.bubbles.util.GraphicsUtils;
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
+import com.ultreon.bubbles.vector.Vec2i;
 
 @SuppressWarnings("unused")
 public class OptionsButton extends AbstractButton implements GuiStateListener {
@@ -81,44 +77,27 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     @Override
     @SuppressWarnings("DuplicatedCode")
     public void render(Renderer renderer) {
-        Rectangle bounds = getBounds();
-
         Color textColor;
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
-            // Border
-            Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + height, Color.rgb(0x00ff80).toAwt());
-            renderer.paint(p);
-            renderer.fill(bounds);
-            renderer.paint(old);
+        fill(renderer, 0, 0, width, height, 0x20ffffff);
+        if (isPressed()) {
+            renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(1, 1, 1, 1));
 
             textColor = Color.white;
         } else if (isHovered()) {
-            renderer.color(Color.rgb(0x808080));
-            renderer.fill(bounds);
-
-            // Border
-            double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
-            GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x0080ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ff80).toAwt(), true);
-            Border border = new Border(0, 0, 2, 0);
-            border.setPaint(p);
-            border.paintBorder(renderer, x, y, width, height);
+            renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
 
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.color(Color.rgb(0x808080));
-            renderer.fill(bounds);
-
             textColor = Color.lightGray;
         }
 
-        paint0a(renderer, textColor, bounds, text);
+        drawText(renderer, textColor, getSize(), text, font);
     }
 
-    static void paint0a(Renderer renderer, Color textColor, Rectangle bounds, TextObject text) {
-        Renderer gg1 = renderer.subInstance(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
-        gg1.color(textColor);
-        GraphicsUtils.drawCenteredString(gg1, text, new Rectangle2D.Double(0, 0, bounds.width - 2, bounds.height - 2), new Font(BubbleBlaster.getInstance().getFont().getName(), Font.BOLD, 16));
-        gg1.dispose();
+    static void drawText(Renderer renderer, Color textColor, Vec2i size, TextObject text, Font font) {
+        Renderer subRender = renderer.subInstance(4, 4, size.x - 8, size.y - 8);
+        subRender.color(textColor);
+        font.draw(subRender, text, 16, (size.x - 2) / 2f, (size.y - 2) / 2f, Thickness.BOLD, Anchor.CENTER);
+        subRender.dispose();
     }
 }

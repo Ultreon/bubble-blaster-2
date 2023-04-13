@@ -15,25 +15,14 @@ public class Panel extends Container {
     }
 
     @Override
-    public void renderChildren(Renderer renderer) {
-        children.forEach(c -> c.render(renderer));
-    }
-
-    @Override
     public void render(Renderer renderer) {
-        Renderer ngg2 = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderComponent(ngg2);
-        ngg2.dispose();
-
-        Renderer ngg3 = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderChildren(ngg3);
-        ngg3.dispose();
+        renderComponent(renderer);
+        renderChildren(renderer);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.color(getBackgroundColor());
-        renderer.fill(getBounds());
+        fill(renderer, 0, 0, width, height, getBackgroundColor());
     }
 
     @Override

@@ -156,56 +156,9 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     }
 
     /**
-     * @deprecated replaced by {@link Environment#save(GameSave, Messenger)}
-     */
-    @Deprecated(since = "0.0.3071", forRemoval = true)
-    public void createSaveData(GameSave save, Messenger messenger) {
-
-    }
-
-    /**
-     * @deprecated replaced by {@link Environment#load(GameSave, Messenger)}
-     */
-    @Deprecated(since = "0.0.3071", forRemoval = true)
-    public void loadSaveData(GameSave save, Messenger messenger) {
-
-    }
-
-    /**
-     * @deprecated replaced by {@link Environment#load(GameSave, Messenger)}
-     */
-    @Deprecated(since = "0.0.3071", forRemoval = true)
-    public void dumpSaveData(GameSave save) {
-
-    }
-
-    /**
      * Does gamemode rendering.
      */
     public abstract void render(Renderer renderer);
-
-    /**
-     * Dump Default State
-     * Dumps the default state to the given saved game.
-     *
-     * @see GameSave
-     */
-    @Deprecated(since = "0.0.3071", forRemoval = true)
-    public void dumpDefaultState(GameSave gameSave, Messenger Messenger) {
-
-    }
-
-    /**
-     * Dump State to Output Stream
-     * Dumps the game-type state to the output stream.
-     *
-     * @param output the output stream to write the state to.
-     * @throws IOException when an I/O error occurred.
-     */
-    @Deprecated
-    public void dumpState(OutputStream output) throws IOException {
-
-    }
 
     /**
      * Load State from Bytearray.

@@ -65,7 +65,7 @@ public class GiantBubble extends Bubble {
         this.bounceAmount = bubbleType.getBounceAmount();
 
         // Set velocity
-        this.velX = -getBaseSpeed();
+        this.velocityX = -getBaseSpeed();
 
         make();
     }

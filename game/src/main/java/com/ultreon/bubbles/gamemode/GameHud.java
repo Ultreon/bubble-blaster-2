@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 
 /**
  * HUD Baseclass
@@ -9,7 +10,7 @@ import com.ultreon.bubbles.render.Renderer;
  * @see ClassicModeHud
  * @see Gamemode
  */
-public abstract class GameHud {
+public abstract class GameHud extends Screen {
     private final Gamemode gamemode;
 
     public GameHud(Gamemode gamemode) {
@@ -18,6 +19,11 @@ public abstract class GameHud {
 
     @SuppressWarnings("EmptyMethod")
     public void tick() {
+
+    }
+
+    @Override
+    public final void init() {
 
     }
 

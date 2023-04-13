@@ -2,12 +2,10 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.border.Border;
 
 import java.awt.*;
 
@@ -80,33 +78,21 @@ public class TitleButton extends AbstractButton {
     public void render(Renderer renderer) {
         Color textColor;
 
-        renderer.color(Color.rgb(0x606060));
-        renderer.fill(getBounds());
+        fill(renderer, 0, 0, width, height, 0xff606060);
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             // Shadow
             Paint old = renderer.getPaint();
 
-            double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
-            GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
-            renderer.color(Color.rgb(0x484848));
-            renderer.fill(getBounds());
+            fill(renderer, 0, 0, width, height, 0xff484848);
 
-            Border border = new Border(0, 0, 1, 0);
-            border.setPaint(p);
-            border.paintBorder(renderer, x, y, width, height);
-
+            renderer.drawEffectBox(0, 0, width, height, new Insets(1, 1, 1, 1));
             renderer.paint(old);
             textColor = Color.white;
         } else if (isHovered()) {
             Paint old = renderer.getPaint();
 
-            double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
-            GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
-            Border border = new Border(0, 0, 2, 0);
-            border.setPaint(p);
-            border.paintBorder(renderer, x, y, width, height);
-
+            renderer.drawEffectBox(0, 0, width, height, new Insets(2, 2, 2, 2));
             renderer.paint(old);
             textColor = Color.rgb(0xffffff);
         } else {
@@ -114,7 +100,7 @@ public class TitleButton extends AbstractButton {
             textColor = Color.rgb(0xe0e0e0);
         }
 
-        OptionsNumberInput.ArrowButton.paint0a(renderer, textColor, getBounds(), text);
+        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
     }
 
     @SuppressWarnings("EmptyMethod")

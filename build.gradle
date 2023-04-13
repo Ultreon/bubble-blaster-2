@@ -110,6 +110,9 @@ configurations {
     include {
         canBeResolved true
     }
+    addToJar {
+        canBeResolved true
+    }
 }
 
 /***************
@@ -117,8 +120,10 @@ configurations {
  */
 dependencies {
     // Projects
-    include(runtimeOnly project(":preloader"))
-    include(runtimeOnly project(":game"))
+    addToJar(runtimeOnly project(":preloader")) { transitive false }
+    addToJar(runtimeOnly project(":game")) { transitive false }
+    implementation(runtimeOnly project(":preloader"))
+    implementation(runtimeOnly project(":game"))
 }
 
 allprojects {
@@ -254,6 +259,10 @@ jar {
     from {
         processResources.outputs
     }
+
+    from(configurations.addToJar.collect {
+        zipTree(it)
+    })
 
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
@@ -431,6 +440,7 @@ idea{
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
                     moduleName = idea.module.name + ".game.main"
                     workingDirectory = "$projectDir/run/"
+                    programParameters = "--gameDir=."
                 }
             }
         }

@@ -61,7 +61,6 @@ public class AppliedEffect implements TagHolder {
 
     public final void stop(Entity entity) {
         onStop(entity);
-        entity.removeEffect(this);
 
         active = false;
     }
@@ -71,6 +70,7 @@ public class AppliedEffect implements TagHolder {
     }
 
     public void tick(Entity entity) {
+        System.out.println("getRemainingTime() = " + getRemainingTime());
         if (this.getRemainingTime() <= 0d) {
             this.active = false;
             this.stop(entity);

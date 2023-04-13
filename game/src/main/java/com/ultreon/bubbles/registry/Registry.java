@@ -101,7 +101,7 @@ public class Registry<T> {
      */
     public T getValue(@Nullable Identifier key) {
         if (!keyMap.containsKey(key)) {
-            throw new IllegalArgumentException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
+            throw new RegistryException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
         }
         return keyMap.get(key);
     }

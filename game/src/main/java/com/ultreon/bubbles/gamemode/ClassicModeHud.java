@@ -5,18 +5,18 @@ import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.Texture;
-import com.ultreon.bubbles.util.GraphicsUtils;
+import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.util.TimeUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * The classic hud, the hud that's almost identical to older versions and editions create the game.
@@ -28,11 +28,6 @@ public class ClassicModeHud extends GameHud {
     // Flags
     private boolean gameOver;
 
-    // Fonts
-    private static final Font LEVEL_UP_FONT = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.BOLD, 50);
-    private static final Font INFO_TITLE_FONT = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.BOLD, 18);
-    private static final Font INFO_VALUE_FONT = new Font(BubbleBlaster.getInstance().getSansFontName(), Font.PLAIN, 14);
-
     // Strokes
     private static final Stroke HEALTH_LINE = new BasicStroke(1);
 
@@ -40,9 +35,6 @@ public class ClassicModeHud extends GameHud {
     private static final Color LEVEL_UP_COLOR = Color.rgb(0xffbb00);
     private static final Color TOP_BAR_BG_COLOR = Color.argb(0x7f000000);
     private static final Color HEALTH_LINE_BG_COLOR = Color.argb(0x7ffffff);
-    private static final Color GAME_OVER_DETAILS_COLOR = Color.rgb(0xffffff);
-    private static final Color GAME_OVER_COLOR_NORMAL = Color.rgb(0xff0000);
-    private static final Color GAME_OVER_COLOR_FLASH = Color.rgb(0xff8000);
     private boolean showLevelUp;
     private long hideLevelUpTime;
     private int level;
@@ -69,10 +61,14 @@ public class ClassicModeHud extends GameHud {
         Gamemode gamemode = loadedGame.getGamemode();
         Player player = gamemode.getPlayer();
 
-        preDrawTopBar(renderer, game);
-        drawPlayerDetails(renderer, game, player);
-        drawFpsCounter(renderer, game);
-        postDrawTopBar(renderer, game);
+        if (player == null) return;
+
+        if (!gameOver) {
+            preDrawTopBar(renderer, game);
+            drawPlayerDetails(renderer, game, player);
+            drawFpsCounter(renderer, game);
+            postDrawTopBar(renderer, game);
+        }
 
         drawMessages(renderer, game);
 
@@ -95,7 +91,7 @@ public class ClassicModeHud extends GameHud {
     private void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
         renderer.color(Color.argb(0x7f00a5dc));
-        GraphicsUtils.drawRightAnchoredString(renderer, ((Integer) game.getFps()).toString(), new Vec2i(game.getWidth() - 10, 10), 20, INFO_TITLE_FONT);
+        font.draw(renderer, ((Integer) game.getFps()).toString(), 12, game.getWidth() - 10, 10, Anchor.NE);
     }
 
     /**
@@ -105,7 +101,7 @@ public class ClassicModeHud extends GameHud {
      * @param gamemode the game type bound to this hud.
      */
     private void drawLevelUpMessage(Renderer renderer, Gamemode gamemode) {
-        renderer.color(GAME_OVER_DETAILS_COLOR);
+        renderer.color(LEVEL_UP_COLOR);
 
         if (showLevelUp && System.currentTimeMillis() > hideLevelUpTime) {
             showLevelUp = false;
@@ -114,12 +110,10 @@ public class ClassicModeHud extends GameHud {
 
         // Game over message.
         if (showLevelUp) {
-            FontMetrics fontMetrics = renderer.fontMetrics(LEVEL_UP_FONT);
-
             String text = "Level " + level;
 
-            int textWidth = fontMetrics.stringWidth(text);
-            int textHeight = fontMetrics.getAscent();
+            int textWidth = font.width(50, text);
+            int textHeight = font.height(50);
 
             int width = textWidth + 16;
             int height = textHeight + 16;
@@ -134,11 +128,7 @@ public class ClassicModeHud extends GameHud {
 
             renderer.color(LEVEL_UP_COLOR);
 
-            renderer.font(LEVEL_UP_FONT);
-
-            renderer.text(text,
-                    (int)(gameBounds.getX() + gameBounds.getWidth() - textWidth) / 2,
-                    (int)(gameBounds.getY() + gameBounds.getHeight() + textHeight) / 2 - fontMetrics.getDescent());
+            font.draw(renderer, text, 50, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2), Thickness.BOLD, Anchor.S);
         }
     }
 
@@ -149,7 +139,7 @@ public class ClassicModeHud extends GameHud {
      * @param game     the game instance.
      * @param player   the player to draw information for.
      */
-    private void drawPlayerDetails(Renderer renderer, BubbleBlaster game, Player player) {
+    private void drawPlayerDetails(@NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         // Assign colors for title and description.
         Color titleColor = Color.rgb(255, 128, 0);
         Color valueColor = Color.rgb(255, 255, 255);
@@ -157,13 +147,11 @@ public class ClassicModeHud extends GameHud {
         // As long the player isn't game over.
         if (!gameOver) {
             // As long the player exists.
-            if (player != null) {
-                // Draw player components.
-                drawStatusEffects(renderer, game, player);
-                drawScoreText(renderer, player, titleColor, valueColor);
-                drawLevelText(renderer, player, titleColor, valueColor);
-                drawHealthLineForeground(renderer, game, player);
-            }
+            // Draw player components.
+            drawStatusEffects(renderer, game, player);
+            drawScoreText(renderer, player, titleColor, valueColor);
+            drawLevelText(renderer, player, titleColor, valueColor);
+            drawHealthLineForeground(renderer, game, player);
         }
     }
 
@@ -203,37 +191,37 @@ public class ClassicModeHud extends GameHud {
     }
 
     /**
-     * Draws the level informatic for the player.
+     * Draws the level information for the player.
      *
      * @param renderer   renderer to draw with.
      * @param player     the player to get the level from.
-     * @param titleColor the title color for the informatic.
-     * @param valueColor the value color for the informatic.
+     * @param titleColor the title color for the information.
+     * @param valueColor the value color for the information.
      * @see #drawPlayerDetails(Renderer, BubbleBlaster, Player)
      */
     private void drawLevelText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Level
         renderer.color(titleColor);
-        GraphicsUtils.drawCenteredString(renderer, Language.translate("bubbles/Info/Level"), new Rectangle(100, 10, 80, 20), INFO_TITLE_FONT);
+        font.draw(renderer, Language.translate("bubbles/Info/Level"), 18, 140, 20, Thickness.BOLD, Anchor.CENTER);
         renderer.color(valueColor);
-        GraphicsUtils.drawCenteredString(renderer, String.valueOf(player.getLevel()), new Rectangle(100, 40, 80, 20), INFO_VALUE_FONT);
+        font.draw(renderer, String.valueOf(player.getLevel()), 14, 140, 50, Anchor.CENTER);
     }
 
     /**
-     * Draws the score informatic for the player.
+     * Draws the score information for the player.
      *
      * @param renderer   renderer to draw with.
      * @param player     the player to get the score from.
-     * @param titleColor the title color for the informatic.
-     * @param valueColor the value color for the informatic.
+     * @param titleColor the title color for the information.
+     * @param valueColor the value color for the information.
      * @see #drawPlayerDetails(Renderer, BubbleBlaster, Player)
      */
     private void drawScoreText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Score
         renderer.color(titleColor);
-        GraphicsUtils.drawCenteredString(renderer, Language.translate("bubbles/Info/Score"), new Rectangle(10, 10, 80, 20), INFO_TITLE_FONT);
+        font.draw(renderer, Language.translate("bubbles/Info/Score"), 18, 70, 20, Thickness.BOLD, Anchor.CENTER);
         renderer.color(valueColor);
-        GraphicsUtils.drawCenteredString(renderer, String.valueOf((int) player.getScore()), new Rectangle(10, 40, 80, 20), INFO_VALUE_FONT);
+        font.draw(renderer, String.valueOf((int) player.getScore()), 18, 70, 50, Anchor.CENTER);
     }
 
     /**
@@ -243,13 +231,13 @@ public class ClassicModeHud extends GameHud {
      * @param game     the game instance/
      * @param player   the player, to get the information about the status effects from.
      */
-    private void drawStatusEffects(Renderer renderer, BubbleBlaster game, Player player) {
+    private void drawStatusEffects(@NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         try {
             // EffectInstance image.
             Texture effectImage = game.getTextureManager().getOrLoadTexture(BubbleBlaster.id("ui/effect_banner"));
 
             int i = 0;
-            for (AppliedEffect appliedEffect : Objects.requireNonNull(player).getActiveEffects()) {
+            for (AppliedEffect appliedEffect : player.getActiveEffects()) {
                 // GraphicsProcessor 2D
                 Renderer render = renderer.subInstance(320 + i * 196, 16, 192, 38);
 
@@ -257,14 +245,15 @@ public class ClassicModeHud extends GameHud {
                 String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
 
                 // EffectInstance bar.
-                effectImage.render(render, 0, 0, 192, 38);
+                effectImage.draw(render, 0, 0, 192, 38);
 
                 // EffectInstance icon.
-                render.image(appliedEffect.getType().getIcon(32, 32, Color.rgb(0, 191, 191)), 5, 3);
+                renderer.texture(appliedEffect.getType().getIconId());
+                appliedEffect.getType().getIcon().draw(renderer, 5, 3, 32, 32);
                 render.color(Color.rgba(255, 255, 255, 192));
 
                 // Time. 0:00:00
-                GraphicsUtils.drawLeftAnchoredString(render, time, new Vec2i(56, 2), 35, new Font(game.getFont().getFontName(), Font.BOLD, 16));
+                font.draw(render, time, 16, 56, 19.5f, Thickness.BOLD, Anchor.W);
                 render.dispose();
 
                 // Next

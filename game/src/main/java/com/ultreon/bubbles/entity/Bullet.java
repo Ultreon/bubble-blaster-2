@@ -25,6 +25,7 @@ import java.awt.*;
 public class Bullet extends Entity {
     private final Player owner;
     private AmmoType ammoType;
+    private int popsRemaining = 4;
 
     public Bullet(Environment environment) {
         this(null, AmmoTypes.BASIC.get(), 0, 0, 0, environment);
@@ -57,7 +58,10 @@ public class Bullet extends Entity {
 
     @Override
     public void onCollision(Entity other, double deltaTime) {
+        if (other instanceof LivingEntity livingEntity && livingEntity.isInvincible()) return;
+
         ammoType.onCollision(this, other, deltaTime);
+
 
         // Modifiers
         if (other instanceof Bubble bubble) {
@@ -81,7 +85,10 @@ public class Bullet extends Entity {
             double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             owner.addScore(score);
         }
-        delete();
+        popsRemaining--;
+        if (popsRemaining <= 0) {
+            delete();
+        }
     }
 
     @Override

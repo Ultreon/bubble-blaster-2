@@ -67,21 +67,6 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
     }
 
     /**
-     * Save the ability instance.
-     * @return the compound nbt tag.
-     * @since 0.0.0
-     * @author Qboi123
-     */
-    @Override
-    public @NotNull CompoundTag save() {
-        CompoundTag document = new CompoundTag();
-        document.putInt("Cooldown", this.cooldown);
-        document.putInt("Value", this.value);
-
-        return document;
-    }
-
-    /**
      * Handle entity ticking.
      * @see Entity
      * @since 0.0.0
@@ -101,7 +86,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @since 0.0.0
      */
     @Override
-    public @NonNull MapType save() {
+    public @NotNull MapType save() {
         MapType data = new MapType();
         data.putInt("cooldown", this.cooldown);
         data.putInt("value", this.value);

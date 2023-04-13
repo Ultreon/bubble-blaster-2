@@ -7,7 +7,8 @@ import com.ultreon.commons.function.ThrowingSupplier;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +16,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SoundInstance {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("GameAudio");
@@ -24,7 +25,7 @@ public class SoundInstance {
     private final String name;
     private boolean playing = false;
     private Player player;
-    private static final Set<SoundInstance> ALL = new HashSet<>();
+    private static final Set<SoundInstance> ALL = new CopyOnWriteArraySet<>();
 
     public SoundInstance(File file) {
         this(file, "");

@@ -2,7 +2,6 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.common.text.LiteralText;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
@@ -78,11 +77,11 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     public void render(Renderer renderer) {
         Color textColor;
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, y, Color.rgb(0xff0000).toAwt(), width, y + height, Color.rgb(0xff4000).toAwt());
+            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
             renderer.paint(p);
-            renderer.fill(getBounds());
+            renderer.rect(0, 0, width, height);
             renderer.paint(old);
 
             textColor = Color.white;
@@ -90,11 +89,11 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
             renderer.stroke(new BasicStroke(4.0f));
 
             Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, y, Color.rgb(0xff0000).toAwt(), width, y + height, Color.rgb(0xff4000).toAwt());
+            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
             renderer.paint(p);
             Border border = new OuterBorder(2, 2, 2, 2);
             border.setPaint(p);
-            border.paintBorder(renderer, x + 1, y + 1, width - 2, height - 2);
+            border.paintBorder(renderer, 1, 1, width - 2, height - 2);
 
             renderer.paint(old);
 
@@ -105,12 +104,12 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
             renderer.color(Color.rgb(0xffffff));
             Border border = new Border(1, 1, 1, 1);
             border.setPaint(Color.rgb(0xffffff).toAwt());
-            border.paintBorder(renderer, x, y, width, height);
+            border.paintBorder(renderer, 0, 0, width, height);
 
             textColor = Color.rgb(0xffffff);
         }
 
-        OptionsNumberInput.ArrowButton.paint0a(renderer, textColor, getBounds(), text);
+        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
     }
 
     public Runnable getCommand() {

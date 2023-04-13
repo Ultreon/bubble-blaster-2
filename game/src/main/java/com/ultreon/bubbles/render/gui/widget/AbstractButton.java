@@ -9,7 +9,6 @@ import org.checkerframework.common.value.qual.IntRange;
 
 public abstract class AbstractButton extends GuiComponent {
     private Runnable command;
-    //    private boolean hovered;
     private boolean pressed;
 
     public AbstractButton(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
@@ -18,7 +17,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (isWithinBounds(x, y) && button == 1 && enabled && visible) {
+        if (isHovered() && button == 1 && enabled && visible) {
             this.pressed = true;
             return true;
         }
@@ -27,7 +26,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (isWithinBounds(x, y) && button == 1 && enabled && visible) {
+        if (isHovered() && button == 1 && enabled && visible && pressed) {
             this.pressed = false;
             Sounds.MENU_EVENT.get().play(0.2d);
             this.command.run();
@@ -37,11 +36,20 @@ public abstract class AbstractButton extends GuiComponent {
     }
 
     @Override
+    public void mouseDrag(int x, int y, int nx, int ny, int button) {
+        if (isHovered() && button == 1 && enabled && visible) {
+            pressed = true;
+            return;
+        }
+        super.mouseDrag(x, y, nx, ny, button);
+    }
+
+    @Override
     public void make() {
         super.make();
 
         Vec2i mousePos = MouseInput.getPos();
-        if (isWithinBounds(mousePos)) {
+        if (isHovered()) {
             BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getPointerCursor());
         }
     }
@@ -56,21 +64,13 @@ public abstract class AbstractButton extends GuiComponent {
     }
 
     @Override
-    public void mouseEnter(int x, int y) {
-
-    }
-
-    @Override
     public void mouseExit() {
-
+        pressed = false;
+        super.mouseExit();
     }
 
     public boolean isPressed() {
         return this.pressed;
-    }
-
-    public boolean isHovered() {
-        return isWithinBounds(MouseInput.getPos());
     }
 
     /**

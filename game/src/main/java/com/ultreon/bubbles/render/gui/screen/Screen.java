@@ -2,9 +2,11 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.render.gui.GuiStateListener;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.awt.*;
@@ -12,15 +14,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
 public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Container {
+    protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private GuiComponent focused;
     @IntRange(from = 0)
     private int focusIndex = 0;
 
+
     public Screen() {
         super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
     }
-
-    protected final BubbleBlaster game = BubbleBlaster.getInstance();
 
     public final void resize(int width, int height) {
         this.onResize(width, height);
@@ -127,7 +129,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public void renderBackground(Renderer renderer) {
         if (game.environment != null) {
-            renderer.color(0x80ffffff);
+            renderer.color(0x80000000);
         } else {
             renderer.color(0xff222222);
         }
@@ -143,6 +145,11 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @param partialTicks partial ticks / frame time.
      */
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+        render(renderer);
+    }
+
+    @Override
+    public void render(Renderer renderer) {
         renderBackground(renderer);
         renderChildren(renderer);
     }

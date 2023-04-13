@@ -91,4 +91,8 @@ public class LanguageManager {
     public Set<String> getLanguageIDs() {
         return ids;
     }
+
+    public List<Language> getLanguages() {
+        return new ArrayList<>(languages.values());
+    }
 }

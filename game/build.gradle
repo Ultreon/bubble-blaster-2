@@ -226,6 +226,9 @@ processResources {
         expand "version": version
     }
 
+    from(file("NOTICE.txt")) { into "META-INF/" }
+    from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
+
     exclude "*.pdn", "*.xcf", "*.ps"
 }
 
