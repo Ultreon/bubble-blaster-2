@@ -50,8 +50,8 @@ public class ScrollableView extends Container {
     }
 
     private void updateXYOffset() {
-        this.innerXOffset = (int) -this.viewport.xScroll;
-        this.innerYOffset = (int) -this.viewport.yScroll;
+        this.innerXOffset = (int) -this.viewport.xScroll - x;
+        this.innerYOffset = (int) -this.viewport.yScroll - y;
     }
 
     @Override

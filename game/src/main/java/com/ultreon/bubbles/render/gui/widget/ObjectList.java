@@ -195,11 +195,6 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
             list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
             return true;
         }
-
-        @Override
-        public boolean mouseClick(int x, int y, int button, int count) {
-            return super.mouseClick(x, y, button, count);
-        }
     }
 
     @FunctionalInterface
