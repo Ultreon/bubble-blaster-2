@@ -616,6 +616,21 @@ public class Renderer {
         border.paintBorder(this, x, y, width, height);
     }
 
+    public void drawErrorEffectBox(int x, int y, int width, int height) {
+        drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
+        drawErrorEffectBox(x, y, width, height, insets, 10);
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+        GradientPaint p = getErrorEffectPaint(x, width, speed);
+        Border border = new Border(insets);
+        border.setPaint(p);
+        border.paintBorder(this, x, y, width, height);
+    }
+
     public void fillEffect(int x, int y, int width, int height) {
         fillEffect(x, y, width, height, 10);
     }
@@ -632,6 +647,15 @@ public class Renderer {
     private GradientPaint getEffectPaint(int x, int width, int speed) {
         int color1 = 0x00a0ff;
         int color2 = 0x00ffa0;
+        width = game.getScaledWidth();
+        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
+        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
+    }
+
+    @NotNull
+    private GradientPaint getErrorEffectPaint(int x, int width, int speed) {
+        int color1 = 0xff3000;
+        int color2 = 0xffa000;
         width = game.getScaledWidth();
         double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
         return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);

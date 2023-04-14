@@ -21,14 +21,14 @@ public final class LanguageScreen extends Screen {
     private final List<Language> languages;
     private ObjectList<Language> languageList;
     private OptionsButton cancelButton;
-    private Screen backScene;
+    private Screen backScreen;
     private Locale oldLanguage;
     private OptionsButton okButton;
 
-    public LanguageScreen(Screen backScene) {
+    public LanguageScreen(Screen backScreen) {
         LanguageScreen.INSTANCE = this;
 
-        this.backScene = backScene;
+        this.backScreen = backScreen;
         this.languages = LanguageManager.INSTANCE.getLanguages();
         this.languages.sort((o1, o2) -> o1.getLocale().getDisplayLanguage(Locale.ENGLISH).compareToIgnoreCase(o2.getLocale().getDisplayLanguage(Locale.ENGLISH)));
     }
@@ -80,11 +80,11 @@ public final class LanguageScreen extends Screen {
 
     private void cancel() {
         GameSettings.instance().setLanguage(oldLanguage);
-        game.showScreen(backScene);
+        game.showScreen(backScreen);
     }
 
     private void apply() {
-        game.showScreen(backScene);
+        game.showScreen(backScreen);
     }
 
     public static LanguageScreen instance() {
@@ -95,8 +95,8 @@ public final class LanguageScreen extends Screen {
     public boolean onClose(Screen to) {
         cancelButton.destroy();
 
-        if (to == backScene) {
-            backScene = null;
+        if (to == backScreen) {
+            backScreen = null;
         }
         return super.onClose(to);
     }

@@ -72,6 +72,9 @@ public class Bubble extends AbstractBubbleEntity {
         // Add player as collidable.
         this.markAsCollidable(Entities.PLAYER.get());
 
+        // FIXME: Use a more stable alternative that allows save loading. This is just a workaround.
+        if (!BubbleSpawnContext.exists()) return;
+
         // Get random properties
         BubbleRandomizer randomizer = this.environment.getBubbleRandomizer();
         BubbleSpawnContext ctx = BubbleSpawnContext.get();

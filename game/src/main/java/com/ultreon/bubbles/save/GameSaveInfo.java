@@ -9,14 +9,12 @@ import com.ultreon.data.types.MapType;
 public class GameSaveInfo {
     private final String name;
     private final long savedTime;
-    private final long highScore;
     private final Gamemode gamemode;
-    private long seed;
+    private final long seed;
 
     public GameSaveInfo(MapType tag) {
         this.name = tag.getString("name");
         this.savedTime = tag.getLong("savedTime");
-        this.highScore = tag.getLong("highScore");
         this.seed = tag.getLong("seed");
         this.gamemode = Registry.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.CLASSIC.id().toString())));
     }
@@ -29,8 +27,9 @@ public class GameSaveInfo {
         return savedTime;
     }
 
+    @Deprecated(forRemoval = true)
     public long getHighScore() {
-        return highScore;
+        return 0;
     }
 
     public Gamemode getGamemode() {

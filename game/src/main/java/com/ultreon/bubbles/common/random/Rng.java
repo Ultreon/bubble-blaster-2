@@ -30,6 +30,10 @@ public class Rng {
         this.subIndex = subIndex;
     }
 
+    public static void serializeText(String text) {
+
+    }
+
     /**
      * @return get random number generator.
      */

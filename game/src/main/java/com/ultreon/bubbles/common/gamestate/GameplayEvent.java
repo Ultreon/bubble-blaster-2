@@ -20,7 +20,7 @@ public abstract class GameplayEvent {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isActive(DateTime dateTime) {
-        @Nullable Screen currentScene = game.getCurrentScreen();
+        @Nullable Screen currentScreen = game.getCurrentScreen();
 
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {

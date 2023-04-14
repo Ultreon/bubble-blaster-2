@@ -21,9 +21,10 @@ import com.ultreon.bubbles.util.helpers.Mth;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {
-    private final IngameButton exitButton;
-    private final IngameButton prevButton;
-    private final IngameButton nextButton;
+    private IngameButton exitButton;
+    private IngameButton forfeitButton;
+    private IngameButton prevButton;
+    private IngameButton nextButton;
 
     private final TextObject minRadius = new TranslationText("bubbles/screen/pause/min_radius");
     private final TextObject maxRadius = new TranslationText("bubbles/screen/pause/max_radius");
@@ -48,6 +49,7 @@ public class PauseScreen extends Screen {
     private static int helpIndex = 0;
     private BubbleType bubble;
 
+
     static {
         GameEvents.LANGUAGE_CHANGED.listen((from, to) -> {
             if (BubbleBlaster.getInstance().getCurrentScreen() instanceof PauseScreen pauseScreen) {
@@ -58,7 +60,9 @@ public class PauseScreen extends Screen {
 
     public PauseScreen() {
         super();
-        exitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 200, 256, 48).text("Exit and Quit Game").command(BubbleBlaster.getInstance()::shutdown).build();
+
+        exitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 200, 256, 48).text("Exit and Quit Game").command(this.game::shutdown).build();
+        forfeitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text("Save and Go To Title").command(this.game::saveAndQuit).build();
         prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text("Prev").command(this::previousPage).build();
         nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text("Next").command(this::nextPage).build();
 
@@ -102,17 +106,18 @@ public class PauseScreen extends Screen {
 
     @Override
     public void init() {
-        clearWidgets();
+        this.clearWidgets();
 
-        add(exitButton);
-        add(prevButton);
-        add(nextButton);
+        this.exitButton = add(this.exitButton);
+        this.forfeitButton = add(this.forfeitButton);
+        this.prevButton = add(this.prevButton);
+        this.nextButton = add(this.nextButton);
 
-        if (!BubbleBlaster.getInstance().isInGame()) {
+        if (!this.game.isInGame()) {
             return;
         }
 
-        Util.setCursor(BubbleBlaster.getInstance().getDefaultCursor());
+        Util.setCursor(this.game.getDefaultCursor());
     }
 
     @Override
@@ -146,7 +151,10 @@ public class PauseScreen extends Screen {
         //     Exit button     //
         /////////////////////////
         exitButton.setText(Language.translate("bubbles/screen/pause/exit"));
-        exitButton.render(renderer);
+        exitButton.render(renderer.subInstance(exitButton.getBounds()));
+
+        forfeitButton.setText(Language.translate("bubbles/screen/pause/forfeit"));
+        forfeitButton.render(renderer.subInstance(forfeitButton.getBounds()));
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Navigation Buttons & border     //
@@ -156,8 +164,8 @@ public class PauseScreen extends Screen {
         nextButton.setText(Language.translate("bubbles/other/next"));
         prevButton.setText(Language.translate("bubbles/other/prev"));
 
-        if (helpIndex > 0) prevButton.render(renderer);
-        if (helpIndex < differentBubbles - 1) nextButton.render(renderer);
+        if (helpIndex > 0) prevButton.render(renderer.subInstance(prevButton.getBounds()));
+        if (helpIndex < differentBubbles - 1) nextButton.render(renderer.subInstance(nextButton.getBounds()));
 
         // Border
         renderer.color(Color.argb(0x80ffffff));

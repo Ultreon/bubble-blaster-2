@@ -98,7 +98,9 @@ public class LoadedGame {
         gamemode.destroy();
         shutdown();
 
-        ambientAudio.stop();
+        if (ambientAudio != null) {
+            ambientAudio.stop();
+        }
 
         if (autoSaveThread != null) autoSaveThread.interrupt();
         if (collisionThread != null) collisionThread.interrupt();

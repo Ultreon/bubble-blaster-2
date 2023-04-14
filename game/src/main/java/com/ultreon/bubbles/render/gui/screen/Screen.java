@@ -2,10 +2,7 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.checkerframework.common.value.qual.IntRange;
 
@@ -18,10 +15,20 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     private GuiComponent focused;
     @IntRange(from = 0)
     private int focusIndex = 0;
+    private Screen backScreen;
 
 
     public Screen() {
         super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+    }
+
+    public Screen(Screen backScreen) {
+        super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        this.backScreen = backScreen;
+    }
+
+    protected final void setBackScreen(Screen screen) {
+        this.backScreen = screen;
     }
 
     public final void resize(int width, int height) {
@@ -73,6 +80,10 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     @Override
     public boolean keyPress(int keyCode, char character) {
         if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
+            if (backScreen != null) {
+                game.showScreen(backScreen);
+                return true;
+            }
             game.showScreen(null);
             return true;
         }

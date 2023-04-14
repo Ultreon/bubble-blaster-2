@@ -984,8 +984,13 @@ public final class BubbleBlaster {
      * @param saveName ...
      */
     @SuppressWarnings("EmptyMethod")
+    @Deprecated
     public void loadSave(String saveName) {
-        createGame(new Random().nextLong());
+        try {
+            loadGame(GameSave.fromFile(new File(References.SAVES_DIR, saveName)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -993,8 +998,13 @@ public final class BubbleBlaster {
      *
      * @param save save to load
      */
+    @Deprecated
     public void loadSave(GameSave save) {
-        createGame(new Random().nextLong());
+        try {
+            loadGame(save);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -1076,7 +1086,7 @@ public final class BubbleBlaster {
     public void loadGame(GameSave save) throws IOException {
         var seed = save.getSeed();
         var gamemode = save.getGamemode();
-        startGame(seed, gamemode, save, true);
+        startGame(seed, gamemode, save, false);
     }
 
     /**
@@ -1960,6 +1970,28 @@ public final class BubbleBlaster {
     public void finish() {
         glitchRenderer = new GlitchRenderer(this);
         showScreen(new TitleScreen());
+    }
+
+    public long serializeSeed(String text) {
+        Long seedNr = Long.getLong(text);
+        if (seedNr != null) {
+            return seedNr;
+        }
+
+        long h = 0;
+        long length = text.length() >> 1;
+        for (char c : text.toCharArray()) {
+            h = 31L * h + c;
+        }
+        return h;
+    }
+
+    public void saveAndQuit() {
+        if (this.environment == null)
+            throw new IllegalStateException("Environment isn't loaded.");
+
+        this.environment.save();
+        this.quitLoadedGame();
     }
 
     protected static class BootOptions {

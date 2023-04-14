@@ -65,8 +65,6 @@ public final class LoadScreen extends Screen implements Runnable {
 
     @Override
     public void init() {
-        LOGGER.info("Showing LoadScene");
-
         BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getDefaultCursor());
 
         new Thread(this).start();
@@ -137,6 +135,8 @@ public final class LoadScreen extends Screen implements Runnable {
 
     @Override
     public void run() {
+        LOGGER.info("Loading started");
+
         this.progMain = new ProgressMessenger(msgMain, 12);
 
         // Get game directory in Java's File format.

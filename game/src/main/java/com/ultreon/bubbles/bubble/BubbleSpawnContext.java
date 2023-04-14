@@ -10,6 +10,10 @@ public record BubbleSpawnContext(long spawnIndex, int retry) {
         return Objects.requireNonNull(value, () -> "Spawn context not set.");
     }
 
+    public static boolean exists() {
+        return value != null;
+    }
+
     public static void inContext(long spawnIndex, int retry, Runnable run) {
         value = new BubbleSpawnContext(spawnIndex, retry);
         run.run();

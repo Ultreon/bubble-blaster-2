@@ -28,20 +28,22 @@ import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.commons.lang.DummyMessenger;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.StringType;
+import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.checkerframework.common.value.qual.IntRange;
 
 import java.awt.*;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,7 +104,7 @@ public final class Environment {
     private final Object entitiesLock = new Object();
 
     // Game
-    private static final BubbleBlaster game = BubbleBlaster.getInstance();
+    private final BubbleBlaster game = BubbleBlaster.getInstance();
     private String name = "UNKNOWN WORLD";
     private int freezeTicks;
     boolean shuttingDown;
@@ -137,12 +139,21 @@ public final class Environment {
         this.initialized = true;
     }
 
+    public void save() {
+        try {
+            save(gameSave, new DummyMessenger());
+        } catch (IOException e) {
+            BubbleBlaster.getLogger().error("Error occurred when saving the game: ", e);
+        }
+    }
+
     public void save(GameSave save, Messenger messenger) throws IOException {
         this.gamemode.onSave(this, save, messenger);
 
         dumpRegistries(save, messenger);
         dumpPlayers(save, messenger);
         save.dump("environment", saveEnvironment(), true);
+        save.dump("info", saveInfo(), true);
     }
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
@@ -190,13 +201,14 @@ public final class Environment {
     private void loadEnvironment(GameSave save, MapType tag) throws IOException {
         ListType<MapType> entitiesTag = tag.getList("Entities");
         for (MapType entityTag : entitiesTag) {
-            this.entities.add(Entity.loadFully(this, entityTag));
+            Entity entity = Entity.loadFully(this, entityTag);
+            this.entities.add(entity);
         }
+        this.player = (Player) Entity.loadFully(this, tag.getMap("Player"));
         this.name = tag.getString("name", "INVALID SAVE NAME");
         this.seed = tag.getLong("seed");
-        long[] playerUuid = tag.getLongArray("playerUuid");
-        loadPlayer(save, new UUID(playerUuid[0], playerUuid[1]));
-        String gameTypeId = tag.getString("gameType", null);
+//        loadPlayer(save, tag.getUUID("playerUuid"));
+        String gameTypeId = tag.getString("gamemode", null);
         if (gameTypeId == null) {
             this.gamemode = Gamemodes.CLASSIC.get();
         } else {
@@ -211,9 +223,18 @@ public final class Environment {
             entitiesTag.add(entity.save());
         }
         tag.put("Entities", entitiesTag);
-        tag.putString("name", name);
-        tag.putString("gameType", Registry.GAMEMODES.getKey(gamemode).toString());
-        tag.putLong("seed", seed);
+        tag.put("Player", player.save());
+        tag.putUUID("playerUuid", player.getUniqueId());
+        return tag;
+    }
+
+    private MapType saveInfo() {
+        MapType tag = new MapType();
+        tag.putString("name", this.name);
+        tag.putLong("seed", this.seed);
+        tag.putLong("savedTime", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC));
+        Identifier key = Registry.GAMEMODES.getKey(this.gamemode);
+        tag.putString("gamemode", (key == null ? Gamemodes.CLASSIC.id() : key).toString());
         return tag;
     }
 
@@ -223,13 +244,14 @@ public final class Environment {
 
     public void triggerGameOver() {
         synchronized (gameOverLock) {
-            if (isAlive()) {
-                setResultScore(Math.round(Objects.requireNonNull(getPlayer()).getScore()));
+            if (this.isAlive()) {
+                this.setResultScore(Math.round(Objects.requireNonNull(getPlayer()).getScore()));
             }
 
-            gameOver = true;
-            gamemode.onGameOver();
-            game.showScreen(new GameOverScreen(this.getResultScore()));
+            this.gameOver = true;
+            this.gamemode.onGameOver();
+            this.game.showScreen(new GameOverScreen(this.getResultScore()));
+            this.save();
         }
     }
 

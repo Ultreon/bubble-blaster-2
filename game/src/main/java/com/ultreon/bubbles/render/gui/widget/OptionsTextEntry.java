@@ -138,7 +138,7 @@ public class OptionsTextEntry extends GuiComponent {
         }
 
         renderer.color(Color.rgb(0xffffffff));
-        font.draw(renderer, text, 24, 0, 0, Anchor.W);
+        font.draw(renderer, text, 24, 0, 0, Anchor.NW);
 
         int cursorX;
         renderer.color(Color.rgb(0xff00c0c0));

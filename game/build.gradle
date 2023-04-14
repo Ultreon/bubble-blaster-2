@@ -107,7 +107,7 @@ dependencies {
     implementation "it.unimi.dsi:fastutil-core:8.5.9"
     implementation "org.checkerframework:checker:3.25.0"
 
-    implementation 'com.github.Ultreon:ultreon-data:d6e10585a7'
+    implementation 'com.github.Ultreon:ultreon-data:a7b510fcb6'
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"

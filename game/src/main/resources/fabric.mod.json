@@ -26,6 +26,9 @@
     "fabricloader": "*",
     "bb-preloader": "*"
   },
+  "mixins": [
+
+  ],
   "license": "Ultreon-API-v1.2",
   "icon": "assets/bubbles/icon.png",
   "version": "${version}"

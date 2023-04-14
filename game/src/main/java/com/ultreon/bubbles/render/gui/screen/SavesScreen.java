@@ -1,57 +1,75 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.event.v1.SubscribeEvent;
-import com.ultreon.bubbles.event.v1.TickEvent;
+import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.font.Thickness;
+import com.ultreon.bubbles.render.gui.widget.ObjectList;
+import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.save.GameSave;
+import com.ultreon.bubbles.save.GameSaveInfo;
 import com.ultreon.bubbles.save.SaveLoader;
-import com.ultreon.bubbles.util.Util;
+import com.ultreon.bubbles.util.Either;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
-@SuppressWarnings({"FieldCanBeLocal", "unused", "CommentedOutCode"})
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class SavesScreen extends Screen {
     @Nullable
     private static SavesScreen instance;
-    private final Collection<Supplier<GameSave>> saves;
+    private final Map<GameSave, Either<GameSaveInfo, Exception>> cache = new HashMap<>();
+    private final List<GameSave> saves;
+    private final SaveLoader loader;
     @Nullable
-    private GameSave selectedSave;
+    private ObjectList<GameSave> saveList;
     @Nullable
-    private Screen backScreen;
+    private OptionsButton newSaveBtn;
+    @Nullable
+    private OptionsButton openSaveBtn;
 
     public SavesScreen(Screen backScreen) {
-        super();
+        super(backScreen);
 
         SavesScreen.instance = this;
 
-        // Configure back scene.
-        this.backScreen = backScreen;
-
-        // Logging.
-        BubbleBlaster.getLogger().info("Initializing SavesScene");
-
-        this.saves = SaveLoader.instance().getSaves();
+        this.loader = SaveLoader.instance();
+        this.loader.refresh();
+        this.saves = this.loader.getSaves().stream().map(Supplier::get).toList();
     }
 
     @SuppressWarnings("EmptyMethod")
     private void newSave() {
-//        Objects.requireNonNull(Util.getSceneManager()).displayScene(new CreateSaveScene(this));
+        this.game.showScreen(new CreateSaveScreen(this));
     }
 
     private void openSave() {
-        if (selectedSave != null) {
-            BubbleBlaster.getInstance().loadSave(selectedSave);
+        var saveList = this.saveList;
+        if (saveList != null) {
+            var selected = saveList.getSelected();
+            if (selected != null) {
+                try {
+                    BubbleBlaster.getInstance().loadGame(selected.value);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -60,92 +78,73 @@ public class SavesScreen extends Screen {
         return instance;
     }
 
-    private void showLanguages() {
-        game.showScreen(new LanguageScreen(this));
-    }
-
-    private void back() {
-        game.showScreen(backScreen);
-    }
-
     @Override
     public void init() {
-//        panel.setVisible(true);
+        var calcWidth = calculateWidth();
 
-//        languageButton.bindEvents();
-//        cancelButton.bindEvents();
-//        scrollPane.validate();
+        this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 0, calcWidth, this.height - 60));
+        this.saveList.setSelectable(true);
+        this.saveList.setEntryRenderer(this::renderEntry);
+
+        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/new")).build());
+        this.newSaveBtn.setCommand(this::newSave);
+
+        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/open")).build());
+        this.openSaveBtn.setCommand(this::openSave);
     }
 
-    @Override
-    public boolean onClose(Screen to) {
-//        panel.setVisible(false);
-
-//        languageButton.unbindEvents();
-//        cancelButton.unbindEvents();
-
-        if (to == backScreen) {
-            backScreen = null;
+    private void renderEntry(Renderer renderer, int width, int height, GameSave save, boolean selected, boolean hovered) {
+        var cachedInfo = cache.get(save);
+        try {
+            if (cachedInfo == null) {
+                cachedInfo = Either.left(save.getInfo());
+                cache.put(save, cachedInfo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            cachedInfo = Either.right(e);
+            cache.put(save, cachedInfo);
         }
 
-//        scrollPane.invalidate();
-        return super.onClose(to);
+        if (cachedInfo.isRightPresent()) {
+            var name = "Loading Error";
+            var description = "Save filename: %s".formatted(save.getDirectory().getName());
+
+            fill(renderer, 0, 0, width, height, hovered ? 0x40ff0000 : 0x20ff0000);
+            if (selected) {
+                renderer.drawErrorEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
+            }
+
+            renderer.color(0xc0ffffff);
+            font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
+            renderer.color(0x60ffffff);
+            font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
+            return;
+        }
+
+        var info = cachedInfo.getLeft();
+        var name = info.getName();
+        var description = info.getGamemode().getName().getText();
+        description += ", " + LocalDateTime.ofInstant(Instant.ofEpochSecond(info.getSavedTime()), ZoneOffset.systemDefault()).format(DateTimeFormatter.ofPattern("dd/LLL/yyyy HH:mm:ss"));
+
+        fill(renderer, 0, 0, width, height, hovered ? 0x40ffffff : 0x20ffffff);
+        if (selected) {
+            renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
+        }
+
+        renderer.color(0xc0ffffff);
+        font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
+        renderer.color(0x60ffffff);
+        font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
+    }
+
+    private int calculateWidth() {
+        return Math.min(width - 50, 500);
     }
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-//        languageButton.setX((int) Game.getMiddleX() - 322);
-//        languageButton.setY((int) Game.getMiddleY() + 101);
-
-//        cancelButton.setX((int) Game.getMiddleX() - 322);
-//        cancelButton.setY((int) Game.getMiddleY() + 151);
-
-//        if (evt.getPriority() == RenderEventPriority.BACKGROUND) {
-//        }
-
-//        if (evt.getPriority() == RenderEventPriority.FOREGROUND) {
-//        }
-
-        renderBackground(game, renderer);
-
-//        cancelButton.setText(I18n.translateToLocal("other.cancel"));
-//        cancelButton.render(game, renderer);
-
-//        languageButton.setText(I18n.translateToLocal("scene.BubbleBlaster.options.language"));
-//        languageButton.render(game, renderer);
-
-//        scrollPane.setPreferredSize(new Dimension(800, BubbleBlaster.getInstance().getScaledHeight()));
-//        scrollPane.setSize(new Dimension(800, BubbleBlaster.getInstance().getScaledHeight()));
-//        panel.setPreferredSize(new Dimension(800, BubbleBlaster.getInstance().getScaledHeight()));
-//        panel.setSize(new Dimension(800, BubbleBlaster.getInstance().getScaledHeight()));
-//        scrollPane.setLocation(Game.instance().getWidth() / 2 - 300, 0);
-
-//        scrollPane.paintAll(renderer.create(Game.instance().getWidth() / 2 - 400, 0, 800, Game.instance().getHeight()));
-//        scrollPane.repaint(0);
-//        scrollPane.addNotify();
-//        scrollPane.invalidate();
-
-//        Game.instance().getWindow().repaint();
-//        Game.instance().getWindow().revalidate();
-
-//        scrollPane.setVisible(true);
-
-//        panel.revalidate();
-//        scrollPane.repaint();
-//        panel.repaint(0);
-//        scrollPane.repaint(0);
-//        panel.revalidate();
-//        scrollPane.revalidate();
-
-////        savesDisplay.paint(renderer);
-////        savesDisplay.paintComponents(renderer);
-////        savesDisplay.paintAll(renderer);
-//        savesDisplay.paint(renderer.create(Game.instance().getWidth() / 2 - 400, 0, 800, Game.instance().getHeight()));
-//        savesDisplay.repaint(0);
-    }
-
-    public void renderBackground(BubbleBlaster game, Renderer renderer) {
-        renderer.color(Color.rgb(0x606060));
-        renderer.rect(0, 0, game.getWidth(), game.getHeight());
+        renderBackground(renderer);
+        renderChildren(renderer);
     }
 }

@@ -9,6 +9,8 @@ import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
 import com.ultreon.bubbles.common.random.Rng;
+import com.ultreon.bubbles.common.text.TextObject;
+import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.player.Player;
@@ -28,7 +30,6 @@ import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,10 +38,10 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * GameType base class.
@@ -271,7 +272,6 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      *
      * @param tag the bson document containing the game-type data.
      */
-    @NotNull
     @Override
     public void load(MapType tag) {
 
@@ -397,5 +397,18 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
 
         this.make();
         this.initialized = true;
+    }
+
+    public TextObject getName() {
+        return new TranslationText(getTranslationId());
+    }
+
+    public String getTranslationId() {
+        Identifier id = getId();
+        return id.location() + "/gamemode/names/" + id.path();
+    }
+
+    private Identifier getId() {
+        return Objects.requireNonNull(Registry.GAMEMODES.getKey(this), "Gamemode not registered: " + getClass().getName());
     }
 }
