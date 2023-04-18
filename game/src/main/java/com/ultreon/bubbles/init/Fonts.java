@@ -12,6 +12,7 @@ public class Fonts {
     public static final Supplier<Font> DEFAULT = () -> BubbleBlaster.getInstance().getSansFont();
     public static final Font MONOSPACED = register("roboto/roboto_mono", new Font());
     public static final Font QUANTUM = register("quantum", new Font());
+    public static final Font DONGLE = register("dongle/dongle", new Font());
     public static final Font CHICLE = register("chicle", new Font());
     public static final Font PIXEL = register("pixel", new Font());
     public static final Font PRESS_START_K = register("pixel/press_start_k", new Font());
