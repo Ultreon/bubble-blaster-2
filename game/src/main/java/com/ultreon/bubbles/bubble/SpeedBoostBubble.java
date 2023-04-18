@@ -3,7 +3,6 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.init.Effects;
 import org.apache.commons.lang3.Range;
 
 public class SpeedBoostBubble extends BubbleType {

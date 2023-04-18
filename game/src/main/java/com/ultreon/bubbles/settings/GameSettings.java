@@ -4,15 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.Keybind;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.translations.v0.LanguageManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,6 @@ import java.util.Locale;
 @SuppressWarnings("FieldMayBeFinal")
 public final class GameSettings implements Serializable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
-//            .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())
             .create();
     private static GameSettings instance;
     public static Keybind keybindForward = new Keybind(KeyboardInput.Map.KEY_UP);
@@ -40,7 +40,7 @@ public final class GameSettings implements Serializable {
     private String language = "en_US";
 
     @SerializedName("gamemode")
-    private Identifier gamemode = Gamemodes.CLASSIC.id();
+    private Identifier gamemode = Gamemodes.CLASSIC.getId();
     @SerializedName("graphics")
     private GraphicsSettings graphicsSettings = new GraphicsSettings();
     @SerializedName("difficulty")
@@ -69,10 +69,11 @@ public final class GameSettings implements Serializable {
         try {
             String json = Files.readString(References.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
-            if (!Registry.GAMEMODES.contains(instance.gamemode)) {
-                instance.gamemode = Gamemodes.CLASSIC.id();
+            if (!Registries.GAMEMODES.contains(instance.gamemode)) {
+                instance.gamemode = Gamemodes.CLASSIC.getId();
             }
             GameSettings.instance = instance;
+            LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
         } catch (Exception e) {
             BubbleBlaster.getLogger().error("Failed to load settings from: " + References.SETTINGS_FILE.toPath());
             e.printStackTrace();
@@ -122,6 +123,7 @@ public final class GameSettings implements Serializable {
         String oldLang = this.language;
         Locale oldLocale = Locale.forLanguageTag(oldLang);
         Locale newLocale = Locale.forLanguageTag(language);
+        LanguageManager.setCurrentLanguage(newLocale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, newLocale);
 
         save();
@@ -131,6 +133,7 @@ public final class GameSettings implements Serializable {
         String oldLang = this.language;
         Locale oldLocale = Locale.forLanguageTag(oldLang);
         this.language = locale.toLanguageTag();
+        LanguageManager.setCurrentLanguage(locale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, locale);
         save();
     }
@@ -140,7 +143,7 @@ public final class GameSettings implements Serializable {
     }
 
     public Gamemode getGamemode() {
-        return Registry.GAMEMODES.getValue(gamemode);
+        return Registries.GAMEMODES.getValue(gamemode);
     }
 
     public Difficulty getDifficulty() {

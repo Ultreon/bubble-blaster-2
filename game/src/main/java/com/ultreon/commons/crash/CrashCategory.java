@@ -12,6 +12,7 @@ import java.util.List;
 
 import static com.ultreon.commons.util.StringUtils.splitIntoLines;
 
+@Deprecated
 public class CrashCategory {
     protected final List<AbstractMap.SimpleEntry<String, String>> entries = new ArrayList<>();
     protected final String details;

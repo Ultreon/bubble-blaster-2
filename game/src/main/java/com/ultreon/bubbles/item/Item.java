@@ -1,11 +1,10 @@
 package com.ultreon.bubbles.item;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.data.types.MapType;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +29,7 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     public @NotNull MapType save() {
         MapType document = new MapType();
         document.put("Tag", tag);
-        document.putString("type", Registry.ITEMS.getKey(type).toString());
+        document.putString("type", Registries.ITEMS.getKey(type).toString());
 
         return document;
     }
@@ -38,7 +37,7 @@ public final class Item implements IItemProvider, StateHolder, TagHolder {
     @Override
     public void load(MapType tag) {
         this.tag = tag.getMap("Tag");
-        this.type = Registry.ITEMS.getValue(Identifier.parse(tag.getString("type")));
+        this.type = Registries.ITEMS.getValue(Identifier.parse(tag.getString("type")));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common.text.translation;
 
 import com.google.gson.*;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class LanguageManager {
     public static final LanguageManager INSTANCE = new LanguageManager();
     private final Map<String, Language> languages = new HashMap<>();
@@ -28,7 +29,6 @@ public class LanguageManager {
         Gson gson = new Gson();
         String s = "languages/" + id + ".json";
         List<byte[]> assets = resourceManager.getAllAssetsByPath(s);
-        Set<Identifier> assets1 = resourceManager.getAssets().keySet();
         JsonObject json = new JsonObject();
         for (byte[] asset : assets) {
             JsonObject object = gson.fromJson(new StringReader(new String(asset, StandardCharsets.UTF_8)), JsonObject.class);

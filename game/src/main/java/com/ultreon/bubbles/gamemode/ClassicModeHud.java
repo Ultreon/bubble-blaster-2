@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.gamemode;
 
-import com.ultreon.bubbles.common.text.translation.Language;
+import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.game.BubbleBlaster;

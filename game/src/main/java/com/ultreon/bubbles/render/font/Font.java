@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.render.font;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.settings.GameSettings;
@@ -227,7 +227,7 @@ public class Font {
 
     @ApiStatus.Internal
     public void register() {
-        Identifier key = Registry.FONTS.getKey(this);
+        Identifier key = Registries.FONTS.getKey(this);
         if (key == null)
             throw new IllegalStateException("Expected font to be registered. (Is the mod accessing internal functions?)");
         this.info = BubbleBlaster.getInstance().loadFont(key);

@@ -5,10 +5,11 @@ import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 
@@ -48,7 +49,7 @@ public class DebugRenderer {
             left(renderer, "Entity Count: " + environment.getEntities().size());
             left(renderer, "Visible Entity Count: " + environment.getEntities().stream().filter(Entity::isVisible).count());
             left(renderer, "Entity Removal Count: " + environment.getEntities().stream().filter(Entity::willBeDeleted).count());
-            left(renderer, "Cur. Game Event: " + (curGe != null ? Registry.GAMEPLAY_EVENTS.getKey(curGe) : "null"));
+            left(renderer, "Cur. Game Event: " + (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : "null"));
             left(renderer, "Is Initialized: " + environment.isInitialized());
             left(renderer, "Difficulty: " + environment.getDifficulty().name());
             left(renderer, "Local Difficulty: " + environment.getLocalDifficulty());
@@ -57,11 +58,12 @@ public class DebugRenderer {
             if (KeyboardInput.isDown(KeyboardInput.Map.KEY_SHIFT)) {
                 Entity entityAt = environment.getEntityAt(MouseInput.getPos());
                 if (entityAt != null) {
-                    left(renderer, "Entity Type: " + Registry.ENTITIES.getKey(entityAt.getType()));
+                    left(renderer, "Entity Type: " + Registries.ENTITIES.getKey(entityAt.getType()));
                     if (entityAt instanceof Bubble bubble) {
-                        left(renderer, "Bubble Type: " + Registry.BUBBLES.getKey(bubble.getBubbleType()));
-                        left(renderer, "Base Speed: " + bubble.getBaseSpeed());
-                        left(renderer, "Speed: " + bubble.getSpeed());
+                        left(renderer, "Bubble Type: " + Registries.BUBBLES.getKey(bubble.getBubbleType()));
+                        left(renderer, "Base Speed: " + bubble.getAttributes().getBase(Attribute.SPEED));
+                        left(renderer, "Speed: " + bubble.getAttributes().get(Attribute.SPEED));
+                        left(renderer, "Radius: " + bubble.getRadius());
                     }
                 }
             }

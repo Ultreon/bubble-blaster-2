@@ -3,13 +3,13 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.common.text.TranslationText;
-import com.ultreon.bubbles.common.text.translation.Language;
+import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -66,7 +66,7 @@ public class PauseScreen extends Screen {
         prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text("Prev").command(this::previousPage).build();
         nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text("Next").command(this::nextPage).build();
 
-        differentBubbles = Registry.BUBBLES.values().size();
+        differentBubbles = Registries.BUBBLES.values().size();
         tickPage();
     }
 
@@ -81,7 +81,7 @@ public class PauseScreen extends Screen {
     }
 
     private void tickPage() {
-        bubble = new ArrayList<>(Registry.BUBBLES.values()).get(helpIndex);
+        bubble = new ArrayList<>(Registries.BUBBLES.values()).get(helpIndex);
 
         if (helpIndex >= differentBubbles - 1 && nextButton.isValid()) {
             nextButton.enabled = false;

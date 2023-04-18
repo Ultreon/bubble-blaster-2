@@ -3,7 +3,7 @@ package com.ultreon.bubbles.environment;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
@@ -22,7 +22,7 @@ import com.ultreon.bubbles.game.LoadedGame;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
@@ -36,7 +36,9 @@ import com.ultreon.commons.time.DateTime;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.StringType;
+import com.ultreon.libs.registries.v0.Registry;
 import org.checkerframework.common.value.qual.IntRange;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +57,8 @@ public final class Environment {
     private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("bubble_spawn_usage");
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private final List<Player> players = new CopyOnWriteArrayList<>();
-    private Gamemode gamemode;
-    private long seed;
+    private final Gamemode gamemode;
+    private final long seed;
     private GameplayEvent currentGameplayEvent;
     private Thread gameEventHandlerThread;
 
@@ -133,8 +135,9 @@ public final class Environment {
 
     public void load(GameSave save, Messenger messenger) throws IOException {
         this.gamemode.onLoad(this, save, messenger);
+        this.name = save.getInfo().getName();
 
-        loadEnvironment(save, save.load("environment", true));
+        loadEnvironment(save.load("environment", true));
 
         this.initialized = true;
     }
@@ -190,7 +193,7 @@ public final class Environment {
         ListType<StringType> entriesTag = new ListType<>();
 
         for (T type : registry.values()) {
-            entriesTag.add(new StringType(registry.getKey(type).toString()));
+            entriesTag.add(new StringType(Objects.requireNonNull(registry.getKey(type)).toString()));
         }
         tag.put("Entries", entriesTag);
 
@@ -198,22 +201,14 @@ public final class Environment {
         gameSave.dump("registries/" + registry.id().location() + "/" + registry.id().path().replaceAll("/", "-"), tag);
     }
 
-    private void loadEnvironment(GameSave save, MapType tag) throws IOException {
+    private void loadEnvironment(MapType tag) {
         ListType<MapType> entitiesTag = tag.getList("Entities");
         for (MapType entityTag : entitiesTag) {
             Entity entity = Entity.loadFully(this, entityTag);
             this.entities.add(entity);
         }
         this.player = (Player) Entity.loadFully(this, tag.getMap("Player"));
-        this.name = tag.getString("name", "INVALID SAVE NAME");
-        this.seed = tag.getLong("seed");
-//        loadPlayer(save, tag.getUUID("playerUuid"));
-        String gameTypeId = tag.getString("gamemode", null);
-        if (gameTypeId == null) {
-            this.gamemode = Gamemodes.CLASSIC.get();
-        } else {
-            this.gamemode = Registry.GAMEMODES.getValue(Identifier.parse(gameTypeId));
-        }
+        this.gameOver = tag.getBoolean("gameOver");
     }
 
     private MapType saveEnvironment() {
@@ -225,6 +220,7 @@ public final class Environment {
         tag.put("Entities", entitiesTag);
         tag.put("Player", player.save());
         tag.putUUID("playerUuid", player.getUniqueId());
+        tag.putBoolean("gameOver", isGameOver());
         return tag;
     }
 
@@ -233,8 +229,8 @@ public final class Environment {
         tag.putString("name", this.name);
         tag.putLong("seed", this.seed);
         tag.putLong("savedTime", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC));
-        Identifier key = Registry.GAMEMODES.getKey(this.gamemode);
-        tag.putString("gamemode", (key == null ? Gamemodes.CLASSIC.id() : key).toString());
+        Identifier key = Registries.GAMEMODES.getKey(this.gamemode);
+        tag.putString("gamemode", (key == null ? Gamemodes.CLASSIC.getId() : key).toString());
         return tag;
     }
 
@@ -326,8 +322,8 @@ public final class Environment {
             if (bloodMoonValueAnimator != null) {
                 setGlobalBubbleSpeedModifier(bloodMoonValueAnimator.animate());
                 if (bloodMoonValueAnimator.isEnded()) {
-                    GameplayEvents.BLOOD_MOON_EVENT.get().activate();
-                    this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT.get());
+                    GameplayEvents.BLOOD_MOON_EVENT.activate();
+                    this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT);
                     bloodMoonActive = true;
 
                     if (loadedGame.getAmbientAudio() != null) {
@@ -368,7 +364,7 @@ public final class Environment {
         if (bloodMoonActive) {
             bloodMoonActive = false;
             bloodMoonTriggered = false;
-            GameplayEvents.BLOOD_MOON_EVENT.get().deactivate();
+            GameplayEvents.BLOOD_MOON_EVENT.deactivate();
             loadedGame.getAmbientAudio().stop();
             currentGameplayEvent = null;
         }
@@ -467,7 +463,7 @@ public final class Environment {
 
     private void loadAndSpawnEntity(MapType tag) {
         String type = tag.getString("Type");
-        EntityType<?> entityType = Registry.ENTITIES.getValue(Identifier.parse(type));
+        EntityType<?> entityType = Registries.ENTITIES.getValue(Identifier.parse(type));
         Entity entity = entityType.create(this, tag);
         entity.prepareSpawn(SpawnInformation.fromLoadSpawn(tag));
         entity.load(tag);
@@ -484,7 +480,7 @@ public final class Environment {
 
                 continue;
             }
-            for (GameplayEvent gameplayEvent : Registry.GAMEPLAY_EVENTS.values()) {
+            for (GameplayEvent gameplayEvent : Registries.GAMEPLAY_EVENTS.values()) {
                 if (gameplayEvent.isActive(DateTime.current())) {
                     currentGameplayEvent = gameplayEvent;
                     break;
@@ -548,9 +544,9 @@ public final class Environment {
     }
 
     /**
-     * Tick the environment.<br>
-     * <b>DO NOT CALL, THIS IS FOR INTERNAL USE ONLY</b>
+     * Tick the environment.<br>\
      */
+    @ApiStatus.Internal
     public void tick() {
         if (globalBubbleFreeze && freezeTicks-- <= 0) {
             freezeTicks = 0;

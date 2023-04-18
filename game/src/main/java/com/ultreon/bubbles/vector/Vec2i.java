@@ -130,8 +130,8 @@ public class Vec2i implements Externalizable, Cloneable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Vec2i vec2I = (Vec2i) o;
-        return getX() == vec2I.getX() && getY() == vec2I.getY();
+        Vec2i vec2i = (Vec2i) o;
+        return getX() == vec2i.getX() && getY() == vec2i.getY();
     }
 
     @Override
@@ -148,9 +148,9 @@ public class Vec2i implements Externalizable, Cloneable {
     }
 
     @Override
-    public Vec2f clone() {
+    public Vec2i clone() {
         try {
-            Vec2f clone = (Vec2f) super.clone();
+            Vec2i clone = (Vec2i) super.clone();
 
             clone.x = this.x;
             clone.y = this.y;

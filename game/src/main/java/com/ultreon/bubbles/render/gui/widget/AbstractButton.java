@@ -28,7 +28,7 @@ public abstract class AbstractButton extends GuiComponent {
     public boolean mouseRelease(int x, int y, int button) {
         if (isHovered() && button == 1 && enabled && visible && pressed) {
             this.pressed = false;
-            Sounds.MENU_EVENT.get().play(0.2d);
+            Sounds.MENU_EVENT.play(0.2d);
             this.command.run();
             return true;
         }

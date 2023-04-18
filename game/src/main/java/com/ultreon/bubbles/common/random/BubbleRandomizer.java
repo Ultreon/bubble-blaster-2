@@ -63,7 +63,7 @@ public class BubbleRandomizer extends EntityRandomizer {
      */
     @Override
     public BubbleProperties getRandomProperties(Rectangle2D bounds, long spawnIndex, int retry, Environment environment) {
-        BubbleType type = BubbleSystem.random(variantRng, spawnIndex, retry, environment);
+        BubbleType type = environment.getRandomBubble(spawnIndex);
 
         // Properties
         double minHardness = type.getHardness();

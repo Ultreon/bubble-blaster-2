@@ -29,7 +29,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
      * @author Qboi123
      */
     public TeleportAbility() {
-        super(Objects.requireNonNull(Abilities.TELEPORT_ABILITY).get());
+        super(Objects.requireNonNull(Abilities.TELEPORT_ABILITY));
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.ultreon.bubbles.registry.Registry;
 import java.util.function.Supplier;
 
 @SuppressWarnings({"unchecked"})
+@Deprecated
 public class RegistrySupplier<B> {
     private final Registry<? super B> registry;
     private final Supplier<B> supplier;

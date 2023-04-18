@@ -2,30 +2,24 @@ package com.ultreon.bubbles.init;
 
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.ammo.BasicAmmoType;
-import com.ultreon.bubbles.game.InternalMod;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
-
-import java.util.function.Supplier;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * @see AmmoType
  */
 public class AmmoTypes {
-    private static final DelayedRegister<AmmoType> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.AMMO_TYPES);
-
-    public static final RegistrySupplier<BasicAmmoType> BASIC = register("basic", BasicAmmoType::new);
+    public static final BasicAmmoType BASIC = register("basic", new BasicAmmoType());
 
     @SuppressWarnings("SameParameterValue")
-    private static <T extends AmmoType> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends AmmoType> T register(String name, T ammoType) {
+        Registries.AMMO_TYPES.register(new Identifier(name), ammoType);
+        return ammoType;
     }
 
-    /**
-     * <b>DO NOT CALL, THIS IS CALLED INTERNALLY</b>
-     */
+    @ApiStatus.Internal
     public static void register() {
-        REGISTER.register();
+
     }
 }

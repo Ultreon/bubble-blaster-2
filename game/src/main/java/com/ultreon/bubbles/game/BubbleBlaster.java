@@ -1,20 +1,19 @@
 package com.ultreon.bubbles.game;
 
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Suppliers;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
 import com.ultreon.bubbles.common.exceptions.ResourceNotFoundException;
-import com.ultreon.bubbles.common.text.translation.LanguageManager;
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.event.v2.*;
+import com.ultreon.bubbles.event.v1.*;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
 import com.ultreon.bubbles.media.MP3Player;
@@ -25,7 +24,7 @@ import com.ultreon.bubbles.mod.loader.LibraryJar;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.*;
@@ -36,17 +35,18 @@ import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
-import com.ultreon.bubbles.resources.ResourceManager;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.size.IntSize;
-import com.ultreon.commons.crash.ApplicationCrash;
-import com.ultreon.commons.crash.CrashLog;
-import com.ultreon.commons.lang.Messenger;
-import com.ultreon.commons.lang.ProgressMessenger;
 import com.ultreon.commons.time.TimeProcessor;
-import com.ultreon.commons.util.FileUtils;
 import com.ultreon.dev.GameDevMain;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.ProgressMessenger;
+import com.ultreon.libs.commons.v0.util.FileUtils;
+import com.ultreon.libs.crash.v0.ApplicationCrash;
+import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.resources.v0.ResourceManager;
+import com.ultreon.libs.translations.v0.LanguageManager;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
@@ -213,14 +213,11 @@ public final class BubbleBlaster {
         var windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720).close(BubbleBlaster::dispose)/*.fullscreen()*/;
         var bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
-        Thread.setDefaultUncaughtExceptionHandler(new GameExceptions(this));
+        Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
 
         // Hook output for logger.
         System.setErr(new RedirectPrintStream(Level.ERROR, LogManager.getLogger("STD"), getMarker("Output")));
         System.setOut(new RedirectPrintStream(Level.INFO, LogManager.getLogger("STD"), getMarker("Error")));
-
-        // Invoke entry points.
-        EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
 
         // Assign instance.
         instance = this;
@@ -240,6 +237,9 @@ public final class BubbleBlaster {
         // Setup game window.
         this.window = new GameWindow(windowProperties);
 
+        // Invoke entry points.
+        EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
+
         // Prepare for loading.
         this.prepare();
 
@@ -250,14 +250,14 @@ public final class BubbleBlaster {
         Entities.register();
         Fonts.register();
         Sounds.register();
-        Effects.register();
+        StatusEffects.register();
         Abilities.register();
         GameplayEvents.register();
         Gamemodes.register();
         TextureCollections.register();
 
         // Load game with loading screen.
-        this.load(new ProgressMessenger(new Messenger(this::log), 1000));
+        this.load(new ProgressMessenger(this::log, 1000));
         this.screenManager = createScreenManager();
         BubbleBlaster.instance = this;
 
@@ -286,16 +286,22 @@ public final class BubbleBlaster {
             if (Objects.equals(location.getProtocol(), "file")) {
                 var file = new File(location.toURI());
                 if (file.isDirectory()) {
-                    resourceManager.importResources(new File(file, "../../../resources/main"));
+                    resourceManager.importPackage(new File(file, "../../../resources/main"));
                 } else {
-                    resourceManager.importResources(file);
+                    resourceManager.importPackage(file);
                 }
             } else {
-                resourceManager.importResources(location);
+                resourceManager.importPackage(location);
             }
         } catch (Exception e) {
             if (classPath != null)
-                classPath.values().forEach(list -> list.forEach(file -> resourceManager.importResources(new File(file))));
+                classPath.values().forEach(list -> list.forEach(file -> {
+                    try {
+                        resourceManager.importPackage(new File(file));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }));
             else
                 throw new FileNotFoundException("Can't find bubble blaster game executable.");
         }
@@ -391,6 +397,8 @@ public final class BubbleBlaster {
         // Register Game Font.
         var ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
+        GameEvents.CLIENT_STARTED.factory().onClientStarted(this);
+
         // Start scene-manager.
         try {
             screenManager.start();
@@ -429,6 +437,9 @@ public final class BubbleBlaster {
      */
     public static void launch(Arguments args) throws IOException {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
+        Identifier.setDefaultNamespace("bubbles");
+
+        FlatMacDarkLaf.setup();
 
         // Get game-directory.
         final var defaultGameDir = new File(".");
@@ -559,17 +570,6 @@ public final class BubbleBlaster {
         return currentScreen != null && currentScreen.doesPauseGame();
     }
 
-    /**
-     * Game Events getter.
-     *
-     * @deprecated use normal events instead.
-     * @return The game event manager.
-     */
-    @Deprecated()
-    public static com.ultreon.bubbles.event.v1.bus.GameEvents getEventBus() {
-        return com.ultreon.bubbles.event.v1.bus.GameEvents.get();
-    }
-
     public static void runOnMainThread(Runnable task) {
         if (instance.isOnTickingThread()) {
             task.run();
@@ -676,13 +676,13 @@ public final class BubbleBlaster {
      * @param collection the texture collection being collected.
      */
     public void onCollectTextures(TextureCollection collection) {
-        if (collection == TextureCollections.BUBBLE_TEXTURES.get()) {
+        if (collection == TextureCollections.BUBBLE_TEXTURES) {
             var loadScreen = LoadScreen.get();
 
             if (loadScreen == null) {
                 throw new IllegalStateException("Load scene is not available.");
             }
-            for (var e : Registry.BUBBLES.entries()) {
+            for (var e : Registries.BUBBLES.entries()) {
                 var bubble = e.getValue();
                 for (var i = 0; i <= bubble.getMaxRadius(); i++) {
                     var id = e.getKey();
@@ -860,6 +860,7 @@ public final class BubbleBlaster {
         if (resource != null) {
             try {
                 Font font = resource.loadFont();
+                this.registerFont(font);
                 FontInfo.Builder builder = FontInfo.builder();
                 builder.set(Thickness.REGULAR, FontStyle.PLAIN, font);
                 builder.set(Thickness.REGULAR, FontStyle.ITALIC, new Font(font.getName(), Font.ITALIC, 1));
@@ -874,7 +875,8 @@ public final class BubbleBlaster {
             var regularRes = resourceManager.getResource(regularId);
             if (regularRes != null) {
                 try {
-                    Font font1 = regularRes.loadFont();
+                    Font regularFont = regularRes.loadFont();
+                    this.registerFont(regularFont);
                     FontInfo.Builder builder = FontInfo.builder();
 
                     for (var thickness : Thickness.values()) {
@@ -882,6 +884,7 @@ public final class BubbleBlaster {
                         var thicknessRes = resourceManager.getResource(thicknessId);
                         if (thicknessRes != null) {
                             var thicknessFont = thicknessRes.loadFont();
+                            this.registerFont(thicknessFont);
                             builder.set(thickness, FontStyle.PLAIN, thicknessFont);
 
                             for (var style : FontStyle.values()) {
@@ -890,6 +893,7 @@ public final class BubbleBlaster {
                                 var thicknessStyleRes = resourceManager.getResource(thicknessStyleId);
                                 if (thicknessStyleRes != null) {
                                     var thicknessStyleFont = thicknessStyleRes.loadFont();
+                                    this.registerFont(thicknessStyleFont);
                                     builder.set(thickness, FontStyle.ITALIC, thicknessStyleFont);
                                 }
                             }
@@ -1055,7 +1059,7 @@ public final class BubbleBlaster {
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void createGame(long seed) {
-        createGame(seed, Gamemodes.CLASSIC.get());
+        createGame(seed, Gamemodes.CLASSIC);
     }
 
     /**
@@ -1141,7 +1145,7 @@ public final class BubbleBlaster {
             crashLog.add("Current Description", screen.getDescription());
             crashLog.add("Create Flag", create);
             crashLog.add("Seed", seed);
-            crashLog.add("Gamemode", Registry.GAMEMODES.getKey(gamemode));
+            crashLog.add("Gamemode", Registries.GAMEMODES.getKey(gamemode));
             crash(crashLog.createCrash());
             return;
         }
@@ -1944,7 +1948,7 @@ public final class BubbleBlaster {
 
         var locales = LanguageManager.INSTANCE.getLocales();
         for (var locale : locales) {
-            LanguageManager.INSTANCE.load(locale, LanguageManager.INSTANCE.getLanguageID(locale), BubbleBlaster.getInstance().getResourceManager());
+            LanguageManager.INSTANCE.load(locale, new Identifier(LanguageManager.INSTANCE.getLanguageID(locale)), BubbleBlaster.getInstance().getResourceManager());
         }
     }
 

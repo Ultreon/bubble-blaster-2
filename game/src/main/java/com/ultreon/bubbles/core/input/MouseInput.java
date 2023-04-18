@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.core.input;
 
-import com.ultreon.bubbles.event.v2.InputEvents;
+import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.render.gui.screen.ScreenManager;

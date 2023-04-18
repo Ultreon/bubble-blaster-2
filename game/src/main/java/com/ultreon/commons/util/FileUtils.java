@@ -1,40 +1,23 @@
 package com.ultreon.commons.util;
 
+import com.ultreon.libs.commons.v0.UtilityClass;
+
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 @SuppressWarnings("unused")
-public class FileUtils {
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean setCwd(File directory_name) {
-        boolean result = false; // Boolean indicating whether directory was set  
+public class FileUtils extends UtilityClass {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void deleteDir(File file) throws IOException {
+        Path pathToBeDeleted = file.toPath();
 
-        // Desired current working directory
-        File directory = directory_name.getAbsoluteFile();
-        if (directory.exists() || directory.mkdirs()) {
-            result = (System.setProperty("user.dir", directory.getAbsolutePath()) != null);
+        try (var walker = Files.walk(pathToBeDeleted)) {
+            walker.sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         }
-
-        return result;
-    }
-
-    public static PrintWriter openOutputFile(String file_name) {
-        PrintWriter output = null;  // File to open for writing
-
-        try {
-            output = new PrintWriter(new File(file_name).getAbsoluteFile());
-        } catch (Exception ignored) {
-        }
-
-        return output;
-    }
-
-    public static String getExtension(File file) {
-        String[] split = file.getName().split("\\.", 2);
-        if (split.length <= 1) {
-            return null;
-        }
-
-        return "." + split[1];
     }
 }

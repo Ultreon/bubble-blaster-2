@@ -1,16 +1,16 @@
 package com.ultreon.bubbles.game;
 
-import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.core.CursorManager;
 import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.event.v2.EventResult;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.WindowEvents;
 import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.exceptions.OneTimeUseException;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.events.v1.EventResult;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -220,9 +220,8 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowClosing(WindowEvent e) {
-        EventResult<Boolean> booleanEventResult = GameEvents.WINDOW_CLOSING.factory().onWindowClosing(this);
-        Boolean cancel = booleanEventResult.getValue();
-        if (cancel == null || !cancel) {
+        EventResult booleanEventResult = WindowEvents.WINDOW_CLOSING.factory().onWindowClosing(this);
+        if (!booleanEventResult.isCanceled()) {
             game().shutdown();
         }
     }
@@ -233,6 +232,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowClosed(WindowEvent e) {
+        WindowEvents.WINDOW_CLOSED.factory().onWindowClosed(this);
         properties.onClose.run();
     }
 
@@ -242,7 +242,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowIconified(WindowEvent e) {
-
+        WindowEvents.WINDOW_MINIMIZED.factory().onWindowMinimized(this);
     }
 
     /**
@@ -251,7 +251,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowDeiconified(WindowEvent e) {
-
+        WindowEvents.WINDOW_RESTORED.factory().onWindowRestored(this);
     }
 
     /**
@@ -276,6 +276,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      */
     @Override
     public void windowGainedFocus(WindowEvent e) {
+        WindowEvents.WINDOW_GAINED_FOCUS.factory().onWindowGainedFocus(this);
         GameWindow.this.canvas.requestFocus();
     }
 
@@ -288,6 +289,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     public void windowLostFocus(WindowEvent e) {
         BubbleBlaster game = game();
         Environment environment = game.getEnvironment();
+        WindowEvents.WINDOW_LOST_FOCUS.factory().onWindowLostFocus(this);
         if (environment != null && game.isInGame() && environment.isAlive()) {
             game.showScreen(new PauseScreen());
         }
@@ -348,18 +350,18 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     public void toggleFullscreen() {
-        if (isFullscreen()) {
-            device.setFullScreenWindow(null);
-        } else {
-            device.setFullScreenWindow(this.frame);
-        }
+        setFullscreen(!isFullscreen());
     }
 
     public void setFullscreen(boolean fullscreen) {
         if (isFullscreen() && !fullscreen) { // If currently not fullscreen and disabling fullscreen.
-            device.setFullScreenWindow(null); // Set fullscreen to false.
+            if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
+                device.setFullScreenWindow(null); // Set fullscreen to false.
+            }
         } else if (!isFullscreen() && fullscreen) { // If currently in fullscreen and enabling fullscreen.
-            device.setFullScreenWindow(this.frame); // Set fullscreen to true.
+            if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
+                device.setFullScreenWindow(this.frame); // Set fullscreen to true.
+            }
         }
     }
 
@@ -427,6 +429,10 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
                 taskbar.requestWindowUserAttention(this.frame);
             }
         }
+    }
+
+    public void showError(String title, String description) {
+        JOptionPane.showMessageDialog(frame, description, title, JOptionPane.ERROR_MESSAGE);
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

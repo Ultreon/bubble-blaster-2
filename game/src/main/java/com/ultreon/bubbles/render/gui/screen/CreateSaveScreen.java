@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
@@ -23,7 +23,7 @@ public class CreateSaveScreen extends Screen {
     private OptionsButton createBtn;
 
     public CreateSaveScreen(Screen back) {
-        this.gamemodes = Collections.unmodifiableList(Lists.newArrayList(Registry.GAMEMODES.values()));
+        this.gamemodes = Collections.unmodifiableList(Lists.newArrayList(Registries.GAMEMODES.values()));
         this.setBackScreen(back);
     }
 

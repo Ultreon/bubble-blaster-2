@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.text;
 
-import com.ultreon.bubbles.common.text.translation.Language;
+import com.ultreon.libs.translations.v0.Language;
 
 public class TranslationText extends TextObject {
     private final String path;

@@ -60,11 +60,11 @@ public class ModListScreen extends Screen {
                 if (selected == null) return;
                 var metadata = selected.value.getMetadata();
                 renderer.color(0xffffffff);
-                font.draw(renderer, metadata.getName(), 48, 20, 20);
+                font.draw(renderer, metadata.getName(), 40, 20, 20);
                 renderer.color(0x80ffffff);
-                monospaced.get().draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(48, metadata.getName()) + 20, 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
+                monospaced.draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(48, metadata.getName()) + 20, 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
                 renderer.color(0x80ffffff);
-                monospaced.get().draw(renderer, metadata.getId(), 12, 20, 70, Thickness.BOLD);
+                monospaced.draw(renderer, metadata.getId(), 12, 20, 70, Thickness.BOLD);
                 String description = metadata.getDescription();
                 AtomicInteger i = new AtomicInteger();
                 renderer.color(0x60ffffff);
@@ -114,7 +114,7 @@ public class ModListScreen extends Screen {
         int textX = 20 + iconSize + 20;
 
         renderer.color(0x7fffffff);
-        monospaced.get().draw(renderer, metadata.getId(), 12, textX, 20, Thickness.BOLD);
+        monospaced.draw(renderer, metadata.getId(), 12, textX, 20, Thickness.BOLD);
         renderer.color(0xffffffff);
         font.draw(renderer, metadata.getName(), 40, textX, 32);
         var nameWidth = font.width(40, metadata.getName());

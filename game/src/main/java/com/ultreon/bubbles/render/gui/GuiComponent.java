@@ -4,7 +4,7 @@ import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
+import com.ultreon.libs.registries.v0.RegistrySupplier;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Font;
@@ -33,7 +33,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     protected Color backgroundColor;
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     public final Font font = Fonts.DEFAULT.get();
-    public final RegistrySupplier<Font> monospaced = Fonts.MONOSPACED;
+    public final Font monospaced = Fonts.MONOSPACED;
     private boolean hovered = false;
     private int lastMouseX;
     private int lastMouseY;

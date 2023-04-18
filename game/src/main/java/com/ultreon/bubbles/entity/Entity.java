@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.entity;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.AppliedEffect;
@@ -13,7 +13,7 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.GameObject;
 import com.ultreon.bubbles.init.Bubbles;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
@@ -398,7 +398,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     //     Getters     //
     /////////////////////
     public final Identifier id() {
-        return Registry.ENTITIES.getKey(type);
+        return Registries.ENTITIES.getKey(type);
     }
 
     public EntityType<?> getType() {
@@ -526,40 +526,42 @@ public abstract class Entity extends GameObject implements StateHolder {
     public static Entity loadFully(Environment environment, MapType tags) {
         Identifier type = Identifier.tryParse(tags.getString("type"));
         if (type == null) return null;
-        EntityType<?> entityType = Registry.ENTITIES.getValue(type);
+        EntityType<?> entityType = Registries.ENTITIES.getValue(type);
         return entityType == null ? null : entityType.create(environment, tags);
     }
 
     /**
      * Load the entity from a compound nbt tag.
-     * @param tag the compound to load from.
+     * @param data the compound to load from.
      */
     @Override
-    public void load(MapType tag) {
-        this.tag = tag.getMap("Tag");
-        this.attributes.load(tag.getList("Attributes"));
-        this.bases.load(tag.getList("AttributeBases"));
+    public void load(MapType data) {
+        this.tag = data.getMap("Tag");
+        this.attributes.load(data.getList("Attributes"));
+        this.attributes.loadModifiers(data.getList("AttributeModifiers"));
 
-        MapType positionTag = tag.getMap("Position");
+        MapType positionTag = data.getMap("Position");
         this.x = positionTag.getFloat("x");
         this.y = positionTag.getFloat("y");
 
-        MapType previousTag = tag.getMap("PrevPosition");
+        MapType previousTag = data.getMap("PrevPosition");
         this.prevX = previousTag.getFloat("x");
         this.prevY = previousTag.getFloat("y");
 
-        MapType velocityTag = tag.getMap("Velocity");
+        MapType velocityTag = data.getMap("Velocity");
         this.velocityX = velocityTag.getFloat("x");
         this.velocityY = velocityTag.getFloat("y");
 
-        ListType<MapType> activeEffectsTag = new ListType<>();
-        for (AppliedEffect instance : activeEffects) {
-            activeEffectsTag.add(instance.save());
+        ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
+        clearEffects();
+        for (var activeEffectData : activeEffectsData) {
+            this.activeEffects.add(AppliedEffect.load(activeEffectData));
         }
 
-        this.entityId = tag.getLong("id");
-        this.uniqueId = tag.getUUID("uuid");
-        this.rotation = tag.getFloat("rotation");
+        this.entityId = data.getLong("id");
+        this.uniqueId = data.getUUID("uuid");
+        this.scale = data.getDouble("scale");
+        this.rotation = data.getFloat("rotation");
     }
 
     /**
@@ -570,36 +572,48 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Override
     public @NotNull MapType save() {
         // Save components.
-        MapType state = new MapType();
-        state.put("Tag", this.tag);
-        state.put("Attributes", this.attributes.save());
-        state.put("AttributesModifiers", this.attributes.saveModifiers());
+        var data = new MapType();
+        data.put("Tag", this.tag);
+        data.put("Attributes", this.attributes.save());
+        data.put("AttributesModifiers", this.attributes.saveModifiers());
 
         // Save position.
-        MapType positionTag = new MapType();
+        var positionTag = new MapType();
         positionTag.putFloat("x", x);
         positionTag.putFloat("y", y);
-        state.put("Position", positionTag);
+        data.put("Position", positionTag);
 
-        MapType previousTag = new MapType();
+        var previousTag = new MapType();
         previousTag.putDouble("x", prevX);
         previousTag.putDouble("y", prevY);
-        state.put("PrevPosition", previousTag);
+        data.put("PrevPosition", previousTag);
 
         // Velocity.
-        MapType velocityTag = new MapType();
+        var velocityTag = new MapType();
         velocityTag.putDouble("x", velocityX);
         velocityTag.putDouble("y", velocityY);
-        state.put("Velocity", velocityTag);
+        data.put("Velocity", velocityTag);
+
+        var activeEffectsTag = new ListType<MapType>();
+        for (var instance : activeEffects)
+            activeEffectsTag.add(instance.save());
+        data.put("ActiveEffects", activeEffectsTag);
 
         // Other properties.
-        state.putLong("id", this.entityId);
-        state.putUUID("uuid", this.uniqueId);
-        state.putDouble("scale", this.scale);
+        data.putLong("id", this.entityId);
+        data.putUUID("uuid", this.uniqueId);
+        data.putDouble("scale", this.scale);
+        data.putFloat("rotation", this.rotation);
 
-        Identifier key = Registry.ENTITIES.getKey(this.type);
-        state.putString("type", (key == null ? Bubbles.NORMAL.id() : key).toString());
-        return state;
+        var key = Registries.ENTITIES.getKey(this.type);
+        data.putString("type", (key == null ? Bubbles.NORMAL.getId() : key).toString());
+        return data;
+    }
+
+    private void clearEffects() {
+        for (AppliedEffect activeEffect : new HashSet<>(activeEffects)) {
+            removeEffect(activeEffect);
+        }
     }
 
     /**

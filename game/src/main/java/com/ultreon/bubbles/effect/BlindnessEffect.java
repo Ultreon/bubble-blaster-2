@@ -2,7 +2,7 @@ package com.ultreon.bubbles.effect;
 
 import com.jhlabs.image.ContrastFilter;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.event.v2.FilterBuilder;
+import com.ultreon.bubbles.event.v1.FilterBuilder;
 
 public class BlindnessEffect extends StatusEffect {
     private long startTime;

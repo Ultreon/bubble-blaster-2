@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.Serializable;
 
 @SuppressWarnings("unused")
+@Deprecated
 public class Pixel implements Serializable {
     private final Color color;
     private final Point pos;

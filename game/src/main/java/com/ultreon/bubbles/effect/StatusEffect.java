@@ -1,15 +1,15 @@
 package com.ultreon.bubbles.effect;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
-import com.ultreon.bubbles.event.v2.FilterBuilder;
+import com.ultreon.bubbles.event.v1.FilterBuilder;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.registry.RegistryException;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.Texture;
-import com.ultreon.bubbles.resources.Resource;
+import com.ultreon.libs.resources.v0.Resource;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.Raster;
@@ -56,7 +56,7 @@ public abstract class StatusEffect {
     }
 
     public Identifier getIconId() {
-        Identifier key = Registry.EFFECTS.getKey(this);
+        Identifier key = Registries.EFFECTS.getKey(this);
         if (key == null) throw new RegistryException("Object not registered: " + getClass().getName());
         return key.mapPath(path -> "effects/" + path);
     }

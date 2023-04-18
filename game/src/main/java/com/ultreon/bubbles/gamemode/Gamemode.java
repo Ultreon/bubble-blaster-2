@@ -2,7 +2,7 @@ package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.StateListener;
 import com.ultreon.bubbles.common.interfaces.DefaultSaver;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
@@ -19,7 +19,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.init.Gamemodes;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -27,9 +27,9 @@ import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.crash.v0.CrashLog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +61,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     protected Screen screen;
 
     protected boolean initialized = false;
-    private BubbleType defaultBubble = Bubbles.NORMAL.get();
+    private BubbleType defaultBubble = Bubbles.NORMAL;
     protected GameHud hud;
     private boolean valid;
 
@@ -170,7 +170,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * @return the game-type loaded from the save.
      */
     public static Gamemode loadState(GameSave save, Messenger Messenger) throws IOException {
-        return Gamemodes.CLASSIC.get();
+        return Gamemodes.CLASSIC;
     }
 
     /**
@@ -210,8 +210,8 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * @throws IOException when an I/O error occurred.
      */
     @Deprecated
-    public HashMap<Registry<?>, List<Identifier>> checkRegistry(GameSave gameSave) throws IOException {
-        HashMap<Registry<?>, List<Identifier>> missing = new HashMap<>();
+    public HashMap<Registries, List<Identifier>> checkRegistry(GameSave gameSave) throws IOException {
+        HashMap<Registries, List<Identifier>> missing = new HashMap<>();
 
         return missing;
     }
@@ -280,7 +280,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     @Nullable
     public static Gamemode getFromNbt(@NotNull MapType nbt) {
         try {
-            return Registry.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
+            return Registries.GAMEMODES.getValue(Identifier.parse(nbt.getString("Name")));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -360,7 +360,6 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
 
     }
 
-
     protected void initializeClassic(Environment environment, Messenger messenger) {
         int maxBubbles = GameSettings.instance().getMaxBubbles();
 
@@ -375,10 +374,10 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
             Rng yRng = randomizer.getYRng();
             long spawnIndex = -1;
             for (int i = 0; i < maxBubbles; i++) {
-                var bubble = Bubbles.DAMAGE.get();
+                int retry = 0;
 
                 Vec2f pos = new Vec2f(xRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1), yRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1));
-                BubbleSpawnContext.inContext(spawnIndex, 0, () -> environment.spawn(Entities.BUBBLE.get().create(environment), pos));
+                BubbleSpawnContext.inContext(spawnIndex, retry, () -> environment.spawn(Entities.BUBBLE.create(environment), pos));
 
                 spawnIndex--;
 
@@ -408,7 +407,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         return id.location() + "/gamemode/names/" + id.path();
     }
 
-    private Identifier getId() {
-        return Objects.requireNonNull(Registry.GAMEMODES.getKey(this), "Gamemode not registered: " + getClass().getName());
+    public Identifier getId() {
+        return Objects.requireNonNull(Registries.GAMEMODES.getKey(this), "Gamemode not registered: " + getClass().getName());
     }
 }

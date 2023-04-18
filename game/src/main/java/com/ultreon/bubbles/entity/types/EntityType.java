@@ -4,8 +4,6 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.data.types.MapType;
 
-import java.util.Objects;
-
 public class EntityType<T extends Entity> {
     private final EntityFactory<T> entityFactory;
 

@@ -2,6 +2,7 @@ package com.ultreon.commons.function.primitive;
 
 import java.util.function.Function;
 
+@Deprecated
 @FunctionalInterface
 public interface Short2ShortFunction extends Function<Short, Short> {
     @Override

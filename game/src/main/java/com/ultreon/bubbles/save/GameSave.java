@@ -1,8 +1,12 @@
 package com.ultreon.bubbles.save;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.commons.util.FileUtils;
 import com.ultreon.data.DataIo;
 import com.ultreon.data.types.MapType;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +15,7 @@ import java.util.Random;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "SameParameterValue"})
 public class GameSave {
+    public static final Marker MARKER = MarkerFactory.getMarker("GameSaves");
     private final String path;
     protected final File gameInfoFile;
     private final File directory;
@@ -99,6 +104,11 @@ public class GameSave {
 
     private boolean hasDataFile(File file) {
         return file.exists() && file.getAbsolutePath().startsWith(directory.getAbsolutePath());
+    }
+
+    @CanIgnoreReturnValue
+    public void delete() throws IOException {
+        FileUtils.deleteDir(directory);
     }
 
     public void createFolders(String relPath) throws IOException {

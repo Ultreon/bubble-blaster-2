@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.mod.loader;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.commons.crash.CrashCategory;
-import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.exceptions.TODO;
+import com.ultreon.libs.crash.v0.CrashCategory;
+import com.ultreon.libs.crash.v0.CrashLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

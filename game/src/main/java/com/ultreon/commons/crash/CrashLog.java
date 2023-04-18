@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 @SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
 public final class CrashLog extends CrashCategory {

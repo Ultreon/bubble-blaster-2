@@ -6,7 +6,6 @@ import com.ultreon.bubbles.ability.triggers.types.AbilityKeyTriggerType;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 
 /**

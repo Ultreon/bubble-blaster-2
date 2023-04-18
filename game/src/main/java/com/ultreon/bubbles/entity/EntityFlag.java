@@ -1,15 +1,19 @@
 package com.ultreon.bubbles.entity;
 
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.Nullable;
+
 public class EntityFlag {
-    public static final EntityFlag MOTION_ENABLED = new EntityFlag("bubbleblaster.motion_enabled");
+    public void onEnable() {
 
-    private final String name;
-
-    public EntityFlag(String name) {
-        this.name = name;
     }
 
-    public String getName() {
-        return name;
+    public void onDisable() {
+
+    }
+
+    public @Nullable Identifier getId() {
+        return Registries.ENTITY_FLAGS.getKey(this);
     }
 }
