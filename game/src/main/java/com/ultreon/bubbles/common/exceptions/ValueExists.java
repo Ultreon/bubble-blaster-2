@@ -1,5 +1,11 @@
 package com.ultreon.bubbles.common.exceptions;
 
+import com.ultreon.libs.collections.v0.exceptions.ValueExistsException;
+
+/**
+ * @deprecated use {@link ValueExistsException} from CoreLibs instead.
+ */
+@Deprecated
 public class ValueExists extends Throwable {
     public ValueExists() {
     }

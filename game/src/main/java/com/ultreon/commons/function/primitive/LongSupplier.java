@@ -2,6 +2,7 @@ package com.ultreon.commons.function.primitive;
 
 import java.util.function.Supplier;
 
+@Deprecated
 @FunctionalInterface
 public interface LongSupplier extends Supplier<Long> {
     @Deprecated

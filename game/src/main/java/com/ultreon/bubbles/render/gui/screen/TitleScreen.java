@@ -97,12 +97,12 @@ public class TitleScreen extends Screen {
         renderer.fillEffect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.color(0xffffffff);
-        Fonts.QUANTUM.get().draw(renderer, "Bubble Blaster", 86, (float) BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
+        Fonts.QUANTUM.draw(renderer, "Bubble Blaster", 86, (float) BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
 
         renderer.color(0xffffffff);
-        monospaced.get().draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
-        monospaced.get().draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
-        monospaced.get().draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
+        monospaced.draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
+        monospaced.draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
+        monospaced.draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
 
         this.renderChildren(renderer);
     }

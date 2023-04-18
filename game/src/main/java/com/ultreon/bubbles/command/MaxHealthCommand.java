@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.command;
 
+import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 
 import java.util.Objects;
@@ -17,7 +18,7 @@ public class MaxHealthCommand implements CommandExecutor {
                         player.sendMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
-                    player.setMaxHealth(player.getMaxHealth() + value);
+                    player.getAttributes().setBase(Attribute.MAX_HEALTH, player.getAttributes().getBase(Attribute.MAX_HEALTH) + value);
                     return true;
                 }
                 case "set" -> {
@@ -27,7 +28,7 @@ public class MaxHealthCommand implements CommandExecutor {
                         player.sendMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
-                    player.setMaxHealth(value);
+                    player.getAttributes().setBase(Attribute.MAX_HEALTH, value);
                     return true;
                 }
                 case "subtract" -> {
@@ -37,7 +38,7 @@ public class MaxHealthCommand implements CommandExecutor {
                         player.sendMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
-                    player.setMaxHealth(player.getMaxHealth() - value);
+                    player.getAttributes().setBase(Attribute.MAX_HEALTH, player.getAttributes().getBase(Attribute.MAX_HEALTH) - value);
                     return true;
                 }
             }
@@ -47,7 +48,7 @@ public class MaxHealthCommand implements CommandExecutor {
             }
         }
 
-        player.sendMessage("Usage: /health <add|set|subtract> <value>");
+        player.sendMessage("Usage: /max-health <add|set|subtract> <value>");
 
         return false;
     }

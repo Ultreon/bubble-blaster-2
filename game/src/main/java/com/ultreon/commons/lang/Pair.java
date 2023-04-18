@@ -10,6 +10,7 @@ import java.util.Objects;
  * @author Qboi
  * @since 0.0.0
  */
+@Deprecated
 public class Pair<F, S> implements Cloneable {
     private F first;
     private S second;

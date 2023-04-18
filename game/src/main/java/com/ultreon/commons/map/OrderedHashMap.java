@@ -90,6 +90,7 @@ import java.util.*;
  * @since 2.0
  */
 @SuppressWarnings({"unused", "JavaDoc"})
+@Deprecated
 public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizable {
     // constants to define what the iterator should return on "next"
     private static final int KEY = 0;

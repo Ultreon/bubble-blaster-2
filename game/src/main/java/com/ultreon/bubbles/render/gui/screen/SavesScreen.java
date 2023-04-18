@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.google.common.collect.Lists;
 import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Insets;
@@ -24,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 @MethodsReturnNonnullByDefault
@@ -39,10 +39,10 @@ public class SavesScreen extends Screen {
     private final SaveLoader loader;
     @Nullable
     private ObjectList<GameSave> saveList;
-    @Nullable
-    private OptionsButton newSaveBtn;
-    @Nullable
-    private OptionsButton openSaveBtn;
+    @Nullable private OptionsButton newSaveBtn;
+    @Nullable private OptionsButton openSaveBtn;
+    @Nullable private OptionsButton delSaveBtn;
+    @Nullable private OptionsButton editSaveBtn;
 
     public SavesScreen(Screen backScreen) {
         super(backScreen);
@@ -51,7 +51,7 @@ public class SavesScreen extends Screen {
 
         this.loader = SaveLoader.instance();
         this.loader.refresh();
-        this.saves = this.loader.getSaves().stream().map(Supplier::get).toList();
+        this.saves = Lists.newArrayList(this.loader.getSaves().stream().map(Supplier::get).toList());
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -73,6 +73,32 @@ public class SavesScreen extends Screen {
         }
     }
 
+    private void deleteSave() {
+        var saveList = this.saveList;
+        if (saveList != null) {
+            var selected = saveList.getSelected();
+            if (selected != null) {
+                try {
+                    selected.value.delete();
+                } catch (IOException e) {
+                    BubbleBlaster.getLogger().error("Failed to delete save " + selected.value.getDirectory().getName() + ":", e);
+                }
+                refresh();
+            }
+        }
+    }
+
+    private void editSave() {
+        game.getGameWindow().showError("Unfinished Feature", "The 'Edit Save' feature isn't implemented yet.");
+    }
+
+    private void refresh() {
+        this.loader.refresh();
+        this.saves.clear();
+        this.saves.addAll(this.loader.getSaves().stream().map(Supplier::get).toList());
+        game.showScreen(this);
+    }
+
     @Nullable
     public static SavesScreen instance() {
         return instance;
@@ -80,17 +106,24 @@ public class SavesScreen extends Screen {
 
     @Override
     public void init() {
+        clearWidgets();
         var calcWidth = calculateWidth();
 
-        this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 0, calcWidth, this.height - 60));
+        this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 10, calcWidth, this.height - 120));
         this.saveList.setSelectable(true);
         this.saveList.setEntryRenderer(this::renderEntry);
 
-        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/new")).build());
+        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/new")).build());
         this.newSaveBtn.setCommand(this::newSave);
 
-        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/open")).build());
+        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 100, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/open")).build());
         this.openSaveBtn.setCommand(this::openSave);
+
+        this.delSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/delete")).build());
+        this.delSaveBtn.setCommand(this::deleteSave);
+
+        this.editSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/edit")).build());
+        this.editSaveBtn.setCommand(this::editSave);
     }
 
     private void renderEntry(Renderer renderer, int width, int height, GameSave save, boolean selected, boolean hovered) {
@@ -101,7 +134,7 @@ public class SavesScreen extends Screen {
                 cache.put(save, cachedInfo);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getDirectory().getName() + ":", e);
             cachedInfo = Either.right(e);
             cache.put(save, cachedInfo);
         }

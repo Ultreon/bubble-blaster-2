@@ -79,10 +79,6 @@ repositories {
         url "https://maven.atlassian.com/3rdparty/"
     }
     maven {
-        name "ImageJ"
-        url "https://maven.imagej.net/content/repositories/public/"
-    }
-    maven {
         name "Maven Central"
         url "https://repo1.maven.org/maven2/"
     }
@@ -101,13 +97,14 @@ repositories {
  */
 dependencies {
     // Projects
-    implementation project(":preloader")
+    implementation project(":gameprovider")
     implementation "it.unimi.dsi:fastutil:8.5.9"
     implementation "it.unimi.dsi:fastutil-extra:8.5.4"
     implementation "it.unimi.dsi:fastutil-core:8.5.9"
     implementation "org.checkerframework:checker:3.25.0"
 
     implementation 'com.github.Ultreon:ultreon-data:a7b510fcb6'
+    implementation 'org.jetbrains:annotations:23.0.0'
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
@@ -115,6 +112,24 @@ dependencies {
 
     // Misc
     implementation "org.jetbrains:annotations:23.0.0"
+
+    // CoreLibs
+    implementation "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-commons-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-crash-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-datetime-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-events-v1:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-functions-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-registries-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
+
+    // FlatLAF
+    implementation "com.formdev:flatlaf:$flatlaf_version"
+    implementation "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
+    implementation "com.formdev:flatlaf-extras:$flatlaf_version"
+    implementation "com.formdev:flatlaf-swingx:$flatlaf_version"
 
     // Apis
     implementation "commons-io:commons-io:2.11.0"
@@ -233,7 +248,7 @@ processResources {
 }
 
 jar {
-    dependsOn ":preloader:jar"
+    dependsOn ":gameprovider:jar"
 
     //noinspection GroovyAssignabilityCheck
     manifest {
@@ -241,7 +256,7 @@ jar {
         attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
                 project_version: project.project_version,
-                'Main-Class': 'com.ultreon.preloader.PreGameLoader',
+                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
                 'Multi-Release': 'true'
     }
 

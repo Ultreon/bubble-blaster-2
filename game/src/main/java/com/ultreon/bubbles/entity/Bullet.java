@@ -13,7 +13,6 @@ import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,11 +27,11 @@ public class Bullet extends Entity {
     private int popsRemaining = 4;
 
     public Bullet(Environment environment) {
-        this(null, AmmoTypes.BASIC.get(), 0, 0, 0, environment);
+        this(null, AmmoTypes.BASIC, 0, 0, 0, environment);
     }
 
     public Bullet(@UnknownNullability Player owner, @NotNull AmmoType type, float x, float y, float rotation, Environment environment) {
-        super(Entities.BULLET.get(), environment);
+        super(Entities.BULLET, environment);
         this.owner = owner;
 
         this.x = x;
@@ -40,16 +39,15 @@ public class Bullet extends Entity {
         this.setRotation(rotation);
 
         this.ammoType = type;
-        this.bases.setAll(type.getDefaultAttributes());
         this.attributes.setAll(type.getDefaultAttributes());
 
         setSpeed(type.getSpeed());
 
-        markAsCollidable(Entities.BUBBLE.get());
-        markAsCollidable(Entities.GIANT_BUBBLE.get());
+        markAsCollidable(Entities.BUBBLE);
+        markAsCollidable(Entities.GIANT_BUBBLE);
 
-        markAsAttackable(Entities.BUBBLE.get());
-        markAsAttackable(Entities.GIANT_BUBBLE.get());
+        markAsAttackable(Entities.BUBBLE);
+        markAsAttackable(Entities.GIANT_BUBBLE);
     }
 
     private void setSpeed(float speed) {
@@ -139,7 +137,6 @@ public class Bullet extends Entity {
     @SuppressWarnings("unused")
     public void setAmmoType(@NotNull AmmoType ammoType) {
         this.ammoType = ammoType;
-        this.bases.setAll(ammoType.getDefaultAttributes());
         this.attributes.setAll(ammoType.getDefaultAttributes());
     }
 }

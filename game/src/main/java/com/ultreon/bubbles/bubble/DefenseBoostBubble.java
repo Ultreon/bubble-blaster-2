@@ -3,7 +3,7 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.init.Effects;
+import com.ultreon.bubbles.init.StatusEffects;
 import org.apache.commons.lang3.Range;
 
 public class DefenseBoostBubble extends BubbleType {
@@ -21,6 +21,6 @@ public class DefenseBoostBubble extends BubbleType {
 
     @Override
     public AppliedEffect getEffect(Bubble source, Entity target) {
-        return new AppliedEffect(Effects.DEFENSE_BOOST.get(), source.getRadius() / 8, (byte) ((byte) source.getRadius() / 24 + 1));
+        return new AppliedEffect(StatusEffects.DEFENSE_BOOST, source.getRadius() / 8, (byte) ((byte) source.getRadius() / 24 + 1));
     }
 }

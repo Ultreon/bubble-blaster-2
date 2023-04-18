@@ -11,6 +11,7 @@ import java.util.Set;
  * @param <K> The type to use for values.. (KT = Key Type)
  * @param <V> The type for the registry. (VT = Value Type)
  */
+@Deprecated
 public abstract class AbstractRegistry<K, V> {
     public static AbstractRegistry<?, ?> INSTANCE;
 

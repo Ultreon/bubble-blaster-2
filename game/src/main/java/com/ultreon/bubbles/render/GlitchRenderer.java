@@ -12,7 +12,7 @@ public class GlitchRenderer {
     private final char[] chars = " ~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=`1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final int matrixW;
     private final int matrixH;
-    private final Font font = Fonts.PRESS_START_K.get();
+    private final Font font = Fonts.PRESS_START_K;
     private final char[][] matrix;
     private final int[][] cMatrix;
     private final int charW;

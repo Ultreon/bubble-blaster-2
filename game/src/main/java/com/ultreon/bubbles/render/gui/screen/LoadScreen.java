@@ -3,18 +3,20 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
-import com.ultreon.bubbles.event.v2.GameEvents;
-import com.ultreon.bubbles.event.v2.LifecycleEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
+import com.ultreon.bubbles.event.v1.LifecycleEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.ModDataManager;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.Color;
-import com.ultreon.bubbles.resources.Resource;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.commons.lang.Pair;
 import com.ultreon.commons.lang.ProgressMessenger;
+import com.ultreon.libs.registries.v0.Registry;
+import com.ultreon.libs.registries.v0.event.RegistryEvents;
+import com.ultreon.libs.resources.v0.Resource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -151,11 +153,19 @@ public final class LoadScreen extends Screen implements Runnable {
 
         LOGGER.info("Loading resources...");
         this.progMain.sendNext("Loading resources...");
-        game().getResourceManager().importResources(game.getGameFile());
+        try {
+            game().getResourceManager().importPackage(game.getGameFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         for (ModContainer container : FabricLoader.getInstance().getAllMods()) {
             List<Path> paths = container.getOrigin().getPaths();
             for (Path path : paths) {
-                game().getResourceManager().importResources(path);
+                try {
+                    game().getResourceManager().importPackage(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         this.progAlt = null;
@@ -176,7 +186,7 @@ public final class LoadScreen extends Screen implements Runnable {
                     if (resource == null) {
                         resource = TextureManager.DEFAULT_TEXTURE;
                     }
-                    ModDataManager.setIcon(container, ImageIO.read(resource.getUrl()));
+                    ModDataManager.setIcon(container, resource.readImage());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -186,7 +196,7 @@ public final class LoadScreen extends Screen implements Runnable {
         try {
             Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/java.png"));
             if (resource == null) resource = TextureManager.DEFAULT_TEXTURE;
-            ModDataManager.setIcon(container, ImageIO.read(resource.getUrl()));
+            ModDataManager.setIcon(container, resource.readImage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -201,9 +211,9 @@ public final class LoadScreen extends Screen implements Runnable {
         for (Registry<?> registry : registries) {
             this.progAlt.send(registry.id().toString());
             this.progAlt.increment();
-            GameEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
-            registry.freeze();
+            RegistryEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
         }
+        Registry.freeze();
         this.progAlt = null;
 
         // Loading object holders
@@ -223,7 +233,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         this.progMain.send("");
         this.progMain.increment();
-        Collection<TextureCollection> values = Registry.TEXTURE_COLLECTIONS.values();
+        Collection<TextureCollection> values = Registries.TEXTURE_COLLECTIONS.values();
         this.progAlt = new ProgressMessenger(this.msgAlt, values.size());
         for (TextureCollection collection : values) {
             GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
@@ -241,7 +251,6 @@ public final class LoadScreen extends Screen implements Runnable {
         // Registry dump.
         this.progMain.sendNext("Registry Dump.");
         Registry.dump();
-        GameEvents.REGISTRY_DUMP.factory().onDump();
 
         LoadScreen.done = true;
 
@@ -271,7 +280,6 @@ public final class LoadScreen extends Screen implements Runnable {
         CommandConstructor.add("score", new ScoreCommand());
         CommandConstructor.add("effect", new EffectCommand());
         CommandConstructor.add("spawn", new SpawnCommand());
-        CommandConstructor.add("shutdown", new ShutdownCommand());
         CommandConstructor.add("teleport", new TeleportCommand());
         CommandConstructor.add("game-over", new GameOverCommand());
         CommandConstructor.add("blood-moon", new BloodMoonCommand());

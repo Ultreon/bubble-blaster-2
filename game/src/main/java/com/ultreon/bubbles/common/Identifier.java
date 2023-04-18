@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"unused"})
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@Deprecated
 public final class Identifier {
     @SerializedName("id")
     private final @NotNull String location;

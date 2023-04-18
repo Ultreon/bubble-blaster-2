@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.registry;
 
+@Deprecated
 public class RegistryException extends IllegalStateException {
     public RegistryException() {
         super();

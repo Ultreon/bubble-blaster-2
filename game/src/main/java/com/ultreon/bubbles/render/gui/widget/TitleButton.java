@@ -6,6 +6,7 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.vector.Vec2i;
 
 import java.awt.*;
 

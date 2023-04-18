@@ -1,5 +1,6 @@
 package com.ultreon.commons.lang;
 
+@Deprecated
 public class ConstantProperty<T> implements IProperty<T> {
     private final T value;
 

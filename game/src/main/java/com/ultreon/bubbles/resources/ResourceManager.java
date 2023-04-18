@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.resources;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
 import com.ultreon.commons.exceptions.SyntaxException;
@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Deprecated
 public class ResourceManager {
     private final Map<Identifier, byte[]> assets = new ConcurrentHashMap<>();
     private final List<ResourcePackage> resourcePackages = new ArrayList<>();

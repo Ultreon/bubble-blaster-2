@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.text.components;
 
-import com.ultreon.bubbles.common.text.translation.Language;
+import com.ultreon.libs.translations.v0.Language;
 
 public class TranslatableText extends Text {
     private final String id;

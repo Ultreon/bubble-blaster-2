@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.media;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.exceptions.SoundLoadException;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.commons.function.ThrowingSupplier;

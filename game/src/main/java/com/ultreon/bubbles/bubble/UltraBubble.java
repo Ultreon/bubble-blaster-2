@@ -5,7 +5,7 @@ import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.init.Effects;
+import com.ultreon.bubbles.init.StatusEffects;
 import org.apache.commons.lang3.Range;
 
 import java.util.ArrayList;
@@ -38,11 +38,11 @@ public class UltraBubble extends BubbleType {
     public void onCollision(Bubble source, Entity target) {
         super.onCollision(source, target);
         if (target instanceof Player player) {
-            player.addEffect(new AppliedEffect(Effects.ATTACK_BOOST.get(), 10, 3));
-            player.addEffect(new AppliedEffect(Effects.DEFENSE_BOOST.get(), 10, 3));
-            player.addEffect(new AppliedEffect(Effects.MULTI_SCORE.get(), 12, 10));
-            player.addEffect(new AppliedEffect(Effects.BUBBLE_FREEZE.get(), 8, 1));
-            player.addEffect(new AppliedEffect(Effects.LUCK.get(), 8, 1));
+            player.addEffect(new AppliedEffect(StatusEffects.ATTACK_BOOST, 10, 3));
+            player.addEffect(new AppliedEffect(StatusEffects.DEFENSE_BOOST, 10, 3));
+            player.addEffect(new AppliedEffect(StatusEffects.MULTI_SCORE, 12, 10));
+            player.addEffect(new AppliedEffect(StatusEffects.BUBBLE_FREEZE, 8, 1));
+            player.addEffect(new AppliedEffect(StatusEffects.LUCK, 8, 1));
         }
     }
 }

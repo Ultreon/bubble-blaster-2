@@ -95,6 +95,7 @@ public class EnvironmentRenderer implements IRenderer {
         Environment environment = getEnvironment();
         if (environment == null) return;
         if (environment.shuttingDown) return;
+        if (!environment.isInitialized()) return;
 
         profiler.section("Render BG", () -> {
             GameplayEvent currentGameplayEvent = environment.getCurrentGameEvent();

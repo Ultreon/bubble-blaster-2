@@ -8,7 +8,7 @@ import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.*;
 
-
+@Deprecated
 public class Registry<T> {
     private static final Logger dumpLogger = LogManager.getLogger("Registry-Dump");
     private final OrderedHashMap<Identifier, T> keyMap = new OrderedHashMap<>();

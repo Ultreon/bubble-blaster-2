@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.common.text.TranslationText;
-import com.ultreon.bubbles.common.text.translation.Language;
-import com.ultreon.bubbles.common.text.translation.LanguageManager;
+import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.libs.translations.v0.LanguageManager;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.FontStyle;

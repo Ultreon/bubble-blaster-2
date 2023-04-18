@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.save;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.data.types.MapType;
 
 public class GameSaveInfo {
@@ -16,7 +16,7 @@ public class GameSaveInfo {
         this.name = tag.getString("name");
         this.savedTime = tag.getLong("savedTime");
         this.seed = tag.getLong("seed");
-        this.gamemode = Registry.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.CLASSIC.id().toString())));
+        this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.CLASSIC.getId().toString())));
     }
 
     public String getName() {

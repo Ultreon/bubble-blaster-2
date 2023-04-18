@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.command;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.commons.exceptions.InvalidValueException;
 
 public class EffectCommand implements CommandExecutor {
@@ -31,7 +31,7 @@ public class EffectCommand implements CommandExecutor {
             if (args[0].equals("give")) {
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
@@ -61,7 +61,7 @@ public class EffectCommand implements CommandExecutor {
 
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
@@ -109,7 +109,7 @@ public class EffectCommand implements CommandExecutor {
 
                 AppliedEffect appliedEffect;
                 try {
-                    StatusEffect statusEffect = Registry.EFFECTS.getValue(Identifier.parse(args[1]));
+                    StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {

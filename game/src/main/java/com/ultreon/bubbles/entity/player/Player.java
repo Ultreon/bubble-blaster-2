@@ -16,7 +16,7 @@ import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
 import com.ultreon.bubbles.player.InputController;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -66,7 +66,7 @@ public class Player extends LivingEntity implements InputController {
     private int invincibilityTicks;
 
     // Types
-    private AmmoType currentAmmo = AmmoTypes.BASIC.get();
+    private AmmoType currentAmmo = AmmoTypes.BASIC;
 
     // Motion (Arrow Keys).
     private boolean forward = false;
@@ -105,9 +105,9 @@ public class Player extends LivingEntity implements InputController {
      * @see LivingEntity
      */
     public Player(Environment environment) {
-        super(Entities.PLAYER.get(), environment);
+        super(Entities.PLAYER, environment);
 
-        this.markAsCollidable(Entities.BUBBLE.get());
+        this.markAsCollidable(Entities.BUBBLE);
 
         // Ship shape.
         Ellipse2D shipShape1 = new Ellipse2D.Double(-20, -20, 40, 40);
@@ -136,7 +136,7 @@ public class Player extends LivingEntity implements InputController {
         // Health
         this.health = 30f;
 
-        for (EntityType<?> entityType : Registry.ENTITIES.values()) {
+        for (EntityType<?> entityType : Registries.ENTITIES.values()) {
             markAsAttackable(entityType);
         }
 
@@ -497,14 +497,14 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Load the player data.
-     * @param tag the player data.
+     * @param data the player data.
      */
     @Override
-    public void load(MapType tag) {
+    public void load(MapType data) {
         super.save();
 
-        this.score = tag.getFloat("score");
-        this.rotation = tag.getFloat("rotation");
+        this.score = data.getFloat("score");
+        this.rotation = data.getFloat("rotation");
     }
 
     /**
