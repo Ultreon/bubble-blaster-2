@@ -142,7 +142,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
         if (game.environment != null) {
             renderer.color(0x80000000);
         } else {
-            renderer.color(0xff222222);
+            renderer.color(0xff1e1e1e);
         }
         renderer.fill(getBounds());
     }

@@ -86,10 +86,10 @@ public class TitleScreen extends Screen {
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
         ticks += partialTicks;
-        renderer.color(0xff808080);
+        renderer.color(0xff404040);
         renderer.fill(BubbleBlaster.getInstance().getGameBounds());
 
-        renderer.color(0xff404040);
+        renderer.color(0xff1e1e1e);
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), 175);
 
         float shiftX = (float) BubbleBlaster.getInstance().getWidth() * 2f * ticks / ((float) BubbleBlaster.TPS * 10f);
@@ -97,7 +97,7 @@ public class TitleScreen extends Screen {
         renderer.fillEffect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.color(0xffffffff);
-        Fonts.QUANTUM.draw(renderer, "Bubble Blaster", 86, (float) BubbleBlaster.getInstance().getWidth() / 2, 72, Anchor.CENTER);
+        Fonts.DONGLE.draw(renderer, "Bubble Blaster", 140, (float) BubbleBlaster.getInstance().getWidth() / 2, 87, Thickness.BOLD, Anchor.S);
 
         renderer.color(0xffffffff);
         monospaced.draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
