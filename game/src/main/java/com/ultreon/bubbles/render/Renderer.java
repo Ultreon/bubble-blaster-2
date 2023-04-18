@@ -3,6 +3,7 @@
 /////////////////////
 package com.ultreon.bubbles.render;
 
+import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
@@ -63,6 +64,7 @@ public class Renderer {
     private RenderState state;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private Texture curTexture;
+    private Vec2d globalTranslation = new Vec2d();
 
     //////////////////////////
     //     Constructors     //
@@ -442,10 +444,12 @@ public class Renderer {
     //     Transformation     //
     ////////////////////////////
     public void translate(double tx, double ty) {
+        globalTranslation.add(tx, ty);
         gfx.translate(tx, ty);
     }
 
     public void translate(int x, int y) {
+        globalTranslation.add(x, y);
         gfx.translate(x, y);
     }
 
@@ -575,7 +579,10 @@ public class Renderer {
     }
 
     public Renderer subInstance(int x, int y, int width, int height) {
-        return new Renderer(gfx.create(x, y, width, height), observer);
+        Renderer renderer = new Renderer(gfx.create(x, y, width, height), observer);
+        renderer.globalTranslation = globalTranslation.clone();
+        renderer.globalTranslation.add(x, y);
+        return renderer;
     }
 
     public Renderer subInstance(com.ultreon.bubbles.render.gui.widget.Rectangle bounds) {
@@ -610,7 +617,7 @@ public class Renderer {
     }
 
     public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
-        GradientPaint p = getEffectPaint(x, width, speed);
+        GradientPaint p = getEffectPaint(speed);
         Border border = new Border(insets);
         border.setPaint(p);
         border.paintBorder(this, x, y, width, height);
@@ -625,7 +632,7 @@ public class Renderer {
     }
 
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
-        GradientPaint p = getErrorEffectPaint(x, width, speed);
+        GradientPaint p = getErrorEffectPaint(speed);
         Border border = new Border(insets);
         border.setPaint(p);
         border.paintBorder(this, x, y, width, height);
@@ -636,7 +643,7 @@ public class Renderer {
     }
 
     public void fillEffect(int x, int y, int width, int height, int speed) {
-        GradientPaint p = getEffectPaint(x, width, speed);
+        GradientPaint p = getEffectPaint(speed);
         Paint old = getPaint();
         paint(p);
         rect(x, y, width, height);
@@ -644,20 +651,19 @@ public class Renderer {
     }
 
     @NotNull
-    private GradientPaint getEffectPaint(int x, int width, int speed) {
-        int color1 = 0x00a0ff;
-        int color2 = 0x00ffa0;
-        width = game.getScaledWidth();
-        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
-        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
+    private GradientPaint getEffectPaint(int speed) {
+        return getEffectPaint(speed, 0x00a0ff, 0x00ffa0);
     }
 
     @NotNull
-    private GradientPaint getErrorEffectPaint(int x, int width, int speed) {
-        int color1 = 0xff3000;
-        int color2 = 0xffa000;
-        width = game.getScaledWidth();
-        double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed);
+    private GradientPaint getErrorEffectPaint(int speed) {
+        return getEffectPaint(speed, 0xff3000, 0xffa000);
+    }
+
+    @NotNull
+    private GradientPaint getEffectPaint(int speed, int color1, int color2) {
+        var width = game.getScaledWidth();
+        var shiftX = (((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed)) - globalTranslation.x;
         return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
     }
 
