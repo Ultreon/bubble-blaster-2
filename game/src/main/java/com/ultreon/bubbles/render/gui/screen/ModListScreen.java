@@ -62,13 +62,13 @@ public class ModListScreen extends Screen {
                 renderer.color(0xffffffff);
                 font.draw(renderer, metadata.getName(), 40, 20, 20);
                 renderer.color(0x80ffffff);
-                monospaced.draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(48, metadata.getName()) + 20, 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
+                monospaced.draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(40, metadata.getName() + "  "), 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
                 renderer.color(0x80ffffff);
                 monospaced.draw(renderer, metadata.getId(), 12, 20, 70, Thickness.BOLD);
                 String description = metadata.getDescription();
                 AtomicInteger i = new AtomicInteger();
                 renderer.color(0x60ffffff);
-                description.lines().forEachOrdered(line -> font.draw(renderer, line, 12, 20, 90 + i.getAndIncrement() + font.height(12) + 1));
+                description.lines().forEachOrdered(line -> font.draw(renderer, line, 12, 20, 90 + i.getAndIncrement() * (font.height(12) + 1)));
             }
         });
     }
@@ -109,22 +109,12 @@ public class ModListScreen extends Screen {
             renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
         }
 
-        Collection<Person> authors = metadata.getAuthors();
-
         int textX = 20 + iconSize + 20;
 
         renderer.color(0x7fffffff);
         monospaced.draw(renderer, metadata.getId(), 12, textX, 20, Thickness.BOLD);
         renderer.color(0xffffffff);
-        font.draw(renderer, metadata.getName(), 40, textX, 32);
-        var nameWidth = font.width(40, metadata.getName());
-        renderer.color(0x50ffffff);
-//        if (authors.isEmpty()) {
-//            font.draw(renderer, metadata.getVersion().getFriendlyString(), 16, textX + nameWidth + 30, 52, Anchor.W);
-//        } else {
-//            font.draw(renderer, metadata.getVersion().getFriendlyString(), 16, textX + nameWidth + 30, 54, Anchor.SW);
-//            font.draw(renderer, String.join(", ", authors.stream().map(Person::getName).toList()), 16, textX + nameWidth + 30, 50, Anchor.NW);
-//        }
+        font.draw(renderer, metadata.getName(), 32, textX, 32);
         renderer.color(0x80ffffff);
         font.draw(renderer, metadata.getDescription(), 14, textX, ENTRY_HEIGHT - 18, Anchor.SW);
     }

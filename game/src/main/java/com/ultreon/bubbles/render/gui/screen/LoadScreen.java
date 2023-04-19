@@ -85,8 +85,7 @@ public final class LoadScreen extends Screen implements Runnable {
             startTime = System.currentTimeMillis();
         }
 
-        renderer.color(Color.rgb(0x484848));
-        renderer.rect(0, 0, width, height);
+        renderBackground(renderer);
 
         int i = 0;
 

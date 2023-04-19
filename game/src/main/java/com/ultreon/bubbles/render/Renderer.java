@@ -623,6 +623,27 @@ public class Renderer {
         border.paintBorder(this, x, y, width, height);
     }
 
+    public void drawRoundEffectBox(int x, int y, int width, int height) {
+        drawRoundEffectBox(x, y, width, height, 10);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius) {
+        drawRoundEffectBox(x, y, width, height, radius, 2);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth) {
+        drawRoundEffectBox(x, y, width, height, radius, borderWidth, 10);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth, int speed) {
+//        radius -= borderWidth - 1;
+        paint(getEffectPaint(speed));
+        Stroke old = getStroke();
+        stroke(new BasicStroke(borderWidth));
+        roundRectLine(x, y, width, height, radius, radius);
+        stroke(old);
+    }
+
     public void drawErrorEffectBox(int x, int y, int width, int height) {
         drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
     }

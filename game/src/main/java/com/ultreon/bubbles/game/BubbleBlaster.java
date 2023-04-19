@@ -8,6 +8,7 @@ import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
 import com.ultreon.bubbles.common.exceptions.ResourceNotFoundException;
 import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.player.Player;
@@ -203,6 +204,7 @@ public final class BubbleBlaster {
     private boolean fadeIn = false;
     private long fadeInStart = 0L;
     private boolean firstFrame = true;
+    private final GlobalSaveData globalSaveData = GlobalSaveData.instance();
 
     /**
      * Class constructor for Bubble Blaster.
@@ -1586,6 +1588,9 @@ public final class BubbleBlaster {
                 screen.render(this, renderer, frameTime);
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
+            if (environment != null && environmentRenderer != null) {
+                renderer.fillEffect(0, 0, BubbleBlaster.getInstance().getWidth(), 3);
+            }
         });
 
         // Post render.
@@ -1996,6 +2001,10 @@ public final class BubbleBlaster {
 
         this.environment.save();
         this.quitLoadedGame();
+    }
+
+    public GlobalSaveData getGlobalData() {
+        return globalSaveData;
     }
 
     protected static class BootOptions {

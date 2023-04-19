@@ -103,6 +103,7 @@ public class TitleScreen extends Screen {
         monospaced.draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
         monospaced.draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
         monospaced.draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
+        monospaced.draw(renderer, "High Score: " + (int)game.getGlobalData().getHighScore(), 11, 10, 46, Thickness.BOLD);
 
         this.renderChildren(renderer);
     }

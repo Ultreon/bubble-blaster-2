@@ -79,21 +79,23 @@ public class TitleButton extends AbstractButton {
     public void render(Renderer renderer) {
         Color textColor;
 
-        fill(renderer, 0, 0, width, height, 0xff606060);
+        renderer.color(0xff606060);
+        renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, Math.min(width, height)-2);
 
         if (isPressed()) {
             // Shadow
             Paint old = renderer.getPaint();
 
-            fill(renderer, 0, 0, width, height, 0xff484848);
+            renderer.color(0xff484848);
+            renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, 10);
 
-            renderer.drawEffectBox(0, 0, width, height, new Insets(1, 1, 1, 1));
+            renderer.drawRoundEffectBox(0, 0, width-1, height-1, Math.min(width, height)-4, 1);
             renderer.paint(old);
             textColor = Color.white;
         } else if (isHovered()) {
             Paint old = renderer.getPaint();
 
-            renderer.drawEffectBox(0, 0, width, height, new Insets(2, 2, 2, 2));
+            renderer.drawRoundEffectBox(1, 1, width-4, height-4, Math.min(width, height)-8, 2);
             renderer.paint(old);
             textColor = Color.rgb(0xffffff);
         } else {
