@@ -431,8 +431,12 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
         }
     }
 
-    public void showError(String title, String description) {
+    public void showError(@NotNull String title, @Nullable String description) {
         JOptionPane.showMessageDialog(frame, description, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void setTitle(@NotNull String title) {
+        frame.setTitle(title);
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

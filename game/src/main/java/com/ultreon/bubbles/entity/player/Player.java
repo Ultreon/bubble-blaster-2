@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.ultreon.bubbles.common.PolygonBuilder;
+import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
@@ -271,8 +272,8 @@ public class Player extends LivingEntity implements InputController {
         double rotate = 0.0f;
 
         // Check each direction, to create velocity
-        if (this.forward) motion += this.attributes.getBase(Attribute.SPEED) * 10;
-        if (this.backward) motion -= this.attributes.getBase(Attribute.SPEED) * 10;
+        if (this.forward) motion += getSpeed() * 10;
+        if (this.backward) motion -= getSpeed() * 10;
         if (this.left) rotate -= this.rotationSpeed;
         if (this.right) rotate += this.rotationSpeed;
         if (this.joyStickY != 0) motion = this.joyStickY * this.attributes.getBase(Attribute.SPEED);
@@ -323,16 +324,8 @@ public class Player extends LivingEntity implements InputController {
             }
         }
 
-        // Update X, and Y.
-        if (mobile) {
-            this.x += ((this.getAccelerateX()) + this.velocityX) / ((double) TPS);
-            this.y += ((this.getAccelerateY()) + this.velocityY) / ((double) TPS);
-        }
-
         // Game border collision.
         Rectangle2D gameBounds = loadedGame.getGamemode().getGameBounds();
-        this.prevX = x;
-        this.prevY = y;
 
         // Leveling up.
         if (score / Constants.LEVEL_THRESHOLD > level) {
@@ -349,7 +342,19 @@ public class Player extends LivingEntity implements InputController {
             invincible = false;
         }
 
-        super.tick(environment);
+        for (AppliedEffect appliedEffect : this.activeEffects) {
+            appliedEffect.tick(this);
+        }
+
+        this.activeEffects.removeIf((effectInstance -> effectInstance.getRemainingTime() < 0d));
+
+        this.accelerateX = this.getAccelerateX() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+        this.accelerateY = this.getAccelerateY() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+
+        this.prevX = this.getX();
+        this.prevY = this.getY();
+        this.x += this.isMobile() ? this.getAccelerateX() + this.getVelocityX() / TPS : 0;
+        this.y += this.isMobile() ? this.getAccelerateY() + this.getVelocityY() / TPS : 0;
 
         double minX = gameBounds.getMinX() + this.size() / 2;
         double minY = gameBounds.getMinY() + this.size() / 2;

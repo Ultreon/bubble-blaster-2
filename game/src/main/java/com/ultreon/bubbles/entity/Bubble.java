@@ -58,6 +58,8 @@ public class Bubble extends AbstractBubbleEntity {
 
     private final Random random = new Random(Math.round((double) (System.currentTimeMillis() / 86400000))); // Random day. 86400000 milliseconds == 1 day.
     private boolean effectApplied = false;
+    private int destroyFrame;
+    private boolean isBeingDestroyed;
 
     public static EntityType<? extends Bubble> getRandomType(Environment environment, Rng rng) {
         if (rng.getNumber(0, GIANT_BUBBLE_RARITY, TYPE_RNG) == 0) {
@@ -208,11 +210,24 @@ public class Bubble extends AbstractBubbleEntity {
         this.prevX = x;
         this.prevY = y;
 
+        if (isBeingDestroyed) {
+            destroyFrame++;
+            if (destroyFrame >= 10) {
+                delete();
+            }
+        }
+
         super.tick(environment);
 
         if (this.x + this.radius < 0) {
             delete();
         }
+    }
+
+    @Override
+    public boolean hasAi() {
+        if (isBeingDestroyed) return false;
+        return super.hasAi();
     }
 
     @Override
@@ -230,7 +245,11 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.getColors());
+        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, destroyFrame, bubbleType.getColors());
+    }
+
+    public boolean isBeingDestroyed() {
+        return isBeingDestroyed;
     }
 
     /**
@@ -291,9 +310,7 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public void checkHealth() {
-        if (this.health <= 0d || radius < 0) {
-            delete();
-        }
+
     }
 
     @Override
@@ -305,13 +322,16 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public void damage(double value, EntityDamageSource source) {
+        if (isBeingDestroyed) return;
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
         if (invincible) return;
         if (isValid() && isVisible()) {
             BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3);
         }
-        delete();
-        radius = (int) health + 4;
+        isBeingDestroyed = true;
+        attributes.removeModifiers(Attribute.SCORE);
+        attributes.setBase(Attribute.SCORE, 0);
+        canCollideWith.clear();
     }
 
     @Override

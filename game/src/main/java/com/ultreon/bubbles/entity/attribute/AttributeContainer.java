@@ -168,4 +168,8 @@ public class AttributeContainer implements ListDataHolder<MapType> {
         List<AttributeModifier> list = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
     }
+
+    public void removeModifiers(Attribute attribute) {
+        modifierMap.remove(attribute);
+    }
 }

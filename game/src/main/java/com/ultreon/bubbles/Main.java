@@ -1,11 +1,13 @@
 package com.ultreon.bubbles;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.crash.v0.CrashLog;
+import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.impl.util.Arguments;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
     public static boolean rpcReady;
@@ -15,6 +17,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.z
 
+        AtomicReference<Throwable> error = new AtomicReference<>();
         SwingUtilities.invokeAndWait(() -> {
             try {
                 Arguments arguments = new Arguments();
@@ -22,20 +25,24 @@ public class Main {
                 BubbleBlaster.launch(arguments);
             } catch (Exception e) {
                 System.err.println("Cannot invoke launch method.");
-                System.err.println("Cannot load Game class: " + BubbleBlaster.class);
-                e.printStackTrace();
-                System.exit(1);
+                error.set(e);
             } catch (Error e) {
                 System.err.println("Cannot invoke launch method. (Internal error occurred)");
-                System.err.println("Cannot load Game class: " + BubbleBlaster.class);
-                e.printStackTrace();
-                System.exit(1);
+                error.set(e);
             } catch (Throwable t) {
                 System.err.println("Cannot invoke launch method. (Internal hard error occurred)");
-                System.err.println("Cannot load Game class: " + BubbleBlaster.class);
-                t.printStackTrace();
-                System.exit(1);
+                error.set(t);
             }
         });
+
+        Throwable ex = error.get();
+        if (ex != null) {
+            try {
+                BubbleBlaster.crash(new CrashLog("Failed to startup the game.", ex).createCrash());
+                FabricGuiEntry.displayError("Bubble Blaster failed to start", ex, true);
+            } catch (Throwable t) {
+                BubbleBlaster.getLogger().error("ERROR:", t);
+            }
+        }
     }
 }

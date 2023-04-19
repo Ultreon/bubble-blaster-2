@@ -57,6 +57,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
+import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.impl.util.Arguments;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -216,6 +217,7 @@ public final class BubbleBlaster {
         var bootOptions = new BootOptions().tps(TPS);
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
+        Thread.currentThread().setUncaughtExceptionHandler(new GameExceptions());
 
         // Hook output for logger.
         System.setErr(new RedirectPrintStream(Level.ERROR, LogManager.getLogger("STD"), getMarker("Output")));
@@ -687,26 +689,29 @@ public final class BubbleBlaster {
             for (var e : Registries.BUBBLES.entries()) {
                 var bubble = e.getValue();
                 for (var i = 0; i <= bubble.getMaxRadius(); i++) {
-                    var id = e.getKey();
-                    assert id != null;
-                    var identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i);
-                    final var finalI = i;
-                    collection.set(identifier, new ITexture() {
-                        @Override
-                        public void render(Renderer renderer) {
-                            EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, bubble.getColors());
-                        }
+                    for (var destroyFrame = 0; destroyFrame <= 10; destroyFrame++) {
+                        var id = e.getKey();
+                        assert id != null;
+                        var identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i + "/destroy_" + destroyFrame);
+                        final var finalI = i;
+                        int finalDestroyFrame = destroyFrame;
+                        collection.set(identifier, new ITexture() {
+                            @Override
+                            public void render(Renderer renderer) {
+                                EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, finalDestroyFrame, bubble.getColors());
+                            }
 
-                        @Override
-                        public int width() {
-                            return finalI + bubble.getColors().size() * 2;
-                        }
+                            @Override
+                            public int width() {
+                                return finalI + bubble.getColors().size() * 2;
+                            }
 
-                        @Override
-                        public int height() {
-                            return finalI + bubble.getColors().size() * 2;
-                        }
-                    });
+                            @Override
+                            public int height() {
+                                return finalI + bubble.getColors().size() * 2;
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -790,6 +795,8 @@ public final class BubbleBlaster {
         synchronized (rpcUpdateLock) {
             this.activity = () -> {
                 var ret = activity.get();
+                String state = ret.getState();
+                window.setTitle("Bubble Blaster - " + getGameVersion().getFriendlyString() + " - " + state);
                 ret.assets().setLargeImage("icon");
                 return ret;
             };

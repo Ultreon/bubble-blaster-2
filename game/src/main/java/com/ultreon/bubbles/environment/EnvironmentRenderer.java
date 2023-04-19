@@ -8,6 +8,7 @@ import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.BufferRender;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.util.helpers.Mth;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -30,29 +31,44 @@ public class EnvironmentRenderer implements IRenderer {
      * Draw bubble.
      * Draws bubble on screen.
      *
+     * @param renderer the graphics-2D instance
+     * @param x        the x-coordinate.
+     * @param y        the y-coordinate.
+     * @param radius   the bubble radius (full width.).
+     * @param colors   the bubble colors (on sequence).
+     */
+    public static void drawBubble(Renderer renderer, double x, double y, int radius,  List<Color> colors) {
+        drawBubble(renderer, x, y, radius, 0, colors);
+    }
+
+    /**
+     * Draw bubble.
+     * Draws bubble on screen.
+     *
      * @param renderer      the graphics-2D instance
      * @param x      the x-coordinate.
      * @param y      the y-coordinate.
      * @param radius the bubble radius (full width.).
      * @param colors the bubble colors (on sequence).
      */
-    public static void drawBubble(Renderer renderer, double x, double y, int radius, List<com.ultreon.bubbles.render.Color> colors) {
+    public static void drawBubble(Renderer renderer, double x, double y, int radius, int destroyFrame, List<com.ultreon.bubbles.render.Color> colors) {
         // Define ellipse-depth (pixels).
         double i = 0f;
+        destroyFrame = Mth.clamp(destroyFrame, 0, 10);
 
         // Loop colors.
         for (Color color : colors) {
             // Set stroke width.
             if (i == 0) {
                 if (colors.size() > 1) {
-                    renderer.stroke(new BasicStroke(1.4f));
+                    renderer.stroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{10 - destroyFrame, destroyFrame}, 10));
                 } else {
-                    renderer.stroke(new BasicStroke(1.2f));
+                    renderer.stroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{10 - destroyFrame, destroyFrame}, 10));
                 }
             } else if (i == colors.size() - 1) {
-                renderer.stroke(new BasicStroke(1.2f));
+                renderer.stroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{10 - destroyFrame, destroyFrame}, 10));
             } else {
-                renderer.stroke(new BasicStroke(1.4f));
+                renderer.stroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, new float[]{10 - destroyFrame, destroyFrame}, 10));
             }
 
             // Set color.
