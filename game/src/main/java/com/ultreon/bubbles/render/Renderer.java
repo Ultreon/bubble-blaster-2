@@ -3,13 +3,13 @@
 /////////////////////
 package com.ultreon.bubbles.render;
 
-import com.ultreon.bubbles.vector.Vec2d;
-import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.border.Border;
+import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.bubbles.vector.Vec4i;
 import com.ultreon.commons.util.StringUtils;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -379,7 +379,7 @@ public class Renderer {
     }
 
     public void text(TextObject str, float x, float y) {
-        gfx.drawString(StringUtils.createFallbackString(str.getText(), getFont(), fallbackFont).getIterator(), x, y);
+        gfx.drawString(str.getAttrString().getIterator(), x, y);
     }
 
     public void text(AttributedCharacterIterator iterator, int x, int y) {

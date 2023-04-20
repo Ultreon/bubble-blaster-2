@@ -1,10 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.common.text.LiteralText;
-import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.libs.text.v0.TextObject;
 
 public class Label extends GuiComponent {
     private TextObject text;
@@ -14,7 +13,7 @@ public class Label extends GuiComponent {
     private int fontSize;
 
     public Label(String text, int x, int y, int width, int height) {
-        this(new LiteralText(text), x, y, width, height);
+        this(TextObject.literal(text), x, y, width, height);
     }
 
     public Label(TextObject text, int x, int y, int width, int height) {
@@ -58,7 +57,7 @@ public class Label extends GuiComponent {
     }
 
     public void setLiteralText(String text) {
-        this.text = new LiteralText(text);
+        this.text = TextObject.literal(text);
     }
 
     public boolean isWrapped() {

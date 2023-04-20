@@ -332,6 +332,7 @@ public class Bubble extends AbstractBubbleEntity {
         attributes.removeModifiers(Attribute.SCORE);
         attributes.setBase(Attribute.SCORE, 0);
         canCollideWith.clear();
+        canAttack.clear();
     }
 
     @Override

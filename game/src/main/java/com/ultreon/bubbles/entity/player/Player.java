@@ -754,4 +754,9 @@ public class Player extends LivingEntity implements InputController {
     public int getInvincibilityTicks() {
         return invincibilityTicks;
     }
+
+    @Override
+    public String getName() {
+        return "Player";
+    }
 }

@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
@@ -14,6 +13,7 @@ import com.ultreon.bubbles.save.SaveLoader;
 import com.ultreon.bubbles.util.Either;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
+import com.ultreon.libs.text.v0.TextObject;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -113,16 +113,16 @@ public class SavesScreen extends Screen {
         this.saveList.setSelectable(true);
         this.saveList.setEntryRenderer(this::renderEntry);
 
-        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/new")).build());
+        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/screen/saves/new")).build());
         this.newSaveBtn.setCommand(this::newSave);
 
-        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 100, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/open")).build());
+        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/screen/saves/open")).build());
         this.openSaveBtn.setCommand(this::openSave);
 
-        this.delSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/delete")).build());
+        this.delSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/screen/saves/delete")).build());
         this.delSaveBtn.setCommand(this::deleteSave);
 
-        this.editSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/screen/saves/edit")).build());
+        this.editSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/screen/saves/edit")).build());
         this.editSaveBtn.setCommand(this::editSave);
     }
 

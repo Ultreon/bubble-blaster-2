@@ -230,7 +230,7 @@ public final class Environment {
         tag.putLong("seed", this.seed);
         tag.putLong("savedTime", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC));
         Identifier key = Registries.GAMEMODES.getKey(this.gamemode);
-        tag.putString("gamemode", (key == null ? Gamemodes.CLASSIC.getId() : key).toString());
+        tag.putString("gamemode", (key == null ? Gamemodes.MODERN.getId() : key).toString());
         return tag;
     }
 

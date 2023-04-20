@@ -19,6 +19,7 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.translations.v0.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -932,5 +933,13 @@ public abstract class Entity extends GameObject implements StateHolder {
 
     public boolean isBad() {
         return false;
+    }
+
+    public String getName() {
+        return Language.translate(getId().location() + "/entity/names/" + getId().path());
+    }
+
+    public Identifier getId() {
+        return getType().getId();
     }
 }

@@ -40,11 +40,14 @@ public final class GameSettings implements Serializable {
     private String language = "en_US";
 
     @SerializedName("gamemode")
-    private Identifier gamemode = Gamemodes.CLASSIC.getId();
+    private Identifier gamemode = Gamemodes.MODERN.getId();
     @SerializedName("graphics")
     private GraphicsSettings graphicsSettings = new GraphicsSettings();
     @SerializedName("difficulty")
     private Difficulty difficulty = Difficulty.NORMAL;
+    @SerializedName("debug")
+    private DebugOptions debugOptions = new DebugOptions();
+
 
     static {
         if (!reload()) {
@@ -70,7 +73,7 @@ public final class GameSettings implements Serializable {
             String json = Files.readString(References.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
-                instance.gamemode = Gamemodes.CLASSIC.getId();
+                instance.gamemode = Gamemodes.MODERN.getId();
             }
             GameSettings.instance = instance;
             LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
@@ -152,5 +155,9 @@ public final class GameSettings implements Serializable {
 
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public DebugOptions getDebugOptions() {
+        return debugOptions;
     }
 }

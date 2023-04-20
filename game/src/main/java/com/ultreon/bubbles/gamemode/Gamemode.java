@@ -2,15 +2,12 @@ package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.StateListener;
 import com.ultreon.bubbles.common.interfaces.DefaultSaver;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
 import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.player.Player;
@@ -29,7 +26,9 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -170,7 +169,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
      * @return the game-type loaded from the save.
      */
     public static Gamemode loadState(GameSave save, Messenger Messenger) throws IOException {
-        return Gamemodes.CLASSIC;
+        return save.getInfo().getGamemode();
     }
 
     /**
@@ -364,8 +363,6 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         int maxBubbles = GameSettings.instance().getMaxBubbles();
 
         try {
-            this.hud = new ClassicModeHud(this);
-
             // Spawn bubbles
             messenger.send("Spawning bubbles...");
 
@@ -399,7 +396,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     }
 
     public TextObject getName() {
-        return new TranslationText(getTranslationId());
+        return TextObject.translation(getTranslationId());
     }
 
     public String getTranslationId() {

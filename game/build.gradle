@@ -105,6 +105,7 @@ dependencies {
 
     implementation 'com.github.Ultreon:ultreon-data:a7b510fcb6'
     implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"

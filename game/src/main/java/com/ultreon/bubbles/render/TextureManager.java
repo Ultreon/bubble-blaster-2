@@ -57,14 +57,16 @@ public final class TextureManager {
         return loadTexture(entry, new TextureSource() {
             @Override
             public Texture create() {
-                return new AwtImage() {
+                AwtImage awtImage = new AwtImage() {
                     @Override
                     protected byte[] loadBytes() {
                         @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
                         Resource resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
-                        return Objects.requireNonNullElse(resource, DEFAULT_TEXTURE).getData();
+                        return Objects.requireNonNullElse(resource, DEFAULT_TEXTURE).loadOrGet();
                     }
                 };
+                awtImage.load();
+                return awtImage;
             }
         });
     }

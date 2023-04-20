@@ -1,9 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.common.text.TranslationText;
-import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v1.GameEvents;
@@ -17,6 +14,8 @@ import com.ultreon.bubbles.render.font.FontStyle;
 import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.translations.v0.Language;
 
 import java.util.ArrayList;
 
@@ -26,24 +25,24 @@ public class PauseScreen extends Screen {
     private IngameButton prevButton;
     private IngameButton nextButton;
 
-    private final TextObject minRadius = new TranslationText("bubbles/screen/pause/min_radius");
-    private final TextObject maxRadius = new TranslationText("bubbles/screen/pause/max_radius");
-    private final TextObject minSpeed = new TranslationText("bubbles/screen/pause/min_speed");
-    private final TextObject maxSpeed = new TranslationText("bubbles/screen/pause/max_speed");
-    private final TextObject defChance = new TranslationText("bubbles/screen/pause/default_chance");
-    private final TextObject curChance = new TranslationText("bubbles/screen/pause/current_chance");
-    private final TextObject defPriority = new TranslationText("bubbles/screen/pause/default_priority");
-    private final TextObject curPriority = new TranslationText("bubbles/screen/pause/current_priority");
-    private final TextObject defTotPriority = new TranslationText("bubbles/screen/pause/default_total_priority");
-    private final TextObject curTotPriority = new TranslationText("bubbles/screen/pause/current_total_priority");
-    private final TextObject scoreMod = new TranslationText("bubbles/screen/pause/score_modifier");
-    private final TextObject attackMod = new TranslationText("bubbles/screen/pause/attack_modifier");
-    private final TextObject defenseMod = new TranslationText("bubbles/screen/pause/defense_modifier");
-    private final TextObject canSpawn = new TranslationText("bubbles/screen/pause/can_spawn");
-    private final TextObject description = new TranslationText("bubbles/screen/pause/description");
-    private final TextObject random = new TranslationText("bubbles/other/random");
-    private final TextObject boolTrue = new TranslationText("bubbles/other/true");
-    private final TextObject boolFalse = new TranslationText("bubbles/other/False");
+    private final TextObject minRadius = TextObject.translation("bubbles/screen/pause/min_radius");
+    private final TextObject maxRadius = TextObject.translation("bubbles/screen/pause/max_radius");
+    private final TextObject minSpeed = TextObject.translation("bubbles/screen/pause/min_speed");
+    private final TextObject maxSpeed = TextObject.translation("bubbles/screen/pause/max_speed");
+    private final TextObject defChance = TextObject.translation("bubbles/screen/pause/default_chance");
+    private final TextObject curChance = TextObject.translation("bubbles/screen/pause/current_chance");
+    private final TextObject defPriority = TextObject.translation("bubbles/screen/pause/default_priority");
+    private final TextObject curPriority = TextObject.translation("bubbles/screen/pause/current_priority");
+    private final TextObject defTotPriority = TextObject.translation("bubbles/screen/pause/default_total_priority");
+    private final TextObject curTotPriority = TextObject.translation("bubbles/screen/pause/current_total_priority");
+    private final TextObject scoreMod = TextObject.translation("bubbles/screen/pause/score_modifier");
+    private final TextObject attackMod = TextObject.translation("bubbles/screen/pause/attack_modifier");
+    private final TextObject defenseMod = TextObject.translation("bubbles/screen/pause/defense_modifier");
+    private final TextObject canSpawn = TextObject.translation("bubbles/screen/pause/can_spawn");
+    private final TextObject description = TextObject.translation("bubbles/screen/pause/description");
+    private final TextObject random = TextObject.translation("bubbles/other/random");
+    private final TextObject boolTrue = TextObject.translation("bubbles/other/true");
+    private final TextObject boolFalse = TextObject.translation("bubbles/other/False");
 
     private final int differentBubbles;
     private static int helpIndex = 0;

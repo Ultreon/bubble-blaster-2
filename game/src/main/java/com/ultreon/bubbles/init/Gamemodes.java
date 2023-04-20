@@ -3,6 +3,7 @@ package com.ultreon.bubbles.init;
 import com.ultreon.bubbles.gamemode.ClassicMode;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gamemode.ImpossibleMode;
+import com.ultreon.bubbles.gamemode.ModernMode;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 @SuppressWarnings("unused")
 public class Gamemodes {
     public static final ClassicMode CLASSIC = register("classic", new ClassicMode());
+    public static final ModernMode MODERN = register("modern", new ModernMode());
     public static final ImpossibleMode IMPOSSIBLE = register("impossible", new ImpossibleMode());
 
     @SuppressWarnings("SameParameterValue")

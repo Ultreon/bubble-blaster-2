@@ -1,8 +1,5 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.common.text.TranslationText;
-import com.ultreon.libs.translations.v0.Language;
-import com.ultreon.libs.translations.v0.LanguageManager;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.FontStyle;
@@ -11,6 +8,9 @@ import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.commons.util.StringUtils;
+import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.libs.translations.v0.LanguageManager;
 
 import java.util.List;
 import java.util.Locale;
@@ -49,10 +49,10 @@ public final class LanguageScreen extends Screen {
             instance.setLanguage(entry.value.getLocale());
         });
 
-        this.okButton = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/other/ok")).build());
+        this.okButton = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/other/ok")).build());
         this.okButton.setCommand(this::apply);
 
-        this.cancelButton = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(new TranslationText("bubbles/other/cancel")).build());
+        this.cancelButton = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/other/cancel")).build());
         this.cancelButton.setCommand(this::cancel);
     }
 

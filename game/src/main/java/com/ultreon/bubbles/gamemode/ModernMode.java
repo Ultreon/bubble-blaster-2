@@ -1,11 +1,9 @@
 package com.ultreon.bubbles.gamemode;
 
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.ExceptionUtils;
@@ -15,7 +13,6 @@ import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
@@ -26,12 +23,11 @@ import java.awt.geom.Rectangle2D;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"unused", "deprecation"})
-public class ImpossibleMode extends Gamemode {
+public class ModernMode extends Gamemode {
     // Threads
     private Thread spawner;
-    private final ClassicModeHud classicHud = new ClassicModeHud(this);
 
-    public ImpossibleMode() {
+    public ModernMode() {
         super();
     }
 
@@ -44,19 +40,14 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void initEnv(Environment environment, Messenger messenger) {
-        this.hud = new ClassicModeHud(this);
+        this.hud = new ModernHud(this);
 
         initializeClassic(environment, messenger);
     }
 
     @Override
-    public @Nullable BubbleType getRandomBubble(long spawnIndex) {
-        return Bubbles.DAMAGE;
-    }
-
-    @Override
     public void onLoad(Environment environment, GameSave save, Messenger messenger) {
-        this.hud = new ClassicModeHud(this);
+        this.hud = new ModernHud(this);
         this.initialized = true;
     }
 
@@ -66,7 +57,7 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void start() {
-
+//        spawner.start();
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -114,7 +105,7 @@ public class ImpossibleMode extends Gamemode {
 
     @Override
     public void renderHUD(Renderer renderer) {
-        ((ClassicModeHud)hud).renderHUD(renderer);
+        getHud().renderHUD(renderer);
     }
 
     @Override
@@ -122,13 +113,13 @@ public class ImpossibleMode extends Gamemode {
 
     }
 
-    public ClassicModeHud getHud() {
-        return (ClassicModeHud) this.hud;
+    public ModernHud getHud() {
+        return (ModernHud) this.hud;
     }
 
     @Override
     public Rectangle2D getGameBounds() {
-        return new Rectangle2D.Double(70d, 0d, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight() - 70d);
+        return new Rectangle2D.Double(0d, 2d, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight() - 2d);
     }
 
     @Override
@@ -140,12 +131,14 @@ public class ImpossibleMode extends Gamemode {
      * Trigger Game Over
      * Deletes player and set game over flag in ClassicHUD. Showing Game Over message.
      *
-     * @see ClassicModeHud#setGameOver()
+     * @see ModernHud#setGameOver()
      */
     @Override
     public void onGameOver() {
+//        environment.gameOver(game.player);
         game.player.delete();
-        classicHud.setGameOver();
+        getHud().setGameOver();
+//        gameOver = true;
     }
 
     @Override
@@ -158,7 +151,7 @@ public class ImpossibleMode extends Gamemode {
 
     @Override
     public void onQuit() {
-        this.hud = null;
+
     }
 
     public Thread getSpawner() {

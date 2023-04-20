@@ -114,4 +114,8 @@ public abstract class StatusEffect {
     protected void updateStrength() {
 
     }
+
+    public Identifier getId() {
+        return Registries.EFFECTS.getKey(this);
+    }
 }

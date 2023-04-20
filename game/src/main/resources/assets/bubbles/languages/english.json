@@ -16,27 +16,28 @@
     "gamemode": {
       "names": {
         "classic": "Classic Mode",
+        "modern": "Modern Mode",
         "impossible": "Impossible Mode"
       }
     },
     "status_effect": {
       "poison": {
-        "Name": "Poisoned"
+        "name": "Poisoned"
       },
       "blindness": {
-        "Name": "Blinded"
+        "name": "Blinded"
       },
       "multi_score": {
-        "Name": "Multi Score"
+        "name": "Multi Score"
       },
       "speed_boost": {
-        "Name": "Speed Boost"
+        "name": "Speed Boost"
       },
       "attack_boost": {
-        "Name": "Attack Boost"
+        "name": "Attack Boost"
       },
-      "DefenseBoost": {
-        "Name": "Defense Boost"
+      "defense_boost": {
+        "name": "Defense Boost"
       }
     },
     "Info": {

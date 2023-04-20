@@ -1,15 +1,13 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
+import com.ultreon.libs.text.v0.TextObject;
 import net.fabricmc.loader.api.FabricLoader;
-
-import java.awt.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class TitleScreen extends Screen {
@@ -53,32 +51,32 @@ public class TitleScreen extends Screen {
 
         startButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 220, 400, 60)
-                .text(new TranslationText("bubbles/screen/title/start"))
+                .text(TextObject.translation("bubbles/screen/title/start"))
                 .command(this::startGame)
                 .build());
         savesButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 300, 400, 60)
-                .text(new TranslationText("bubbles/screen/title/saves"))
+                .text(TextObject.translation("bubbles/screen/title/saves"))
                 .command(this::openSavesSelection)
                 .build());
         modsButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 380, 190, 60)
-                .text(new TranslationText("bubbles/screen/title/mods"))
+                .text(TextObject.translation("bubbles/screen/title/mods"))
                 .command(this::openModList)
                 .build());
         optionsButton = add(new TitleButton.Builder()
                 .bounds(width / 2 + 10, 380, 190, 60)
-                .text(new TranslationText("bubbles/screen/title/options"))
+                .text(TextObject.translation("bubbles/screen/title/options"))
                 .command(this::openOptions)
                 .build());
         languageButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 460, 190, 60)
-                .text(new TranslationText("bubbles/screen/title/language"))
+                .text(TextObject.translation("bubbles/screen/title/language"))
                 .command(this::openLanguageSettings)
                 .build());
         quitButton = add(new TitleButton.Builder()
                 .bounds(width / 2 + 10, 460, 190, 60)
-                .text(new TranslationText("bubbles/screen/title/quit"))
+                .text(TextObject.translation("bubbles/screen/title/quit"))
                 .command(game::shutdown)
                 .build());
     }

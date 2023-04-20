@@ -40,6 +40,8 @@ public class ClassicMode extends Gamemode {
      */
     @Override
     public void initEnv(Environment environment, Messenger messenger) {
+        this.hud = new ClassicModeHud(this);
+
         initializeClassic(environment, messenger);
     }
 

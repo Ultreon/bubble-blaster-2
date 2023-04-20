@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Anchor;
@@ -9,6 +8,7 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public class GameOverScreen extends Screen {
 
         add(new IngameButton.Builder()
                 .bounds((int) (BubbleBlaster.getMiddleX() - 128), 340, 256, 48)
-                .text(new TranslationText("bubbles/screen/game_over/back_to_title")).command(this::goToTitle).build());
+                .text(TextObject.translation("bubbles/screen/game_over/back_to_title")).command(this::goToTitle).build());
     }
 
     private void goToTitle() {

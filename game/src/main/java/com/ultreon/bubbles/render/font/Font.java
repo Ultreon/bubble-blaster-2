@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.render.font;
 
-import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
@@ -9,9 +7,16 @@ import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.commons.util.StringUtils;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,9 +28,7 @@ public class Font {
     FontInfo info;
 
     public Font() {
-        GameEvents.LOAD_FONTS.listen(loader -> {
-            register();
-        });
+        GameEvents.LOAD_FONTS.listen(loader -> register());
     }
 
     public void drawMultiline(Renderer renderer, TextObject text, int size, float x, float y) {
@@ -146,7 +149,82 @@ public class Font {
     }
 
     public void draw(Renderer renderer, TextObject text, int size, float x, float y, Thickness thickness, FontStyle style, Anchor anchor) {
-        draw(renderer, text.getText(), size, x, y, thickness, style, anchor);
+        java.awt.Font awtFont = getAwtFont(size, thickness, style);
+        AttributedString attrString = text.getAttrString();
+        if (text.getText().isEmpty()) return;
+
+        java.awt.Font fallback = getAwtFont(size, thickness, style, GameSettings.instance().getLanguage());
+        java.awt.Font font = getAwtFont(size, thickness, style);
+        attrString.addAttribute(TextAttribute.FONT, font);
+        attrString.addAttribute(TextAttribute.SIZE, size);
+        attrString.addAttribute(TextAttribute.FAMILY, font.getFamily());
+        attrString.addAttribute(TextAttribute.LIGATURES, true);
+
+        var bounds = bounds(renderer, attrString);
+
+        switch (anchor) {
+            case N -> {
+                x = x - bounds.width / 2;
+                y = y + bounds.height;
+            }
+            case NE -> {
+                x = x - bounds.width;
+                y = y + bounds.height;
+            }
+            case NW -> y = y + bounds.height;
+            case E -> {
+                x = x - bounds.width;
+                y = y + bounds.height / 2;
+            }
+            case CENTER -> {
+                x = x - bounds.width / 2;
+                y = y + bounds.height / 2;
+            }
+            case W -> y = y;
+            case SE -> {
+                x = x - bounds.width;
+                y = y;
+            }
+            case S -> {
+                x = x - bounds.width / 2;
+                y = y;
+            }
+            case SW -> y = y;
+        }
+//        renderer.font(font);
+        renderer.text(attrString, x, y);
+    }
+
+    private Rectangle2D.Float bounds(Renderer renderer, AttributedString text) {
+        TextLayout textLayout = new TextLayout(
+                text.getIterator(),
+                renderer.getFontRenderContext()
+        );
+        return (Rectangle2D.Float) textLayout.getBounds();
+    }
+
+    public Rectangle2D.Float bounds(Renderer renderer, int size,  FontStyle style, TextObject text) {
+        return bounds(renderer, size, Thickness.REGULAR, style, text);
+    }
+
+    public Rectangle2D.Float bounds(Renderer renderer, int size, TextObject text) {
+        return bounds(renderer, size, Thickness.REGULAR, text);
+    }
+
+    public Rectangle2D.Float bounds(Renderer renderer, int size, Thickness thickness, TextObject text) {
+        return bounds(renderer, size, thickness, FontStyle.PLAIN, text);
+    }
+
+    public Rectangle2D.Float bounds(Renderer renderer, int size, Thickness thickness, FontStyle style, TextObject text) {
+        AttributedString attrString = text.getAttrString();
+
+        java.awt.Font font = getAwtFont(size, thickness, style);
+        attrString.addAttribute(TextAttribute.FONT, font);
+        attrString.addAttribute(TextAttribute.SIZE, size);
+        attrString.addAttribute(TextAttribute.FAMILY, font.getFamily());
+        attrString.addAttribute(TextAttribute.LIGATURES, true);
+
+        return bounds(renderer, attrString);
     }
 
     public void draw(Renderer renderer, String text, int size, float x, float y) {
@@ -186,43 +264,7 @@ public class Font {
     }
 
     public void draw(Renderer renderer, String text, int size, float x, float y, Thickness thickness, FontStyle style, Anchor anchor) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        FontMetrics metrics = renderer.fontMetrics(awtFont);
-
-        switch (anchor) {
-            case N -> {
-                x = x - (float) metrics.stringWidth(text) / 2;
-                y = y + (float) metrics.getHeight() / 2 + metrics.getDescent();
-            }
-            case NE -> {
-                x = x - metrics.stringWidth(text);
-                y = y + (float) metrics.getHeight() / 2 + metrics.getDescent();
-            }
-            case NW -> y = y + (float) metrics.getHeight() / 2 + metrics.getDescent();
-            case E -> {
-                x = x - metrics.stringWidth(text);
-                y = y + metrics.getDescent();
-            }
-            case CENTER -> {
-                x = x - (float) metrics.stringWidth(text) / 2;
-                y = y + metrics.getDescent();
-            }
-            case W -> y = y + metrics.getDescent();
-            case SE -> {
-                x = x - metrics.stringWidth(text);
-                y = y - (float) metrics.getHeight() / 2 + metrics.getAscent();
-            }
-            case S -> {
-                x = x - (float) metrics.stringWidth(text) / 2;
-                y = y - (float) metrics.getHeight() / 2 + metrics.getAscent();
-            }
-            case SW -> y = y - (float) metrics.getHeight() / 2 + metrics.getDescent();
-        }
-
-        java.awt.Font fallback = getAwtFont(size, thickness, style, GameSettings.instance().getLanguage());
-        java.awt.Font font = getAwtFont(size, thickness, style);
-        renderer.font(font);
-        renderer.text(StringUtils.createFallbackString(text, font, fallback), x, y);
+        draw(renderer, TextObject.literal(text), size, x, y, thickness, style, anchor);
     }
 
     @ApiStatus.Internal

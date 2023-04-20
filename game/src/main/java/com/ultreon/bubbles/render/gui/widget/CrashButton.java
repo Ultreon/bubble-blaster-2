@@ -1,12 +1,11 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.common.text.LiteralText;
-import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.render.gui.border.OuterBorder;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.awt.*;
 
@@ -15,7 +14,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     private TextObject text;
 
     public void setText(String text) {
-        this.text = new LiteralText(text);
+        this.text = TextObject.literal(text);
     }
 
     public void setText(TextObject text) {
@@ -54,7 +53,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         }
 
         public Builder text(String text) {
-            this._text = new LiteralText(text);
+            this._text = TextObject.literal(text);
             return this;
         }
 

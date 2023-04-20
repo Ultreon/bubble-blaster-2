@@ -11,6 +11,7 @@ import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
+import com.ultreon.bubbles.debug.Section;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
@@ -57,7 +58,6 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
-import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.impl.util.Arguments;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -76,7 +76,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
@@ -200,7 +199,7 @@ public final class BubbleBlaster {
     private boolean isGlitched = false;
     private Supplier<Activity> activity;
     private volatile boolean rpcUpdated;
-    private Map<String, Long> lastProfile = new HashMap<>();
+    private Map<Thread, Map<String, Section>> lastProfile = new HashMap<>();
     private float fadeInDuration = Float.NEGATIVE_INFINITY;
     private boolean fadeIn = false;
     private long fadeInStart = 0L;
@@ -243,6 +242,8 @@ public final class BubbleBlaster {
 
         // Invoke entry points.
         EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
+
+        DebugFormatters.initClass();
 
         // Prepare for loading.
         this.prepare();
@@ -415,7 +416,7 @@ public final class BubbleBlaster {
         getGameWindow().requestFocus();
     }
 
-    public static Map<String, Long> getLastProfile() {
+    public static Map<Thread, Map<String, Section>> getLastProfile() {
         return instance.lastProfile;
     }
 
@@ -1068,7 +1069,7 @@ public final class BubbleBlaster {
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void createGame(long seed) {
-        createGame(seed, Gamemodes.CLASSIC);
+        createGame(seed, Gamemodes.MODERN);
     }
 
     /**
@@ -1446,7 +1447,6 @@ public final class BubbleBlaster {
 
         try {
             while (running) {
-                profiler.start();
                 var canTick = false;
 
                 var time2 = TimeProcessor.now();
@@ -1467,17 +1467,15 @@ public final class BubbleBlaster {
                 Thread.sleep(1);
 
                 try {
-                    SwingUtilities.invokeAndWait(() -> {
-                        profiler.startSection("render");
-                        wrappedRender(fps);
-                        profiler.endSection("render");
-                    });
+                    profiler.start("render");
+                    wrappedRender(fps);
+                    profiler.end();
                 } catch (Throwable t) {
                     var crashLog = new CrashLog("Game being rendered.", t);
                     crash(crashLog.createCrash());
                 }
 
-                lastProfile = profiler.end();
+                lastProfile = profiler.collect();
                 Thread.sleep(8);
             }
         } catch (InterruptedException e) {
