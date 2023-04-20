@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.event.v2.EventResult;
-import com.ultreon.bubbles.event.v2.ScreenEvents;
+import com.ultreon.bubbles.event.v1.ScreenEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
+import com.ultreon.libs.events.v1.ValueEventResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -68,17 +68,19 @@ public class ScreenManager {
         if (screen == null && game.isInMainMenus()) {
             screen = new TitleScreen();
         }
-        EventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(screen);
-        this.currentScreen = result.isInterrupted() ? result.getValue() : screen;
+        ValueEventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(screen);
+        var newScreen = result.isInterrupted() ? result.getValue() : screen;
+        if (result.isCanceled()) newScreen = new TitleScreen();
 
         game.getGameWindow().setCursor(screen != null ? screen.getDefaultCursor() : game.getDefaultCursor());
 
-        if (currentScreen != null) {
-            ScreenEvents.INIT.factory().onInit(this.currentScreen);
-            this.currentScreen.init();
+        if (newScreen != null) {
+            ScreenEvents.INIT.factory().onInit(newScreen);
+            newScreen.init();
         } else {
             LOGGER.debug("Showing <<NO-SCENE>>");
         }
+        this.currentScreen = newScreen;
         return true;
     }
 
@@ -87,7 +89,7 @@ public class ScreenManager {
             throw new IllegalStateException("SceneManager already initialized.");
         }
 
-        EventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(this.startScreen);
+        ValueEventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(this.startScreen);
         this.currentScreen = result.isInterrupted() ? result.getValue() : this.startScreen;
         this.game.getGameWindow().setCursor(this.startScreen.getDefaultCursor());
 

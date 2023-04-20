@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.command;
 
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,7 +37,7 @@ public class SpawnCommand implements CommandExecutor {
             if (args[0].equals("spawn")) {
                 BubbleType bubble;
                 try {
-                    bubble = Registry.BUBBLES.getValue(Identifier.parse(args[1]));
+                    bubble = Registries.BUBBLES.getValue(Identifier.parse(args[1]));
                 } catch (InvalidValueException exception) {
                     player.sendMessage("Invalid key: " + args[1]);
                     return false;

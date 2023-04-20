@@ -1,25 +1,19 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.media.Sound;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
-
-import java.util.function.Supplier;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
 
 public class Sounds {
-    private static final DelayedRegister<Sound> REGISTER = DelayedRegister.create(BubbleBlaster.NAMESPACE, Registry.SOUNDS);
-
-    public static final RegistrySupplier<Sound> MENU_EVENT = register("sfx/ui/button/focus_change", Sound::new);
+    public static final Sound MENU_EVENT = register("sfx/ui/button/focus_change", new Sound());
 
     @SuppressWarnings("SameParameterValue")
-    private static <T extends Sound> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends Sound> T register(String name, T sound) {
+        Registries.SOUNDS.register(new Identifier(name), sound);
+        return sound;
     }
 
     public static void register() {
-        REGISTER.register();
+
     }
 }

@@ -22,5 +22,17 @@
         "url": "https://youtu.be/YRbiIRTXnws"
       }
     }
+  ],
+  "fonts": [
+    {
+      "author": {
+        "url": "https://fonts.google.com/noto/fonts",
+        "name": "Noto Fonts"
+      },
+      "source": {
+        "name": "Noto Sans",
+        "url": "https://fonts.google.com/noto/specimen/Noto+Sans"
+      }
+    }
   ]
 }

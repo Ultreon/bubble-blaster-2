@@ -5,9 +5,10 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.event.v2.EntityEvents;
+import com.ultreon.bubbles.event.v1.EntityEvents;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.events.v1.ValueEventResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,23 +38,26 @@ public abstract class LivingEntity extends Entity {
     }
 
     public double getMaxHealth() {
-        return attributes.getBase(Attribute.MAX_HEALTH);
+        return attributes.get(Attribute.MAX_HEALTH);
     }
 
-    public void setMaxHealth(double maxDamage) {
-        attributes.setBase(Attribute.MAX_HEALTH, maxDamage);
+    @Deprecated
+    public void setMaxHealth(double baseMaxDamage) {
+        attributes.setBase(Attribute.MAX_HEALTH, baseMaxDamage);
     }
 
     public double getSpeed() {
-        return attributes.getBase(Attribute.SPEED);
+        return attributes.get(Attribute.SPEED);
     }
 
-    public void setSpeed(double speed) {
-        attributes.setBase(Attribute.SPEED, speed);
+    @Deprecated
+    public void setSpeed(double baseSpeed) {
+        attributes.setBase(Attribute.SPEED, baseSpeed);
     }
 
+    @Deprecated
     public double getBaseSpeed() {
-        return bases.getBase(Attribute.SPEED);
+        return attributes.getBase(Attribute.SPEED);
     }
 
     /**
@@ -66,14 +70,13 @@ public abstract class LivingEntity extends Entity {
     public void damage(double value, EntityDamageSource source) {
         if (invincible) return;
 
-        if (attributes.getBase(Attribute.DEFENSE) == 0f) {
-            this.destroy();
-        }
+        ValueEventResult<Double> eventResult = EntityEvents.DAMAGE.factory().onDamage(this, source, value);
+        if (eventResult.isCanceled()) return;
 
-        @Nullable Double resultValue = EntityEvents.DAMAGE.factory().onDamage(this, source, value).getValue();
-        if (resultValue != null) {
-            value = resultValue;
-        }
+        if (attributes.getBase(Attribute.DEFENSE) == 0f) this.destroy();
+
+        @Nullable Double resultValue = eventResult.getValue();
+        if (resultValue != null) value = resultValue;
 
         this.health -= value / attributes.getBase(Attribute.DEFENSE);
         this.checkHealth();
@@ -105,13 +108,21 @@ public abstract class LivingEntity extends Entity {
     }
 
     @Override
-    public void load(MapType tag) {
-        super.load(tag);
+    public void load(MapType data) {
+        super.load(data);
 
-        health = tag.getFloat("health");
+        health = data.getFloat("health");
     }
 
     public String toSimpleString() {
         return id() + "@(" + Math.round(getX()) + "," + Math.round(getY()) + ")";
+    }
+
+    public boolean isInvincible() {
+        return invincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
     }
 }

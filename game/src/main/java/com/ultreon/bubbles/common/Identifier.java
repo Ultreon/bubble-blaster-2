@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"unused"})
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@Deprecated
 public final class Identifier {
     @SerializedName("id")
     private final @NotNull String location;
@@ -34,18 +35,15 @@ public final class Identifier {
     private final @NotNull String path;
 
     public Identifier(@NotNull String location, @NotNull String path) {
-        if (!Pattern.matches("^[a-z\\d-_]{2,}$", location))
-            throw new SyntaxException("Location contains illegal characters: " + location);
-
-        if (!Pattern.matches("^[a-z\\d_./]+$", path))
-            throw new SyntaxException("Path contains illegal characters: " + path);
+        testLocation(location);
+        testPath(path);
 
         this.location = location;
         this.path = path;
     }
 
     public Identifier(@MinLen(3) @NotNull String name) {
-        String[] split = name.split("@", 1);
+        String[] split = name.split(":", 2);
         if (split.length == 2) {
             this.location = testLocation(split[0]);
             this.path = testPath(split[1]);
@@ -77,7 +75,7 @@ public final class Identifier {
 
     @Contract("_ -> param1")
     public static String testLocation(String location) {
-        if (!Pattern.matches("([a-z][a-z\\d_]{2,})(\\.[a-z][a-z\\d_]{2,})+", location)) {
+        if (!Pattern.matches("([a-z\\d_]+)(\\.[a-z][a-z\\d_]+)*", location)) {
             throw new SyntaxException("Location is invalid: " + location);
         }
         return location;
@@ -85,7 +83,7 @@ public final class Identifier {
 
     @Contract("_ -> param1")
     public static @NotNull String testPath(String path) {
-        if (!Pattern.matches("([a-z_.\\d]{2,})(/[a-z_.\\d]{2,})*", path)) {
+        if (!Pattern.matches("([a-z_.\\d]+)(/[a-z_.\\d]+)*", path)) {
             throw new SyntaxException("Path is invalid: " + path);
         }
         return path;
@@ -111,7 +109,7 @@ public final class Identifier {
     @NewInstance
     @Contract(pure = true)
     public String toString() {
-        return location + "@" + path;
+        return location + ":" + path;
     }
 
     /**

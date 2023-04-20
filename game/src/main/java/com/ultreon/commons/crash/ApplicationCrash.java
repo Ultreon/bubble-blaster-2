@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public final class ApplicationCrash {
     private static final List<Runnable> crashHandlers = new ArrayList<>();
     @NotNull

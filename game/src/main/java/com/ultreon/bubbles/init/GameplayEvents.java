@@ -1,32 +1,26 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.gameplay.event.BloodMoonGameplayEvent;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
-
-import java.util.function.Supplier;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * @see GameplayEvent
  */
 @SuppressWarnings("unused")
 public class GameplayEvents {
-    private static final DelayedRegister<GameplayEvent> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.GAMEPLAY_EVENTS);
-
     // Bubbles
-    public static final RegistrySupplier<BloodMoonGameplayEvent> BLOOD_MOON_EVENT = register("blood_moon", BloodMoonGameplayEvent::new);
+    public static final BloodMoonGameplayEvent BLOOD_MOON_EVENT = register("blood_moon", new BloodMoonGameplayEvent());
 
-    private static <T extends GameplayEvent> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends GameplayEvent> T register(String name, T gameplayuEvent) {
+        Registries.GAMEPLAY_EVENTS.register(new Identifier(name), gameplayuEvent);
+        return gameplayuEvent;
     }
 
-    /**
-     * <b>DO NOT CALL, THIS IS CALLED INTERNALLY</b>
-     */
+    @ApiStatus.Internal
     public static void register() {
-        REGISTER.register();
+
     }
 }

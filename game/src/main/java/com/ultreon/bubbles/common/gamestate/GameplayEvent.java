@@ -2,7 +2,7 @@ package com.ultreon.bubbles.common.gamestate;
 
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -20,7 +20,7 @@ public abstract class GameplayEvent {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isActive(DateTime dateTime) {
-        @Nullable Screen currentScene = game.getCurrentScreen();
+        @Nullable Screen currentScreen = game.getCurrentScreen();
 
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {
@@ -49,6 +49,6 @@ public abstract class GameplayEvent {
 
     @Override
     public String toString() {
-        return "GameEvent[" + Registry.GAMEPLAY_EVENTS.getKey(this) + "]";
+        return "GameEvent[" + Registries.GAMEPLAY_EVENTS.getKey(this) + "]";
     }
 }

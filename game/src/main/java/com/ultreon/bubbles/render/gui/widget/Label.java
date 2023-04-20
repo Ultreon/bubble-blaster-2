@@ -3,14 +3,20 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.libs.text.v0.TextObject;
 
 public class Label extends GuiComponent {
-    private String text;
+    private TextObject text;
     private boolean wrapped;
 
     protected Color foregroundColor;
+    private int fontSize;
 
     public Label(String text, int x, int y, int width, int height) {
+        this(TextObject.literal(text), x, y, width, height);
+    }
+
+    public Label(TextObject text, int x, int y, int width, int height) {
         super(x, y, width, height);
         this.text = text;
 
@@ -20,20 +26,17 @@ public class Label extends GuiComponent {
 
     @Override
     public void render(Renderer renderer) {
-        Renderer ngg1 = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderComponent(ngg1);
-        ngg1.dispose();
+        renderComponent(renderer);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.color(backgroundColor);
-        renderer.fill(getBounds());
+        fill(renderer, 0, 0, width, height, backgroundColor);
 
         renderer.color(foregroundColor);
 
-        if (wrapped) renderer.wrappedText(text, 0, 0, getWidth());
-        else renderer.multiLineText(text, 0, 0);
+        if (wrapped) font.drawMultiline(renderer, font.wrap(fontSize, text.getText(), getWidth()), fontSize, 0, 0);
+        else font.drawMultiline(renderer, text.getText(), fontSize, 0, 0);
     }
 
     @Override
@@ -41,12 +44,20 @@ public class Label extends GuiComponent {
 
     }
 
-    public String getText() {
+    public TextObject getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(TextObject text) {
         this.text = text;
+    }
+
+    public String getLiteralText() {
+        return this.text.getText();
+    }
+
+    public void setLiteralText(String text) {
+        this.text = TextObject.literal(text);
     }
 
     public boolean isWrapped() {
@@ -63,5 +74,13 @@ public class Label extends GuiComponent {
 
     public void setForegroundColor(Color foregroundColor) {
         this.foregroundColor = foregroundColor;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public int getFontSize() {
+        return fontSize;
     }
 }

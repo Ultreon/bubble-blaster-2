@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.util;
 
-import com.ultreon.bubbles.common.text.TextObject;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

@@ -1,6 +1,8 @@
 package com.ultreon.bubbles.common.exceptions;
 
+@Deprecated
 public class SceneParameterCountError extends RuntimeException {
+    @Deprecated
     private static String getMessage(int needed, int got) {
         String a;
         if (needed == 1 || needed == -1) {
@@ -12,6 +14,7 @@ public class SceneParameterCountError extends RuntimeException {
         return "Needed " + needed + " " + a + " got " + got + ".";
     }
 
+    @Deprecated
     public SceneParameterCountError(int needed, int got) {
         super(getMessage(needed, got));
     }

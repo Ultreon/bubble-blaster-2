@@ -2,6 +2,7 @@ package com.ultreon.commons.function.primitive;
 
 import java.util.function.BiFunction;
 
+@Deprecated
 @FunctionalInterface
 public interface BiShort2ShortFunction extends BiFunction<Short, Short, Short> {
     @Override

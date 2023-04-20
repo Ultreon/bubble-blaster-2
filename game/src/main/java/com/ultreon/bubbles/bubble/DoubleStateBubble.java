@@ -3,7 +3,7 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.init.Effects;
+import com.ultreon.bubbles.init.StatusEffects;
 import org.apache.commons.lang3.Range;
 
 public class DoubleStateBubble extends BubbleType {
@@ -21,6 +21,6 @@ public class DoubleStateBubble extends BubbleType {
 
     @Override
     public AppliedEffect getEffect(Bubble source, Entity target) {
-        return new AppliedEffect(Effects.MULTI_SCORE.get(), source.getRadius() / 8, 2);
+        return new AppliedEffect(StatusEffects.MULTI_SCORE, source.getRadius() / 8, 2);
     }
 }

@@ -1,13 +1,10 @@
 package com.ultreon.bubbles.entity.attribute;
 
 import com.ultreon.bubbles.common.holders.ListDataHolder;
-import com.ultreon.commons.exceptions.TODO;
-import com.ultreon.commons.function.primitive.BiDouble2DoubleFunction;
-import com.ultreon.commons.function.primitive.Double2DoubleFunction;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.ListType;
+import com.ultreon.libs.functions.v0.BiDouble2DoubleFunction;
+import com.ultreon.libs.functions.v0.Double2DoubleFunction;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -106,8 +103,18 @@ public class AttributeContainer implements ListDataHolder<MapType> {
         return list;
     }
 
-    public ListType<MapType> loadModifiers() {
-        throw new TODO("Not yet implemented"); // TODO: Implement load modifiers in attribute container.
+    public void loadModifiers(ListType<MapType> list) {
+        for (MapType tag : list) {
+            Attribute key = Attribute.fromName(tag.getString("name"));
+            if (key == null) continue;
+            ListType<MapType> modifiersTag = tag.getList("Modifiers");
+            List<AttributeModifier> modifiers = new ArrayList<>();
+            for (MapType modifierTag : modifiersTag) {
+                modifiers.add(AttributeModifier.deserialize(modifierTag));
+            }
+
+            this.modifierMap.put(key, modifiers);
+        }
     }
 
     public void load(ListType<MapType> list) {
@@ -160,5 +167,9 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     public void removeModifier(Attribute attribute, AttributeModifier modifier) {
         List<AttributeModifier> list = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
+    }
+
+    public void removeModifiers(Attribute attribute) {
+        modifierMap.remove(attribute);
     }
 }

@@ -2,6 +2,7 @@ package com.ultreon.commons.function.primitive;
 
 import java.util.function.BiFunction;
 
+@Deprecated
 @FunctionalInterface
 public interface BiInt2IntFunction extends BiFunction<Integer, Integer, Integer> {
     @Override

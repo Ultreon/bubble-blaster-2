@@ -5,7 +5,9 @@ import com.ultreon.bubbles.common.exceptions.ValueExists;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.collections.v0.exceptions.ValueExistsException;
+import com.ultreon.libs.collections.v0.list.SizedList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,10 +66,10 @@ public class BubbleSystem {
      * {@linkplain BubbleType Bubble} initialization for random spawning.
      *
      * @see BubbleType
-     * @see Registry#BUBBLES
+     * @see Registries#BUBBLES
      */
     public static void init() {
-        Collection<BubbleType> bubbleTypes = Registry.BUBBLES.values();
+        Collection<BubbleType> bubbleTypes = Registries.BUBBLES.values();
         BubbleSystem.bubblePriorities = new HashMap<>();
         BubbleSystem.maxPriority = 0;
 
@@ -79,7 +81,7 @@ public class BubbleSystem {
             try {
                 priorities.add(bubbleType.getPriority(), bubbleType);
                 defaults.add(bubbleType.getPriority(), bubbleType);
-            } catch (ValueExists valueExists) {
+            } catch (ValueExistsException valueExists) {
                 valueExists.printStackTrace();
             }
         }
@@ -88,7 +90,7 @@ public class BubbleSystem {
     /**
      * Returns a random bubble from the bubbles initialized in {@link #init()}.
      *
-     * @param rand The random instance used for the bubble system e.g. {@code bubbleblaster:bubble_system} from the initDefaults in {@link Gamemode}.
+     * @param rand The random instance used for the bubble system e.g. {@code bubbles:bubble_system} from the initDefaults in {@link Gamemode}.
      * @return A random bubble.
      */
     public static BubbleType random(Rng rand, long spawnIndex, int retry, Environment env) {

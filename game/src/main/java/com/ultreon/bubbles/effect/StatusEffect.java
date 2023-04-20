@@ -1,42 +1,64 @@
 package com.ultreon.bubbles.effect;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
-import com.ultreon.bubbles.event.v2.FilterBuilder;
+import com.ultreon.bubbles.event.v1.FilterBuilder;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.registry.RegistryException;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.resources.Resource;
-import com.ultreon.bubbles.util.helpers.SvgHelper;
+import com.ultreon.bubbles.render.Texture;
+import com.ultreon.libs.resources.v0.Resource;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Objects;
 
 
 public abstract class StatusEffect {
     // Empty Image.
-    private static final BufferedImage FALLBACK_IMAGE;
+    private static final Texture FALLBACK_TEXTURE;
 
     static {
-        FALLBACK_IMAGE = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        Renderer renderer = new Renderer(FALLBACK_IMAGE.createGraphics(), BubbleBlaster.getInstance().getObserver());
-        renderer.clearColor(0, 0, 0, 0);
-        renderer.clearRect(0, 0, 32, 32);
+        FALLBACK_TEXTURE = new Texture() {
+            @Override
+            protected int getWidth() {
+                return 16;
+            }
+
+            @Override
+            protected int getHeight() {
+                return 16;
+            }
+
+            @Override
+            public void draw(Renderer renderer, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight) {
+                renderer.color(0xff404040);
+                renderer.rect(x, y, width, height);
+                renderer.color(0xffffc000);
+                renderer.rect(x, y, width / 2, height / 2);
+                renderer.rect(x + width / 2, y + height / 2, width / 2, height / 2);
+            }
+
+            @Override
+            public Raster getRaster() {
+                return null;
+            }
+        };
     }
 
-    private Image cachedImage = null;
+    private Texture cachedTexture = null;
 
     public StatusEffect() {
 
     }
 
     public Identifier getIconId() {
-        return Registry.EFFECTS.getKey(this).mapPath(path -> "vectors/effects/" + path + ".svg");
+        Identifier key = Registries.EFFECTS.getKey(this);
+        if (key == null) throw new RegistryException("Object not registered: " + getClass().getName());
+        return key.mapPath(path -> "effects/" + path);
     }
 
     public @Nullable Resource getIconResource() {
@@ -48,25 +70,14 @@ public abstract class StatusEffect {
         return stream;
     }
 
-    public Image getIcon(int w, int h, Color color) throws IOException {
-        if (cachedImage != null) {
-            return cachedImage;
+    public Texture getIcon() throws IOException {
+        if (cachedTexture != null) {
+            return cachedTexture;
         }
 
-        Resource resource = getIconResource();
-
-        if (resource == null) return cachedImage = FALLBACK_IMAGE;
-
-        try (InputStream inputStream = resource.openStream()) {
-            if (inputStream != null) {
-                SvgHelper svgHelper = new SvgHelper(resource.getUrl(), inputStream);
-                return cachedImage = svgHelper.getColoredImage(w, h, color);
-            }
-        } catch (Exception ignored) {
-
-        }
-
-        return cachedImage = FALLBACK_IMAGE;
+        BubbleBlaster game = BubbleBlaster.getInstance();
+        var texture = game.getTextureManager().getOrLoadTexture(getIconId());
+        return cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 
     public final void tick(Entity entity, AppliedEffect appliedEffect) {
@@ -102,5 +113,9 @@ public abstract class StatusEffect {
     @SuppressWarnings("EmptyMethod")
     protected void updateStrength() {
 
+    }
+
+    public Identifier getId() {
+        return Registries.EFFECTS.getKey(this);
     }
 }

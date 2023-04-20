@@ -7,6 +7,7 @@ import com.ultreon.bubbles.settings.GameSettings;
 
 import java.util.Locale;
 
+@Deprecated
 public class Language {
     private final Locale locale;
     private final JsonObject root;
@@ -57,7 +58,7 @@ public class Language {
     private static String translateFallback(String path, Object[] args) {
         Language english = LanguageManager.INSTANCE.get(new Locale("en"));
         if (english == null) {
-            throw new IllegalStateException("English language not loaded");
+            return path;
         }
         String s = english.get(path, args);
         return s == null ? path : s;

@@ -1,19 +1,15 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.common.text.translation.Language;
+import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.util.Util;
-
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class OptionsScreen extends Screen {
-    private static OptionsScreen INSTANCE;
     private final OptionsNumberInput maxBubblesOption;
     private final OptionsButton languageButton;
     private final OptionsButton cancelButton;
@@ -23,18 +19,12 @@ public class OptionsScreen extends Screen {
     public OptionsScreen(Screen back) {
         super();
 
-        OptionsScreen.INSTANCE = this;
-
         this.back = back;
 
         this.maxBubblesOption = new OptionsNumberInput(0, 0, 321, 48, GameSettings.instance().getMaxBubbles(), 400, 2000);
         this.languageButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::showLanguages).build();
         this.cancelButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::back).build();
         this.saveButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::save).build();
-    }
-
-    public static OptionsScreen instance() {
-        return INSTANCE;
     }
 
     private void save() {
@@ -45,11 +35,11 @@ public class OptionsScreen extends Screen {
     }
 
     private void showLanguages() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(new LanguageScreen(this));
+        game.showScreen(new LanguageScreen(this));
     }
 
     private void back() {
-        Objects.requireNonNull(Util.getSceneManager()).displayScreen(back);
+        game.showScreen(back);
     }
 
     @Override
@@ -93,11 +83,11 @@ public class OptionsScreen extends Screen {
         saveButton.setY((int) BubbleBlaster.getMiddleY() + 151);
         saveButton.setWidth(321);
 
-        renderBackground(game, renderer);
-
         cancelButton.setText(Language.translate("bubbles/other/cancel"));
         languageButton.setText(Language.translate("bubbles/screen/options/language"));
         saveButton.setText(Language.translate("bubbles/other/save"));
+
+        super.render(game, renderer, partialTicks);
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {

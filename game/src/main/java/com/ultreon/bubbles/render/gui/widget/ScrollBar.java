@@ -10,6 +10,8 @@ public class ScrollBar extends GuiComponent {
 
     private double percent = 0.0;
     private double scale;
+    private ScrollHandler scrollHandler;
+    private boolean dragging;
 
     /**
      * @param x      position create the widget
@@ -24,14 +26,14 @@ public class ScrollBar extends GuiComponent {
     @Override
     public void render(Renderer renderer) {
         setWidth(SIZE);
-        renderer.color(0x40000000);
-        renderer.fill(getBounds());
-        renderer.color(0xff555555);
-        renderer.fill(getThumbBounds());
+
+        Rectangle thumbBounds = getThumbBounds();
+        fill(renderer, 0, 0, width, height, 0x40000000);
+        fill(renderer, thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 0xff555555);
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(getX() + getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
+        return new Rectangle(getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
     }
 
     private double scale() {
@@ -43,7 +45,7 @@ public class ScrollBar extends GuiComponent {
     }
 
     public void setPercent(double percent) {
-        this.percent = percent;
+        this.percent = Mth.clamp(percent, 0.0, 1.0);
     }
 
     @Override
@@ -58,5 +60,37 @@ public class ScrollBar extends GuiComponent {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public void setOnScroll(ScrollHandler scrollHandler) {
+        this.scrollHandler = scrollHandler;
+    }
+
+    @Override
+    public void mouseDrag(int x, int y, int nx, int ny, int button) {
+        if (dragging) {
+            float percent = (float)ny / this.getHeight();
+            this.setPercent(percent);
+            this.scrollHandler.onScroll(percent);
+        }
+    }
+
+    @Override
+    public boolean mousePress(int x, int y, int button) {
+        if (this.scrollHandler != null) {
+            if (!this.getThumbBounds().contains(x, y)) {
+                float percent = (float) y / this.getHeight();
+                this.setPercent(percent);
+                this.scrollHandler.onScroll(percent);
+            } else {
+                this.dragging = true;
+            }
+        }
+        return true;
+    }
+
+    @FunctionalInterface
+    public interface ScrollHandler {
+        void onScroll(double percent);
     }
 }

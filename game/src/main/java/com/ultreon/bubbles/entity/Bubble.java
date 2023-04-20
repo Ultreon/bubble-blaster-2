@@ -3,7 +3,7 @@ package com.ultreon.bubbles.entity;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.entity.ai.AiTask;
@@ -16,15 +16,11 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -58,23 +54,28 @@ public class Bubble extends AbstractBubbleEntity {
     protected BubbleType bubbleType;
 
     // Entity type.
-    private static final EntityType<Bubble> entityType = Entities.BUBBLE.get();
+    private static final EntityType<Bubble> entityType = Entities.BUBBLE;
 
     private final Random random = new Random(Math.round((double) (System.currentTimeMillis() / 86400000))); // Random day. 86400000 milliseconds == 1 day.
     private boolean effectApplied = false;
+    private int destroyFrame;
+    private boolean isBeingDestroyed;
 
     public static EntityType<? extends Bubble> getRandomType(Environment environment, Rng rng) {
         if (rng.getNumber(0, GIANT_BUBBLE_RARITY, TYPE_RNG) == 0) {
-            return Entities.GIANT_BUBBLE.get();
+            return Entities.GIANT_BUBBLE;
         }
-        return Entities.BUBBLE.get();
+        return Entities.BUBBLE;
     }
 
     public Bubble(Environment environment) {
         super(entityType, environment);
 
         // Add player as collidable.
-        this.markAsCollidable(Entities.PLAYER.get());
+        this.markAsCollidable(Entities.PLAYER);
+
+        // FIXME: Use a more stable alternative that allows save loading. This is just a workaround.
+        if (!BubbleSpawnContext.exists()) return;
 
         // Get random properties
         BubbleRandomizer randomizer = this.environment.getBubbleRandomizer();
@@ -82,11 +83,11 @@ public class Bubble extends AbstractBubbleEntity {
         BubbleProperties properties = randomizer.getRandomProperties(environment.game().getGameBounds(), ctx.spawnIndex(), ctx.retry(), environment);
 
         // Bubble Type
-        this.bubbleType = properties.getType().canSpawn(environment) ? properties.getType() : Bubbles.NORMAL.get();
+        this.bubbleType = properties.getType().canSpawn(environment) ? properties.getType() : Bubbles.NORMAL;
 
         // Dynamic values
+        this.invincible = properties.getType().isInvincible();
         this.radius = properties.getRadius();
-        setSpeed(properties.getSpeed());
         this.baseRadius = properties.getRadius();
         this.attributes.setBase(Attribute.MAX_HEALTH, properties.getDamageValue());
         this.attributes.setBase(Attribute.MAX_HEALTH, properties.getDamageValue());
@@ -97,11 +98,10 @@ public class Bubble extends AbstractBubbleEntity {
         this.attributes.setBase(Attribute.DEFENSE, properties.getDefense());
         this.attributes.setBase(Attribute.SCORE, properties.getScoreMultiplier());
         this.attributes.setBase(Attribute.SPEED, properties.getSpeed());
-        this.bases.setBase(Attribute.SPEED, properties.getSpeed());
         this.bounceAmount = bubbleType.getBounceAmount();
 
         // Set velocity
-        this.velX = -getBaseSpeed();
+        this.velocityX = 0;
 
         // Set attributes.
         this.attributes.setBase(Attribute.DEFENSE, 0.5f);
@@ -109,8 +109,8 @@ public class Bubble extends AbstractBubbleEntity {
         this.rotation = 180;
 
         //
-        markAsAttackable(Entities.PLAYER.get());
-        markAsCollidable(Entities.BULLET.get());
+        markAsAttackable(Entities.PLAYER);
+        markAsCollidable(Entities.BULLET);
 
         xRng = environment.getBubbleRandomizer().getXRng();
         yRng = environment.getBubbleRandomizer().getYRng();
@@ -137,9 +137,9 @@ public class Bubble extends AbstractBubbleEntity {
     public void onCollision(Entity other, double deltaTime) {
         this.bubbleType.onCollision(this, other);
 
-        if (other instanceof Player player && bounceAmount > 0) {
-            player.bounceOff(this, bounceAmount / 10f, -0.01f);
-        }
+//        if (other instanceof Player player && bounceAmount > 0) {
+            other.bounceOff(this, bounceAmount / 10f, -0.01f);
+//        }
     }
 
     /**
@@ -210,11 +210,24 @@ public class Bubble extends AbstractBubbleEntity {
         this.prevX = x;
         this.prevY = y;
 
+        if (isBeingDestroyed) {
+            destroyFrame++;
+            if (destroyFrame >= 10) {
+                delete();
+            }
+        }
+
         super.tick(environment);
 
         if (this.x + this.radius < 0) {
             delete();
         }
+    }
+
+    @Override
+    public boolean hasAi() {
+        if (isBeingDestroyed) return false;
+        return super.hasAi();
     }
 
     @Override
@@ -232,7 +245,11 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, bubbleType.getColors());
+        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, destroyFrame, bubbleType.getColors());
+    }
+
+    public boolean isBeingDestroyed() {
+        return isBeingDestroyed;
     }
 
     /**
@@ -293,9 +310,7 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public void checkHealth() {
-        if (this.health <= 0d || radius < 0) {
-            delete();
-        }
+
     }
 
     @Override
@@ -307,12 +322,17 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public void damage(double value, EntityDamageSource source) {
+        if (isBeingDestroyed) return;
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
+        if (invincible) return;
         if (isValid() && isVisible()) {
             BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3);
         }
-        delete();
-        radius = (int) health + 4;
+        isBeingDestroyed = true;
+        attributes.removeModifiers(Attribute.SCORE);
+        attributes.setBase(Attribute.SCORE, 0);
+        canCollideWith.clear();
+        canAttack.clear();
     }
 
     @Override
@@ -325,24 +345,25 @@ public class Bubble extends AbstractBubbleEntity {
         data.putFloat("baseBounceAmount", baseBounceAmount);
 
         data.putBoolean("effectApplied", effectApplied);
-        data.putString("bubbleType", Registry.BUBBLES.getKey(bubbleType).toString());
+        Identifier id = Registries.BUBBLES.getKey(bubbleType);
+        data.putString("bubbleType", id == null ? Bubbles.NORMAL.getId().toString() : id.toString());
 
         return data;
     }
 
     @Override
-    public void load(MapType tag) {
-        super.load(tag);
+    public void load(MapType data) {
+        super.load(data);
 
-        this.radius = tag.getInt("radius");
-        this.baseRadius = tag.getInt("baseRadius");
+        this.radius = data.getInt("radius");
+        this.baseRadius = data.getInt("baseRadius");
 
-        this.bounceAmount = tag.getFloat("bounceAmount");
-        this.baseBounceAmount = tag.getFloat("baseBounceAmount");
+        this.bounceAmount = data.getFloat("bounceAmount");
+        this.baseBounceAmount = data.getFloat("baseBounceAmount");
 
-        Identifier bubbleTypeKey = Identifier.parse(tag.getString("bubbleType"));
-        this.effectApplied = tag.getBoolean("effectApplied");
-        this.bubbleType = Registry.BUBBLES.getValue(bubbleTypeKey);
+        Identifier bubbleTypeKey = Identifier.parse(data.getString("bubbleType"));
+        this.effectApplied = data.getBoolean("effectApplied");
+        this.bubbleType = Registries.BUBBLES.getValue(bubbleTypeKey);
     }
 
     public void setEffectApplied(boolean effectApplied) {

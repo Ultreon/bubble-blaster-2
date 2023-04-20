@@ -3,6 +3,7 @@ package com.ultreon.commons.lang;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Deprecated
 public final class Version implements Serializable {
     private static final long serialVersionUID = 0L;
     private final int major;

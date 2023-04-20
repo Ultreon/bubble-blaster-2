@@ -1,1 +1,1 @@
-com.ultreon.preloader.PreGameLoader
+net.fabricmc.impl.launch.knot.KnotClient

@@ -18,7 +18,7 @@ public class DamageBubble extends BubbleType {
         setHardness(1.0d);
 
         addAiTask(0, new AiAttack());
-        addAiTask(1, new AiTarget(Entities.PLAYER.get()));
+        addAiTask(1, new AiTarget(Entities.PLAYER));
     }
 
     @Override

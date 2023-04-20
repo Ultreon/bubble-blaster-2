@@ -1,6 +1,5 @@
 package com.ultreon.dev;
 
-import com.ultreon.preloader.PreGameLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +31,6 @@ public class GameDevMain {
                 GameDevMain.classPath.computeIfAbsent(name, s -> new ArrayList<>()).addAll(List.of(split));
             }
         });
-
-        PreGameLoader.main(args);
     }
 
     public static DevClassPath getClassPath() {

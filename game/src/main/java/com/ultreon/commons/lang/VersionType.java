@@ -8,6 +8,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @FieldsAreNonnullByDefault
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@Deprecated
 public enum VersionType {
     ALPHA("alpha"), BETA("beta"), RELEASE("release"), CANDIDATE("rc");
 

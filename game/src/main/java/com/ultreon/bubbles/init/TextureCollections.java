@@ -1,33 +1,27 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.TextureCollection;
-
-import java.util.function.Supplier;
+import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Initialization for texture collections.
  *
- * @see Registry#TEXTURE_COLLECTIONS
+ * @see Registries#TEXTURE_COLLECTIONS
  * @since 1.0.924-a1
  */
 public class TextureCollections {
-    private static final DelayedRegister<TextureCollection> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.TEXTURE_COLLECTIONS);
-
-    public static final RegistrySupplier<TextureCollection> BUBBLE_TEXTURES = register("bubble", TextureCollection::new);
+    public static final TextureCollection BUBBLE_TEXTURES = register("bubble", new TextureCollection());
 
     @SuppressWarnings("SameParameterValue")
-    private static <T extends TextureCollection> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends TextureCollection> T register(String name, T textureCollection) {
+        Registries.TEXTURE_COLLECTIONS.register(new Identifier(name), textureCollection);
+        return textureCollection;
     }
 
-    /**
-     * <b>DO NOT CALL, THIS IS CALLED INTERNALLY</b>
-     */
+    @ApiStatus.Internal
     public static void register() {
-        REGISTER.register();
+
     }
 }

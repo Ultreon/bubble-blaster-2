@@ -1,9 +1,10 @@
 package com.ultreon.bubbles.render;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.resources.Resource;
-import com.ultreon.bubbles.resources.ResourceManager;
+import com.ultreon.libs.resources.v0.Resource;
+import com.ultreon.libs.resources.v0.ResourceManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,7 +32,7 @@ public final class TextureManager {
             graphics.dispose();
             out.close();
             return new ByteArrayInputStream(out.toByteArray());
-        }, BubbleBlaster.getJarUrl()); // TODO: Replace with mem:// url.
+        }); // TODO: Replace with mem:// url.
     }
     private final Map<Identifier, Texture> textureMap = new ConcurrentHashMap<>();
 
@@ -56,14 +57,16 @@ public final class TextureManager {
         return loadTexture(entry, new TextureSource() {
             @Override
             public Texture create() {
-                return new ImageTex() {
+                AwtImage awtImage = new AwtImage() {
                     @Override
                     protected byte[] loadBytes() {
-                        ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
+                        @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
                         Resource resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
-                        return Objects.requireNonNullElse(resource, DEFAULT_TEXTURE).getData();
+                        return Objects.requireNonNullElse(resource, DEFAULT_TEXTURE).loadOrGet();
                     }
                 };
+                awtImage.load();
+                return awtImage;
             }
         });
     }

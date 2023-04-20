@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.common.text.translation;
 
+@Deprecated
 public class Translation {
     private final String id;
     private final Object[] format;

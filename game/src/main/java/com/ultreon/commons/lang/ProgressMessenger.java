@@ -4,6 +4,7 @@ package com.ultreon.commons.lang;
  * @author Qboi
  * @since 0.0.0
  */
+@Deprecated
 public class ProgressMessenger extends Progress {
     private final Messenger messenger;
 

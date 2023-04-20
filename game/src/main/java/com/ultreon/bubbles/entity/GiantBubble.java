@@ -18,7 +18,7 @@ import com.ultreon.bubbles.vector.Vec2f;
 @SuppressWarnings({"unused", "SameParameterValue"})
 public class GiantBubble extends Bubble {
     // Entity type.
-    private static final EntityType<Bubble> entityType = Entities.BUBBLE.get();
+    private static final EntityType<Bubble> entityType = Entities.BUBBLE;
 
     public GiantBubble(Environment environment) {
         super(environment);
@@ -42,13 +42,6 @@ public class GiantBubble extends Bubble {
         // Bubble Type
         this.bubbleType = properties.getType();
 
-        // Bases.
-        this.bases.setBase(Attribute.ATTACK, bubbleType.getAttack(this.environment, this.environment.getBubbleRandomizer().getAttackRng()));
-        this.bases.setBase(Attribute.DEFENSE, bubbleType.getDefense(this.environment, this.environment.getBubbleRandomizer().getDefenseRng()));
-        this.bases.setBase(Attribute.SCORE_MODIFIER, bubbleType.getScore(this.environment, this.environment.getBubbleRandomizer().getScoreMultiplierRng()));
-        this.bases.setBase(Attribute.SPEED, properties.getSpeed() / (Math.PI));
-        this.bases.setBase(Attribute.MAX_HEALTH, properties.getDamageValue() * 4 + 80);
-
         // Attributes
         this.attributes.setBase(Attribute.ATTACK, bubbleType.getAttack(this.environment, this.environment.getBubbleRandomizer().getAttackRng()));
         this.attributes.setBase(Attribute.DEFENSE, bubbleType.getDefense(this.environment, this.environment.getBubbleRandomizer().getDefenseRng()));
@@ -63,9 +56,6 @@ public class GiantBubble extends Bubble {
 
         // Static values.
         this.bounceAmount = bubbleType.getBounceAmount();
-
-        // Set velocity
-        this.velX = -getBaseSpeed();
 
         make();
     }

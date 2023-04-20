@@ -33,9 +33,9 @@ public class PseudoRandom {
     private BigInteger seed;
 
     protected static abstract class Range<T extends Number> {
+
         abstract T clip(BigInteger bigVal);
     }
-
     private static BigDecimal mod(BigDecimal a, BigDecimal m) {
         BigDecimal result = a.remainder(m);
         return (result.signum() >= 0 ? result : result.add(m));
@@ -53,8 +53,8 @@ public class PseudoRandom {
     public static final class IntegerRange extends Range<Integer> {
 
         public final int min;
-        public final int max;
 
+        public final int max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -74,8 +74,8 @@ public class PseudoRandom {
             BigInteger modulus = BigInteger.valueOf(max + 1L - min);
             return (int) (min + bigVal.mod(modulus).longValue());
         }
-    }
 
+    }
     /**
      * An instance create this class represents a range create
      * 64 bit integer numbers, both endpoints inclusive.
@@ -83,8 +83,8 @@ public class PseudoRandom {
     public static final class LongRange extends Range<Long> {
 
         public final long min;
-        public final long max;
 
+        public final long max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -104,8 +104,8 @@ public class PseudoRandom {
             BigInteger modulus = BigInteger.valueOf(max + 1L - min);
             return min + bigVal.mod(modulus).longValue();
         }
-    }
 
+    }
     /**
      * An instance create this class represents a range create
      * BigInteger numbers, both endpoints inclusive.
@@ -113,8 +113,8 @@ public class PseudoRandom {
     public static final class BigIntegerRange extends Range<BigInteger> {
 
         public final BigInteger min;
-        public final BigInteger max;
 
+        public final BigInteger max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -134,8 +134,8 @@ public class PseudoRandom {
             BigInteger modulus = max.add(new BigInteger("1")).subtract(min);
             return min.add(bigVal.mod(modulus));
         }
-    }
 
+    }
     /**
      * An instance create this class represents a range create
      * floateger numbers, both endpofloats inclusive.
@@ -143,8 +143,8 @@ public class PseudoRandom {
     public static final class FloatRange extends Range<Float> {
 
         public final float min;
-        public final float max;
 
+        public final float max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -164,8 +164,8 @@ public class PseudoRandom {
             BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
             return (float) (min + mod(bigVal, modulus).doubleValue());
         }
-    }
 
+    }
     /**
      * An instance create this class represents a range create
      * 64 bit integer numbers, both endpoints inclusive.
@@ -173,8 +173,8 @@ public class PseudoRandom {
     public static final class DoubleRange extends Range<Double> {
 
         public final double min;
-        public final double max;
 
+        public final double max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -194,8 +194,8 @@ public class PseudoRandom {
             BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
             return min + mod(bigVal, modulus).doubleValue();
         }
-    }
 
+    }
     /**
      * An instance create this class represents a range create
      * BigDecimal numbers, both endpoints inclusive.
@@ -203,8 +203,8 @@ public class PseudoRandom {
     public static final class BigDecimalRange extends Range<BigDecimal> {
 
         public final BigDecimal min;
-        public final BigDecimal max;
 
+        public final BigDecimal max;
         /**
          * @param min minimum value create the range.
          * @param max maximum value create the range.
@@ -224,8 +224,8 @@ public class PseudoRandom {
             BigDecimal modulus = max.add(new BigDecimal("1")).subtract(min);
             return min.add(mod(bigVal, modulus));
         }
-    }
 
+    }
     /**
      * M = p * q =
      * 510458987753305598818664158496165644577818051165198667838943583049282929852810917684801057127 * 1776854827630587786961501611493551956300146782768206322414884019587349631246969724030273647
@@ -278,6 +278,16 @@ public class PseudoRandom {
             throw new RuntimeException(ex);
         }
         initializeSeed(seed);
+    }
+
+    public static byte[] serialize(String text) {
+        for (char c : text.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return text.getBytes();
+            }
+        }
+
+        return new BigInteger(text).toByteArray();
     }
 
     /**
@@ -396,6 +406,9 @@ public class PseudoRandom {
      * usable by the generator. (This is completely deterministic.)
      */
     private void initializeSeed(BigInteger proposal) {
+        if (proposal.equals(BigInteger.ZERO)) {
+            proposal = BigInteger.ONE;
+        }
         this.seed = proposal;
 
         // we want our seed be big enough so s^2 > M.

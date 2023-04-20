@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
@@ -14,7 +13,7 @@ import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +29,7 @@ import java.awt.geom.Rectangle2D;
 public class ImpossibleMode extends Gamemode {
     // Threads
     private Thread spawner;
-    private ClassicModeHud classicHud;
+    private final ClassicModeHud classicHud = new ClassicModeHud(this);
 
     public ImpossibleMode() {
         super();
@@ -45,12 +44,14 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void initEnv(Environment environment, Messenger messenger) {
+        this.hud = new ClassicModeHud(this);
+
         initializeClassic(environment, messenger);
     }
 
     @Override
     public @Nullable BubbleType getRandomBubble(long spawnIndex) {
-        return Bubbles.DAMAGE.get();
+        return Bubbles.DAMAGE;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void start() {
-//        spawner.start();
+
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -143,10 +144,8 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void onGameOver() {
-//        environment.gameOver(game.player);
         game.player.delete();
         classicHud.setGameOver();
-//        gameOver = true;
     }
 
     @Override

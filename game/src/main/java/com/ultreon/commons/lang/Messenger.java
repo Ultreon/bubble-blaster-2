@@ -6,6 +6,7 @@ import java.util.function.Consumer;
  * @author Qboi
  * @since 0.0.0
  */
+@Deprecated
 public class Messenger {
     private final Consumer<String> consumer;
 

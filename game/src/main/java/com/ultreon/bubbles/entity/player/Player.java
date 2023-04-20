@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.ultreon.bubbles.common.PolygonBuilder;
+import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
@@ -16,19 +17,15 @@ import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
 import com.ultreon.bubbles.player.InputController;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
-import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2d;
 import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -70,7 +67,7 @@ public class Player extends LivingEntity implements InputController {
     private int invincibilityTicks;
 
     // Types
-    private AmmoType currentAmmo = AmmoTypes.BASIC.get();
+    private AmmoType currentAmmo = AmmoTypes.BASIC;
 
     // Motion (Arrow Keys).
     private boolean forward = false;
@@ -99,9 +96,6 @@ public class Player extends LivingEntity implements InputController {
 
     // Ability
     private final AbilityContainer abilityContainer = new AbilityContainer(this);
-
-    private double accelerateX = 0.0d;
-    private double accelerateY = 0.0d;
     private final PlayerItemCollection inventory = new PlayerItemCollection(this);
     private int shootCooldown;
 
@@ -112,9 +106,9 @@ public class Player extends LivingEntity implements InputController {
      * @see LivingEntity
      */
     public Player(Environment environment) {
-        super(Entities.PLAYER.get(), environment);
+        super(Entities.PLAYER, environment);
 
-        this.markAsCollidable(Entities.BUBBLE.get());
+        this.markAsCollidable(Entities.BUBBLE);
 
         // Ship shape.
         Ellipse2D shipShape1 = new Ellipse2D.Double(-20, -20, 40, 40);
@@ -130,8 +124,8 @@ public class Player extends LivingEntity implements InputController {
         this.arrowShape = new Area(arrowShape1);
 
         // Velocity.
-        this.velX = 0;
-        this.velY = 0;
+        this.velocityX = 0;
+        this.velocityY = 0;
 
         // Set attributes.
         this.attributes.setBase(Attribute.DEFENSE, 1f);
@@ -143,7 +137,7 @@ public class Player extends LivingEntity implements InputController {
         // Health
         this.health = 30f;
 
-        for (EntityType<?> entityType : Registry.ENTITIES.values()) {
+        for (EntityType<?> entityType : Registries.ENTITIES.values()) {
             markAsAttackable(entityType);
         }
 
@@ -223,34 +217,6 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * @return the x acceleration.
-     */
-    public double getAccelerateX() {
-        return accelerateX;
-    }
-
-    /**
-     * @return the y acceleration.
-     */
-    public double getAccelerateY() {
-        return accelerateY;
-    }
-
-    /**
-     * @param accelerateX the x acceleration to set.
-     */
-    public void setAccelerateX(double accelerateX) {
-        this.accelerateX = accelerateX;
-    }
-
-    /**
-     * @param accelerateY the y acceleration to set.
-     */
-    public void setAccelerateY(double accelerateY) {
-        this.accelerateY = accelerateY;
-    }
-
-    /**
      * @return the shape create the ship.
      */
     public Area getShipArea() {
@@ -302,15 +268,12 @@ public class Player extends LivingEntity implements InputController {
         // Player motion. //
         //****************//
 
-        this.accelerateX = accelerateX / ((0.05 / (1 * (double) TPS / 20)) + 1);
-        this.accelerateY = accelerateY / ((0.05 / (1 * (double) TPS / 20)) + 1);
-
         double motion = 0.0f;
         double rotate = 0.0f;
 
         // Check each direction, to create velocity
-        if (this.forward) motion += this.attributes.getBase(Attribute.SPEED) * 10;
-        if (this.backward) motion -= this.attributes.getBase(Attribute.SPEED) * 10;
+        if (this.forward) motion += getSpeed() * 10;
+        if (this.backward) motion -= getSpeed() * 10;
         if (this.left) rotate -= this.rotationSpeed;
         if (this.right) rotate += this.rotationSpeed;
         if (this.joyStickY != 0) motion = this.joyStickY * this.attributes.getBase(Attribute.SPEED);
@@ -332,47 +295,37 @@ public class Player extends LivingEntity implements InputController {
         }
 
         // Velocity on X-axis.
-        if (this.velX > 0) {
-            if (this.velX + this.velocityDelta < 0) {
-                this.velX = 0;
+        if (this.velocityX > 0) {
+            if (this.velocityX + this.velocityDelta < 0) {
+                this.velocityX = 0;
             } else {
-                this.velX += this.velocityDelta;
+                this.velocityX += this.velocityDelta;
             }
-        } else if (this.velX < 0) {
-            if (this.velX + this.velocityDelta > 0) {
-                this.velX = 0;
+        } else if (this.velocityX < 0) {
+            if (this.velocityX + this.velocityDelta > 0) {
+                this.velocityX = 0;
             } else {
-                this.velX -= this.velocityDelta;
+                this.velocityX -= this.velocityDelta;
             }
         }
 
         // Velocity on Y-axis.
-        if (this.velY > 0) {
-            if (this.velY + velocityDelta < 0) {
-                this.velY = 0;
+        if (this.velocityY > 0) {
+            if (this.velocityY + velocityDelta < 0) {
+                this.velocityY = 0;
             } else {
-                this.velY += this.velocityDelta;
+                this.velocityY += this.velocityDelta;
             }
-        } else if (this.velX < 0) {
-            if (this.velY + this.velocityDelta > 0) {
-                this.velY = 0;
+        } else if (this.velocityX < 0) {
+            if (this.velocityY + this.velocityDelta > 0) {
+                this.velocityY = 0;
             } else {
-                this.velY -= this.velocityDelta;
+                this.velocityY -= this.velocityDelta;
             }
-        }
-
-        // Update X, and Y.
-        if (mobile) {
-            this.x += ((this.accelerateX) + this.velX) / ((double) TPS);
-            this.y += ((this.accelerateY) + this.velY) / ((double) TPS);
         }
 
         // Game border collision.
         Rectangle2D gameBounds = loadedGame.getGamemode().getGameBounds();
-        this.prevX = x;
-        this.prevY = y;
-        this.x = (float) Mth.clamp(this.x, gameBounds.getMinX() + this.size() / 2, gameBounds.getMaxX() - size() / 2);
-        this.y = (float) Mth.clamp(this.y, gameBounds.getMinY() + this.size() / 2, gameBounds.getMaxY() - size() / 2);
 
         // Leveling up.
         if (score / Constants.LEVEL_THRESHOLD > level) {
@@ -388,6 +341,38 @@ public class Player extends LivingEntity implements InputController {
             invincibilityTicks = 0;
             invincible = false;
         }
+
+        for (AppliedEffect appliedEffect : this.activeEffects) {
+            appliedEffect.tick(this);
+        }
+
+        this.activeEffects.removeIf((effectInstance -> effectInstance.getRemainingTime() < 0d));
+
+        this.accelerateX = this.getAccelerateX() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+        this.accelerateY = this.getAccelerateY() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+
+        this.prevX = this.getX();
+        this.prevY = this.getY();
+        this.x += this.isMobile() ? this.getAccelerateX() + this.getVelocityX() / TPS : 0;
+        this.y += this.isMobile() ? this.getAccelerateY() + this.getVelocityY() / TPS : 0;
+
+        double minX = gameBounds.getMinX() + this.size() / 2;
+        double minY = gameBounds.getMinY() + this.size() / 2;
+        double maxX = gameBounds.getMaxX() - this.size() / 2;
+        double maxY = gameBounds.getMaxY() - this.size() / 2;
+
+        if (x > maxX && getVelocityX() > 0) setVelocityX(0);
+        if (x < minX && getVelocityX() < 0) setVelocityX(0);
+        if (x > maxX && getAccelerateX() > 0) setAccelerateX(0);
+        if (x < minX && getAccelerateX() < 0) setAccelerateX(0);
+
+        if (y > maxY && getVelocityY() > 0) setVelocityY(0);
+        if (y < minY && getVelocityY() < 0) setVelocityY(0);
+        if (y > maxY && getAccelerateY() > 0) setAccelerateY(0);
+        if (y < minY && getAccelerateY() < 0) setAccelerateY(0);
+
+        this.x = (float) Mth.clamp(this.x, minX, maxX);
+        this.y = (float) Mth.clamp(this.y, minY, maxY);
     }
 
     @Override
@@ -473,58 +458,6 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Apply force using velocity.
-     *
-     * @param velocityX the amount velocity for bounce.
-     * @param velocityY the amount velocity for bounce.
-     * @param delta     the delta change.
-     */
-    public void applyForce(double velocityX, double velocityY, double delta) {
-        setAcceleration(velocityX, velocityY);
-    }
-
-    private void setAcceleration(double x, double y) {
-        accelerateX = x;
-        accelerateY = y;
-    }
-
-    /**
-     * Trigger a Reflection
-     * Triggers a reflection, there are some problems with the velocity.
-     * That's why it's currently in beta.
-     *
-     * @param velocity the amount velocity for bounce.
-     * @param delta    the delta change.
-     */
-    public void applyForce(Vec2d velocity, double delta) {
-        this.applyForce(velocity.getX(), velocity.getY(), delta);
-    }
-
-    /**
-     * Apply a force towards a direction.
-     *
-     * @param direction the direction (in degrees).
-     * @param velocity the amount velocity for bounce.
-     * @param delta    the delta change.
-     */
-    public void applyForce(float direction, float velocity, double delta) {
-        double x = Math.cos(direction) * velocity;
-        double y = Math.sin(direction) * velocity;
-        this.applyForce(x, y, delta);
-    }
-
-    /**
-     * Bounce off another entity, with given amount of velocity.
-     *
-     * @param source   the source entity that triggers the bounce.
-     * @param velocity the amount velocity for bounce.
-     * @param delta    the delta change.
-     */
-    public void bounceOff(Entity source, float velocity, double delta) {
-        this.applyForce((float) Math.toDegrees(Math.atan2(source.getY() - y, source.getX() - x)), velocity, delta);
-    }
-
-    /**
      * Handles deleting of the player.
      * @see #delete()
      */
@@ -569,14 +502,14 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Load the player data.
-     * @param tag the player data.
+     * @param data the player data.
      */
     @Override
-    public void load(MapType tag) {
+    public void load(MapType data) {
         super.save();
 
-        this.score = tag.getFloat("score");
-        this.rotation = tag.getFloat("rotation");
+        this.score = data.getFloat("score");
+        this.rotation = data.getFloat("rotation");
     }
 
     /**
@@ -820,5 +753,10 @@ public class Player extends LivingEntity implements InputController {
 
     public int getInvincibilityTicks() {
         return invincibilityTicks;
+    }
+
+    @Override
+    public String getName() {
+        return "Player";
     }
 }

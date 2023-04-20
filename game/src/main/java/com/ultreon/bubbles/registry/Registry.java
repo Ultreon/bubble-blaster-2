@@ -8,7 +8,7 @@ import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.*;
 
-
+@Deprecated
 public class Registry<T> {
     private static final Logger dumpLogger = LogManager.getLogger("Registry-Dump");
     private final OrderedHashMap<Identifier, T> keyMap = new OrderedHashMap<>();
@@ -101,7 +101,7 @@ public class Registry<T> {
      */
     public T getValue(@Nullable Identifier key) {
         if (!keyMap.containsKey(key)) {
-            throw new IllegalArgumentException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
+            throw new RegistryException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
         }
         return keyMap.get(key);
     }

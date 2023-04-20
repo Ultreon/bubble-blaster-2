@@ -32,8 +32,8 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
     }
 
     @Override
-    public void load(MapType tag) {
-        super.load(tag);
+    public void load(MapType data) {
+        super.load(data);
     }
 
     public String toSimpleString() {

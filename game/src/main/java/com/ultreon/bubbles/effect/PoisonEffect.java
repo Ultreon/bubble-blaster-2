@@ -4,7 +4,7 @@ import com.jhlabs.image.HSBAdjustFilter;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.damage.DamageSourceType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
-import com.ultreon.bubbles.event.v2.FilterBuilder;
+import com.ultreon.bubbles.event.v1.FilterBuilder;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 

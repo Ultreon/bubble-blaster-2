@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.render.gui.widget.view;
 
-import com.ultreon.bubbles.event.v1.SubscribeEvent;
-import com.ultreon.bubbles.event.v1.TickEvent;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -36,12 +34,6 @@ public class ScrollView extends View {
 
     public void setInnerBounds(Rectangle innerBounds) {
         this.innerBounds = innerBounds;
-    }
-
-    @SuppressWarnings("EmptyMethod")
-    @SubscribeEvent
-    private void tick(TickEvent event) {
-
     }
 
     @Override

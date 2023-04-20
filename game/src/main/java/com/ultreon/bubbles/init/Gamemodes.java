@@ -1,13 +1,12 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
 import com.ultreon.bubbles.gamemode.ClassicMode;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
-
-import java.util.function.Supplier;
+import com.ultreon.bubbles.gamemode.ImpossibleMode;
+import com.ultreon.bubbles.gamemode.ModernMode;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * @author Qboi
@@ -15,21 +14,19 @@ import java.util.function.Supplier;
  * @since 0.0.0
  */
 @SuppressWarnings("unused")
-//@ObjectHolder(modId = "bubbleblaster", type = GameType.class)
 public class Gamemodes {
-    private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.GAMEMODES);
-
-    public static final RegistrySupplier<ClassicMode> CLASSIC = register("classic", ClassicMode::new);
+    public static final ClassicMode CLASSIC = register("classic", new ClassicMode());
+    public static final ModernMode MODERN = register("modern", new ModernMode());
+    public static final ImpossibleMode IMPOSSIBLE = register("impossible", new ImpossibleMode());
 
     @SuppressWarnings("SameParameterValue")
-    private static <T extends Gamemode> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends Gamemode> T register(String name, T gamemode) {
+        Registries.GAMEMODES.register(new Identifier(name), gamemode);
+        return gamemode;
     }
 
-    /**
-     * <b>DO NOT CALL, THIS IS CALLED INTERNALLY</b>
-     */
+    @ApiStatus.Internal
     public static void register() {
-        REGISTER.register();
+
     }
 }

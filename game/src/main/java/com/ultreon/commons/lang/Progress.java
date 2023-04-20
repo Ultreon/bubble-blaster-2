@@ -9,6 +9,7 @@ import java.util.Objects;
  * @author Qboi
  * @since 0.0.0
  */
+@Deprecated
 public class Progress implements Cloneable, Comparable<Progress>, Serializable {
     private int progress;
     private final int max;

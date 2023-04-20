@@ -1,12 +1,13 @@
 package com.ultreon.bubbles.resources;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Deprecated
 public class ResourcePackage {
     private final Map<Identifier, Resource> resources;
 

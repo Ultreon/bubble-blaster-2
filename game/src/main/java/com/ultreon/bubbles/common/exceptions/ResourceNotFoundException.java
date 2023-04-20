@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common.exceptions;
 
-import com.ultreon.bubbles.common.Identifier;
+import com.ultreon.libs.commons.v0.Identifier;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException() {

@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.common.text.TranslationText;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
@@ -8,6 +7,7 @@ import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.awt.*;
 import java.util.Random;
@@ -37,7 +37,7 @@ public class StartOptionsScreen extends Screen {
                 }
             }
         });
-        startBtn = add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(new TranslationText("bubbles/screen/start_options/start")).command(this::start).build());
+        startBtn = add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(TextObject.translation("bubbles/screen/start_options/start")).command(this::start).build());
     }
 
     private void start() {

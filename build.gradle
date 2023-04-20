@@ -1,10 +1,10 @@
 //file:noinspection GroovyUnusedCatchParameter
+
+import com.ultreon.bubbles.gradle.VersionType
 import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
 import java.nio.file.Paths
-import com.ultreon.bubbles.gradle.VersionType
-
 import java.nio.file.StandardOpenOption
 
 import static java.lang.System.getenv
@@ -39,6 +39,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id "org.panteleyev.jpackageplugin" version "1.5.0"
+    id 'com.github.johnrengelman.shadow' version '7.+'
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
 }
 
@@ -78,10 +79,6 @@ repositories {
         url "https://maven.atlassian.com/3rdparty/"
     }
     maven {
-        name "ImageJ"
-        url "https://maven.imagej.net/content/repositories/public/"
-    }
-    maven {
         name "Maven Central"
         url "https://repo1.maven.org/maven2/"
     }
@@ -110,6 +107,9 @@ configurations {
     include {
         canBeResolved true
     }
+    addToJar {
+        canBeResolved true
+    }
 }
 
 /***************
@@ -117,8 +117,10 @@ configurations {
  */
 dependencies {
     // Projects
-    include(runtimeOnly project(":preloader"))
-    include(runtimeOnly project(":game"))
+    shadow(runtimeOnly project(":gameprovider")) { transitive false }
+    shadow(runtimeOnly project(":game")) { transitive false }
+    implementation(runtimeOnly project(":gameprovider"))
+    implementation(runtimeOnly project(":game"))
 }
 
 allprojects {
@@ -160,10 +162,6 @@ allprojects {
             url "https://maven.atlassian.com/3rdparty/"
         }
         maven {
-            name "ImageJ"
-            url "https://maven.imagej.net/content/repositories/public/"
-        }
-        maven {
             name "Maven Central"
             url "https://repo1.maven.org/maven2/"
         }
@@ -191,7 +189,7 @@ allprojects {
     }
 
     dependencies {
-        implementation("net.fabricmc:fabric-loader:0.14.19")
+        implementation("net.fabricmc:fabric-loader:$fabric_loader_version")
 
         // fabric-loader dependencies
         implementation "org.ow2.asm:asm:${project.asm_version}"
@@ -236,7 +234,7 @@ processResources {
 }
 
 jar {
-    dependsOn ":preloader:jar"
+    dependsOn ":gameprovider:jar"
 
     //noinspection GroovyAssignabilityCheck
     manifest {
@@ -244,7 +242,7 @@ jar {
         attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
                 'Implementation-Version': project.version,
-                'Main-Class': 'com.ultreon.preloader.PreGameLoader',
+                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
                 'Multi-Release': 'true'
     }
 
@@ -254,6 +252,10 @@ jar {
     from {
         processResources.outputs
     }
+
+    from(configurations.addToJar.collect {
+        zipTree(it)
+    })
 
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
@@ -284,13 +286,51 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-task packedJar(type: Jar) {
-    doFirst {
-        def collect = configurations.include.files.collect { it.name }
-        Files.write(file("$buildDir/jar-files.txt").toPath(), String.join("\n", collect).getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE)
-    }
+//task packedJar(type: Jar) {
+//    doFirst {
+//        def collect = configurations.include.files.collect { it.name }
+//        Files.write(file("$buildDir/jar-files.txt").toPath(), String.join("\n", collect).getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+//    }
+//
+//    dependsOn ":gameprovider:jar"
+//    dependsOn ":jar"
+//
+//    //noinspection GroovyAssignabilityCheck
+//    manifest {
+//        //noinspection GroovyAssignabilityCheck
+//        attributes 'Implementation-Title': 'QBubbles',
+//                'Implementation-Vendor': 'Ultreon Team',
+//                'Implementation-Version': "1.0-indev1",
+//                'Main-Class': 'com.ultreon.premain.PreMain',
+//                'Multi-Release': 'true'
+//    }
+//
+//    into('META-INF/jars') {
+//        from configurations.include
+//    }
+//
+//    into('META-INF') {
+//        from file("$buildDir/jar-files.txt")
+//    }
+//
+//    archivesBaseName = "bubbles"
+//
+//    from zipTree(jar.archiveFile.get())
+//    classifier "packed"
+//    zip64 true
+//    duplicatesStrategy DuplicatesStrategy.INCLUDE
+//
+//    doLast {
+//        copy {
+//            from archiveFile
+//            into buildDir
+//            rename ".*", "packed.jar"
+//        }
+//    }
+//}
 
-    dependsOn ":preloader:jar"
+task packedJar(type: Jar) {
+    dependsOn ":gameprovider:jar"
     dependsOn ":jar"
 
     //noinspection GroovyAssignabilityCheck
@@ -303,14 +343,6 @@ task packedJar(type: Jar) {
                 'Multi-Release': 'true'
     }
 
-    into('META-INF/jars') {
-        from configurations.include
-    }
-
-    into('META-INF') {
-        from file("$buildDir/jar-files.txt")
-    }
-
     archivesBaseName = "bubbles"
 
     from zipTree(jar.archiveFile.get())
@@ -318,6 +350,9 @@ task packedJar(type: Jar) {
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 
+    from {
+        configurations.include.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     doLast {
         copy {
             from archiveFile
@@ -328,7 +363,7 @@ task packedJar(type: Jar) {
 }
 
 build {
-    mustRunAfter ":packedJar"
+//    mustRunAfter ":packedJar"
 }
 
 task createExec {
@@ -366,7 +401,7 @@ task createExec {
 }
 
 artifacts {
-    packedJar
+//    packedJar
 }
 
 jar.finalizedBy(retrieveUrls)
@@ -394,6 +429,62 @@ println("Project: " + group + ":" + archivesBaseName)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")
 
 mkdir("$buildDir/bubbles")
+
+jpackage {
+    dependsOn("build", "copyDependencies", "copyJar")
+
+    input  = "$projectDir/jars"
+    destination = "$buildDir/dist"
+
+    appName = project.property("app_name").toString()
+    appVersion = project.version.toString()
+    vendor = "Ultreon Team"
+    copyright = "Copyright (c) 2022 Ultreon Team"
+    runtimeImage = System.getProperty("java.home")
+
+//    mainJar = "fabric-loader-${fabric_loader_version}.jar"
+    mainJar = shadowJar.archiveFileName.get()
+    mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient"
+
+    destination = "$buildDir/dist"
+
+    licenseFile = "$projectDir/package/LICENSE.txt"
+
+    javaOptions = [ "-Dfile.encoding=UTF-8" ]
+
+    aboutUrl = "https://github.com/Ultreon/bubble-blaster-2"
+
+    mac {
+        icon = "icons/icon.icns"
+        macPackageIdentifier = "com.ultreon.browser"
+        macPackageName = "ultreon-browser"
+        appVersion = packageVersion.replace(Regex("(\\d+\\.\\d+\\.\\d+).*"), "\$1")
+    }
+
+    linux {
+        icon = "icons/icon.png"
+        linuxPackageName = "ultreon-browser"
+        linuxDebMaintainer = "Ultreon Team"
+        linuxRpmLicenseType = "Ultreon API License v1.1"
+        linuxAppRelease = "2"
+        linuxShortcut = true
+        appVersion = project.version.toString()
+    }
+
+    windows {
+        icon = "icons/icon.ico"
+        winMenu = true
+        winDirChooser = true
+        winConsole = false
+        winPerUserInstall = true
+        winShortcutPrompt = true
+        winShortcut = false
+        winUpgradeUuid = "36cb25da-b6d1-4104-9607-9077b7449668"
+        winMenuGroup = "Ultreon Team"
+        appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
+    }
+}
+
 def ps = System.getProperty("path.separator")
 def files = configurations.runtimeClasspath
 def strm = (files.toList()).stream()
@@ -401,7 +492,7 @@ def rcl = String.join(ps, strm.map {
     it.path
 }.filter{it != null }.toList())
 //\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
-//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":preloader").buildDir}/classes/java/main/$ps${project(":preloader").buildDir}/resources/main/$ps$rcl
+//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
 def conf = """
 commonProperties
 \tfabric.development=true
@@ -431,6 +522,7 @@ idea{
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
                     moduleName = idea.module.name + ".game.main"
                     workingDirectory = "$projectDir/run/"
+                    programParameters = "--gameDir=."
                 }
             }
         }

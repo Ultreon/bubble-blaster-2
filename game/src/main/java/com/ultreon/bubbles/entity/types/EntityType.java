@@ -2,9 +2,9 @@ package com.ultreon.bubbles.entity.types;
 
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.data.types.MapType;
-
-import java.util.Objects;
+import com.ultreon.libs.commons.v0.Identifier;
 
 public class EntityType<T extends Entity> {
     private final EntityFactory<T> entityFactory;
@@ -21,5 +21,9 @@ public class EntityType<T extends Entity> {
         T t = entityFactory.create(environment);
         t.load(document);
         return t;
+    }
+
+    public Identifier getId() {
+        return Registries.ENTITIES.getKey(this);
     }
 }

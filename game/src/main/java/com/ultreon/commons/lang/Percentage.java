@@ -11,6 +11,7 @@ import java.util.Objects;
  * @author Qboi
  * @since 0.0.0
  */
+@Deprecated
 public final class Percentage implements Serializable, Comparable<Percentage> {
     private static final long serialVersionUID = 0L;
     private final double percentage;

@@ -1,33 +1,30 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.game.InternalMod;
-import com.ultreon.bubbles.registry.DelayedRegister;
-import com.ultreon.bubbles.registry.Registry;
-import com.ultreon.bubbles.registry.object.RegistrySupplier;
+import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.font.Font;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Supplier;
 
 public class Fonts {
-    private static final DelayedRegister<Font> REGISTER = DelayedRegister.create(InternalMod.MOD_ID, Registry.FONTS);
-
-    public static final RegistrySupplier<Font> QUANTUM = register("quantum", Font::new);
-    public static final RegistrySupplier<Font> ARIAL_UNICODE = register("arial_unicode", Font::new);
-    public static final RegistrySupplier<Font> CHICLE = register("chicle", Font::new);
-    public static final RegistrySupplier<Font> PIXEL = register("pixel", Font::new);
-    public static final RegistrySupplier<Font> PRESS_START_K = register("pixel/press_start_k", Font::new);
+    public static final Supplier<Font> DEFAULT = () -> BubbleBlaster.getInstance().getSansFont();
+    public static final Font MONOSPACED = register("roboto/roboto_mono", new Font());
+    public static final Font QUANTUM = register("quantum", new Font());
+    public static final Font DONGLE = register("dongle/dongle", new Font());
+    public static final Font CHICLE = register("chicle", new Font());
+    public static final Font PIXEL = register("pixel", new Font());
+    public static final Font PRESS_START_K = register("pixel/press_start_k", new Font());
 
     @SuppressWarnings("SameParameterValue")
-    private static <T extends Font> RegistrySupplier<T> register(String name, Supplier<T> supplier) {
-        return REGISTER.register(name, supplier);
+    private static <T extends Font> T register(String name, T font) {
+        Registries.FONTS.register(new Identifier(name), font);
+        return font;
     }
 
-    /**
-     * <b>DO NOT CALL, THIS IS CALLED INTERNALLY</b>
-     */
     @ApiStatus.Internal
     public static void register() {
-        REGISTER.register();
+
     }
 }

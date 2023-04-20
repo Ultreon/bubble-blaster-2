@@ -1,26 +1,17 @@
 package com.ultreon.bubbles.gamemode;
 
-import com.ultreon.bubbles.bubble.BubbleSpawnContext;
-import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.common.random.BubbleRandomizer;
-import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Bubbles;
-import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.ExceptionUtils;
 import com.ultreon.bubbles.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.commons.crash.CrashLog;
 import com.ultreon.commons.lang.Messenger;
 import com.ultreon.data.types.MapType;
-import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -33,9 +24,6 @@ import java.awt.geom.Rectangle2D;
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"unused", "deprecation"})
 public class ClassicMode extends Gamemode {
-    // Hud and events-active flag.
-    private ClassicModeHud hud;
-
     // Threads
     private Thread spawner;
 
@@ -52,50 +40,9 @@ public class ClassicMode extends Gamemode {
      */
     @Override
     public void initEnv(Environment environment, Messenger messenger) {
-        int maxBubbles = GameSettings.instance().getMaxBubbles();
+        this.hud = new ClassicModeHud(this);
 
-        try {
-            this.hud = new ClassicModeHud(this);
-
-            // Spawn bubbles
-            messenger.send("Spawning bubbles...");
-
-            BubbleRandomizer randomizer = environment.getBubbleRandomizer();
-            Rng xRng = randomizer.getXRng();
-            Rng yRng = randomizer.getYRng();
-            long spawnIndex = -1;
-            for (int i = 0; i < maxBubbles; i++) {
-                BubbleType bubble = environment.getRandomBubble(spawnIndex);
-                int retry = 0;
-                while (!bubble.canSpawn(environment)) {
-                    bubble = environment.getRandomBubble(spawnIndex);
-                    if (++retry == 5) {
-                        spawnIndex--;
-                    }
-                }
-
-                if (bubble != Bubbles.LEVEL_UP.get()) {
-                    Vec2f pos = new Vec2f(xRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1), yRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1));
-                    BubbleSpawnContext.inContext(spawnIndex, retry, () -> environment.spawn(Entities.BUBBLE.get().create(environment), pos));
-                }
-
-                spawnIndex--;
-
-                messenger.send("Spawning bubble " + i + "/" + maxBubbles);
-            }
-
-            // Spawn player
-            messenger.send("Spawning player...");
-            game.loadPlayEnvironment();
-            environment.spawn(game.player, new Vec2f(game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f));
-        } catch (Exception e) {
-            CrashLog crashLog = new CrashLog("Could not initialize classic game type.", e);
-
-            BubbleBlaster.crash(crashLog.createCrash());
-        }
-
-        this.make();
-        this.initialized = true;
+        initializeClassic(environment, messenger);
     }
 
     @Override
@@ -158,7 +105,7 @@ public class ClassicMode extends Gamemode {
 
     @Override
     public void renderHUD(Renderer renderer) {
-        hud.renderHUD(renderer);
+        getHud().renderHUD(renderer);
     }
 
     @Override
@@ -167,7 +114,7 @@ public class ClassicMode extends Gamemode {
     }
 
     public ClassicModeHud getHud() {
-        return this.hud;
+        return (ClassicModeHud) this.hud;
     }
 
     @Override
@@ -190,7 +137,7 @@ public class ClassicMode extends Gamemode {
     public void onGameOver() {
 //        environment.gameOver(game.player);
         game.player.delete();
-        hud.setGameOver();
+        getHud().setGameOver();
 //        gameOver = true;
     }
 

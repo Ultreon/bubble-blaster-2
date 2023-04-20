@@ -1,13 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.common.text.LiteralText;
-import com.ultreon.bubbles.common.text.TextObject;
-import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.border.Border;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.awt.*;
 
@@ -16,7 +12,7 @@ public class TitleButton extends AbstractButton {
     private TextObject text;
 
     public void setText(String text) {
-        this.text = new LiteralText(text);
+        this.text = TextObject.literal(text);
     }
 
     public void setText(TextObject text) {
@@ -56,7 +52,7 @@ public class TitleButton extends AbstractButton {
         }
 
         public Builder text(String text) {
-            this.text = new LiteralText(text);
+            this.text = TextObject.literal(text);
             return this;
         }
 
@@ -80,33 +76,23 @@ public class TitleButton extends AbstractButton {
     public void render(Renderer renderer) {
         Color textColor;
 
-        renderer.color(Color.rgb(0x606060));
-        renderer.fill(getBounds());
+        renderer.color(0xff606060);
+        renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, Math.min(width, height)-2);
 
-        if (isPressed() && isWithinBounds(MouseInput.getPos())) {
+        if (isPressed()) {
             // Shadow
             Paint old = renderer.getPaint();
 
-            double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
-            GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
-            renderer.color(Color.rgb(0x484848));
-            renderer.fill(getBounds());
+            renderer.color(0xff484848);
+            renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, 10);
 
-            Border border = new Border(0, 0, 1, 0);
-            border.setPaint(p);
-            border.paintBorder(renderer, x, y, width, height);
-
+            renderer.drawRoundEffectBox(0, 0, width-1, height-1, Math.min(width, height)-4, 1);
             renderer.paint(old);
             textColor = Color.white;
         } else if (isHovered()) {
             Paint old = renderer.getPaint();
 
-            double shiftX = ((double) width * 2) * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * 10);
-            GradientPaint p = new GradientPaint(x + ((float) shiftX - width), 0, Color.rgb(0x00c0ff).toAwt(), x + (float) shiftX, 0f, Color.rgb(0x00ffc0).toAwt(), true);
-            Border border = new Border(0, 0, 2, 0);
-            border.setPaint(p);
-            border.paintBorder(renderer, x, y, width, height);
-
+            renderer.drawRoundEffectBox(1, 1, width-4, height-4, Math.min(width, height)-8, 2);
             renderer.paint(old);
             textColor = Color.rgb(0xffffff);
         } else {
@@ -114,7 +100,7 @@ public class TitleButton extends AbstractButton {
             textColor = Color.rgb(0xe0e0e0);
         }
 
-        OptionsNumberInput.ArrowButton.paint0a(renderer, textColor, getBounds(), text);
+        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
     }
 
     @SuppressWarnings("EmptyMethod")

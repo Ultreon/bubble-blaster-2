@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.registry;
 
 import com.ultreon.bubbles.common.Identifier;
-import com.ultreon.bubbles.event.v2.GameEvents;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.registry.object.RegistrySupplier;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
-public class DelayedRegister<@NotNull T> {
+@Deprecated
+public class DelayedRegister<T> {
     @NotNull
     private final String modId;
     @NotNull
@@ -26,7 +27,7 @@ public class DelayedRegister<@NotNull T> {
         return new DelayedRegister<>(modId, registry);
     }
 
-    public <@NotNull C extends T> RegistrySupplier<C> register(@NotNull String key, @NotNull Supplier<@NotNull C> supplier) {
+    public <C extends T> RegistrySupplier<C> register(@NotNull String key, @NotNull Supplier<@NotNull C> supplier) {
         Identifier id = new Identifier(modId, key);
 
         objects.add(new HashMap.SimpleEntry<>(id, supplier::get));

@@ -1,15 +1,17 @@
 package com.ultreon.bubbles.effect;
 
-import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.registry.Registry;
+import com.ultreon.bubbles.init.StatusEffects;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.checkerframework.common.value.qual.IntRange;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
@@ -32,7 +34,13 @@ public class AppliedEffect implements TagHolder {
      */
     private AppliedEffect(MapType document) {
         this.tag = document.getMap("Tag");
-        this.type = Registry.EFFECTS.getValue(Identifier.parse(document.getString("id")));
+        Identifier id = Identifier.tryParse(document.getString("id"));
+        if (id == null) {
+            this.type = StatusEffects.NONE;
+        } else {
+            var type = Registries.EFFECTS.getValue(id);
+            this.type = type == null ? StatusEffects.NONE : type;
+        }
         this.setRemainingTime(document.getLong("duration"));
         this.baseDuration = document.getLong("baseDuration");
         this.strength = document.getInt("strength");
@@ -49,19 +57,35 @@ public class AppliedEffect implements TagHolder {
         this.setRemainingTime(duration);
     }
 
+    public static @NotNull AppliedEffect load(MapType activeEffectData) {
+        return new AppliedEffect(activeEffectData);
+    }
+
+    public @NotNull MapType save() {
+        MapType tag = new MapType();
+        tag.put("Tag", this.tag);
+        tag.putLong("baseDuration", getBaseDuration());
+        tag.putLong("duration", getRemainingTime());
+        tag.putInt("strength", getStrength());
+
+        Identifier key = Registries.EFFECTS.getKey(getType());
+        tag.putString("id", key == null ? "none" : key.toString());
+
+        return tag;
+    }
+
     public boolean allowMerge() {
         return true;
     }
 
-    public final void start(Entity entity) {
+    public final void start(@NotNull Entity entity) {
         onStart(entity);
 
         active = true;
     }
 
-    public final void stop(Entity entity) {
+    public final void stop(@NotNull Entity entity) {
         onStop(entity);
-        entity.removeEffect(this);
 
         active = false;
     }
@@ -71,6 +95,7 @@ public class AppliedEffect implements TagHolder {
     }
 
     public void tick(Entity entity) {
+        System.out.println("getRemainingTime() = " + getRemainingTime());
         if (this.getRemainingTime() <= 0d) {
             this.active = false;
             this.stop(entity);
@@ -173,17 +198,6 @@ public class AppliedEffect implements TagHolder {
     @Override
     public int hashCode() {
         return Objects.hash(getType());
-    }
-
-    public MapType save() {
-        MapType tag = new MapType();
-        tag.put("Tag", this.tag);
-        tag.putLong("baseDuration", getBaseDuration());
-        tag.putLong("duration", getRemainingTime());
-        tag.putInt("strength", getStrength());
-        tag.putString("id", Registry.EFFECTS.getKey(getType()).toString());
-
-        return tag;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.core.input;
 
-import com.ultreon.bubbles.event.v2.InputEvents;
+import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -81,9 +82,10 @@ public final class KeyboardInput extends KeyAdapter {
 
         ScreenManager screenManager = this.game.getScreenManager();
         Screen currentScreen = screenManager.getCurrentScreen();
+        Environment environment = game.environment;
         if (currentScreen != null) {
             currentScreen.keyPress(e.getKeyCode(), e.getKeyChar());
-        } else if (e.getKeyCode() == Map.KEY_ESCAPE) {
+        } else if (e.getKeyCode() == Map.KEY_ESCAPE && environment != null && environment.isAlive()) {
             BubbleBlaster.getInstance().showScreen(new PauseScreen());
         }
     }

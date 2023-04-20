@@ -2,6 +2,7 @@ package com.ultreon.commons.function.primitive;
 
 import java.util.function.Function;
 
+@Deprecated
 @FunctionalInterface
 public interface Long2LongFunction extends Function<Long, Long> {
     @Override

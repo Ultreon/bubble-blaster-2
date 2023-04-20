@@ -20,8 +20,9 @@ public class ScrollableView extends Container {
 
     public ScrollableView(@NotNull Viewport viewport, int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.viewport = viewport;
-        this.scrollBar = new ScrollBar(x + width - SCROLLBAR_WIDTH, y, SCROLLBAR_WIDTH, height);
+        this.viewport = super.add(viewport);
+        this.scrollBar = super.add(new ScrollBar(x + width - SCROLLBAR_WIDTH, y, SCROLLBAR_WIDTH, height));
+        this.scrollBar.setOnScroll(percent -> this.viewport.setYPercent(percent));
     }
 
     @Override
@@ -30,12 +31,12 @@ public class ScrollableView extends Container {
         this.viewport.setHeight(getHeight());
         this.viewport.setX(0);
         this.viewport.setY(0);
-        this.viewport.render(renderer);
+        this.viewport.render(renderer.subInstance(viewport.getBounds()));
         this.scrollBar.setWidth(SCROLLBAR_WIDTH);
         this.scrollBar.setHeight(getHeight());
         this.scrollBar.setX(getWidth() - SCROLLBAR_WIDTH);
         this.scrollBar.setY(0);
-        this.scrollBar.render(renderer);
+        this.scrollBar.render(renderer.subInstance(scrollBar.getBounds()));
     }
 
     @Override
@@ -44,23 +45,18 @@ public class ScrollableView extends Container {
         this.scrollBar.setPercent(this.viewport.getYPercent());
         this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().height - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().height));
 
-        Renderer componentRenderer = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderComponent(componentRenderer);
-        componentRenderer.dispose();
-        Renderer childRenderer = renderer.subInstance(getX(), getY(), getWidth(), getHeight());
-        renderChildren(childRenderer);
-        childRenderer.dispose();
+        renderComponent(renderer);
+        renderChildren(renderer);
     }
 
     private void updateXYOffset() {
-        this.innerXOffset = (int) -this.viewport.xScroll;
-        this.innerYOffset = (int) -this.viewport.yScroll;
+        this.innerXOffset = (int) -this.viewport.xScroll - x;
+        this.innerYOffset = (int) -this.viewport.yScroll - y;
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.color(this.getBackgroundColor());
-        renderer.fill(this.getBounds());
+        fill(renderer, 0, 0, width, height, getBackgroundColor());
     }
 
     @Override
@@ -97,12 +93,63 @@ public class ScrollableView extends Container {
     }
 
     @Override
+    public boolean mousePress(int x, int y, int button) {
+        if (scrollBar.isWithinBounds(x, y) && scrollBar.mousePress(x, y, button)) {
+            return true;
+        }
+        return super.mousePress(x, y, button);
+    }
+
+    @Override
+    public boolean mouseRelease(int x, int y, int button) {
+        return super.mouseRelease(x, y, button);
+    }
+
+    @Override
+    public boolean mouseClick(int x, int y, int button, int count) {
+        if (scrollBar.isWithinBounds(x, y) && scrollBar.mouseClick(x, y, button, count)) {
+            return true;
+        }
+        return super.mouseClick(x, y, button, count);
+    }
+
+    @Override
+    public void mouseDrag(int x, int y, int nx, int ny, int button) {
+        if (scrollBar.isWithinBounds(x, y)) {
+            scrollBar.mouseDrag(x, y, nx, ny, button);
+            return;
+        }
+        super.mouseDrag(x, y, nx, ny, button);
+    }
+
+    @Override
+    public void mouseMove(int x, int y) {
+        super.mouseMove(x, y);
+    }
+
+    @Override
+    public boolean keyPress(int keyCode, char character) {
+        return super.keyPress(keyCode, character);
+    }
+
+    @Override
+    public boolean keyRelease(int keyCode, char character) {
+        return super.keyRelease(keyCode, character);
+    }
+
+    @Override
     public void remove(GuiComponent child) {
         this.viewport.remove(child);
     }
 
     @Override
-    public void mouseWheel(int x, int y, double rotation, int amount, int units) {
+    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
+        x -= this.x + this.innerXOffset;
+        y -= this.y + this.innerYOffset;
+        if (viewport.isWithinBounds(x, y) && viewport.mouseWheel(x, y, rotation, amount, units)) {
+            return true;
+        }
         this.viewport.setYScroll(this.viewport.getYScroll() + rotation * 100 * amount / 10);
+        return true;
     }
 }
