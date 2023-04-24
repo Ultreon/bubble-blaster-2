@@ -1,0 +1,324 @@
+//file:noinspection GroovyUnusedCatchParameter
+
+
+import com.ultreon.bubbles.gradle.VersionType
+import org.apache.tools.ant.taskdefs.condition.Os
+
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import static java.lang.System.getenv
+
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            name = "sonatype"
+        }
+
+        maven {
+            url = "https://maven.atlassian.com/3rdparty/"
+        }
+
+        google()
+    }
+
+    dependencies {
+        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
+        classpath "com.google.code.gson:gson:2.8.9"
+    }
+}
+
+//*****************//
+//     Plugins     //
+//*****************//
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id "org.panteleyev.jpackageplugin"
+}
+
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'bubbles-gradle'
+
+//****************************//
+// Setting up main properties //
+//****************************//
+
+// Project properties.
+version project_version
+group project_group
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+bubbles {
+    versionType(VersionType.DEV)
+}
+
+//**********************//
+//     Repositories     //
+//**********************//
+repositories {
+    mavenCentral()
+    mavenLocal()
+    google()
+    maven {
+        name "JitPack"
+        url 'https://jitpack.io'
+    }
+    maven {
+        name "Atlassian"
+        url "https://maven.atlassian.com/3rdparty/"
+    }
+    maven {
+        name "Maven Central"
+        url "https://repo1.maven.org/maven2/"
+    }
+    maven {
+        name "RuneLite"
+        url "https://repo.runelite.net/"
+    }
+    flatDir {
+        name "Project Libraries"
+        dirs "${projectDir}/libs"
+    }
+}
+
+/***************
+ * Dependencies
+ */
+dependencies {
+    // Projects
+    implementation project(":core")
+    implementation rootProject.project(":gameprovider")
+
+    // Annotations
+    implementation "org.checkerframework:checker:3.25.0"
+    implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Test dependencies
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+
+    // FastUtil
+    implementation "it.unimi.dsi:fastutil:8.5.9"
+    implementation "it.unimi.dsi:fastutil-extra:8.5.4"
+    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+
+    // UBO
+    implementation 'com.github.Ultreon:ultreon-data:a7b510fcb6'
+
+    // Misc
+    implementation "org.jetbrains:annotations:23.0.0"
+
+    // CoreLibs
+    implementation "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-commons-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-crash-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-datetime-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-events-v1:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-functions-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-registries-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
+
+    // FlatLAF
+    implementation "com.formdev:flatlaf:$flatlaf_version"
+    implementation "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
+    implementation "com.formdev:flatlaf-extras:$flatlaf_version"
+    implementation "com.formdev:flatlaf-swingx:$flatlaf_version"
+
+    // Apis
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "org.apache.commons:commons-collections4:4.4"
+    implementation "org.apache.commons:commons-text:1.10.0"
+    implementation "org.apache.commons:commons-math3:3.6.1"
+    implementation "org.apache.ant:ant:1.10.12"
+
+    // Local jars.
+    implementation fileTree(dir: "$projectDir/libs", include: ["*.jar"])
+
+    // Google
+    implementation "com.google.code.findbugs:jsr305:$jsr_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+
+    // Apache
+    implementation "org.apache.logging.log4j:log4j:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version") { exclude group: "org.slf4j" }
+    implementation "org.apache.logging.log4j:log4j-jcl:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-jul:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-web:$log4j_version"
+    implementation("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    implementation("org.apache.xmlgraphics:batik-dom:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    implementation("org.apache.xmlgraphics:batik-swing:$batik_version") {
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+
+    // SLF4J
+    implementation "org.slf4j:slf4j-api:[1.7, 1.8)!!"
+
+    // JHLabs
+    implementation "com.jhlabs:filters:2.0.235-1"
+
+    // SwingLabs
+    implementation "org.swinglabs.swingx:swingx-all:1.6.5-1"
+
+    // FuseSource
+    implementation "org.fusesource.jansi:jansi:2.4.0"
+
+    // OSHi (For system info in crash reports)
+    implementation "com.github.oshi:oshi-core:$oshi_version"
+
+    // Discord Presence
+    implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
+
+    // MP3 Sounds
+    implementation "javazoom:jlayer:1.0.1"
+    implementation "javax.media:jmf:2.1.1e"
+    implementation 'org.w3c.dom:svg:1.1.0'
+    implementation 'org.w3c.css:sac:1.3'
+
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+
+}
+
+processResources {
+    inputs.property "version", version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": version
+    }
+
+    from(file("NOTICE.txt")) { into "META-INF/" }
+    from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
+
+    exclude "*.pdn", "*.xcf", "*.ps"
+}
+
+jar {
+    dependsOn ":gameprovider:jar"
+
+    //noinspection GroovyAssignabilityCheck
+    manifest {
+        //noinspection GroovyAssignabilityCheck
+        attributes 'Implementation-Title': 'Bubble Blaster 2',
+                'Implementation-Vendor': 'Ultreon Team',
+                project_version: project.project_version,
+                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
+                'Multi-Release': 'true'
+    }
+
+    from {
+        compileJava.outputs
+    }
+    from {
+        processResources.outputs
+    }
+
+    zip64 true
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+processResources {
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.create('prepareRun', {
+    Files.createDirectories(Paths.get(rootProject.projectDir.getAbsolutePath(), "run"))
+})
+
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    options.incremental = true
+}
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+build {
+    mustRunAfter ":packedJar"
+}
+
+task createExec {
+    doFirst {
+        if (!file("build").exists()) {
+            mkdir "build"
+        }
+        mkdir "build/exec/"
+        if (file("build/exec/lib/").exists()) {
+            delete fileTree("build/exec/lib/")
+        }
+        copy {
+            from file("bin/start.bat")
+            into file("build/exec/")
+        }
+        copy {
+            from file("bin/start-unix.sh")
+            into file("build/exec/")
+        }
+        copy {
+            from file("bin/start-mac.sh")
+            into file("build/exec/")
+        }
+        copy {
+            from jar.outputs.files.singleFile
+            into file("build/exec/")
+            rename ".*", "bubbles.jar"
+        }
+        mkdir "build/exec/lib/"
+        copy {
+            from fileTree("build/dependencies/")
+            into file("build/exec/lib/")
+        }
+    }
+}
+
+jar.finalizedBy(retrieveUrls)
+publish.finalizedBy(retrieveUrls)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+task("copyDependencies", type: Copy) {
+    from(configurations.runtimeClasspath)
+    into("$buildDir/jars")
+}
+
+task("copyJar", type: Copy) {
+    from(tasks.jar)
+    into("$buildDir/jars")
+}

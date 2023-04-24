@@ -5,8 +5,25 @@
 *.ear
 hs_err_pid*
 
+## Robovm
+/ios/robovm-build/
+
+## GWT
+/html/war/
+/html/gwt-unitCache/
+.apt_generated/
+.gwt/
+gwt-unitCache/
+www-test/
+.gwt-tmp/
+
 ## Android Studio and Intellij and Android in general
-.idea/workspace.xml
+/android/libs/armeabi-v7a/
+/android/libs/arm64-v8a/
+/android/libs/x86/
+/android/libs/x86_64/
+/android/gen/
+.idea/
 *.ipr
 *.iws
 *.iml
@@ -18,7 +35,11 @@ com_crashlytics_export_strings.xml
 .classpath
 .project
 .metadata/
-/preloader/bin/
+/android/bin/
+/core/bin/
+/desktop/bin/
+/html/bin/
+/ios/bin/
 *.tmp
 *.bak
 *.swp
@@ -29,77 +50,68 @@ com_crashlytics_export_strings.xml
 *.launch
 
 ## NetBeans
+
 /nbproject/private/
-/preloader/nbproject/private
+/android/nbproject/private/
+/core/nbproject/private/
+/desktop/nbproject/private/
+/html/nbproject/private/
+/ios/nbproject/private/
 
 /build/
-/preloader/build/
+/android/build/
+/core/build/
+/desktop/build/
+/html/build/
+/ios/build/
 
 /nbbuild/
-/preloader/nbbuild/
+/android/nbbuild/
+/core/nbbuild/
+/desktop/nbbuild/
+/html/nbbuild/
+/ios/nbbuild/
 
 /dist/
-/preloader/dist/
+/android/dist/
+/core/dist/
+/desktop/dist/
+/html/dist/
+/ios/dist/
 
 /nbdist/
-/preloader/nbdist/
+/android/nbdist/
+/core/nbdist/
+/desktop/nbdist/
+/html/nbdist/
+/ios/nbdist/
 
 nbactions.xml
 nb-configuration.xml
 
 ## Gradle
-/local.bootOptions
+
+/local.properties
 .gradle/
 gradle-app.setting
+/build/
+/android/build/
+/core/build/
+/desktop/build/
+/html/build/
+/ios/build/
 
 ## OS Specific
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Directories
-/**/log/
-/**/venv/
-/out/
-
-# Files.
-/result.png
-
-# Recusive Directories
-/**/__pycache__/
-/**/.gradle/
-/**/.idea/workspace.xml
-/**/build/
-/**/out/
-/**/run/
-
-# Test files.
-/test.bson
-/test.data
-/test.qdat
-
-# File types.
-*.qdat
-*.pkl
-*.log
-*.temp
-
-# Lombok config
-lombok.config
-
-# Local files
-/local/
-/tmp/
-/temp/
-
-# Libraries
-!libs/*.jar
-
-# Java Libraries
-/lib/
-/java-lib/
-/java-libs/
-
-# Removed
-/docs/
+## iOS
+/ios/xcode/*.xcodeproj/*
+!/ios/xcode/*.xcodeproj/xcshareddata
+!/ios/xcode/*.xcodeproj/project.pbxproj
+/ios/xcode/native/
+/ios/IOSLauncher.app
+/ios/IOSLauncher.app.dSYM
+/gameprovider/build/
 /run/
+/buildSrc/build/

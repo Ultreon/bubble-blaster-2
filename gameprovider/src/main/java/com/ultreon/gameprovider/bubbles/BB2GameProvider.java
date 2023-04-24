@@ -104,7 +104,7 @@ public class BB2GameProvider implements GameProvider {
 
         try {
             var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, envType, this);
-            var gameLib = GameLibrary.BB_MAIN;
+            var gameLib = GameLibrary.BB_DESKTOP;
             var gameJar = GameProviderHelper.getCommonGameJar();
             var commonGameJarDeclared = gameJar != null;
 
@@ -114,7 +114,8 @@ public class BB2GameProvider implements GameProvider {
 
             classifier.process(launcher.getClassPath());
 
-            gameJar = classifier.getOrigin(GameLibrary.BB_MAIN);
+            gameJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
+            var coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
 
             if (commonGameJarDeclared && gameJar == null) {
                 Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
@@ -122,6 +123,10 @@ public class BB2GameProvider implements GameProvider {
 
             if (gameJar != null) {
                 gameJars.add(gameJar);
+            }
+
+            if (coreJar != null) {
+                gameJars.add(coreJar);
             }
 
             entrypoint = classifier.getClassName(gameLib);

@@ -1,4 +1,1 @@
-rootProject.name = "bubbles"
-
-include 'gameprovider'
-include 'game'
+include 'desktop', 'core', 'gameprovider'

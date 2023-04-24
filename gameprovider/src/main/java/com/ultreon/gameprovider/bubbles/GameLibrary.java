@@ -20,7 +20,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.impl.game.LibClassifier.LibraryType;
 
 enum GameLibrary implements LibraryType {
-	BB_MAIN("com/ultreon/bubbles/Main.class"),
+	BB_DESKTOP("com/ultreon/bubbles/DesktopLauncher.class"),
+	BB_CORE("com/ultreon/bubbles/game/BubbleBlaster.class"),
 	BB_DEV("com/ultreon/dev/GameDevMain.class"),
 	BB_PRELOADER("com/ultreon/gameprovider/bubbles/PreGameLoader.class"),
 	BB_PREMAIN("com/ultreon/premain/PreMain.class"),
@@ -34,7 +35,7 @@ enum GameLibrary implements LibraryType {
 	SLF4J_API("org/slf4j/Logger.class"),
 	SLF4J_CORE("META-INF/services/org.slf4j.spi.SLF4JServiceProvider");
 
-	static final GameLibrary[] GAME = { BB_MAIN, BB_DEV, BB_PRELOADER, BB_PREMAIN };
+	static final GameLibrary[] GAME = { BB_DESKTOP, BB_CORE, BB_DEV, BB_PRELOADER, BB_PREMAIN };
 	static final GameLibrary[] LOGGING = { LOG4J_API, LOG4J_CORE, LOG4J_CONFIG, LOG4J_PLUGIN, LOG4J_PLUGIN_2, LOG4J_PLUGIN_3, GSON, SLF4J_API, SLF4J_CORE };
 
 	private final EnvType env;

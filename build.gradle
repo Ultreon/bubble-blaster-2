@@ -118,9 +118,11 @@ configurations {
 dependencies {
     // Projects
     shadow(runtimeOnly project(":gameprovider")) { transitive false }
-    shadow(runtimeOnly project(":game")) { transitive false }
+    shadow(runtimeOnly project(":core")) { transitive false }
+    shadow(runtimeOnly project(":desktop")) { transitive false }
     implementation(runtimeOnly project(":gameprovider"))
-    implementation(runtimeOnly project(":game"))
+    implementation(runtimeOnly project(":core"))
+    implementation(runtimeOnly project(":desktop"))
 }
 
 allprojects {
@@ -130,6 +132,16 @@ allprojects {
     apply plugin: "java-library"
     apply plugin: "idea"
     apply plugin: "groovy"
+
+    ext {
+        appName = "Bubble Blaster 2"
+        gdxVersion = '1.11.0'
+        roboVMVersion = '2.3.16'
+        box2DLightsVersion = '1.5'
+        ashleyVersion = '1.7.4'
+        aiVersion = '1.8.2'
+        gdxControllersVersion = '2.2.1'
+    }
 
     publishing {
         publications {
@@ -492,7 +504,7 @@ def rcl = String.join(ps, strm.map {
     it.path
 }.filter{it != null }.toList())
 //\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
-//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":game").buildDir}/classes/java/main/$ps${project(":game").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
+//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":core").buildDir}/classes/java/main/$ps${project(":core").buildDir}/resources/main/$ps${project(":desktop").buildDir}/classes/java/main/$ps${project(":desktop").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
 def conf = """
 commonProperties
 \tfabric.development=true
@@ -520,7 +532,7 @@ idea{
                 "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
                     jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
-                    moduleName = idea.module.name + ".game.main"
+                    moduleName = idea.module.name + ".desktop.main"
                     workingDirectory = "$projectDir/run/"
                     programParameters = "--gameDir=."
                 }
