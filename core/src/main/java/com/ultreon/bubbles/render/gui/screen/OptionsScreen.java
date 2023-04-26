@@ -91,7 +91,7 @@ public class OptionsScreen extends Screen {
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {
-        renderer.color(Color.rgb(0x606060));
+        renderer.setColor(Color.rgb(0x606060));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
     }
 }

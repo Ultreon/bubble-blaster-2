@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.input;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-
 public class Keybind {
     private final int defaultKey;
     private int keyCode;
@@ -19,7 +17,7 @@ public class Keybind {
     }
 
     public boolean isDown() {
-        return KeyboardInput.isDown(keyCode);
+        return GameInput.isKeyDown(keyCode);
     }
 
     public int getKeyCode() {

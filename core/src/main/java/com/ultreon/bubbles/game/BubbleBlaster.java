@@ -1,13 +1,27 @@
 package com.ultreon.bubbles.game;
 
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Suppliers;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.common.References;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
-import com.ultreon.bubbles.common.exceptions.ResourceNotFoundException;
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
@@ -18,6 +32,7 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v1.*;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
+import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.media.MP3Player;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.media.SoundPlayer;
@@ -28,7 +43,6 @@ import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
-import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.font.FontInfo;
 import com.ultreon.bubbles.render.font.FontStyle;
@@ -37,16 +51,18 @@ import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
+import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.time.TimeProcessor;
-import com.ultreon.dev.GameDevMain;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.commons.v0.util.FileUtils;
 import com.ultreon.libs.crash.v0.ApplicationCrash;
 import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.registries.v0.Registry;
+import com.ultreon.libs.resources.v0.Resource;
 import com.ultreon.libs.resources.v0.ResourceManager;
 import com.ultreon.libs.translations.v0.LanguageManager;
 import de.jcm.discordgamesdk.Core;
@@ -74,19 +90,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.*;
@@ -103,7 +119,7 @@ import static org.apache.logging.log4j.MarkerManager.getMarker;
  */
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "RedundantSuppression"})
-public final class BubbleBlaster {
+public final class BubbleBlaster extends ApplicationAdapter {
     public static final int TPS = 40;
     public static final String NAMESPACE = "bubbles";
     // Logger.
@@ -129,35 +145,26 @@ public final class BubbleBlaster {
     private static final Supplier<ModMetadata> GAME_META = Suppliers.memoize(() -> GAME_CONTAINER.get().getMetadata());
     private static final Supplier<Version> GAME_VERSION = Suppliers.memoize(() -> GAME_META.get().getVersion());
     public final Profiler profiler = new Profiler();
-    private final URL gameFile;
+    private URL gameFile;
     @IntVal(20)
-    final int tps;
-    @NotNull
-    private final ResourceManager resourceManager;
-    @NotNull
-    private final GameWindow window;
-    @NotNull
-    private final ScreenManager screenManager;
-    @NotNull
-    private final RenderSettings renderSettings;
+    private final int tps = 20;
+    private ResourceManager resourceManager;
+    private GameWindow window;
+    private ScreenManager screenManager;
+    private RenderSettings renderSettings;
     // Tasks
     final List<Runnable> tasks = new CopyOnWriteArrayList<>();
-    private final Thread rpcThread;
+    private Thread rpcThread;
     // Fonts.
     private SystemFont sansFont;
-    // Cursors
-    private final Cursor blankCursor;
-    private final Cursor defaultCursor;
-    private final Cursor pointerCursor;
-    private final Cursor textCursor;
     // Font names.
-    private final String fontName;
+    private String fontName;
     // Rendering
-    private final DebugRenderer debugRenderer = new DebugRenderer(this);
-    private final EnvironmentRenderer environmentRenderer;
+    private DebugRenderer debugRenderer;
+    private EnvironmentRenderer environmentRenderer;
     private final GraphicsEnvironment graphicEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
     // Managers.
-    private final TextureManager textureManager = TextureManager.instance();
+    private TextureManager textureManager;
     // Randomizers.
     private final Random random = new Random();
     // Misc
@@ -199,12 +206,19 @@ public final class BubbleBlaster {
     private boolean isGlitched = false;
     private Supplier<Activity> activity;
     private volatile boolean rpcUpdated;
-    private Map<Thread, ThreadSection> lastProfile = new HashMap<>();
+    private final Map<Thread, ThreadSection> lastProfile = new HashMap<>();
     private float fadeInDuration = Float.NEGATIVE_INFINITY;
     private boolean fadeIn = false;
     private long fadeInStart = 0L;
     private boolean firstFrame = true;
     private final GlobalSaveData globalSaveData = GlobalSaveData.instance();
+    private SpriteBatch batch;
+    private ShapeDrawer shapes;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private boolean focused;
+    private int transX;
+    private int transY;
 
     /**
      * Class constructor for Bubble Blaster.
@@ -212,8 +226,28 @@ public final class BubbleBlaster {
      * @see LoadScreen
      */
     public BubbleBlaster() throws IOException {
-        var windowProperties = new GameWindow.Properties("Bubble Blaster", 1280, 720).close(BubbleBlaster::dispose)/*.fullscreen()*/;
-        var bootOptions = new BootOptions().tps(TPS);
+    }
+
+    @Override
+    public void create() {
+        this.batch = new SpriteBatch();
+        Pixmap singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        singlePxPixmap.setColor(Color.rgb(0xffffff).toGdx());
+        singlePxPixmap.drawPixel(0, 0);
+        com.badlogic.gdx.graphics.Texture singlePxTex = new com.badlogic.gdx.graphics.Texture(singlePxPixmap);
+        TextureRegion pixel = new TextureRegion(singlePxTex);
+        this.shapes = new ShapeDrawer(batch, pixel);
+
+        this.textureManager = TextureManager.instance();
+        this.debugRenderer = new DebugRenderer(this);
+        this.camera = new OrthographicCamera();
+        this.camera.setToOrtho(false, getWidth(), getHeight()); // Set up the camera's projection matrix
+        this.viewport = new ScreenViewport(camera);
+
+        this.transX = Gdx.graphics.getWidth() / 2;
+        this.transY = Gdx.graphics.getHeight() / 2;
+        camera.translate(transX, transY);
+
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
         Thread.currentThread().setUncaughtExceptionHandler(new GameExceptions());
@@ -225,20 +259,13 @@ public final class BubbleBlaster {
         // Assign instance.
         instance = this;
 
+        this.window = new GameWindow(new GameWindow.Properties("Bubble Blaster", 1280, 720).close(this::dispose)/*.fullscreen()*/);
+
         gameFile = BubbleBlaster.class.getProtectionDomain().getCodeSource().getLocation();
-
-//        var scanner = new Scanner(true, getClassLoader(), getGameFile());
-//        scanResults = scanner.scan();
-
-        // Set game properties.
-        this.tps = bootOptions.tps;
 
         // Prepare for game launch
         this.resourceManager = new ResourceManager("assets");
         this.renderSettings = new RenderSettings();
-
-        // Setup game window.
-        this.window = new GameWindow(windowProperties);
 
         // Invoke entry points.
         EntrypointUtils.invoke("main", ModInitializer.class, ModInitializer::onInitialize);
@@ -285,35 +312,16 @@ public final class BubbleBlaster {
 
         environmentRenderer = new EnvironmentRenderer();
 
-        var classPath = GameDevMain.getClassPath();
-        try {
-            var location = getClass().getProtectionDomain().getCodeSource().getLocation();
-            if (Objects.equals(location.getProtocol(), "file")) {
-                var file = new File(location.toURI());
-                if (file.isDirectory()) {
-                    resourceManager.importPackage(new File(file, "../../../resources/main"));
-                } else {
-                    resourceManager.importPackage(file);
-                }
-            } else {
-                resourceManager.importPackage(location);
+        List<Path> paths = FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow().getOrigin().getPaths();
+        for (Path path : paths) {
+            try {
+                resourceManager.importPackage(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            if (classPath != null)
-                classPath.values().forEach(list -> list.forEach(file -> {
-                    try {
-                        resourceManager.importPackage(new File(file));
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }));
-            else
-                throw new FileNotFoundException("Can't find bubble blaster game executable.");
         }
 
-
         // Assign instance.
-
         for (var thread : Thread.getAllStackTraces().keySet()) {
             if (thread.getName().equals("JavaFX Application Thread")) {
                 thread.setName("Application Thread");
@@ -324,69 +332,6 @@ public final class BubbleBlaster {
         AnsiConsole.systemInstall();
         FileUtils.setCwd(References.GAME_DIR);
 
-        // Transparent 16 x 16 pixel cursor image.
-        var nulCurImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
-        // Create a new blank cursor.
-        blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                nulCurImg, new Point(0, 0), "blank cursor");
-
-        // Transparent 16 x 16 pixel cursor image.
-        var defCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        var defCurPly = new Polygon(new int[]{0, 10, 5, 0}, new int[]{0, 12, 12, 16}, 4);
-
-        var defCurGfx = new Renderer(defCurImg.createGraphics(), getObserver());
-        defCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        defCurGfx.color(Color.black);
-        defCurGfx.polygon(defCurPly);
-        defCurGfx.color(Color.white);
-        defCurGfx.polygonLine(defCurPly);
-        defCurGfx.dispose();
-
-        // Create a new blank cursor.
-        defaultCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                defCurImg, new Point(1, 1), "default cursor");
-
-        // Transparent 16 x 16 pixel cursor image.
-        var pntCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        var pntCurPly = new Polygon(new int[]{10, 20, 15, 10}, new int[]{10, 22, 22, 26}, 4);
-
-        var pntCurGfx = new Renderer(pntCurImg.createGraphics(), getObserver());
-        pntCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        pntCurGfx.color(Color.white);
-        pntCurGfx.ovalLine(0, 0, 20, 20);
-        pntCurGfx.color(Color.white);
-        pntCurGfx.ovalLine(2, 2, 16, 16);
-        pntCurGfx.color(Color.black);
-        pntCurGfx.polygon(pntCurPly);
-        pntCurGfx.color(Color.white);
-        pntCurGfx.polygonLine(pntCurPly);
-        pntCurGfx.color(Color.black);
-        pntCurGfx.ovalLine(1, 1, 18, 18);
-        pntCurGfx.dispose();
-
-        // Create a new blank cursor.
-        pointerCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                pntCurImg, new Point(11, 11), "pointer cursor");
-
-        // Transparent 16 x 16 pixel cursor image.
-        var txtCurImg = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        var txtCurGfx = new Renderer(txtCurImg.createGraphics(), getObserver());
-        txtCurGfx.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        txtCurGfx.color(Color.white);
-        txtCurGfx.line(0, 1, 0, 24);
-        txtCurGfx.color(Color.white);
-        txtCurGfx.line(1, 0, 1, 25);
-        txtCurGfx.color(Color.white);
-        txtCurGfx.line(2, 1, 2, 24);
-        txtCurGfx.color(Color.black);
-        txtCurGfx.line(1, 1, 1, 24);
-        txtCurGfx.dispose();
-
-        // Create a new blank cursor.
-        textCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                txtCurImg, new Point(1, 12), "text cursor");
-
         // Logs directory creation.
         References.LOGS_DIR.mkdirs();
 
@@ -394,7 +339,6 @@ public final class BubbleBlaster {
         fontName = "Chicle Regular";
 
         // Register events.
-        GameEvents.COLLECT_TEXTURES.listen(this::onCollectTextures);
         InputEvents.KEY_PRESS.listen(this::onKeyPress);
         InputEvents.KEY_RELEASE.listen(this::onKeyRelease);
         InputEvents.MOUSE_CLICK.listen(this::onMouseClick);
@@ -414,6 +358,61 @@ public final class BubbleBlaster {
 
         // Request focus
         getGameWindow().requestFocus();
+    }
+
+    @Override
+    public void pause() {
+        if (isInGame() && !(getCurrentScreen() instanceof PauseScreen)) {
+            showScreen(new PauseScreen());
+        }
+    }
+
+    @Override
+    public void resume() {
+        if (isInGame() && getCurrentScreen() instanceof PauseScreen) {
+            showScreen(null);
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+        camera.setToOrtho(false, width, height); // Set up the camera's projection matrix
+        this.camera.translate(-this.transX, -this.transY);
+        this.transX = (int) (viewport.getWorldWidth() / 2);
+        this.transY = (int) (viewport.getWorldHeight() / 2);
+        this.camera.translate(this.transX, this.transY);
+    }
+
+    @Override
+    public void render() {
+        super.render();
+
+        Gdx.gl20.glClearColor(0f, 0f, 0f, 1f);
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        tasks.forEach(Runnable::run);
+        tasks.clear();
+
+        camera.update();
+        Matrix4 matrix = camera.combined;
+        batch.begin();
+        var renderer = new Renderer(shapes, new MatrixStack(matrix));
+
+        if (isGlitched) {
+            glitchRenderer.render(renderer);
+        } else {
+            var filters = BubbleBlaster.instance.getCurrentFilters();
+
+            profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
+
+            if (isDebugMode() || debugGuiOpen) {
+                debugRenderer.render(renderer);
+            }
+
+            this.fps = Gdx.graphics.getFramesPerSecond();
+        }
+        batch.end();
     }
 
     public static Map<Thread, ThreadSection> getLastProfile() {
@@ -439,12 +438,15 @@ public final class BubbleBlaster {
     /**
      * Launch method.
      * Contains argument parsing.
+     *
+     * @return the bubble blaster instance.
      */
-    public static void launch(Arguments args) throws IOException {
+    public static BubbleBlaster launch(Arguments args) throws IOException {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
         Identifier.setDefaultNamespace("bubbles");
-
-        FlatMacDarkLaf.setup();
+        ResourceManager.logger = getLogger("ResourceManager");
+        Registry.dumpLogger = getLogger("RegistryDump");
+        LanguageManager.INSTANCE.logger = getLogger("LanguageManager");
 
         // Get game-directory.
         final var defaultGameDir = new File(".");
@@ -456,7 +458,19 @@ public final class BubbleBlaster {
 
         // Boot the game.
         BubbleBlaster.initEngine(BubbleBlaster.debugMode, BubbleBlaster.devMode);
-        new BubbleBlaster();
+        return new BubbleBlaster();
+    }
+
+    private static com.ultreon.libs.commons.v0.Logger getLogger(String name) {
+        Logger logger = LoggerFactory.getLogger(name);
+        return (level, message, t) -> {
+            switch (level) {
+                case ERROR -> logger.error(message, t);
+                case WARN -> logger.warn(message, t);
+                case INFO -> logger.info(message, t);
+                case DEBUG -> logger.debug(message, t);
+            }
+        };
     }
 
     private static String getAppData() {
@@ -618,7 +632,7 @@ public final class BubbleBlaster {
         return GAME_VERSION.get();
     }
 
-    private void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding) {
+    private void onKeyPress(int keyCode, boolean holding) {
         final var loadedGame = this.loadedGame;
 
         if (loadedGame != null) {
@@ -655,7 +669,7 @@ public final class BubbleBlaster {
         }
     }
 
-    private void onKeyRelease(int keyCode, int scanCode, int modifiers) {
+    private void onKeyRelease(int keyCode) {
         if (player != null) {
             if (keyCode == KEY_UP) player.forward(true);
             if (keyCode == KEY_DOWN) player.backward(true);
@@ -668,54 +682,11 @@ public final class BubbleBlaster {
         var loadedGame = this.loadedGame;
         if (isDevMode()) {
             if (loadedGame != null && button == 1) {
-                if (KeyboardInput.isDown(KEY_F1)) {
+                if (GameInput.isKeyDown(Input.Keys.F1)) {
                     Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
                 }
             }
         }
-    }
-
-    /**
-     * Event handler for collecting textures.
-     *
-     * @param collection the texture collection being collected.
-     */
-    public void onCollectTextures(TextureCollection collection) {
-//        if (collection == TextureCollections.BUBBLE_TEXTURES) {
-//            var loadScreen = LoadScreen.get();
-//
-//            if (loadScreen == null) {
-//                throw new IllegalStateException("Load scene is not available.");
-//            }
-//            for (var e : Registries.BUBBLES.entries()) {
-//                var bubble = e.getValue();
-//                for (var i = 0; i <= bubble.getMaxRadius(); i++) {
-//                    for (var destroyFrame = 0; destroyFrame <= 10; destroyFrame++) {
-//                        var id = e.getKey();
-//                        assert id != null;
-//                        var identifier = new TextureCollection.Index(id.location(), id.path() + "/" + i + "/destroy_" + destroyFrame);
-//                        final var finalI = i;
-//                        int finalDestroyFrame = destroyFrame;
-//                        collection.set(identifier, new ITexture() {
-//                            @Override
-//                            public void render(Renderer renderer) {
-//                                EnvironmentRenderer.drawBubble(renderer, 0, 0, finalI, finalDestroyFrame, bubble.getColors());
-//                            }
-//
-//                            @Override
-//                            public int width() {
-//                                return finalI + bubble.getColors().size() * 2;
-//                            }
-//
-//                            @Override
-//                            public int height() {
-//                                return finalI + bubble.getColors().size() * 2;
-//                            }
-//                        });
-//                    }
-//                }
-//            }
-//        }
     }
 
     public URL getGameFile() {
@@ -796,8 +767,8 @@ public final class BubbleBlaster {
         synchronized (rpcUpdateLock) {
             this.activity = () -> {
                 var ret = activity.get();
-                String state = ret.getState();
-                window.setTitle("Bubble Blaster - " + getGameVersion().getFriendlyString() + " - " + state);
+                var state = ret.getState();
+                Gdx.graphics.setTitle("Bubble Blaster - " + getGameVersion().getFriendlyString() + " - " + state);
                 ret.assets().setLargeImage("icon");
                 return ret;
             };
@@ -851,58 +822,52 @@ public final class BubbleBlaster {
         }
     }
 
-    private Font loadFontInternally(Identifier location) {
-        try (var inputStream = getClass().getResourceAsStream("/assets/" + location.location() + "/fonts/" + location.path() + ".ttf")) {
-            if (inputStream == null) {
-                throw new ResourceNotFoundException("Font resource " + location + " doesn't exists.");
-            }
-            var font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            this.registerFont(font);
-            return font;
-        } catch (IOException | FontFormatException e) {
-            throw new RuntimeException(e);
-        }
+    private BitmapFont loadFontInternally(Identifier location) {
+        return loadBitmapFont(Gdx.files.internal("/assets/" + location.location() + "/fonts/" + location.path() + ".ttf"));
     }
 
     public FontInfo loadFont(Identifier fontId) {
         var identifier = new Identifier(fontId.location(), "fonts/" + fontId.path() + ".ttf");
-        var resource = resourceManager.getResource(identifier);
-        if (resource != null) {
+        Resource resource = resourceManager.getResource(identifier);
+        var handle = new ResourceFileHandle(resource);
+        if (handle.exists()) {
             try {
-                Font font = resource.loadFont();
-                this.registerFont(font);
-                FontInfo.Builder builder = FontInfo.builder();
-                builder.set(Thickness.REGULAR, FontStyle.PLAIN, font);
-                builder.set(Thickness.REGULAR, FontStyle.ITALIC, new Font(font.getName(), Font.ITALIC, 1));
-                builder.set(Thickness.BOLD, FontStyle.PLAIN, new Font(font.getName(), Font.BOLD, 1));
-                builder.set(Thickness.BOLD, FontStyle.ITALIC, new Font(font.getName(), Font.ITALIC, 1));
+                var regularFont = loadBitmapFont(handle);
+                var builder = FontInfo.builder(fontId);
+                builder.set(Thickness.REGULAR, FontStyle.PLAIN, regularFont);
+                builder.set(Thickness.REGULAR, FontStyle.ITALIC, regularFont);
+                builder.set(Thickness.BOLD, FontStyle.PLAIN, regularFont);
+                builder.set(Thickness.BOLD, FontStyle.ITALIC, regularFont);
                 return builder.build();
             } catch (Exception e) {
                 throw new FontLoadException(e);
             }
         } else {
             var regularId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_regular.ttf");
-            var regularRes = resourceManager.getResource(regularId);
-            if (regularRes != null) {
+            Resource regularRes = resourceManager.getResource(regularId);
+            var regularHandle = new ResourceFileHandle(regularRes);
+            if (regularHandle.exists()) {
                 try {
-                    Font regularFont = regularRes.loadFont();
-                    this.registerFont(regularFont);
-                    FontInfo.Builder builder = FontInfo.builder();
+                    var regularFont = loadBitmapFont(regularHandle);
+                    var builder = FontInfo.builder(fontId);
+                    builder.set(Thickness.REGULAR, FontStyle.PLAIN, regularFont);
 
                     for (var thickness : Thickness.values()) {
                         var thicknessId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_" + thickness.name().toLowerCase() + ".ttf");
-                        var thicknessRes = resourceManager.getResource(thicknessId);
-                        if (thicknessRes != null) {
-                            var thicknessFont = thicknessRes.loadFont();
+                        Resource thicknessRes = resourceManager.getResource(thicknessId);
+                        var thicknessHandle = new ResourceFileHandle(thicknessRes);
+                        if (thicknessHandle.exists()) {
+                            var thicknessFont = loadBitmapFont(thicknessHandle);
                             this.registerFont(thicknessFont);
                             builder.set(thickness, FontStyle.PLAIN, thicknessFont);
 
                             for (var style : FontStyle.values()) {
                                 if (style == FontStyle.PLAIN) continue;
                                 var thicknessStyleId = new Identifier(fontId.location(), "fonts/" + fontId.path() + "_" + thickness.name().toLowerCase() + "_" + style.name().toLowerCase() + ".ttf");
-                                var thicknessStyleRes = resourceManager.getResource(thicknessStyleId);
-                                if (thicknessStyleRes != null) {
-                                    var thicknessStyleFont = thicknessStyleRes.loadFont();
+                                Resource thicknessStyleRes = resourceManager.getResource(thicknessStyleId);
+                                var thicknessStyleHandle = new ResourceFileHandle(thicknessStyleRes);
+                                if (thicknessStyleHandle.exists()) {
+                                    var thicknessStyleFont = loadBitmapFont(thicknessStyleHandle);
                                     this.registerFont(thicknessStyleFont);
                                     builder.set(thickness, FontStyle.ITALIC, thicknessStyleFont);
                                 }
@@ -917,6 +882,15 @@ public final class BubbleBlaster {
                 throw new FontLoadException("Font resource not found: " + identifier);
             }
         }
+    }
+
+    private BitmapFont loadBitmapFont(FileHandle handle) {
+        var generator = new FreeTypeFontGenerator(handle);
+        var parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 12;
+        var font = generator.generateFont(parameter); // font size 12 pixels
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
+        return font;
     }
 
     ////////////////////////
@@ -952,7 +926,6 @@ public final class BubbleBlaster {
         // Shut-down game.
         logger.info("Shutting down Bubble Blaster");
 
-        this.renderingThread.interrupt();
         this.tickingThread.interrupt();
         this.garbageCollector.interrupt();
         this.rpcThread.interrupt();
@@ -970,7 +943,6 @@ public final class BubbleBlaster {
         SoundInstance.stopAll();
 
         try {
-            this.renderingThread.join();
             this.tickingThread.join();
             this.garbageCollector.join();
             this.rpcThread.join();
@@ -1273,20 +1245,24 @@ public final class BubbleBlaster {
     /////////////////////
     //     Cursors     //
     /////////////////////
+    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
     public Cursor getBlankCursor() {
-        return blankCursor;
+        return null;
     }
 
+    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
     public Cursor getTextCursor() {
-        return textCursor;
+        return null;
     }
 
+    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
     public Cursor getPointerCursor() {
-        return pointerCursor;
+        return null;
     }
 
+    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
     public Cursor getDefaultCursor() {
-        return defaultCursor;
+        return null;
     }
 
     public String getFontName() {
@@ -1422,64 +1398,10 @@ public final class BubbleBlaster {
                     tickTime = 0;
                 }
 
-                tasks.forEach(Runnable::run);
-                tasks.clear();
-
                 Thread.sleep(8);
             }
         } catch (InterruptedException e) {
             logger.info("Ticking interrupted.");
-        } catch (Throwable t) {
-            var crashLog = new CrashLog("Running game loop.", t);
-            crash(crashLog.createCrash());
-        }
-    }
-
-    private void rendering() {
-        var tickCap = 1f / (double) tps;
-        var frameTime = 0d;
-        double frames = 0;
-
-        var time = TimeProcessor.now();
-        this.gameFrameTime = 0;
-
-        initialGameTick();
-
-        try {
-            while (running) {
-                var canTick = false;
-
-                var time2 = TimeProcessor.now();
-                var passed = time2 - time;
-                this.gameFrameTime += passed;
-                frameTime += passed;
-
-                time = time2;
-
-                if (frameTime >= 1.0d) {
-                    frameTime = 0;
-                    fps = (int) Math.round(frames);
-                    frames = 0;
-                }
-
-                frames++;
-
-                Thread.sleep(1);
-
-                try {
-                    profiler.section("render", () -> {
-                        wrappedRender(fps);
-                    });
-                } catch (Throwable t) {
-                    var crashLog = new CrashLog("Game being rendered.", t);
-                    crash(crashLog.createCrash());
-                }
-
-                lastProfile = profiler.collect();
-                Thread.sleep(8);
-            }
-        } catch (InterruptedException e) {
-            logger.info("Shut down renderer");
         } catch (Throwable t) {
             var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
@@ -1504,68 +1426,8 @@ public final class BubbleBlaster {
         }
     }
 
-    /**
-     * Render method, for rendering window.
-     *
-     * @param fps current game framerate.
-     */
-    void wrappedRender(int fps) {
-        BufferStrategy bs;
-        Renderer renderer;
-
-        if (firstFrame) {
-            firstFrame = false;
-            this.window.finalSetup();
-        }
-
-        // Set filter gotten from filter event-handlers.
-        try {
-            // Buffer strategy (triple buffering).
-            bs = this.window.canvas.getBufferStrategy();
-
-            // Create buffers if not created yet.
-            if (bs == null) {
-                this.window.canvas.createBufferStrategy(2);
-                bs = this.window.canvas.getBufferStrategy();
-            }
-
-            // Get GraphicsProcessor and GraphicsProcessor objects.
-            renderer = new Renderer(bs.getDrawGraphics(), getObserver());
-        } catch (IllegalStateException e) {
-            return;
-        }
-
-        if (isGlitched) {
-            glitchRenderer.render(renderer);
-        } else {
-            if (this.renderSettings.isAntialiasingEnabled() && this.isTextAntialiasEnabled()) {
-                renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            }
-            if (this.renderSettings.isAntialiasingEnabled() && this.isAntialiasEnabled())
-                renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            renderer.hint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-            renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-            var filters = BubbleBlaster.instance.getCurrentFilters();
-
-            profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
-
-            if (isDebugMode() || debugGuiOpen) {
-                debugRenderer.render(renderer);
-            }
-
-            this.fps = fps;
-        }
-
-        try {
-            bs.show();
-            if (!isGlitched) {
-                renderer.dispose();
-            }
-            hasRendered = true;
-        } catch (IllegalStateException e) {
-            logger.warn("Illegal state in frame flip: " + e.getMessage());
-        }
+    private void onFirstFrame() {
+        this.window.finalSetup();
     }
 
     /**
@@ -1650,7 +1512,7 @@ public final class BubbleBlaster {
         }
 
         if (player != null) {
-            if (KeyboardInput.isDown(KEY_SPACE)) {
+            if (GameInput.isKeyDown(Input.Keys.SPACE)) {
                 player.shoot();
             }
         }
@@ -1689,7 +1551,7 @@ public final class BubbleBlaster {
         BubbleBlaster.ticks++;
     }
 
-    public void keyPress(int keyCode, int scanCode, int modifiers) {
+    public void keyPress(int keyCode) {
         if (keyCode == KEY_F12) {
             debugGuiOpen = !debugGuiOpen;
             logger.debug("Toggling debug gui");
@@ -1723,7 +1585,7 @@ public final class BubbleBlaster {
     }
 
     public FontMetrics getFontMetrics(Font font) {
-        return window.canvas.getFontMetrics(font);
+        return null;
     }
 
     public boolean hasScreenOpen() {
@@ -1814,7 +1676,7 @@ public final class BubbleBlaster {
     }
 
     public ImageObserver getObserver() {
-        return window.observer;
+        return null;
     }
 
     public Rectangle getBounds() {
@@ -1822,11 +1684,11 @@ public final class BubbleBlaster {
     }
 
     public int getWidth() {
-        return window.canvas.getWidth();
+        return Gdx.graphics.getWidth();
     }
 
     public int getHeight() {
-        return window.canvas.getHeight();
+        return Gdx.graphics.getHeight();
     }
 
     public int getFps() {
@@ -1868,7 +1730,7 @@ public final class BubbleBlaster {
     }
 
     @ApiStatus.Internal
-    public static void dispose() {
+    public void dispose() {
         instance.onClose();
         if (crashed) {
             System.exit(1);
@@ -1908,10 +1770,6 @@ public final class BubbleBlaster {
         this.tickingThread = new Thread(BubbleBlaster.this::ticking, "Ticker");
         this.tickingThread.setDaemon(false);
         this.tickingThread.start();
-
-        this.renderingThread = new Thread(BubbleBlaster.this::rendering, "Renderer");
-        this.renderingThread.setDaemon(false);
-        this.renderingThread.start();
 
         this.garbageCollector = new GarbageCollector(this);
         this.garbageCollector.setDaemon(false);
@@ -1977,8 +1835,9 @@ public final class BubbleBlaster {
     }
 
     @CanIgnoreReturnValue
-    public boolean registerFont(Font font) {
-        return graphicEnv.registerFont(font);
+    public boolean registerFont(BitmapFont font) {
+//        return graphicEnv.registerFont(font);
+        return true;
     }
 
     public void finish() {
@@ -1987,14 +1846,14 @@ public final class BubbleBlaster {
     }
 
     public long serializeSeed(String text) {
-        Long seedNr = Long.getLong(text);
+        var seedNr = Long.getLong(text);
         if (seedNr != null) {
             return seedNr;
         }
 
         long h = 0;
         long length = text.length() >> 1;
-        for (char c : text.toCharArray()) {
+        for (var c : text.toCharArray()) {
             h = 31L * h + c;
         }
         return h;
@@ -2012,8 +1871,16 @@ public final class BubbleBlaster {
         return globalSaveData;
     }
 
+    public BitmapFont getBitmapFont() {
+        return new BitmapFont();
+    }
+
+    public boolean isFocused() {
+        return focused;
+    }
+
     protected static class BootOptions {
-        private int tps = 40;
+        private int tps = 20;
 
         public BootOptions() {
 

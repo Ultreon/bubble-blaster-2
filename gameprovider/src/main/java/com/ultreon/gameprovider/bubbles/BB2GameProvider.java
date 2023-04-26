@@ -1,6 +1,8 @@
 package com.ultreon.gameprovider.bubbles;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.metadata.*;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.FormattedException;
 import net.fabricmc.loader.impl.game.GameProvider;
@@ -8,22 +10,24 @@ import net.fabricmc.loader.impl.game.GameProviderHelper;
 import net.fabricmc.loader.impl.game.LibClassifier;
 import net.fabricmc.loader.impl.game.patch.GameTransformer;
 import net.fabricmc.loader.impl.launch.FabricLauncher;
+import net.fabricmc.loader.impl.metadata.AbstractModMetadata;
+import net.fabricmc.loader.impl.metadata.BuiltinModMetadata;
 import net.fabricmc.loader.impl.util.Arguments;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
 import net.fabricmc.loader.impl.util.SystemProperties;
 import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.fabricmc.loader.impl.util.log.LogHandler;
+import org.apache.logging.log4j.util.PropertiesUtil;
+import org.spongepowered.include.com.google.common.collect.Lists;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BB2GameProvider implements GameProvider {
@@ -44,6 +48,19 @@ public class BB2GameProvider implements GameProvider {
     private Path devJar;
     private boolean log4jAvailable;
     private boolean slf4jAvailable;
+    private Path libGdxJar;
+    private final Properties versions;
+
+    public BB2GameProvider() {
+        InputStream stream = getClass().getResourceAsStream("/versions.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.versions = properties;
+    }
 
     @Override
     public String getGameId() {
@@ -57,17 +74,25 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public String getRawGameVersion() {
-        return "0.1.0";
+        return versions.getProperty("bubbles");
     }
 
     @Override
     public String getNormalizedGameVersion() {
-        return "0.1.0";
+        return versions.getProperty("bubbles");
     }
 
     @Override
     public Collection<BuiltinMod> getBuiltinMods() {
-        return Collections.emptyList();
+        return List.of(
+                new BuiltinMod(List.of(libGdxJar), new BuiltinModMetadata.Builder("libgdx", versions.getProperty("libgdx"))
+                        .addLicense("Apache-2.0")
+                        .addAuthor("libGDX", Map.of("homepage", "http://www.libgdx.com/", "patreon", "https://patreon.com/libgdx", "github", "https://github.com/libgdx", "sources", "https://github.com/libgdx/libgdx"))
+                        .addAuthor("Mario Zechner", Map.of("github", "https://github.com/badlogic", "email", "badlogicgames@gmail.com"))
+                        .addAuthor("Nathan Sweet", Map.of("github", "https://github.com/NathanSweet", "email", "nathan.sweet@gmail.com"))
+                        .addIcon(200, "assets/libgdx/icon.png")
+                        .build())
+        );
     }
 
     @Override
@@ -101,7 +126,6 @@ public class BB2GameProvider implements GameProvider {
         this.arguments = new Arguments();
         arguments.parse(args);
 
-
         try {
             var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, envType, this);
             var gameLib = GameLibrary.BB_DESKTOP;
@@ -116,6 +140,7 @@ public class BB2GameProvider implements GameProvider {
 
             gameJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
             var coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
+            this.libGdxJar = classifier.getOrigin(GameLibrary.LIBGDX);
 
             if (commonGameJarDeclared && gameJar == null) {
                 Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
@@ -127,6 +152,10 @@ public class BB2GameProvider implements GameProvider {
 
             if (coreJar != null) {
                 gameJars.add(coreJar);
+            }
+
+            if (libGdxJar != null) {
+                gameJars.add(libGdxJar);
             }
 
             entrypoint = classifier.getClassName(gameLib);

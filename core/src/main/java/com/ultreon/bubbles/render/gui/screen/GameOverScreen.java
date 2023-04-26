@@ -63,23 +63,23 @@ public class GameOverScreen extends Screen {
         super.renderBackground(renderer);
 
         if (isHighScore) {
-            renderer.color(0xffffffff);
+            renderer.setColor(0xffffffff);
             font.draw(renderer, "Congratulations!", 64, width / 2f, 152, Thickness.BOLD, Anchor.CENTER);
             font.draw(renderer, "You beat your high-score!", 14, width / 2f, 216, Thickness.BOLD, Anchor.CENTER);
         } else {
             long cycled = (System.currentTimeMillis() - gameOverTime) % 4000;
             int phase = (int) (Math.floorDiv(cycled, 1000));
             switch (phase) {
-                case 4, 3, 2 -> renderer.color(GAME_OVER_COLOR_NORMAL);
-                case 1 -> renderer.color(GAME_OVER_COLOR_FLASH);
+                case 4, 3, 2 -> renderer.setColor(GAME_OVER_COLOR_NORMAL);
+                case 1 -> renderer.setColor(GAME_OVER_COLOR_FLASH);
                 case 0 -> Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
             }
-            renderer.color(Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
+            renderer.setColor(Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
 
             font.draw(renderer, "Game Over", 64, width / 2f, 152, Thickness.BOLD, Anchor.CENTER);
         }
 
-        renderer.color(0x7fffffff);
+        renderer.setColor(0x7fffffff);
         font.draw(renderer, Long.toString(score), 32, game.getScaledWidth() / 2f, 280, Thickness.BOLD, Anchor.CENTER);
     }
 

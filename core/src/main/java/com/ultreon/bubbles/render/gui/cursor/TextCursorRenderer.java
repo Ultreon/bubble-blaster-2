@@ -15,13 +15,13 @@ public class TextCursorRenderer extends CursorRenderer {
     @Override
     public void draw(Renderer renderer) {
         renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.line(0, 1, 0, 24);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.line(1, 0, 1, 25);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.line(2, 1, 2, 24);
-        renderer.color(Color.black);
+        renderer.setColor(Color.black);
         renderer.line(1, 1, 1, 24);
         renderer.dispose();
     }

@@ -94,9 +94,10 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     }
 
     static void drawText(Renderer renderer, Color textColor, Vec2i size, TextObject text, Font font) {
-        Renderer subRender = renderer.subInstance(4, 4, size.x - 8, size.y - 8);
-        subRender.color(textColor);
-        font.draw(subRender, text, 16, (size.x - 8) / 2f, (size.y - 8) / 2f, Thickness.BOLD, Anchor.CENTER);
-        subRender.dispose();
+        renderer.subInstance(4, 4, size.x - 8, size.y - 8, subRender -> {
+            subRender.setColor(textColor);
+            font.draw(subRender, text, 16, (size.x - 8) / 2f, (size.y - 8) / 2f, Thickness.BOLD, Anchor.CENTER);
+            subRender.dispose();
+        });
     }
 }

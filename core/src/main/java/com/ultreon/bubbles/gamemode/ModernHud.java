@@ -15,7 +15,6 @@ import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 
 /**
  * The classic hud, the hud that's almost identical to older versions and editions create the game.
@@ -58,8 +57,8 @@ public class ModernHud extends GameHud {
         if (player == null) return;
 
         if (!gameOver) {
-            game.profiler.section("Draw Badge", () -> drawBadge(renderer.subInstance(20, 20, 300, 80), player));
-            game.profiler.section("Draw Status Effects", () -> drawStatusEffects(renderer.subInstance(game.getWidth() - 320, 20, 300, game.getHeight() - 40), player));
+            game.profiler.section("Draw Badge", () -> renderer.subInstance(20, 20, 300, 80, subRender -> drawBadge(subRender, player)));
+            game.profiler.section("Draw Status Effects", () -> renderer.subInstance(game.getWidth() - 320, 20, 300, game.getHeight() - 40, subRender -> drawStatusEffects(subRender, player)));
         }
 
         game.profiler.section("Draw Messages", () -> drawMessages(renderer, game));
@@ -73,7 +72,7 @@ public class ModernHud extends GameHud {
     }
 
     private void drawBadgeBackground(Renderer renderer) {
-        renderer.color(0x80000000);
+        renderer.setColor(0x80000000);
         renderer.rect(0, 0, 300, 80);
     }
 
@@ -85,12 +84,12 @@ public class ModernHud extends GameHud {
      */
     private void drawPlayerDetails(@NotNull Renderer renderer, @NotNull Player player) {
         String name = player.getName();
-        renderer.color(0xffffffff);
+        renderer.setColor(0xffffffff);
         font.draw(renderer, name, 20, 5, 5, Thickness.BOLD, Anchor.NW);
         font.draw(renderer, TextObject.literal("Score: ").append((int) player.getScore()), 12, 5, 45, Thickness.BOLD, Anchor.NW);
         font.draw(renderer, TextObject.literal("Level: ").append(player.getLevel()), 12, 5, 60, Thickness.BOLD, Anchor.NW);
 
-        renderer.color(0x50ffffff);
+        renderer.setColor(0x50ffffff);
         double maxHealth = player.getMaxHealth();
         double health = Mth.clamp(player.getHealth(), 0, maxHealth);
         if (maxHealth != 0) {
@@ -98,11 +97,11 @@ public class ModernHud extends GameHud {
 
             double ratio = health / maxHealth;
             if (ratio >= 0.5) {
-                renderer.color(0xff00ff00);
+                renderer.setColor(0xff00ff00);
             } else if (ratio >= 0.2) {
-                renderer.color(0xffffd000);
+                renderer.setColor(0xffffd000);
             } else {
-                renderer.color(0xffff0000);
+                renderer.setColor(0xffff0000);
             }
             renderer.line(5, 75, (int) (5 + (290 * health / maxHealth)), 75);
         }
@@ -122,7 +121,7 @@ public class ModernHud extends GameHud {
      * @param gamemode the game type bound to this hud.
      */
     private void drawLevelUpMessage(Renderer renderer, Gamemode gamemode) {
-        renderer.color(LEVEL_UP_COLOR);
+        renderer.setColor(LEVEL_UP_COLOR);
 
         if (showLevelUp && System.currentTimeMillis() > hideLevelUpTime) {
             showLevelUp = false;
@@ -141,14 +140,14 @@ public class ModernHud extends GameHud {
 
             Rectangle2D gameBounds = gamemode.getGameBounds();
 
-            renderer.color(Color.argb(0x7f000000));
+            renderer.setColor(Color.argb(0x7f000000));
 
             renderer.roundRect(
                     (int)(gameBounds.getX() + gameBounds.getWidth() - width) / 2,
                     (int)(gameBounds.getY() + gameBounds.getHeight() - height) / 2, width, height,
                     10, 10);
 
-            renderer.color(LEVEL_UP_COLOR);
+            renderer.setColor(LEVEL_UP_COLOR);
             font.draw(renderer, text, 50, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2), Thickness.BOLD, Anchor.S);
         }
     }
@@ -162,30 +161,29 @@ public class ModernHud extends GameHud {
     private void drawStatusEffects(@NotNull Renderer renderer, @NotNull Player player) {
         int y = 0;
         for (AppliedEffect appliedEffect : player.getActiveEffects()) {
-            // GraphicsProcessor 2D
-            Renderer effectRender = renderer.subInstance(0, y, 300, 50);
-            Identifier id = appliedEffect.getType().getId();
-            
-            effectRender.color(0x80000000);
-            effectRender.rect(0, 0, 300, 50);
+            renderer.subInstance(0, y, 300, 50, effectRender -> {
+                Identifier id = appliedEffect.getType().getId();
 
-            // Format duration to string.
-            String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
+                effectRender.setColor(0x80000000);
+                effectRender.rect(0, 0, 300, 50);
 
-            try {
-                appliedEffect.getType().getIcon().draw(effectRender, 5, 5, 40, 40);
-            } catch (Exception e) {
-                e.printStackTrace();
-                effectRender.color(0x80ffffff);
-                effectRender.rect(5, 5, 40, 40);
-            }
+                // Format duration to string.
+                String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
 
-            effectRender.color(0xffffffff);
-            font.draw(effectRender, TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name"), 20, 50, 5, Thickness.BOLD, Anchor.NW);
+                try {
+                    effectRender.texture(appliedEffect.getType().getIcon(), 5, 5, 40, 40);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    effectRender.setColor(0x80ffffff);
+                    effectRender.rect(5, 5, 40, 40);
+                }
 
-            if (appliedEffect.getRemainingTime() < 2L) renderer.color(0xffff0000);
-            font.draw(effectRender, TextObject.literal(time), 15, 50, 45, Thickness.BOLD, Anchor.SW);
+                effectRender.setColor(0xffffffff);
+                font.draw(effectRender, TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name"), 20, 50, 5, Thickness.BOLD, Anchor.NW);
 
+                if (appliedEffect.getRemainingTime() < 2L) renderer.setColor(0xffff0000);
+                font.draw(effectRender, TextObject.literal(time), 15, 50, 45, Thickness.BOLD, Anchor.SW);
+            });
             // Next
             y += 60;
         }

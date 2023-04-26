@@ -71,9 +71,15 @@ dependencies {
 
 processResources {
     inputs.property "version", version
+    inputs.property "bubbles_version", project(":core").version
+    inputs.property "libgdx_version", gdxVersion
 
     filesMatching("fabric.mod.json") {
         expand "version": version
+    }
+
+    filesMatching("versions.properties") {
+        expand "bubbles_version": project(":core").version, "libgdx_version": gdxVersion
     }
 
     exclude "*.pdn", "*.xcf", "*.ps"

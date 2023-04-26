@@ -58,12 +58,12 @@ public class InputEvents {
 
     @FunctionalInterface
     public interface KeyPress {
-        void onKeyPress(int keyCode, int scanCode, int modifiers, boolean holding);
+        void onKeyPress(int keyCode, boolean holding);
     }
 
     @FunctionalInterface
     public interface KeyRelease {
-        void onKeyRelease(int keyCode, int scanCode, int modifiers);
+        void onKeyRelease(int keyCode);
     }
 
     @FunctionalInterface

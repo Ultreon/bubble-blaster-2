@@ -12,7 +12,7 @@ public class GlitchRenderer {
     private final char[] chars = " ~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=`1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final int matrixW;
     private final int matrixH;
-    private final Font font = Fonts.PRESS_START_K;
+    private final Font font = Fonts.DEFAULT.get();
     private final char[][] matrix;
     private final int[][] cMatrix;
     private final int charW;
@@ -51,11 +51,11 @@ public class GlitchRenderer {
                 int xi = x * charW;
                 int yi = y * charH;
 
-                renderer.color("#000");
+                renderer.setColor("#000");
                 if (matrix != 0) {
                     renderer.rect(xi, yi, charW, charH);
                 }
-                renderer.color(Color.rgb(cMatrix[x][y]));
+                renderer.setColor(Color.rgb(cMatrix[x][y]));
                 font.draw(renderer, Character.toString(matrix), 18, xi + 2, yi + charH / 1.5f + 4);
 //                renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
             }

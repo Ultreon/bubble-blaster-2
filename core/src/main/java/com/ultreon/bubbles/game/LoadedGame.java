@@ -119,14 +119,14 @@ public class LoadedGame {
 //            if (this.ambientAudio == null) {
 //                if (!this.environment.isBloodMoonActive() && this.nextAudio < System.currentTimeMillis()) {
 //                    if (new PseudoRandom(System.nanoTime()).getNumber(0, 5, -1) == 0) {
-//                        this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/submarine.mp3")), "ambient");
+//                        this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/bubbles/audio/bgm/submarine.mp3")), "ambient");
 //                        this.ambientAudio.setVolume(0.1d);
 //                        this.ambientAudio.play();
 //                    } else {
 //                        this.nextAudio = System.currentTimeMillis() + new Random().nextLong(1000, 2000);
 //                    }
 //                } else if (this.environment.isBloodMoonActive()) {
-//                    this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
+//                    this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
 //                    this.ambientAudio.setVolume(0.25d);
 //                    this.ambientAudio.play();
 //                }
@@ -142,7 +142,7 @@ public class LoadedGame {
 //                this.ambientAudio.stop();
 //                this.ambientAudio = null;
 //
-//                this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/assets/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
+//                this.ambientAudio = new SoundInstance(Objects.requireNonNull(getClass().getResource("/bubbles/audio/bgm/ultima.mp3")), "blood_moon_state");
 //                this.ambientAudio.setVolume(0.25d);
 //                this.ambientAudio.play();
 //            }
@@ -273,15 +273,15 @@ public class LoadedGame {
     public void renderHUD(@SuppressWarnings({"unused", "RedundantSuppression"}) BubbleBlaster game, Renderer renderer) {
         int i = 0;
         for (String s : activeMessages) {
-            Renderer subInstance = renderer.subInstance(0, 71 + (32 * i), 1000, 32);
+            renderer.subInstance(0, 71 + (32 * i), 1000, 32, subInstance -> {
+                subInstance.setColor(Color.argb(0x80000000));
+                subInstance.rect(0, 0, 1000, 32);
 
-            subInstance.color(Color.argb(0x80000000));
-            subInstance.rect(0, 0, 1000, 32);
+                subInstance.setColor(Color.argb(0xffffffff));
+                Fonts.MONOSPACED.draw(subInstance, s, 32, 2, 16);
 
-            subInstance.color(Color.argb(0xffffffff));
-            Fonts.MONOSPACED.draw(subInstance, s, 32, 2, 16);
-
-            subInstance.dispose();
+                subInstance.dispose();
+            });
             i++;
         }
 

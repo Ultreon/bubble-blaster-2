@@ -21,7 +21,7 @@ public class BasicAmmoType extends AmmoType {
 
     @Override
     public void render(Renderer renderer, Bullet entity) {
-        renderer.color(0xffdfff00);
+        renderer.setColor(0xffdfff00);
         renderer.fill(getShape(entity));
     }
 

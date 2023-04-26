@@ -69,7 +69,7 @@ public class CreateSaveScreen extends Screen {
             renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
         }
 
-        renderer.color(0xc0ffffff);
+        renderer.setColor(0xc0ffffff);
         font.draw(renderer, name, 16, 10, height / 2f, Thickness.BOLD, Anchor.W);
     }
 
@@ -79,8 +79,8 @@ public class CreateSaveScreen extends Screen {
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
-        return super.keyPress(keyCode, character);
+    public boolean keyPress(int keyCode) {
+        return super.keyPress(keyCode);
     }
 
     @Override

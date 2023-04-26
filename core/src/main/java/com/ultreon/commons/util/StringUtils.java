@@ -1,5 +1,8 @@
 package com.ultreon.commons.util;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
@@ -37,14 +40,14 @@ public class StringUtils {
      * @param maxWidth the max line width, in points
      * @return a non-empty list create strings
      */
-    public static List<String> wrap(String str, FontMetrics fm, int maxWidth) {
+    public static List<String> wrap(String str, BitmapFont font, GlyphLayout fm, int maxWidth) {
         List<String> lines = splitIntoLines(str);
         if (lines.size() == 0)
             return lines;
 
         ArrayList<String> strings = new ArrayList<>();
         for (String line : lines)
-            wrapLineInto(line, strings, fm, maxWidth);
+            wrapLineInto(line, strings, font, fm, maxWidth);
         return strings;
     }
 
@@ -57,16 +60,19 @@ public class StringUtils {
      * @param fm       font metrics
      * @param maxWidth maximum width create the line(s)
      */
-    public static void wrapLineInto(String line, List<String> list, FontMetrics fm, int maxWidth) {
+    public static void wrapLineInto(String line, List<String> list, BitmapFont font, GlyphLayout fm, int maxWidth) {
         int len = line.length();
         int width;
-        while (len > 0 && (width = fm.stringWidth(line)) > maxWidth) {
+        while (true) {
+            fm.setText(font, line);
+            if (len <= 0 || (width = (int) fm.width) <= maxWidth) break;
             // Guess where to split the line. Look for the next space before
             // or after the guess.
             int guess = len * maxWidth / width;
             String before = line.substring(0, guess).trim();
 
-            width = fm.stringWidth(before);
+            fm.setText(font, before);
+            width = (int) fm.width;
             int pos;
             if (width > maxWidth) // Too long
                 pos = findBreakBefore(line, guess);
@@ -74,7 +80,8 @@ public class StringUtils {
                 pos = findBreakAfter(line, guess);
                 if (pos != -1) { // Make sure this doesn't make us too long
                     before = line.substring(0, pos).trim();
-                    if (fm.stringWidth(before) > maxWidth)
+                    fm.setText(font, before);
+                    if (fm.width > maxWidth)
                         pos = findBreakBefore(line, guess);
                 }
             }
@@ -166,7 +173,7 @@ public class StringUtils {
         return strings;
     }
 
-    public static AttributedString createFallbackString(String text, Font mainFont, Font fallbackFont) {
+    public static AttributedString createFallbackString(String text, Font mainFont, BitmapFont fallbackFont) {
         AttributedString result = new AttributedString(text);
 
         int textLength = text.length();

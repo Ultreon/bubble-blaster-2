@@ -129,6 +129,10 @@ public class Color {
         return new Color(awt);
     }
 
+    public static Color gdx(com.badlogic.gdx.graphics.Color color) {
+        return new Color((int) (color.r * 255), (int) (color.g * 255), (int) (color.b * 255), (int) (color.a * 255));
+    }
+
     public java.awt.Color toAwt() {
         return awtColor;
     }
@@ -184,5 +188,9 @@ public class Color {
     @Override
     public String toString() {
         return "#%02x%02x%02x%02x".formatted(getRed(), getGreen(), getBlue(), getAlpha());
+    }
+
+    public com.badlogic.gdx.graphics.Color toGdx() {
+        return new com.badlogic.gdx.graphics.Color(getRed() / 255f, getGreen() / 255f, getBlue() / 255f, getAlpha() / 255f);
     }
 }

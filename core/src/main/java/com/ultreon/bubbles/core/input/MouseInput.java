@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.core.input;
 
+import com.badlogic.gdx.Input;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -22,7 +23,7 @@ import java.util.Map;
  */
 @SuppressWarnings("ConstantConditions")
 public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
-    private static final MouseInput INSTANCE = new MouseInput();
+    public static final MouseInput INSTANCE = new MouseInput();
     // Mouse input values.
     private Point currentLocationOnScreen;
     private Point currentPoint;
@@ -40,11 +41,11 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
         this.game = BubbleBlaster.getInstance();
     }
 
-    public static void listen(Component component) {
+    public static void listen(Input component) {
         BubbleBlaster.getLogger().debug("Mouse input launched on component: " + component.getClass().getName() + " at %08x".formatted(component.hashCode()));
-        component.addMouseListener(INSTANCE);
-        component.addMouseMotionListener(INSTANCE);
-        component.addMouseWheelListener(INSTANCE);
+//        component.addMouseListener(INSTANCE);
+//        component.addMouseMotionListener(INSTANCE);
+//        component.addMouseWheelListener(INSTANCE);
     }
 
     public static Vec2i getPos() {
@@ -195,7 +196,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
         if (screenManager != null) {
             Screen currentScreen = screenManager.getCurrentScreen();
             if (currentScreen != null) {
-                currentScreen.mouseWheel(e.getX(), e.getY(), e.getPreciseWheelRotation(), e.getScrollAmount(), e.getUnitsToScroll());
+                currentScreen.mouseWheel(e.getX(), e.getY(), e.getPreciseWheelRotation());
             }
         }
     }
@@ -210,7 +211,6 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
             return new Vec2i(Integer.MAX_VALUE, Integer.MAX_VALUE);
         }
         return new Vec2i(pos);
-//        return BubbleBlaster.getInstance().getGameWindow().getMousePosition();
     }
 
     protected int getClickCount() {

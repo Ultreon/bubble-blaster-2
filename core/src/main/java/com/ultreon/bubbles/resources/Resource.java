@@ -63,7 +63,7 @@ public class Resource {
     public Font loadFont() throws FontFormatException {
         try (InputStream inputStream = opener.get()) {
             Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            BubbleBlaster.getInstance().registerFont(font);
+//            BubbleBlaster.getInstance().registerFont(font);
             return font;
         } catch (IOException e) {
             throw new RuntimeException(e);

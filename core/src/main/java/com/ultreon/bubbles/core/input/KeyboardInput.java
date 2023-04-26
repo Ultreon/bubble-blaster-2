@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.core.input;
 
+import com.badlogic.gdx.Input;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
@@ -9,7 +10,6 @@ import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class KeyboardInput extends KeyAdapter {
     private static final Set<Integer> keysDown = new CopyOnWriteArraySet<>();
-    private static final KeyListener INSTANCE = new KeyboardInput();
+    public static final KeyListener INSTANCE = new KeyboardInput();
     @NotNull
     private final BubbleBlaster game;
 
@@ -61,9 +61,8 @@ public final class KeyboardInput extends KeyAdapter {
     }
 
     @ApiStatus.Internal
-    public static void listen(@NotNull final Component component) {
+    public static void listen(final Input component) {
         BubbleBlaster.getLogger().debug("Keyboard input launched on component: " + component.getClass().getName() + " at %08x".formatted(component.hashCode()));
-        component.addKeyListener(INSTANCE);
     }
 
     public static boolean isDown(int keyCode) {
@@ -73,10 +72,10 @@ public final class KeyboardInput extends KeyAdapter {
     @Override
     public void keyPressed(@NotNull final KeyEvent e) {
         if (isDown(e.getKeyCode())) {
-            InputEvents.KEY_PRESS.factory().onKeyPress(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx(), true);
+            InputEvents.KEY_PRESS.factory().onKeyPress(e.getExtendedKeyCode(), true);
         } else {
-            BubbleBlaster.getInstance().keyPress(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx());
-            InputEvents.KEY_PRESS.factory().onKeyPress(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx(), false);
+            BubbleBlaster.getInstance().keyPress(e.getExtendedKeyCode());
+            InputEvents.KEY_PRESS.factory().onKeyPress(e.getExtendedKeyCode(), false);
             keysDown.add(e.getKeyCode());
         }
 
@@ -84,7 +83,7 @@ public final class KeyboardInput extends KeyAdapter {
         Screen currentScreen = screenManager.getCurrentScreen();
         Environment environment = game.environment;
         if (currentScreen != null) {
-            currentScreen.keyPress(e.getKeyCode(), e.getKeyChar());
+            currentScreen.keyPress(e.getKeyCode());
         } else if (e.getKeyCode() == Map.KEY_ESCAPE && environment != null && environment.isAlive()) {
             BubbleBlaster.getInstance().showScreen(new PauseScreen());
         }
@@ -93,12 +92,12 @@ public final class KeyboardInput extends KeyAdapter {
     @Override
     public void keyReleased(@NotNull final KeyEvent e) {
         keysDown.remove(e.getKeyCode());
-        InputEvents.KEY_RELEASE.factory().onKeyRelease(e.getExtendedKeyCode(), e.getKeyLocation(), e.getModifiersEx());
+        InputEvents.KEY_RELEASE.factory().onKeyRelease(e.getExtendedKeyCode());
 
         ScreenManager screenManager = this.game.getScreenManager();
         Screen currentScreen = screenManager.getCurrentScreen();
         if (currentScreen != null) {
-            currentScreen.keyRelease(e.getKeyCode(), e.getKeyChar());
+            currentScreen.keyRelease(e.getKeyCode());
         }
     }
 
@@ -109,7 +108,7 @@ public final class KeyboardInput extends KeyAdapter {
         ScreenManager screenManager = this.game.getScreenManager();
         Screen currentScreen = screenManager.getCurrentScreen();
         if (currentScreen != null) {
-            currentScreen.charType(e.getKeyCode(), e.getKeyChar());
+            currentScreen.charType(e.getKeyChar());
         }
     }
 

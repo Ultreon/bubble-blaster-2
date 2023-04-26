@@ -33,7 +33,7 @@ public class Label extends GuiComponent {
     public void renderComponent(Renderer renderer) {
         fill(renderer, 0, 0, width, height, backgroundColor);
 
-        renderer.color(foregroundColor);
+        renderer.setColor(foregroundColor);
 
         if (wrapped) font.drawMultiline(renderer, font.wrap(fontSize, text.getText(), getWidth()), fontSize, 0, 0);
         else font.drawMultiline(renderer, text.getText(), fontSize, 0, 0);

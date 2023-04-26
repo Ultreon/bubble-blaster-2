@@ -73,8 +73,8 @@ public class OptionsNumberInput extends OptionsTextEntry {
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
-        if (super.keyPress(keyCode, character)) return true;
+    public boolean keyPress(int keyCode) {
+        if (super.keyPress(keyCode)) return true;
 
         if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
             if (cursorIndex == 0) return false;
@@ -102,28 +102,24 @@ public class OptionsNumberInput extends OptionsTextEntry {
             return true;
         }
 
-        char c = character;
+        return false;
+    }
 
-        if (keyCode == KeyboardInput.Map.KEY_DEAD_ACUTE) {
-            c = '\'';
-        }
-
-        if (keyCode == KeyboardInput.Map.KEY_QUOTEDBL) {
-            c = '"';
-        }
-
-        if ("0123456789".contains(Character.toString(c))) {
+    @Override
+    public boolean charType(char character) {
+        if ("0123456789".contains(Character.toString(character))) {
 //                text += c;
             String leftText = text.substring(0, cursorIndex);
             String rightText = text.substring(cursorIndex);
 
-            text = leftText + c + rightText;
+            text = leftText + character + rightText;
 
             cursorIndex++;
 
             cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -171,7 +167,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
         downButton.setText("-");
 
         if (activated) {
-            renderer.color(Color.rgb(0x808080));
+            renderer.setColor(Color.rgb(0x808080));
             fill(renderer, 0, 0, width, height, 0xff808080);
 
             renderer.drawEffectBox(0, 0, width, height, new Insets(0, 0, 2, 0));
@@ -179,11 +175,11 @@ public class OptionsNumberInput extends OptionsTextEntry {
             fill(renderer, 0, 0, width, height, 0xff505050);
         }
 
-        renderer.color(Color.rgb(0xffffffff));
+        renderer.setColor(Color.rgb(0xffffffff));
         font.draw(renderer, text, 24, 2, getHeight() / 2f, Anchor.W);
 
         int cursorX;
-        renderer.color(Color.rgb(0xff00c0c0));
+        renderer.setColor(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
             if (text.length() != 0) {
                 cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;
@@ -258,7 +254,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
                 textColor = Color.white;
             } else if (isHovered()) {
-                renderer.color(Color.rgb(0x808080));
+                renderer.setColor(Color.rgb(0x808080));
                 renderer.fill(bounds);
 
                 // Border
@@ -269,7 +265,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
                 textColor = Color.rgb(0xffffff);
             } else {
-                renderer.color(Color.rgb(0x808080));
+                renderer.setColor(Color.rgb(0x808080));
                 renderer.fill(bounds);
 
                 textColor = Color.rgb(0x808080);

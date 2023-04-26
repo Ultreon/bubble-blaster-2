@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -55,7 +54,7 @@ public class OptionsTextEntry extends GuiComponent {
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
+    public boolean keyPress(int keyCode) {
         if (!activated) return false;
 
         if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
@@ -96,22 +95,16 @@ public class OptionsTextEntry extends GuiComponent {
             cursorIndex = Mth.clamp(cursorIndex + 1, 0, this.text.length());
             return true;
         }
+        return false;
+    }
 
-        char c = character;
-
-        if (keyCode == KeyboardInput.Map.KEY_DEAD_ACUTE) {
-            c = '\'';
-        }
-
-        if (keyCode == KeyboardInput.Map.KEY_QUOTEDBL) {
-            c = '"';
-        }
-
-        if ((short) c >= 32) {
+    @Override
+    public boolean charType(char character) {
+        if ((short) character >= 32) {
             String leftText = this.text.substring(0, cursorIndex);
             String rightText = this.text.substring(cursorIndex);
 
-            String text = leftText + c + rightText;
+            String text = leftText + character + rightText;
             if (responder.test(text)) {
                 this.text = text;
                 cursorIndex++;
@@ -137,11 +130,11 @@ public class OptionsTextEntry extends GuiComponent {
             fill(renderer, 0, 0, width, height, 0xff404040);
         }
 
-        renderer.color(Color.rgb(0xffffffff));
+        renderer.setColor(Color.rgb(0xffffffff));
         font.draw(renderer, text, 24, 0, 0, Anchor.NW);
 
         int cursorX;
-        renderer.color(Color.rgb(0xff00c0c0));
+        renderer.setColor(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
             if (text.length() != 0) {
                 cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;

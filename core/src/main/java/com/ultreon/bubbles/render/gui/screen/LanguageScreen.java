@@ -67,11 +67,11 @@ public final class LanguageScreen extends Screen {
             renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
         }
 
-        renderer.color(0xc0ffffff);
+        renderer.setColor(0xc0ffffff);
         font.draw(renderer, language, 20, 20, 20, Thickness.BOLD);
-        renderer.color(0x60ffffff);
-        renderer.fallbackFont(font.getAwtFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage()));
-        renderer.text(StringUtils.createFallbackString(displayLanguage, font.getAwtFont(14, Thickness.BOLD, FontStyle.PLAIN), font.getAwtFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage())), 20 + font.width(14, language) + 40, 20 + font.height(14));
+        renderer.setColor(0x60ffffff);
+        renderer.fallbackFont(font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage()));
+//        renderer.text(StringUtils.createFallbackString(displayLanguage, font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN), font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage())), 20 + font.width(14, language) + 40, 20 + font.height(14));
     }
 
     private int calculateWidth() {

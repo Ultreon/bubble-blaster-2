@@ -38,7 +38,7 @@ public abstract class GameplayEvent {
         if (backgroundColor == null) return;
         if (!isActive(DateTime.current())) return;
 
-        renderer.color(getBackgroundColor());
+        renderer.setColor(getBackgroundColor());
         renderer.fill(BubbleBlaster.getInstance().getGameBounds());
     }
 

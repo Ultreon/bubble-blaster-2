@@ -16,9 +16,9 @@ public class DefaultCursorRenderer extends CursorRenderer {
         Polygon poly = new Polygon(new int[]{0, 10, 5, 0}, new int[]{0, 12, 12, 16}, 4);
 
         renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        renderer.color(Color.black);
+        renderer.setColor(Color.black);
         renderer.polygon(poly);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.polygonLine(poly);
         renderer.dispose();
     }

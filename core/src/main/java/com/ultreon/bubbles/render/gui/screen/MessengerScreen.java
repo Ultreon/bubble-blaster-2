@@ -52,14 +52,14 @@ public class MessengerScreen extends Screen {
      */
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        renderer.color(Color.rgb(0x404040));
+        renderer.setColor(Color.rgb(0x404040));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
         if (GameSettings.instance().getGraphicsSettings().isTextAntialiasEnabled())
             renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        renderer.color(Color.rgb(0x00c0ff));
+        renderer.setColor(Color.rgb(0x00c0ff));
         GraphicsUtils.drawCenteredString(renderer, "Loading Environment...", new Rectangle2D.Double(0, ((double) BubbleBlaster.getInstance().getHeight() / 2) - 24, BubbleBlaster.getInstance().getWidth(), 64d), new Font("Helvetica", Font.PLAIN, 48));
-        renderer.color(Color.rgb(0x7f7f7f));
+        renderer.setColor(Color.rgb(0x7f7f7f));
         GraphicsUtils.drawCenteredString(renderer, this.description, new Rectangle2D.Double(0, ((double) BubbleBlaster.getInstance().getHeight() / 2) + 40, BubbleBlaster.getInstance().getWidth(), 50d), new Font("Helvetica", Font.PLAIN, 20));
         if (GameSettings.instance().getGraphicsSettings().isTextAntialiasEnabled())
             renderer.hint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

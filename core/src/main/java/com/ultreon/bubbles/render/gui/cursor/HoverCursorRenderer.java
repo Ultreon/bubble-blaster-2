@@ -16,15 +16,15 @@ public class HoverCursorRenderer extends CursorRenderer {
         Polygon poly = new Polygon(new int[]{10, 20, 15, 10}, new int[]{10, 22, 22, 26}, 4);
 
         renderer.hint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.ovalLine(0, 0, 20, 20);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.ovalLine(2, 2, 16, 16);
-        renderer.color(Color.black);
+        renderer.setColor(Color.black);
         renderer.polygon(poly);
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.polygonLine(poly);
-        renderer.color(Color.black);
+        renderer.setColor(Color.black);
         renderer.ovalLine(1, 1, 18, 18);
         renderer.dispose();
 

@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.render.font;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
@@ -11,12 +13,7 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.awt.*;
-import java.awt.font.TextAttribute;
-import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.text.AttributedCharacterIterator;
-import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +23,7 @@ public class Font {
     protected final Map<String, FontInfo> alternatives = new HashMap<>();
 
     FontInfo info;
+    private BitmapFont bitmapFont;
 
     public Font() {
         GameEvents.LOAD_FONTS.listen(loader -> register());
@@ -149,18 +147,14 @@ public class Font {
     }
 
     public void draw(Renderer renderer, TextObject text, int size, float x, float y, Thickness thickness, FontStyle style, Anchor anchor) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        AttributedString attrString = text.getAttrString();
+        BitmapFont awtFont = getGdxFont(size, thickness, style);
+        String string = text.getText();
         if (text.getText().isEmpty()) return;
 
-        java.awt.Font fallback = getAwtFont(size, thickness, style, GameSettings.instance().getLanguage());
-        java.awt.Font font = getAwtFont(size, thickness, style);
-        attrString.addAttribute(TextAttribute.FONT, font);
-        attrString.addAttribute(TextAttribute.SIZE, size);
-        attrString.addAttribute(TextAttribute.FAMILY, font.getFamily());
-        attrString.addAttribute(TextAttribute.LIGATURES, true);
+        BitmapFont fallback = getGdxFont(size, thickness, style, GameSettings.instance().getLanguage());
+        BitmapFont font = getGdxFont(size, thickness, style);
 
-        var bounds = bounds(renderer, attrString);
+        var bounds = bounds(size, thickness, style, text);
 
         switch (anchor) {
             case N -> {
@@ -191,40 +185,44 @@ public class Font {
             }
             case SW -> y = y;
         }
-//        renderer.font(font);
-        renderer.text(attrString, x, y);
+        renderer.setFont(font);
+        renderer.text(string, x, y);
     }
 
-    private Rectangle2D.Float bounds(Renderer renderer, AttributedString text) {
-        TextLayout textLayout = new TextLayout(
-                text.getIterator(),
-                renderer.getFontRenderContext()
-        );
-        return (Rectangle2D.Float) textLayout.getBounds();
+    private Rectangle2D.Float bounds(TextObject text) {
+        String s = text.getText();
+        GlyphLayout glyphLayout = new GlyphLayout(bitmapFont, s);
+        return new Rectangle2D.Float(0, 0, glyphLayout.width, glyphLayout.height);
     }
 
-    public Rectangle2D.Float bounds(Renderer renderer, int size,  FontStyle style, TextObject text) {
-        return bounds(renderer, size, Thickness.REGULAR, style, text);
+    private Rectangle2D.Float bounds(String text) {
+        GlyphLayout glyphLayout = new GlyphLayout(bitmapFont, text);
+        return new Rectangle2D.Float(0, 0, glyphLayout.width, glyphLayout.height);
     }
 
-    public Rectangle2D.Float bounds(Renderer renderer, int size, TextObject text) {
-        return bounds(renderer, size, Thickness.REGULAR, text);
+    public Rectangle2D.Float bounds(int size, FontStyle style, TextObject text) {
+        return bounds(size, Thickness.REGULAR, style, text);
     }
 
-    public Rectangle2D.Float bounds(Renderer renderer, int size, Thickness thickness, TextObject text) {
-        return bounds(renderer, size, thickness, FontStyle.PLAIN, text);
+    public Rectangle2D.Float bounds(int size, TextObject text) {
+        return bounds(size, Thickness.REGULAR, text);
     }
 
-    public Rectangle2D.Float bounds(Renderer renderer, int size, Thickness thickness, FontStyle style, TextObject text) {
-        AttributedString attrString = text.getAttrString();
+    public Rectangle2D.Float bounds(int size, Thickness thickness, TextObject text) {
+        return bounds(size, thickness, FontStyle.PLAIN, text);
+    }
 
-        java.awt.Font font = getAwtFont(size, thickness, style);
-        attrString.addAttribute(TextAttribute.FONT, font);
-        attrString.addAttribute(TextAttribute.SIZE, size);
-        attrString.addAttribute(TextAttribute.FAMILY, font.getFamily());
-        attrString.addAttribute(TextAttribute.LIGATURES, true);
+    public Rectangle2D.Float bounds(int size, Thickness thickness, FontStyle style, TextObject text) {
+        String string = text.getText();
+        BitmapFont bitmapFont = getGdxFont(size, thickness, style);
+        GlyphLayout glyphLayout = new GlyphLayout(bitmapFont, string);
+        return new Rectangle2D.Float(0, 0, glyphLayout.width, glyphLayout.height);
+    }
 
-        return bounds(renderer, attrString);
+    public Rectangle2D.Float bounds(int size, Thickness thickness, FontStyle style, String text) {
+        BitmapFont bitmapFont = getGdxFont(size, thickness, style);
+        GlyphLayout glyphLayout = new GlyphLayout(bitmapFont, text);
+        return new Rectangle2D.Float(0, 0, glyphLayout.width, glyphLayout.height);
     }
 
     public void draw(Renderer renderer, String text, int size, float x, float y) {
@@ -276,33 +274,16 @@ public class Font {
     }
 
     @ApiStatus.Internal
-    public java.awt.Font getAwtFont(int size, Thickness thickness, FontStyle style) {
-        java.awt.Font font = info.getFont(thickness, style);
-        if (thickness == Thickness.BOLD) {
-            if (style == FontStyle.ITALIC) {
-                return new java.awt.Font(font.getName(), java.awt.Font.BOLD + java.awt.Font.ITALIC, size);
-            }
-            return new java.awt.Font(font.getName(), java.awt.Font.BOLD, size);
-        } else if (style == FontStyle.ITALIC) {
-            return new java.awt.Font(font.getName(), java.awt.Font.ITALIC, size);
-        }
-        return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, size);
+    public BitmapFont getGdxFont(int size, Thickness thickness, FontStyle style) {
+        return info.getFont(thickness, style);
     }
 
     @ApiStatus.Internal
-    public java.awt.Font getAwtFont(int size, Thickness thickness, FontStyle style, String langCode) {
+    public BitmapFont getGdxFont(int size, Thickness thickness, FontStyle style, String langCode) {
         FontInfo fontInfo = alternatives.get(langCode);
         if (fontInfo == null) return null;
-        java.awt.Font font = fontInfo.getFont(thickness, style);
-        if (thickness == Thickness.BOLD) {
-            if (style == FontStyle.ITALIC) {
-                return new java.awt.Font(font.getName(), java.awt.Font.BOLD + java.awt.Font.ITALIC, size);
-            }
-            return new java.awt.Font(font.getName(), java.awt.Font.BOLD, size);
-        } else if (style == FontStyle.ITALIC) {
-            return new java.awt.Font(font.getName(), java.awt.Font.ITALIC, size);
-        }
-        return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, size);
+        BitmapFont font = fontInfo.getFont(thickness, style);
+        return font;
     }
 
     public int height(int size) {
@@ -326,8 +307,8 @@ public class Font {
     }
 
     public int height(int size, Thickness thickness, FontStyle style) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        return game.getFontMetrics(awtFont).getHeight();
+        BitmapFont awtFont = getGdxFont(size, thickness, style);
+        return (int) awtFont.getLineHeight();
     }
 
     public int width(int size, char c) {
@@ -351,8 +332,8 @@ public class Font {
     }
 
     public int width(int size, char c, Thickness thickness, FontStyle style) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        return game.getFontMetrics(awtFont).charWidth(c);
+        BitmapFont awtFont = getGdxFont(size, thickness, style);
+        return (int) bounds(size, thickness, style, String.valueOf(c)).width;
     }
 
     public int width(int size, String text) {
@@ -376,8 +357,8 @@ public class Font {
     }
 
     public int width(int size, String text, Thickness thickness, FontStyle style) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        return game.getFontMetrics(awtFont).stringWidth(text);
+        BitmapFont awtFont = getGdxFont(size, thickness, style);
+        return (int) bounds(size, thickness, style, text).width;
     }
 
     public String wrap(int size, String text, int maxWidth) {
@@ -401,8 +382,7 @@ public class Font {
     }
 
     public String wrap(int size, String text, int maxWidth, Thickness thickness, FontStyle style) {
-        java.awt.Font awtFont = getAwtFont(size, thickness, style);
-        return String.join("\n", StringUtils.wrap(text, BubbleBlaster.getInstance().getFontMetrics(awtFont), maxWidth));
+        return String.join("\n", StringUtils.wrap(text, bitmapFont, new GlyphLayout(), maxWidth));
     }
 
 }

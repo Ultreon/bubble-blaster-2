@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.debug;
 
+import com.badlogic.gdx.Input;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
@@ -11,6 +11,7 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Renderer;
@@ -77,7 +78,7 @@ public class DebugRenderer {
         reset();
 
 //        renderer.font(font);
-        renderer.color(255, 255, 255);
+        renderer.setColor(255, 255, 255);
 
         Rectangle gameBounds = game.getGameBounds();
         left(renderer, "FPS", game.getFps());
@@ -99,7 +100,7 @@ public class DebugRenderer {
             left(renderer, "Local Difficulty", environment.getLocalDifficulty());
             left(renderer, "Seed", environment.getSeed());
 
-            if (KeyboardInput.isDown(KeyboardInput.Map.KEY_SHIFT)) {
+            if (GameInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
                 Entity entityAt = environment.getEntityAt(MouseInput.getPos());
                 if (entityAt != null) {
                     left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
@@ -185,8 +186,8 @@ public class DebugRenderer {
         }
     }
 
-    private void keyPress(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == KeyboardInput.Map.KEY_ENTER) {
+    private void keyPress(int keyCode) {
+        if (keyCode == Input.Keys.ENTER) {
             System.out.println("selectInput = " + selectInput);
             if (selectInput.isEmpty()) return;
             int number;
@@ -226,17 +227,17 @@ public class DebugRenderer {
                 pathStack.push(entry.getKey());
                 System.out.println("entry = " + entry.getKey());
             }
-        } else if (keyCode == KeyboardInput.Map.KEY_DELETE) {
+        } else if (keyCode == Input.Keys.FORWARD_DEL) {
             if (selectedThread == null) return;
             if (pathStack.isEmpty()) return;
             sectionStack.pop();
             pathStack.pop();
-        } else if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
+        } else if (keyCode == Input.Keys.BACKSPACE) {
             if (selectInput.isEmpty()) return;
             selectInput = selectInput.substring(0, selectInput.length() - 1);
-        } else if (keyCode >= KeyboardInput.Map.KEY_0 && keyCode <= KeyboardInput.Map.KEY_9) {
-            if (keyCode == KeyboardInput.Map.KEY_0 && selectInput.isEmpty()) return;
-            selectInput += keyCode - KeyboardInput.Map.KEY_0;
+        } else if (keyCode >= Input.Keys.NUM_0 && keyCode <= Input.Keys.NUM_9) {
+            if (keyCode == Input.Keys.NUM_0 && selectInput.isEmpty()) return;
+            selectInput += keyCode - Input.Keys.NUM_0;
         }
     }
 
@@ -260,7 +261,7 @@ public class DebugRenderer {
     }
 
     public void left(Renderer renderer, MutableText text) {
-        Rectangle2D.Float bounds = font.bounds(renderer, FONT_SIZE, text);
+        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
         int height = (int) bounds.height;
         int width = (int) bounds.width;
         int y = yLeft += height + 5;
@@ -268,9 +269,9 @@ public class DebugRenderer {
             y += game.getGameBounds().y;
         }
 
-        renderer.color(0, 0, 0, 0x99);
+        renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(10, y, width + 4, height + 4);
-        renderer.color("#fff");
+        renderer.setColor("#fff");
         font.draw(renderer, text, FONT_SIZE, 12, y + 1);
     }
 
@@ -289,7 +290,7 @@ public class DebugRenderer {
     }
 
     public void right(Renderer renderer, MutableText text) {
-        Rectangle2D.Float bounds = font.bounds(renderer, FONT_SIZE, text);
+        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
         int height = (int) bounds.height;
         int width = (int) bounds.width;
         int y = yRight += height + 5;
@@ -297,17 +298,17 @@ public class DebugRenderer {
             y += game.getGameBounds().y;
         }
 
-        renderer.color(0, 0, 0, 0x99);
+        renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(game.getWidth() - width - 10, y, width + 4, height + 4);
-        renderer.color("#fff");
+        renderer.setColor("#fff");
         font.draw(renderer, text, FONT_SIZE, game.getWidth() - 8, y + 1, Anchor.NW);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
-        Rectangle2D.Float bounds = font.bounds(renderer, FONT_SIZE, text);
+        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
         int height;
         if (!text1.getText().isEmpty()) {
-            Rectangle2D.Float bounds1 = font.bounds(renderer, FONT_SIZE, text1);
+            Rectangle2D.Float bounds1 = font.bounds(FONT_SIZE, text1);
             height = Math.max((int) bounds.height, (int) bounds1.height);
         } else {
             height = (int) bounds.height;
@@ -319,9 +320,9 @@ public class DebugRenderer {
 
         int i = 400;
 
-        renderer.color(0, 0, 0, 0x99);
+        renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(game.getWidth() - i - 10, y, i, height + 4);
-        renderer.color("#fff");
+        renderer.setColor("#fff");
         font.draw(renderer, text, FONT_SIZE, game.getWidth() - i - 8, y + 1, Anchor.NW);
         if (!text1.getText().isEmpty()) {
             font.draw(renderer, text1, FONT_SIZE, game.getWidth() - 12, y + 1, Anchor.NE);

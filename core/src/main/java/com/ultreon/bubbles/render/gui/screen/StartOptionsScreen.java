@@ -47,13 +47,13 @@ public class StartOptionsScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        renderer.color(0xff333333);
+        renderer.setColor(0xff333333);
         renderer.fill(game.getBounds());
 
         super.render(game, renderer, partialTicks);
 
 //        renderer.color(Theme.getMenuLabelColor()); // TODO: Add themes
-        renderer.color(255, 255, 255, 96);
+        renderer.setColor(255, 255, 255, 96);
         GraphicsUtils.drawRightAnchoredString(renderer, "Seed:", new Vec2i(width / 2 - 120, height / 2 - 35), 30, new Font("Helvetica", Font.PLAIN, 20));
     }
 

@@ -6,6 +6,7 @@ import com.ultreon.bubbles.environment.EnvironmentRenderer;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Anchor;
 import com.ultreon.bubbles.render.Color;
@@ -137,14 +138,14 @@ public class PauseScreen extends Screen {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Darkened background     //
         /////////////////////////////////
-        renderer.color(Color.argb(0xc0000000));
+        renderer.setColor(Color.argb(0xc0000000));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Pause text     //
         ////////////////////////
-        renderer.color(Color.argb(0x80ffffff));
-        game.getLogoFont().draw(renderer, Language.translate("bubbles/screen/pause/text"), 75, (float)width / 2, 90 + 75f / 2, Anchor.CENTER);
+        renderer.setColor(Color.argb(0x80ffffff));
+        Fonts.DONGLE.draw(renderer, Language.translate("bubbles/screen/pause/text"), 75, (float)width / 2, 90 + 75f / 2, Anchor.CENTER);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Exit button     //
@@ -167,7 +168,7 @@ public class PauseScreen extends Screen {
         if (helpIndex < differentBubbles - 1) nextButton.render(renderer.subInstance(nextButton.getBounds()));
 
         // Border
-        renderer.color(Color.argb(0x80ffffff));
+        renderer.setColor(Color.argb(0x80ffffff));
         renderer.rectLine((int) (BubbleBlaster.getMiddleX() - 480), 300, 960, 300);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +176,7 @@ public class PauseScreen extends Screen {
         ////////////////////
 
         // Bubble name.
-        renderer.color(Color.argb(0xc0ffffff));
+        renderer.setColor(Color.argb(0xc0ffffff));
         font.draw(renderer, Language.translate(bubble.getTranslationPath()), 32, (int) BubbleBlaster.getMiddleX() - 470, 332, Anchor.W);
 
         // Bubble icon.
@@ -186,7 +187,7 @@ public class PauseScreen extends Screen {
         ////////////////////////
 
         // Set color & font.
-        renderer.color(Color.argb(0xc0ffffff));
+        renderer.setColor(Color.argb(0xc0ffffff));
 
         // Left data.
         font.draw(renderer, minRadius, 16, (int) (BubbleBlaster.getMiddleX() - 326) + 10, 362, Anchor.W);
@@ -214,7 +215,7 @@ public class PauseScreen extends Screen {
         ////////////////////
 
         // Set color & font.
-        renderer.color(Color.argb(0x80ffffff));
+        renderer.setColor(Color.argb(0x80ffffff));
 
         // Left data.
         font.draw(renderer, Integer.toString(bubble.getMinRadius()), 16, (int) (BubbleBlaster.getMiddleX() - 326) + 200, 362, FontStyle.ITALIC, Anchor.W);

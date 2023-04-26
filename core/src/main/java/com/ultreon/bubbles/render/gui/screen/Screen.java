@@ -78,7 +78,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
+    public boolean keyPress(int keyCode) {
         if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
             if (backScreen != null) {
                 game.showScreen(backScreen);
@@ -88,7 +88,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
             return true;
         }
 
-        if (super.keyPress(keyCode, character)) return true;
+        if (super.keyPress(keyCode)) return true;
 
         if (keyCode == KeyboardInput.Map.KEY_TAB) {
             this.focusIndex++;
@@ -96,21 +96,21 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
             return true;
         }
 
-        return this.focused != null && this.focused.keyPress(keyCode, character);
+        return this.focused != null && this.focused.keyPress(keyCode);
     }
 
     @Override
-    public boolean keyRelease(int keyCode, char character) {
+    public boolean keyRelease(int keyCode) {
         if (keyCode == KeyboardInput.Map.KEY_TAB) return true;
 
-        return this.focused != null && this.focused.keyRelease(keyCode, character);
+        return this.focused != null && this.focused.keyRelease(keyCode);
     }
 
     @Override
-    public boolean charType(int keyCode, char character) {
-        if (keyCode == KeyboardInput.Map.KEY_TAB) return true;
+    public boolean charType(char character) {
+        if (character == '\t') return true;
 
-        return this.focused != null && this.focused.charType(keyCode, character);
+        return this.focused != null && this.focused.charType(character);
     }
 
     @Override
@@ -140,9 +140,9 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public void renderBackground(Renderer renderer) {
         if (game.environment != null) {
-            renderer.color(0x80000000);
+            renderer.setColor(0x80000000);
         } else {
-            renderer.color(0xff1e1e1e);
+            renderer.setColor(0xff1e1e1e);
         }
         renderer.fill(getBounds());
     }

@@ -35,8 +35,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
                 for (var entry : ObjectList.this.entries) {
                     entry.setPos(0, y);
                     entry.setSize(width, entryHeight);
-                    Renderer entryRenderer = renderer.subInstance(0, y, ObjectList.this.width, entryHeight);
-                    entry.render(entryRenderer);
+                    renderer.subInstance(0, y, ObjectList.this.width, entryHeight, entry::render);
                     y += entryHeight + gap;
                 }
             }

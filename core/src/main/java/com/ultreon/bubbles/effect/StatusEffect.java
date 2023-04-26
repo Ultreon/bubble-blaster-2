@@ -1,55 +1,30 @@
 package com.ultreon.bubbles.effect;
 
-import com.ultreon.libs.commons.v0.Identifier;
+import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.event.v1.FilterBuilder;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.registry.RegistryException;
-import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.Texture;
+import com.ultreon.bubbles.render.TextureManager;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.registries.v0.exception.RegistryException;
 import com.ultreon.libs.resources.v0.Resource;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.image.Raster;
 import java.io.IOException;
 import java.util.Objects;
 
 
 public abstract class StatusEffect {
     // Empty Image.
-    private static final Texture FALLBACK_TEXTURE;
+    private static final com.badlogic.gdx.graphics.Texture FALLBACK_TEXTURE;
 
     static {
-        FALLBACK_TEXTURE = new Texture() {
-            @Override
-            protected int getWidth() {
-                return 16;
-            }
-
-            @Override
-            protected int getHeight() {
-                return 16;
-            }
-
-            @Override
-            public void draw(Renderer renderer, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight) {
-                renderer.color(0xff404040);
-                renderer.rect(x, y, width, height);
-                renderer.color(0xffffc000);
-                renderer.rect(x, y, width / 2, height / 2);
-                renderer.rect(x + width / 2, y + height / 2, width / 2, height / 2);
-            }
-
-            @Override
-            public Raster getRaster() {
-                return null;
-            }
-        };
+        FALLBACK_TEXTURE = TextureManager.DEFAULT_TEX;
     }
 
-    private Texture cachedTexture = null;
+    private com.badlogic.gdx.graphics.Texture cachedTexture = null;
 
     public StatusEffect() {
 
@@ -76,7 +51,7 @@ public abstract class StatusEffect {
         }
 
         BubbleBlaster game = BubbleBlaster.getInstance();
-        var texture = game.getTextureManager().getOrLoadTexture(getIconId());
+        com.badlogic.gdx.graphics.Texture texture = game.getTextureManager().getOrLoadTexture(getIconId());
         return cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 

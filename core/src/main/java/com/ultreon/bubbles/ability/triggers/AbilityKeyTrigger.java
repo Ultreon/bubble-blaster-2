@@ -4,6 +4,7 @@ import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.ability.AbilityTrigger;
 import com.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
+import com.ultreon.bubbles.input.GameInput;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +66,7 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     }
 
     public boolean isDown(int keyCode) {
-        return KeyboardInput.isDown(keyCode);
+        return GameInput.isKeyDown(keyCode);
     }
 
     @Deprecated

@@ -37,7 +37,7 @@ public class CrashScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        renderer.color(Color.rgb(0xc00000));
+        renderer.setColor(Color.rgb(0xc00000));
         renderer.rectLine(0, 0, game.getWidth(), game.getScaledHeight());
 
         font.draw(renderer, "The game crashed!", 24, width / 2f, 25, Thickness.BOLD, Anchor.CENTER);

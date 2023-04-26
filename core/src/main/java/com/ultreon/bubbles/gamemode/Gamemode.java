@@ -15,7 +15,6 @@ import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
-import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -320,7 +319,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
                 renderer.stroke(new BasicStroke(2.2f));
             }
 
-            renderer.color(color);
+            renderer.setColor(color);
 
             Ellipse2D ellipse = this.getEllipse(x - (float) radius / 2, y - (float) radius / 2, radius, i);
             renderer.outline(ellipse);

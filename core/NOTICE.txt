@@ -1,2 +1,2 @@
-The Roboto fonts at "assets/bubbles/fonts/roboto/" are licensed under the Apache 2.0 License.
+The Roboto fonts at "bubbles/fonts/roboto/" are licensed under the Apache 2.0 License.
 Those are available for download at: https://fonts.google.com/specimen/Roboto

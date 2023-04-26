@@ -128,13 +128,13 @@ public class ScrollableView extends Container {
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
-        return super.keyPress(keyCode, character);
+    public boolean keyPress(int keyCode) {
+        return super.keyPress(keyCode);
     }
 
     @Override
-    public boolean keyRelease(int keyCode, char character) {
-        return super.keyRelease(keyCode, character);
+    public boolean keyRelease(int keyCode) {
+        return super.keyRelease(keyCode);
     }
 
     @Override
@@ -143,13 +143,13 @@ public class ScrollableView extends Container {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
+    public boolean mouseWheel(int x, int y, double rotation) {
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
-        if (viewport.isWithinBounds(x, y) && viewport.mouseWheel(x, y, rotation, amount, units)) {
+        if (viewport.isWithinBounds(x, y) && viewport.mouseWheel(x, y, rotation)) {
             return true;
         }
-        this.viewport.setYScroll(this.viewport.getYScroll() + rotation * 100 * amount / 10);
+        this.viewport.setYScroll(this.viewport.getYScroll() + rotation * 300 / 10);
         return true;
     }
 }

@@ -7,7 +7,6 @@ import com.ultreon.bubbles.game.LoadedGame;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.vector.Vec2i;
 
 import java.awt.*;
@@ -37,8 +36,8 @@ public class CommandScreen extends Screen {
     }
 
     @Override
-    public boolean charType(int keyCode, char character) {
-        if (super.charType(keyCode, character)) return true;
+    public boolean charType(char character) {
+        if (super.charType(character)) return true;
 
         if ((int) character >= 0x20) {
             currentText += character;
@@ -49,8 +48,8 @@ public class CommandScreen extends Screen {
     }
 
     @Override
-    public boolean keyPress(int keyCode, char character) {
-        if (super.keyPress(keyCode, character)) return true;
+    public boolean keyPress(int keyCode) {
+        if (super.keyPress(keyCode)) return true;
 
         if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE && !currentText.isEmpty()) {
             currentText = currentText.substring(0, currentText.length() - 1);
@@ -158,20 +157,20 @@ public class CommandScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        renderer.color(Color.argb(0x40000000));
+        renderer.setColor(Color.argb(0x40000000));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), height);
 
-        renderer.color(Color.argb(0x80000000));
+        renderer.setColor(Color.argb(0x80000000));
         renderer.rect(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
 
-        renderer.color(Color.argb(0xffffffff));
+        renderer.setColor(Color.argb(0xffffffff));
         GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, height - 28), 28, defaultFont);
 
         FontMetrics fontMetrics = renderer.fontMetrics(defaultFont);
 
 
         int cursorX;
-        renderer.color(Color.argb(0xff0090c0));
+        renderer.setColor(Color.argb(0xff0090c0));
         if (cursorIndex >= currentText.length()) {
             if (currentText.length() != 0) {
                 cursorX = fontMetrics.stringWidth(currentText.substring(0, cursorIndex)) + 2;

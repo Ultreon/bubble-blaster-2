@@ -8,12 +8,13 @@ import com.ultreon.bubbles.event.v1.LifecycleEvents;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.util.Util;
-import com.ultreon.commons.lang.Messenger;
-import com.ultreon.commons.lang.Pair;
-import com.ultreon.commons.lang.ProgressMessenger;
+import com.ultreon.libs.commons.v0.Messenger;
+import com.ultreon.libs.commons.v0.MessengerImpl;
+import com.ultreon.libs.commons.v0.ProgressMessenger;
+import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.registries.v0.Registry;
 import com.ultreon.libs.registries.v0.event.RegistryEvents;
 import com.ultreon.libs.resources.v0.Resource;
@@ -45,8 +46,8 @@ public final class LoadScreen extends Screen implements Runnable {
     private static boolean done;
     private ProgressMessenger progMain = null;
     private ProgressMessenger progAlt = null;
-    private final Messenger msgMain = new Messenger(this::logMain);
-    private final Messenger msgAlt = new Messenger(this::logAlt);
+    private final Messenger msgMain = new MessengerImpl(this::logMain);
+    private final Messenger msgAlt = new MessengerImpl(this::logAlt);
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
@@ -96,11 +97,11 @@ public final class LoadScreen extends Screen implements Runnable {
 
             // Draw current 1st line message.
             if (curMainMsg != null) {
-                renderer.color(Color.rgb(0x808080));
+                renderer.setColor(Color.rgb(0x808080));
                 font.draw(renderer, curMainMsg, 20, width / 2f, height / 2f, Anchor.CENTER);
             }
 
-            renderer.color(Color.rgb(0x808080));
+            renderer.setColor(Color.rgb(0x808080));
             renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 15, 300, 3);
 
             setupGradient(renderer);
@@ -113,11 +114,11 @@ public final class LoadScreen extends Screen implements Runnable {
 
                 // Draw current 2nd line message.
                 if (curAltMsg != null) {
-                    renderer.color(Color.rgb(0x808080));
+                    renderer.setColor(Color.rgb(0x808080));
                     font.draw(renderer, curAltMsg, 20, width / 2f, height / 2f + 75, Anchor.CENTER);
                 }
 
-                renderer.color(Color.rgb(0x808080));
+                renderer.setColor(Color.rgb(0x808080));
                 renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 90, 300, 3);
 
                 setupGradient(renderer);
@@ -125,11 +126,11 @@ public final class LoadScreen extends Screen implements Runnable {
             }
         }
 
-        renderer.color(Color.rgb(0x7f7f7f));
+        renderer.setColor(Color.rgb(0x7f7f7f));
     }
 
     private void setupGradient(Renderer renderer) {
-        renderer.color(Color.rgb(0x00c0ff));
+        renderer.setColor(Color.rgb(0x00c0ff));
         GradientPaint p = new GradientPaint(0, (float) BubbleBlaster.getInstance().getWidth() / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) BubbleBlaster.getInstance().getWidth() / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
         renderer.paint(p);
     }
@@ -183,7 +184,7 @@ public final class LoadScreen extends Screen implements Runnable {
                 try {
                     Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
                     if (resource == null) {
-                        resource = TextureManager.DEFAULT_TEXTURE;
+                        resource = TextureManager.DEFAULT_TEX_RESOURCE;
                     }
                     ModDataManager.setIcon(container, resource.readImage());
                 } catch (IOException e) {
@@ -194,7 +195,7 @@ public final class LoadScreen extends Screen implements Runnable {
         ModContainer container = FabricLoader.getInstance().getModContainer("java").orElseThrow();
         try {
             Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/java.png"));
-            if (resource == null) resource = TextureManager.DEFAULT_TEXTURE;
+            if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
             ModDataManager.setIcon(container, resource.readImage());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -217,8 +218,10 @@ public final class LoadScreen extends Screen implements Runnable {
 
         // Loading object holders
         this.progMain.sendNext("Loading the fonts...");
-        game().loadFonts();
-        GameEvents.LOAD_FONTS.factory().onLoadFonts(game::loadFont);
+        BubbleBlaster.runLater(() -> {
+            game().loadFonts();
+            GameEvents.LOAD_FONTS.factory().onLoadFonts(game::loadFont);
+        });
         this.progAlt = null;
 
         this.progMain.sendNext("Setting up the game...");

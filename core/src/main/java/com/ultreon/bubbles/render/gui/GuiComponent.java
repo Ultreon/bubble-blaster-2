@@ -1,10 +1,8 @@
 package com.ultreon.bubbles.render.gui;
 
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.libs.registries.v0.RegistrySupplier;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Font;
@@ -16,7 +14,7 @@ import java.util.Objects;
 
 /**
  * Controllable widget, a widget that can be controlled by the user.
- * This widget contains input event handlers like {@link #keyPress(int, char)} and {@link #mouseClick(int, int, int, int)}
+ * This widget contains input event handlers like {@link #keyPress(int)} and {@link #mouseClick(int, int, int, int)}
  *
  * @author Qboi123
  */
@@ -157,7 +155,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
         hovered = true;
     }
 
-    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
+    public boolean mouseWheel(int x, int y, double rotation) {
         return false;
     }
 
@@ -166,10 +164,9 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is pressed.
      *
      * @param keyCode   the code for the key pressed.
-     * @param character the character pressed.
      * @return to cancel out other usage create this method.
      */
-    public boolean keyPress(int keyCode, char character) {
+    public boolean keyPress(int keyCode) {
         return false;
     }
 
@@ -178,10 +175,9 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is released.
      *
      * @param keyCode   the code for the key released.
-     * @param character the character released.
      * @return to cancel out other usage create this method.
      */
-    public boolean keyRelease(int keyCode, char character) {
+    public boolean keyRelease(int keyCode) {
         return false;
     }
 
@@ -189,11 +185,10 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * Key type handler.
      * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is typed.
      *
-     * @param keyCode   the code for the key typed.
      * @param character the character typed.
      * @return to cancel out other usage create this method.
      */
-    public boolean charType(int keyCode, char character) {
+    public boolean charType(char character) {
         return false;
     }
 
@@ -367,12 +362,12 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
 
 
     public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
-        renderer.color(color);
+        renderer.setColor(color);
         renderer.rect(x, y, width, height);
     }
 
     public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
-        renderer.color(color);
+        renderer.setColor(color);
         renderer.rect(x, y, width, height);
     }
 }

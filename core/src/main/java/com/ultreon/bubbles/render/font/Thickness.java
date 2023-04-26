@@ -33,7 +33,9 @@ public enum Thickness {
         var lastDiff = Integer.MAX_VALUE;
         Thickness cur = null;
         for (Thickness value : values) {
-            if (Mth.diff(amount, value.amount) < lastDiff) {
+            int diff = Mth.diff(amount, value.amount);
+            if (diff < lastDiff) {
+                lastDiff = diff;
                 cur = value;
             }
         }

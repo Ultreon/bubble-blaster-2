@@ -38,10 +38,11 @@ public class ScrollView extends View {
 
     @Override
     public void render(@NotNull Renderer renderer) {
-        this.containerGraphics = renderer.subInstance(outerBounds.getX(), outerBounds.getY(), outerBounds.getWidth(), outerBounds.getHeight());
-        for (GuiComponent child : this.children) {
-            child.render(this.containerGraphics);
-        }
+        renderer.subInstance(outerBounds.getX(), outerBounds.getY(), outerBounds.getWidth(), outerBounds.getHeight(), containerGraphics -> {
+            for (GuiComponent child : this.children) {
+                child.render(containerGraphics);
+            }
+        });
     }
 
     public void add(GuiComponent inputWidget) {

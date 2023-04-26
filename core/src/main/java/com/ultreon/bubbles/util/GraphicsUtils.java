@@ -14,7 +14,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer    The GraphicsProcessor instance.
+     * @param renderer    The Renderer instance.
      * @param text The String to draw.
      * @param rect The Rectangle to center the text within.
      * @param font The Font for the text.
@@ -27,7 +27,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer    The GraphicsProcessor instance.
+     * @param renderer    The Renderer instance.
      * @param text The String to draw.
      * @param rect The Rectangle to center the text within.
      * @param font The Font for the text.
@@ -53,7 +53,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer The GraphicsProcessor instance.
+     * @param renderer The Renderer instance.
      * @param text     The text to draw.
      * @param height   The height to center the text within.
      * @param font     The Font for the text.
@@ -66,7 +66,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer The GraphicsProcessor instance.
+     * @param renderer The Renderer instance.
      * @param text     The text to draw.
      * @param height   The height to center the text within.
      * @param font     The Font for the text.
@@ -79,7 +79,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The text to draw.
      * @param pos    The position to center the text within.
      * @param height The height to center the text within.
@@ -106,7 +106,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -120,7 +120,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -134,7 +134,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -148,7 +148,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -162,7 +162,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -176,7 +176,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -203,7 +203,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -217,7 +217,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -231,7 +231,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -244,7 +244,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -257,7 +257,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -270,7 +270,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -296,7 +296,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -324,7 +324,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -352,7 +352,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -380,7 +380,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -395,7 +395,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.
@@ -410,7 +410,7 @@ public class GraphicsUtils {
     /**
      * Draw a String centered in the middle create a Rectangle.
      *
-     * @param renderer      The GraphicsProcessor instance.
+     * @param renderer      The Renderer instance.
      * @param text   The String to draw.
      * @param point  The Point to center the text within.
      * @param height The height to center the text within.

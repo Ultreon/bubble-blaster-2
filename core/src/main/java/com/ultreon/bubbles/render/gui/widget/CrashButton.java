@@ -100,7 +100,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         } else {
             renderer.stroke(new BasicStroke(1.0f));
 
-            renderer.color(Color.rgb(0xffffff));
+            renderer.setColor(Color.rgb(0xffffff));
             Border border = new Border(1, 1, 1, 1);
             border.setPaint(Color.rgb(0xffffff).toAwt());
             border.paintBorder(renderer, 0, 0, width, height);

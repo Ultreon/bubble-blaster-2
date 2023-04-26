@@ -1,7 +1,11 @@
 package com.ultreon.bubbles.render;
 
-import com.ultreon.libs.commons.v0.Identifier;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.resources.ByteArrayFileHandle;
+import com.ultreon.bubbles.resources.ResourceFileHandle;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.resources.v0.Resource;
 import com.ultreon.libs.resources.v0.ResourceManager;
 import org.jetbrains.annotations.NotNull;
@@ -10,29 +14,34 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class TextureManager {
     private static final TextureManager instance = new TextureManager();
-    public static final Resource DEFAULT_TEXTURE;
+    public static final Resource DEFAULT_TEX_RESOURCE;
+    public static final com.badlogic.gdx.graphics.Texture DEFAULT_TEX;
 
     static {
-        DEFAULT_TEXTURE = new Resource(() -> {
-            BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            Renderer graphics = new Renderer(image.getGraphics(), BubbleBlaster.getInstance().getObserver());
-            graphics.color(Color.rgb(0xffbb00));
-            graphics.rect(0, 0, 16, 16);
-            graphics.color(Color.rgb(0x333333));
-            graphics.rect(0, 8, 8, 8);
-            graphics.rect(8, 0, 8, 8);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ImageIO.write(image, ".png", out);
+        DEFAULT_TEX_RESOURCE = new Resource(() -> {
+            var image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            var graphics = image.getGraphics();
+            graphics.setColor(Color.rgb(0xffbb00).toAwt());
+            graphics.fillRect(0, 0, 16, 16);
+            graphics.setColor(Color.rgb(0x333333).toAwt());
+            graphics.fillRect(0, 8, 8, 8);
+            graphics.fillRect(8, 0, 8, 8);
+            var out = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", out);
             graphics.dispose();
+            out.flush();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
             out.close();
-            return new ByteArrayInputStream(out.toByteArray());
+            return byteArrayInputStream;
         }); // TODO: Replace with mem:// url.
+
+        DEFAULT_TEX = new com.badlogic.gdx.graphics.Texture(new ByteArrayFileHandle(".png", DEFAULT_TEX_RESOURCE.loadOrGet()));
     }
     private final Map<Identifier, Texture> textureMap = new ConcurrentHashMap<>();
 
@@ -57,22 +66,16 @@ public final class TextureManager {
         return loadTexture(entry, new TextureSource() {
             @Override
             public Texture create() {
-                AwtImage awtImage = new AwtImage() {
-                    @Override
-                    protected byte[] loadBytes() {
-                        @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
-                        Resource resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
-                        return Objects.requireNonNullElse(resource, DEFAULT_TEXTURE).loadOrGet();
-                    }
-                };
-                awtImage.load();
-                return awtImage;
+                @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
+                var resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
+                if (resource == null) resource = DEFAULT_TEX_RESOURCE;
+                return new NativeImage(resource);
             }
         });
     }
 
     public Texture loadTexture(Identifier entry, TextureSource source) {
-        Texture texture = source.create();
+        var texture = source.create();
         textureMap.put(entry, texture);
         return texture;
     }

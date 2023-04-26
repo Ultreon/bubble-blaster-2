@@ -1,16 +1,13 @@
 package com.ultreon.bubbles.game;
 
+import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.core.CursorManager;
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.WindowEvents;
-import com.ultreon.bubbles.render.gui.screen.PauseScreen;
+import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.vector.Vec2i;
-import com.ultreon.bubbles.vector.size.IntSize;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.events.v1.EventResult;
+import com.ultreon.libs.commons.v0.size.IntSize;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.ImageObserver;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 
 /**
@@ -33,275 +25,56 @@ import java.util.Objects;
  * @author Qboi123
  */
 @SuppressWarnings("unused")
-public class GameWindow implements WindowListener, WindowFocusListener, WindowStateListener, ComponentListener {
+public class GameWindow {
     private static final Marker MARKER = MarkerFactory.getMarker("GameWindow");
-    // GUI Elements.
-    @NotNull
-    private final JFrame frame;
-    @NotNull Canvas canvas;
 
     // AWT Toolkit.
     @NotNull
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     // Graphics thingies.
-    @NotNull ImageObserver observer;
     @NotNull
     private final GraphicsEnvironment gfxEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    @NotNull
-    private final GraphicsDevice device;
-    @NotNull
-    final Properties properties;
     private boolean initialized = false;
 
     @IntRange(from = 0)
     private int fps;
     private CursorManager cursorManager;
     private Thread mainThread;
+    private GameInput input;
 
     /**
      * Window constructor.
-     *
-     * @param properties window properties, not fully implemented yet. LOL
      */
-    @SuppressWarnings("FunctionalExpressionCanBeFolded")
-    public GameWindow(@NotNull Properties properties) {
-        this.properties = properties;
-
-        // --- Set up window --- //
-        BubbleBlaster.getLogger().info(MARKER, "Setting up game window.");
-
-        this.frame = new JFrame(properties.title);
-
-        var config = this.frame.getGraphicsConfiguration();
-
-        this.frame.enableInputMethods(true);
-        this.frame.setFocusTraversalKeysEnabled(false);
-
-        // Setup frame settings.
-        this.frame.setPreferredSize(new Dimension(properties.width, properties.height));
-        this.device = config.getDevice();
-
-        if (properties.fullscreen) {
-            Rectangle bounds = this.device.getDefaultConfiguration().getBounds();
-            this.frame.setBounds(bounds);
-            this.frame.setUndecorated(true);
-        } else {
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            this.frame.setSize(properties.width, properties.height);
-            this.frame.setLocationRelativeTo(null);
-        }
-        this.frame.setResizable(false);
-        try (InputStream inputStream = BubbleBlaster.getGameJar().openStream("assets/bubbles/icon.png")) {
-            this.frame.setIconImage(ImageIO.read(inputStream));
-        } catch (Exception e) {
-            BubbleBlaster.getLogger().error(MARKER, "Failed to load game icon:", e);
-        }
-
-        // Set flag attributes.
-        this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-        // Set listeners.
-        this.frame.addWindowListener(this);
-        this.frame.addWindowFocusListener(this);
-
-        this.frame.setLayout(new CardLayout());
-
-        // --- Set up canvas --- //
-        this.canvas = new Canvas(config) {
-            @Override
-            public void paint(Graphics g) {
-                if (BubbleBlaster.hasRendered()) {
-                    super.paint(g);
-                } else {
-                    g.drawImage(BubbleBlaster.getInstance().cachedImage, 0, 0, getWidth(), getHeight(), this);
-                }
-            }
-        };
-
-        this.canvas.addComponentListener(this);
-
-        this.canvas.setBackground(new Color(72, 72, 72));
-
-        // --- Post setup --- //
-        this.observer = this.canvas::imageUpdate; // Didn't use canvas directly because create security reasons.
-        this.frame.add(this.canvas);
+    public GameWindow(Properties properties) {
+        setSize(new IntSize(properties.width, properties.height));
+        Gdx.graphics.setResizable(false);
     }
 
-    /**
-     * Set up the game frame.
-     *
-     * @param properties the window properties.
-     * @return the game frame.
-     */
-    @NotNull
-    private JFrame setupFrame(@NotNull Properties properties) {
-        return frame;
+    public IntSize getSize() {
+        var width = Gdx.graphics.getWidth();
+        var height = Gdx.graphics.getHeight();
+        return new IntSize(width, height);
     }
 
-    /**
-     * Create the rendering canvas.
-     * @param properties the game window properties.
-     * @return the created canvas.
-     */
-    @NotNull
-    private Canvas createCanvas(@NotNull Properties properties) {
-        return canvas;
+    public void setSize(IntSize size) {
+        Gdx.graphics.setWindowedMode(size.width(), size.height());
     }
 
-    /**
-     * Set up the listeners for the game frame.
-     */
-    private void setupFrameListeners(JFrame frame) {
+    public int getWidth() {
+        return Gdx.graphics.getWidth();
     }
 
-    /**
-     * Set up the game frame settings.
-     * @param frame the window frame.
-     * @param properties the game window properties.
-     */
-    private void setupFrameSettings(JFrame frame, @NotNull Properties properties) {
+    public void setWidth(int width) {
+        Gdx.graphics.setWindowedMode(width, getSize().height());
     }
 
-    /**
-     * Thw window is resized.
-     * @param e the event to be processed
-     */
-    @Override
-    public void componentResized(ComponentEvent e) {
-//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
-        BubbleBlaster game = BubbleBlaster.getInstance();
-        game.resize(new IntSize(e.getComponent().getSize()));
+    public int getHeight() {
+        return Gdx.graphics.getHeight();
     }
 
-    /**
-     * The window moved.
-     * @param e the event to be processed
-     */
-    @Override
-    public void componentMoved(ComponentEvent e) {
-
-    }
-
-    /**
-     * The window is shown
-     * @param e the event to be processed
-     */
-    @Override
-    public void componentShown(ComponentEvent e) {
-//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
-        BubbleBlaster game = BubbleBlaster.getInstance();
-        game.resize(new IntSize(e.getComponent().getSize()));
-    }
-
-    /**
-     * The window is hidden
-     * @param e the event to be processed
-     */
-    @Override
-    public void componentHidden(ComponentEvent e) {
-
-    }
-
-    /**
-     * The window just opened.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowOpened(WindowEvent e) {
-//        GameWindow.this.canvas.setSize(e.getComponent().getSize());
-        BubbleBlaster game = BubbleBlaster.getInstance();
-        game.resize(new IntSize(e.getComponent().getSize()));
-    }
-
-    /**
-     * Window tries to close. (Cancellable)
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowClosing(WindowEvent e) {
-        EventResult booleanEventResult = WindowEvents.WINDOW_CLOSING.factory().onWindowClosing(this);
-        if (!booleanEventResult.isCanceled()) {
-            game().shutdown();
-        }
-    }
-
-    /**
-     * Window is closed.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowClosed(WindowEvent e) {
-        WindowEvents.WINDOW_CLOSED.factory().onWindowClosed(this);
-        properties.onClose.run();
-    }
-
-    /**
-     * Window minimized.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowIconified(WindowEvent e) {
-        WindowEvents.WINDOW_MINIMIZED.factory().onWindowMinimized(this);
-    }
-
-    /**
-     * Window un-minimized.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-        WindowEvents.WINDOW_RESTORED.factory().onWindowRestored(this);
-    }
-
-    /**
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    /**
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
-
-    /**
-     * Window has gained focus.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowGainedFocus(WindowEvent e) {
-        WindowEvents.WINDOW_GAINED_FOCUS.factory().onWindowGainedFocus(this);
-        GameWindow.this.canvas.requestFocus();
-    }
-
-    /**
-     * Window list focus.
-     * This pauses the game.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowLostFocus(WindowEvent e) {
-        BubbleBlaster game = game();
-        Environment environment = game.getEnvironment();
-        WindowEvents.WINDOW_LOST_FOCUS.factory().onWindowLostFocus(this);
-        if (environment != null && game.isInGame() && environment.isAlive()) {
-            game.showScreen(new PauseScreen());
-        }
-    }
-
-    /**
-     * State create window has changed.
-     * @param e the event to be processed
-     */
-    @Override
-    public void windowStateChanged(WindowEvent e) {
-
+    public void setHeight(int height) {
+        Gdx.graphics.setWindowedMode(getSize().width(), height);
     }
 
     /**
@@ -314,8 +87,8 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
 
         BubbleBlaster.getLogger().info(MARKER, "Post-init stage of game window.");
 
-        KeyboardInput.listen(this.canvas);
-        MouseInput.listen(this.canvas);
+        input = new GameInput();
+        Gdx.input.setInputProcessor(input);
 
         this.initialized = true;
 
@@ -325,19 +98,11 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     void dispose() {
-        this.frame.dispose(); // Window#dispose() closes the awt-based window.
+        Gdx.app.exit();
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
-        Identifier textureEntry = new Identifier(identifier.location(), "textures/cursors/" + identifier.path());
-        Image image;
-        try (InputStream assetAsStream = game().getResourceManager().openResourceStream(textureEntry)) {
-            image = ImageIO.read(assetAsStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return toolkit.createCustomCursor(image, new Point(hotSpotX, hotSpotY), identifier.toString());
+        return null;
     }
 
     private BubbleBlaster game() {
@@ -345,8 +110,7 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     public void finalSetup() {
-        this.frame.setVisible(true);
-        this.canvas.setVisible(true);
+        // TODO: Use final setup in game window.
     }
 
     public void toggleFullscreen() {
@@ -356,17 +120,17 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     public void setFullscreen(boolean fullscreen) {
         if (isFullscreen() && !fullscreen) { // If currently not fullscreen and disabling fullscreen.
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
-                device.setFullScreenWindow(null); // Set fullscreen to false.
+                Gdx.graphics.setFullscreenMode(null);
             }
         } else if (!isFullscreen() && fullscreen) { // If currently in fullscreen and enabling fullscreen.
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
-                device.setFullScreenWindow(this.frame); // Set fullscreen to true.
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
             }
         }
     }
 
     public boolean isFullscreen() {
-        return device.getFullScreenWindow() == this.frame;
+        return Gdx.graphics.isFullscreen();
     }
 
     public boolean isInitialized() {
@@ -374,48 +138,34 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
     }
 
     public Rectangle getBounds() {
-        return this.frame.getBounds();
-    }
-
-    public int getWidth() {
-        return this.frame.getWidth();
-    }
-
-    public int getHeight() {
-        return this.frame.getHeight();
+        return new Rectangle(0, 0, getWidth(), getHeight());
     }
 
     public int getX() {
-        return this.frame.getX();
+        return 0;
     }
 
     public int getY() {
-        return this.frame.getY();
+        return 0;
     }
 
     @Nullable
     public Vec2i getMousePosition() {
-        MouseInput.getPos();
-        @Nullable Point mousePosition = this.canvas.getMousePosition();
-
-        if (mousePosition == null) return null;
-        return new Vec2i(mousePosition);
+        return new Vec2i(Gdx.input.getX(), Gdx.input.getY());
     }
 
     public void setCursor(Cursor defaultCursor) {
-        if (cursorManager == null) return;
-        cursorManager.setCursor(this.frame, defaultCursor);
+        BubbleBlaster.getLogger().warn("Setting cursor is not yet supported.", new RuntimeException());
+//        if (cursorManager == null) return;
+//        cursorManager.setCursor(this.frame, defaultCursor);
     }
 
     public void requestFocus() {
-        this.frame.setFocusable(true);
-        this.canvas.setFocusable(true);
-        this.canvas.requestFocus();
-        this.canvas.requestFocusInWindow();
+
     }
 
     public boolean isFocused() {
-        return this.frame.isFocused() && this.canvas.isFocusable();
+        return game().isFocused();
     }
 
     /**
@@ -423,20 +173,21 @@ public class GameWindow implements WindowListener, WindowFocusListener, WindowSt
      * Other operating systems are unknown for this behavior.
      */
     public void requestUserAttention() {
-        if (Taskbar.isTaskbarSupported()) {
-            Taskbar taskbar = Taskbar.getTaskbar();
-            if (taskbar.isSupported(Taskbar.Feature.USER_ATTENTION_WINDOW)) {
-                taskbar.requestWindowUserAttention(this.frame);
-            }
-        }
+        // TODO: Make user attention requests work with LibGDX.
+//        if (Taskbar.isTaskbarSupported()) {
+//            Taskbar taskbar = Taskbar.getTaskbar();
+//            if (taskbar.isSupported(Taskbar.Feature.USER_ATTENTION_WINDOW)) {
+//                taskbar.requestWindowUserAttention(this.frame);
+//            }
+//        }
     }
 
     public void showError(@NotNull String title, @Nullable String description) {
-        JOptionPane.showMessageDialog(frame, description, title, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
     }
 
     public void setTitle(@NotNull String title) {
-        frame.setTitle(title);
+        Gdx.graphics.setTitle(title);
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public class Fonts {
     public static final Supplier<Font> DEFAULT = () -> BubbleBlaster.getInstance().getSansFont();
-    public static final Font MONOSPACED = register("roboto/roboto_mono", new Font());
+    public static final Font MONOSPACED = register("roboto/roboto", new Font());
     public static final Font QUANTUM = register("quantum", new Font());
     public static final Font DONGLE = register("dongle/dongle", new Font());
     public static final Font CHICLE = register("chicle", new Font());

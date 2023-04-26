@@ -148,9 +148,9 @@ public class SavesScreen extends Screen {
                 renderer.drawErrorEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
             }
 
-            renderer.color(0xc0ffffff);
+            renderer.setColor(0xc0ffffff);
             font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
-            renderer.color(0x60ffffff);
+            renderer.setColor(0x60ffffff);
             font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
             return;
         }
@@ -165,9 +165,9 @@ public class SavesScreen extends Screen {
             renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
         }
 
-        renderer.color(0xc0ffffff);
+        renderer.setColor(0xc0ffffff);
         font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
-        renderer.color(0x60ffffff);
+        renderer.setColor(0x60ffffff);
         font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
     }
 

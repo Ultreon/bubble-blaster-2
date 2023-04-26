@@ -1,23 +1,24 @@
 package com.ultreon.bubbles.render.font;
 
-import com.ultreon.commons.map.OrderedHashMap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.ultreon.libs.commons.v0.Identifier;
 
-import java.util.Map;
+import java.util.UUID;
 
 public class SystemFont extends Font {
     public SystemFont(String name) {
         super();
-        FontInfo.Builder builder = new FontInfo.Builder();
-        builder.set(Thickness.REGULAR, FontStyle.PLAIN, new java.awt.Font(name, java.awt.Font.PLAIN, 0));
-        builder.set(Thickness.REGULAR, FontStyle.ITALIC, new java.awt.Font(name, java.awt.Font.ITALIC, 0));
-        builder.set(Thickness.BOLD, FontStyle.PLAIN, new java.awt.Font(name, java.awt.Font.BOLD, 0));
-        builder.set(Thickness.BOLD, FontStyle.ITALIC, new java.awt.Font(name, java.awt.Font.BOLD + java.awt.Font.ITALIC, 0));
+        FontInfo.Builder builder = new FontInfo.Builder(new Identifier("java", UUID.nameUUIDFromBytes(name.getBytes()).toString().replaceAll("-", "")));
+        builder.set(Thickness.REGULAR, FontStyle.PLAIN, new BitmapFont());
+        builder.set(Thickness.REGULAR, FontStyle.ITALIC, new BitmapFont());
+        builder.set(Thickness.BOLD, FontStyle.PLAIN, new BitmapFont());
+        builder.set(Thickness.BOLD, FontStyle.ITALIC, new BitmapFont());
         this.info = builder.build();
     }
 
-    public SystemFont(FontInfo name) {
+    public SystemFont(FontInfo info) {
         super();
-        this.info = name;
+        this.info = info;
     }
 
     @Override

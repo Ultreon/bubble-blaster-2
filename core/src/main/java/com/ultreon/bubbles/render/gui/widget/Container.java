@@ -30,7 +30,7 @@ public abstract class Container extends GuiComponent {
     protected void renderChildren(Renderer renderer) {
         for (GuiComponent child : this.children) {
             if (child.visible) {
-                child.render(renderer.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight()));
+                renderer.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight(), child::render);
             }
         }
     }
@@ -157,11 +157,11 @@ public abstract class Container extends GuiComponent {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
+    public boolean mouseWheel(int x, int y, double rotation) {
         GuiComponent widgetAt = getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
-        if (widgetAt != null) return widgetAt.mouseWheel(x - widgetAt.getX(), y - widgetAt.getY(), rotation, amount, units);
+        if (widgetAt != null) return widgetAt.mouseWheel(x - widgetAt.getX(), y - widgetAt.getY(), rotation);
         return false;
     }
 

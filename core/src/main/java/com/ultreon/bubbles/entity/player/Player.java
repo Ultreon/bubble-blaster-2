@@ -439,11 +439,11 @@ public class Player extends LivingEntity implements InputController {
         if (isNotSpawned()) return;
 
         // Fill the ship with the correct color.
-        renderer.color(Color.red);
+        renderer.setColor(Color.red);
         renderer.fill(getShipArea());
 
         // Fill the arrow with the correct color.
-        renderer.color(Color.white);
+        renderer.setColor(Color.white);
         renderer.fill(getArrowArea());
     }
 

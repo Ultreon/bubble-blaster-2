@@ -5,7 +5,6 @@ import com.ultreon.bubbles.common.renderer.IRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.BufferRender;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -72,7 +71,7 @@ public class EnvironmentRenderer implements IRenderer {
             }
 
             // Set color.
-            renderer.color(color);
+            renderer.setColor(color);
 
             // Draw ellipse.
             Ellipse2D ellipse = getEllipse(x, y, radius, i);
@@ -116,16 +115,16 @@ public class EnvironmentRenderer implements IRenderer {
         profiler.section("Render BG", () -> {
             GameplayEvent currentGameplayEvent = environment.getCurrentGameEvent();
             if (currentGameplayEvent != null) {
-                renderer.color(currentGameplayEvent.getBackgroundColor());
+                renderer.setColor(currentGameplayEvent.getBackgroundColor());
                 renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
             } else {
                 if (cached == null) {
-                    BufferRender bufferRender = new BufferRender(new Dimension(game.getWidth(), game.getHeight()), game.getObserver());
-                    Renderer buffered = bufferRender.getRenderer();
-                    buffered.color(0xff006080);
-                    buffered.paint(new GradientPaint(0f, 0f, UPPER_COLOR.toAwt(), 0f, BubbleBlaster.getInstance().getHeight(), LOWER_COLOR.toAwt()));
-                    buffered.rect(0, 0, game.getWidth(), game.getHeight());
-                    cached = bufferRender.done();
+//                    BufferRender bufferRender = new BufferRender(new Dimension(game.getWidth(), game.getHeight()), game.getObserver());
+//                    Renderer buffered = bufferRender.getRenderer();
+//                    buffered.color(0xff006080);
+//                    buffered.paint(new GradientPaint(0f, 0f, UPPER_COLOR.toAwt(), 0f, BubbleBlaster.getInstance().getHeight(), LOWER_COLOR.toAwt()));
+//                    buffered.rect(0, 0, game.getWidth(), game.getHeight());
+//                    cached = bufferRender.done();
                 }
                 renderer.image(cached, 0, 0);
             }

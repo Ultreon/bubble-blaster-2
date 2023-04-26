@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.player;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.core.input.KeyboardInput;
+import com.badlogic.gdx.Input;
+import com.ultreon.bubbles.input.GameInput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,10 +19,10 @@ public class PlayerController {
 //        logger.info("PlayerController[8c724942]: " + this.player);
         if (this.controller != null) {
 //            logger.info("PlayerController[8c217398]: " + this.player);
-            this.controller.forward(KeyboardInput.isDown(KeyboardInput.Map.KEY_UP) || KeyboardInput.isDown(KeyboardInput.Map.KEY_KP_UP) || KeyboardInput.isDown(KeyboardInput.Map.KEY_W));
-            this.controller.backward(KeyboardInput.isDown(KeyboardInput.Map.KEY_DOWN) || KeyboardInput.isDown(KeyboardInput.Map.KEY_KP_DOWN) || KeyboardInput.isDown(KeyboardInput.Map.KEY_S));
-            this.controller.right(KeyboardInput.isDown(KeyboardInput.Map.KEY_RIGHT) || KeyboardInput.isDown(KeyboardInput.Map.KEY_KP_RIGHT) || KeyboardInput.isDown(KeyboardInput.Map.KEY_D));
-            this.controller.left(KeyboardInput.isDown(KeyboardInput.Map.KEY_LEFT) || KeyboardInput.isDown(KeyboardInput.Map.KEY_KP_LEFT) || KeyboardInput.isDown(KeyboardInput.Map.KEY_A));
+            this.controller.forward(GameInput.isKeyDown(Input.Keys.UP) || GameInput.isKeyDown(Input.Keys.W));
+            this.controller.backward(GameInput.isKeyDown(Input.Keys.DOWN) || GameInput.isKeyDown(Input.Keys.S));
+            this.controller.right(GameInput.isKeyDown(Input.Keys.RIGHT) || GameInput.isKeyDown(Input.Keys.D));
+            this.controller.left(GameInput.isKeyDown(Input.Keys.LEFT) || GameInput.isKeyDown(Input.Keys.A));
         }
     }
 }

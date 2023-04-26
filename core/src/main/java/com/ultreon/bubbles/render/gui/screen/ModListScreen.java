@@ -11,11 +11,9 @@ import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.Person;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,15 +57,15 @@ public class ModListScreen extends Screen {
                 var selected = modList.getSelected();
                 if (selected == null) return;
                 var metadata = selected.value.getMetadata();
-                renderer.color(0xffffffff);
+                renderer.setColor(0xffffffff);
                 font.draw(renderer, metadata.getName(), 40, 20, 20);
-                renderer.color(0x80ffffff);
+                renderer.setColor(0x80ffffff);
                 monospaced.draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(40, metadata.getName() + "  "), 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
-                renderer.color(0x80ffffff);
+                renderer.setColor(0x80ffffff);
                 monospaced.draw(renderer, metadata.getId(), 12, 20, 70, Thickness.BOLD);
                 String description = metadata.getDescription();
                 AtomicInteger i = new AtomicInteger();
-                renderer.color(0x60ffffff);
+                renderer.setColor(0x60ffffff);
                 description.lines().forEachOrdered(line -> font.draw(renderer, line, 12, 20, 90 + i.getAndIncrement() * (font.height(12) + 1)));
             }
         });
@@ -78,8 +76,8 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation, int amount, int units) {
-        return super.mouseWheel(x, y, rotation, amount, units);
+    public boolean mouseWheel(int x, int y, double rotation) {
+        return super.mouseWheel(x, y, rotation);
     }
 
     @Override
@@ -111,11 +109,11 @@ public class ModListScreen extends Screen {
 
         int textX = 20 + iconSize + 20;
 
-        renderer.color(0x7fffffff);
+        renderer.setColor(0x7fffffff);
         monospaced.draw(renderer, metadata.getId(), 12, textX, 20, Thickness.BOLD);
-        renderer.color(0xffffffff);
+        renderer.setColor(0xffffffff);
         font.draw(renderer, metadata.getName(), 32, textX, 32);
-        renderer.color(0x80ffffff);
+        renderer.setColor(0x80ffffff);
         font.draw(renderer, metadata.getDescription(), 14, textX, ENTRY_HEIGHT - 18, Anchor.SW);
     }
 }
