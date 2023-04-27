@@ -390,6 +390,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         Gdx.gl20.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
 
         tasks.forEach(Runnable::run);
         tasks.clear();
@@ -414,6 +415,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
             this.fps = Gdx.graphics.getFramesPerSecond();
         }
         batch.end();
+        Gdx.gl20.glDisable(GL20.GL_BLEND);
     }
 
     public static Map<Thread, ThreadSection> getLastProfile() {
