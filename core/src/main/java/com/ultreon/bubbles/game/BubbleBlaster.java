@@ -396,6 +396,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         camera.update();
         Matrix4 matrix = camera.combined;
+        batch.setProjectionMatrix(matrix);
         batch.begin();
         var renderer = new Renderer(shapes, new MatrixStack(matrix));
 
@@ -1455,13 +1456,14 @@ public final class BubbleBlaster extends ApplicationAdapter {
         // Render screen.
         profiler.section("Render Screen", () -> {
             if (screen != null) {
+                System.out.println("screen.getClass().getName() = " + screen.getClass().getName());
                 RenderEvents.RENDER_SCREEN_BEFORE.factory().onRenderScreenBefore(screen, renderer);
                 screen.render(this, renderer, frameTime);
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
-            if (environment != null && environmentRenderer != null) {
-                renderer.fillEffect(0, 0, BubbleBlaster.getInstance().getWidth(), 3);
-            }
+//            if (environment != null && environmentRenderer != null) {
+//                renderer.fillEffect(0, 0, BubbleBlaster.getInstance().getWidth(), 3);
+//            }
         });
 
         // Post render.
