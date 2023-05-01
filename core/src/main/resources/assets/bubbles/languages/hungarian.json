@@ -13,24 +13,31 @@
       "random": "Random",
       "save": "Save"
     },
+    "gamemode": {
+      "names": {
+        "classic": "Classic Mode",
+        "modern": "Modern Mode",
+        "impossible": "Impossible Mode"
+      }
+    },
     "status_effect": {
       "poison": {
-        "Name": "Poisoned"
+        "name": "Poisoned"
       },
       "blindness": {
-        "Name": "Blinded"
+        "name": "Blinded"
       },
       "multi_score": {
-        "Name": "Multi Score"
+        "name": "Multi Score"
       },
       "speed_boost": {
-        "Name": "Speed Boost"
+        "name": "Speed Boost"
       },
       "attack_boost": {
-        "Name": "Attack Boost"
+        "name": "Attack Boost"
       },
-      "DefenseBoost": {
-        "Name": "Defense Boost"
+      "defense_boost": {
+        "name": "Defense Boost"
       }
     },
     "Info": {
@@ -44,12 +51,19 @@
         "mods": "Mods",
         "saves": "Saves",
         "options": "Options",
-        "language": "Language"
+        "language": "Language",
+        "quit": "Quit Game"
       },
       "options": {
         "Language": "Language"
       },
       "saves": {
+        "create": {
+          "title": "Create a New Save",
+          "seed": "Seed:",
+          "gamemode": "Gamemode:",
+          "button": "Create"
+        },
         "new": "New",
         "duplicate": "Duplicate",
         "edit": "Edit",
@@ -64,6 +78,7 @@
       "pause": {
         "text": "Pause",
         "exit": "Exit and Quit Game",
+        "forfeit": "Save and Go To Title",
         "min_radius": "Min. Radius:",
         "max_radius": "Max. Radius:",
         "min_speed": "Min. Speed:",
