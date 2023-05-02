@@ -1,0 +1,149 @@
+{
+  "bubbles": {
+    "other": {
+      "prev": "Vorige",
+      "next": "Volgende",
+      "true": "Ja",
+      "false": "Nee",
+      "cancel": "Annuleer",
+      "ok": "Oké",
+      "download": "Download",
+      "install": "Installeer",
+      "buy": "Koop",
+      "random": "Random",
+      "save": "Opslaan"
+    },
+    "gamemode": {
+      "names": {
+        "classic": "Classic Mode",
+        "modern": "Modern Mode",
+        "impossible": "Impossible Mode"
+      }
+    },
+    "status_effect": {
+      "poison": {
+        "name": "Vergiftigd"
+      },
+      "blindness": {
+        "name": "Verblind"
+      },
+      "multi_score": {
+        "name": "Meer-score"
+      },
+      "speed_boost": {
+        "name": "Snelheid-boost"
+      },
+      "attack_boost": {
+        "name": "Aanval-boost"
+      },
+      "defense_boost": {
+        "name": "Verdediging-boost"
+      }
+    },
+    "Info": {
+      "Score": "Score",
+      "Level": "Level",
+      "Health": "Health"
+    },
+    "screen": {
+      "title": {
+        "start": "Start spel",
+        "mods": "Modificaties",
+        "saves": "Saves",
+        "options": "Opties",
+        "language": "Taal",
+        "quit": "Spel afsluiten"
+      },
+      "options": {
+        "Language": "Language"
+      },
+      "saves": {
+        "create": {
+          "title": "Create a New Save",
+          "seed": "Seed:",
+          "gamemode": "Gamemode:",
+          "button": "Create"
+        },
+        "new": "Nieuw",
+        "duplicate": "Dupliceer",
+        "edit": "Bewerk",
+        "rename": "Hernoem",
+        "reset": "Reset",
+        "open": "Open",
+        "delete": "Verwijder"
+      },
+      "game_over": {
+        "back_to_title": "Go to title"
+      },
+      "pause": {
+        "text": "Pauze",
+        "exit": "Stop en sluit spel",
+        "forfeit": "Stop en ga naar titel",
+        "min_radius": "Min. radius:",
+        "max_radius": "Max. radius:",
+        "min_speed": "Min. snelheid:",
+        "max_speed": "Max. snelheid:",
+        "default_chance": "Norm. kans:",
+        "current_chance": "Kans nu:",
+        "default_priority": "Norm. prioriteit:",
+        "current_priority": "Prioriteit nu:",
+        "default_total_priority": "Norm. totale prioriteit:",
+        "current_total_priority": "Totale prioriteit nu:",
+        "score_modifier": "Score modifier:",
+        "attack_modifier": "Aanval modifier:",
+        "defense_modifier": "Verdediging modifier:",
+        "can_spawn": "Kan nu ontstaan:",
+        "description": "Beschrijving:"
+      },
+      "start_options": {
+        "start": "Start!"
+      }
+    },
+    "bubble": {
+      "name": {
+        "normal": "Normale bel",
+        "damage": "Aanvaller",
+        "level_up": "Level-up bel",
+        "double": "2x Waarde bel",
+        "triple": "3x Waarde bel",
+        "double_state": "2x Waarde effect bel",
+        "triple_state": "3x Waarde effect bel",
+        "blindness": "Blindheid bel",
+        "poison": "Giftige bel",
+        "bouncy": "Bouncy Bubble",
+        "heal": "Genees bel",
+        "hyper": "Hyper bel",
+        "attack": "Aanval-boost bel",
+        "defense": "Verdediging-boost bel",
+        "accelerate": "Versnelling bel",
+        "speed_boost": "Snelheid-boost bel",
+        "bubble_freeze": "Tijd-vriezer bel",
+        "paralyze": "Versteen bel",
+        "hardened": "Hardened Bubble",
+        "ultra": "Ultra Bubble"
+      },
+      "description": {
+        "normal": "De ordinaire normale bel, heeft alleen 1x score modifier, is vaak voorkomend, en heeft geen aanval.",
+        "damage": "Deze bel valt aan, het heeft een vaststaande aanval modifier van 1, uitkijken!",
+        "level_up": "Deze bel komt alleen tevoorschijn als je een level op hoog kan. \nOntstaat wanneer ((de score) ÷ 10,000 + 1) is groter dan de level.",
+        "double": "Deze bel heeft meer waarde in score, je krijgt dubbel zoveel score dan de Normale Bel.",
+        "triple": "Deze bel heeft zelfs meer waarde dan de dubbele waarde bel, je krijgt driedubbel zoveel score dan de Normale Bel.",
+        "double_state": "Deze bel geeft je dubbel de score van bellen voor een korte tijd.",
+        "triple_state": "Deze bel geeft je driedubbel de score van bellen voor een korte tijd.",
+        "blindness": "Deze bel is irritant, wanneer je deze aanraakt gaat het beeld donkerder maken alsof je blind bent. Dit effect is tijdelijk, maar hoe groter de bel hoe donkerder het wordt.",
+        "poison": "Deze bel ‘vergiftigd’ de speler dat betekend dat het tijdelijk moeilijker is om te zijn welke bel welke is, en de speler krijgt over tijd beschadiging.",
+        "bouncy": "Work In Progress (WIP), the bounce bubble would bounce the player from it. There are currently problems with it.",
+        "heal": "Teze bel hersteld de gezondheid van de speler, zo simpel is het.",
+        "hyper": "Work In Progress (WIP), this bubble has currently no special notes.",
+        "attack": "Geeft je een ‘aanval’-boost, wanneer aangeraakt kan je bellen dan sneller knappen voor een korte tijd.",
+        "defense": "Geeft je een ‘verdediging’-boost, wanneer aangeraakt krijg je tijdelijk minder schade.",
+        "accelerate": "Deze bel versnelt de speler zolang de speler is in de bel, of raakt het aan.",
+        "speed_boost": "Deze bel verhoogd de snelheid van de speler voor een korte tijd.",
+        "bubble_freeze": "Deze bel bevriest alle bellen tijdelijk na aanraking.",
+        "paralyze": "Deze bel bevriest de speler voor even.",
+        "hardened": "A bubble that's harder to destroy than others.",
+        "ultra": "The most overpowered bubble there is, will have all positive effects (not yet mod support), and gives 10x more score than the normal bubble."
+      }
+    }
+  }
+}
