@@ -139,7 +139,7 @@ public final class LoadScreen extends Screen implements Runnable {
     public void run() {
         LOGGER.info("Loading started");
 
-        this.progMain = new ProgressMessenger(msgMain, 12);
+        this.progMain = new ProgressMessenger(msgMain, 11);
 
         // Get game directory in Java's File format.
         File gameDir = BubbleBlaster.getGameDir();
@@ -158,7 +158,11 @@ public final class LoadScreen extends Screen implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        for (ModContainer container : FabricLoader.getInstance().getAllMods()) {
+
+        Collection<ModContainer> allMods = FabricLoader.getInstance().getAllMods();
+        this.progAlt = new ProgressMessenger(msgAlt, allMods.size());
+        for (ModContainer container : allMods) {
+            progAlt.sendNext(container.getMetadata().getName());
             List<Path> paths = container.getOrigin().getPaths();
             for (Path path : paths) {
                 try {
@@ -172,7 +176,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         LOGGER.info("Setting up mods...");
         this.progMain.sendNext("Setting up mods...");
-        for (ModContainer container : FabricLoader.getInstance().getAllMods()) {
+        for (ModContainer container : allMods) {
             ModMetadata metadata = container.getMetadata();
             metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> {
                 try {
@@ -239,8 +243,9 @@ public final class LoadScreen extends Screen implements Runnable {
         this.progAlt = new ProgressMessenger(this.msgAlt, values.size());
         for (TextureCollection collection : values) {
             GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
-            this.progAlt.increment();
+            this.progAlt.sendNext(String.valueOf(Registries.TEXTURE_COLLECTIONS.getKey(collection)));
         }
+        progAlt = null;
 
         // BubbleSystem
         this.progMain.sendNext("Initialize bubble system...");
@@ -300,5 +305,10 @@ public final class LoadScreen extends Screen implements Runnable {
 
     private void logMain(String s) {
         this.curMainMsg = s;
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

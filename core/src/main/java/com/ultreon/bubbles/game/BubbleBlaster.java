@@ -3,6 +3,7 @@ package com.ultreon.bubbles.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -68,6 +69,16 @@ import com.ultreon.libs.translations.v0.LanguageManager;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.ImVec2;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiTabBarFlags;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
+import imgui.type.ImBoolean;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -88,6 +99,8 @@ import org.jdesktop.swingx.util.OS;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -111,6 +124,7 @@ import java.util.function.Supplier;
 
 import static com.ultreon.bubbles.core.input.KeyboardInput.Map.*;
 import static org.apache.logging.log4j.MarkerManager.getMarker;
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * The Bubble Blaster game main class.
@@ -125,6 +139,10 @@ public final class BubbleBlaster extends ApplicationAdapter {
     // Logger.
     private static final Logger logger = LoggerFactory.getLogger("Generic");
     private static final WatchManager watcher = new WatchManager(new ConfigurationScheduler("File Watcher"));
+    private static final ImBoolean SHOW_INFO_WINDOW = new ImBoolean(false);
+    private static final ImBoolean SHOW_FPS_GRAPH = new ImBoolean(false);
+    private static final ImBoolean SHOW_ENTITY_MODIFIER = new ImBoolean(false);
+    private static final ImBoolean SHOW_GUI_MODIFIER = new ImBoolean(false);
     // Modes
     private static boolean debugMode;
     private static boolean devMode;
@@ -145,6 +163,8 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private static final Supplier<ModMetadata> GAME_META = Suppliers.memoize(() -> GAME_CONTAINER.get().getMetadata());
     private static final Supplier<Version> GAME_VERSION = Suppliers.memoize(() -> GAME_META.get().getVersion());
     public final Profiler profiler = new Profiler();
+    private final ImGuiImplGlfw imGuiGlfw;
+    private final ImGuiImplGl3 imGuiGl3;
     private URL gameFile;
     @IntVal(20)
     private final int tps = 20;
@@ -201,7 +221,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     // Loaded game.
     @Nullable
     private LoadedGame loadedGame;
-    private boolean debugGuiOpen = false;
+    private ImBoolean debugGuiOpen = new ImBoolean(false);
     private GlitchRenderer glitchRenderer = null;
     private boolean isGlitched = false;
     private Supplier<Activity> activity;
@@ -219,17 +239,30 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private boolean focused;
     private int transX;
     private int transY;
+    private long windowHandle;
+    private final ImBoolean showDebugUtils = new ImBoolean(FabricLoader.getInstance().isDevelopmentEnvironment());
 
-    /**
-     * Class constructor for Bubble Blaster.
-     *
-     * @see LoadScreen
-     */
-    public BubbleBlaster() throws IOException {
+    public BubbleBlaster() {
+        imGuiGlfw = new ImGuiImplGlfw();
+        imGuiGl3 = new ImGuiImplGl3();
     }
 
     @Override
     public void create() {
+        GLFWErrorCallback.createPrint(System.err).set();
+        if (!glfwInit())
+        {
+            throw new IllegalStateException("Unable to initialize GLFW");
+        }
+        ImGui.createContext();
+        final ImGuiIO io = ImGui.getIO();
+        io.setIniFilename(null);
+        io.getFonts().addFontDefault();
+
+        windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
+
+        imGuiGlfw.init(windowHandle, true);
+        imGuiGl3.init("#version 150");
         this.batch = new SpriteBatch();
         Pixmap singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         singlePxPixmap.setColor(Color.rgb(0xffffff).toGdx());
@@ -408,14 +441,103 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
             profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
 
-            if (isDebugMode() || debugGuiOpen) {
+            if (isDebugMode() || debugGuiOpen.get()) {
                 debugRenderer.render(renderer);
             }
 
             this.fps = Gdx.graphics.getFramesPerSecond();
         }
+
+        if (showDebugUtils.get()) {
+            // render 3D scene
+            imGuiGlfw.newFrame();
+
+            int tabBarFlags = ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.Reorderable | ImGuiTabBarFlags.FittingPolicyResizeDown | ImGuiTabBarFlags.NoCloseWithMiddleMouseButton;
+
+            ImGui.newFrame();
+            ImGui.setNextWindowPos(0, 0);
+            ImGui.setNextWindowSize(Gdx.graphics.getWidth(), 18);
+            ImGui.setNextWindowCollapsed(true);
+
+            if (ImGui.begin("BB DebugUtils", ImGuiWindowFlags.NoMove |
+                    ImGuiWindowFlags.NoCollapse |
+                    ImGuiWindowFlags.AlwaysAutoResize |
+                    ImGuiWindowFlags.NoTitleBar |
+                    ImGuiWindowFlags.MenuBar |
+                    ImGuiInputTextFlags.AllowTabInput)) {
+                if (ImGui.beginMenuBar()) {
+                    if (ImGui.beginMenu("View")) {
+                        ImGui.menuItem("Show Info Window", null, SHOW_INFO_WINDOW);
+                        ImGui.menuItem("Show FPS Graph", null, SHOW_FPS_GRAPH);
+                        ImGui.endMenu();
+                    }
+                    if (ImGui.beginMenu("Debug")) {
+                        ImGui.menuItem("Entity Modifier", null, SHOW_ENTITY_MODIFIER, isInGame());
+                        ImGui.menuItem("GUI Modifier", null, SHOW_GUI_MODIFIER);
+                        ImGui.menuItem("Debug HUD", null, debugGuiOpen);
+                        ImGui.endMenu();
+                    }
+                    ImGui.endMenuBar();
+                }
+                ImGui.end();
+            }
+            if (SHOW_INFO_WINDOW.get()) {
+                showInfoWindow();
+            }
+            if (SHOW_GUI_MODIFIER.get()) {
+                showGuiModifier(renderer);
+            }
+            ImGui.render();
+            imGuiGl3.renderDrawData(ImGui.getDrawData());
+        }
+
         batch.end();
         Gdx.gl20.glDisable(GL20.GL_BLEND);
+    }
+
+    private void showGuiModifier(Renderer renderer) {
+        Screen currentScreen = getCurrentScreen();
+        GuiComponent exactWidgetAt = null;
+        if (currentScreen != null) exactWidgetAt = currentScreen.getExactWidgetAt(Gdx.input.getX(), Gdx.input.getY());
+
+        if (exactWidgetAt != null) {
+            var bounds = exactWidgetAt.getBounds();
+            renderer.setColor(Color.rgb(0xff0000));
+            renderer.rectLine(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);
+        ImGui.setNextWindowPos(ImGui.getMainViewport().getPosX() + 100, ImGui.getMainViewport().getPosY() + 100, ImGuiCond.Once);
+        if (ImGui.begin("Gui Utilities")) {
+            ImGui.text("Screen: " + (currentScreen == null ? "null" : currentScreen.getClass().getSimpleName()));
+            ImGui.text("Widget: " + (exactWidgetAt == null ? "null" : exactWidgetAt.getClass().getSimpleName()));
+        }
+        ImGui.end();
+    }
+
+    private void showInfoWindow() {
+        Screen currentScreen = getCurrentScreen();
+        ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);
+        ImGui.setNextWindowPos(ImGui.getMainViewport().getPosX() + 100, ImGui.getMainViewport().getPosY() + 100, ImGuiCond.Once);
+        if (ImGui.begin("Debug Info")) {
+            ImGui.button("I'm a Button!");
+            ImGui.text("Screen:" + (currentScreen == null ? "null" : currentScreen.getClass().getName()));
+        }
+        ImGui.end();
+    }
+
+    @Override
+    @ApiStatus.Internal
+    public void dispose() {
+        imGuiGl3.dispose();
+        imGuiGlfw.dispose();
+        ImGui.destroyContext();
+
+        instance.onClose();
+        if (crashed) {
+            System.exit(1);
+        }
+        System.exit(0);
     }
 
     public static Map<Thread, ThreadSection> getLastProfile() {
@@ -1557,7 +1679,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     public void keyPress(int keyCode) {
         if (keyCode == KEY_F12) {
-            debugGuiOpen = !debugGuiOpen;
+            debugGuiOpen.set(!debugGuiOpen.get());
             logger.debug("Toggling debug gui");
         } else if (keyCode == KEY_F10 && (debugMode || devMode)) {
             var env = environment;
@@ -1731,15 +1853,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
         this.stopping = true;
         this.running = false;
         this.window.dispose();
-    }
-
-    @ApiStatus.Internal
-    public void dispose() {
-        instance.onClose();
-        if (crashed) {
-            System.exit(1);
-        }
-        System.exit(0);
     }
 
     /**

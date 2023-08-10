@@ -36,6 +36,7 @@ import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -809,13 +810,25 @@ public class Renderer {
     }
 
     public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
-        ScissorStack.pushScissors(new com.badlogic.gdx.math.Rectangle(x, y, width, height));
+        var rectangle = new com.badlogic.gdx.math.Rectangle(x, y, width, height);
+        boolean doPop = false;
+        if (!Objects.equals(ScissorStack.peekScissors(), rectangle)) {
+            doPop = true;
+            new RuntimeException("PUSH " + ScissorStack.peekScissors()).printStackTrace();
+            ScissorStack.pushScissors(rectangle);
+            new RuntimeException("PUSH " + ScissorStack.peekScissors()).printStackTrace();
+        }
         matrixStack.push();
         matrixStack.translate(x, y);
 
         consumer.accept(this);
 
         matrixStack.pop();
+        if (doPop) {
+            new RuntimeException("POP " + ScissorStack.peekScissors()).printStackTrace();
+            ScissorStack.popScissors();
+            new RuntimeException("POP " + ScissorStack.peekScissors()).printStackTrace();
+        }
     }
 
     public boolean hitClip(int x, int y, int width, int height) {

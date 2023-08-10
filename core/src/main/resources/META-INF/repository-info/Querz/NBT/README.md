@@ -85,7 +85,7 @@ Dependency:
 <dependency>
 	<groupId>com.github.Querz</groupId>
 	<artifactId>NBT</artifactId>
-	<version>6.1</version>
+	$imgui_version6.1</version>
 </dependency>
 ```
 

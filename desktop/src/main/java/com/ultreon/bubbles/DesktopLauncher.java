@@ -2,6 +2,7 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.libs.crash.v0.CrashLog;
 import net.fabricmc.loader.impl.util.Arguments;
@@ -12,8 +13,11 @@ import net.fabricmc.loader.impl.util.Arguments;
 public class DesktopLauncher {
     public static void main(String[] argv) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setResizable(false);
         config.useVsync(true);
         config.setForegroundFPS(60);
+        config.setInitialVisible(true);
+        config.setWindowedMode(1280, 720);
         config.setTitle("Bubble Blaster 2");
         Arguments arguments = new Arguments();
         arguments.parse(argv);

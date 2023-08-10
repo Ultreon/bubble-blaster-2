@@ -35,6 +35,7 @@ public abstract class Container extends GuiComponent {
         }
     }
 
+    @Nullable
     public GuiComponent getExactWidgetAt(int x, int y) {
         GuiComponent widgetAt = getWidgetAt(x, y);
         if (widgetAt instanceof Container container) {

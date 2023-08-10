@@ -149,6 +149,9 @@ public class GameInput extends InputAdapter {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        if (this.pos == null) {
+            return false;
+        }
         InputEvents.MOUSE_SCROLL.factory().onMouseScroll(pos.x, pos.y, amountY);
 
         ScreenManager screenManager = game.getScreenManager();

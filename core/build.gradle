@@ -181,47 +181,6 @@ dependencies {
     // FuseSource
     implementation "org.fusesource.jansi:jansi:2.4.0"
 
-    // OpenJFX
-//    implementation "org.openjfx:javafx-swing:$openjfx_version"
-//    implementation "org.openjfx:javafx-web:$openjfx_version"
-//    implementation "org.openjfx:javafx-fxml:$openjfx_version"
-//    implementation "org.openjfx:javafx-media:$openjfx_version"
-//    implementation "org.openjfx:javafx-controls:$openjfx_version"
-//    implementation "org.openjfx:javafx-graphics:$openjfx_version"
-//    implementation "org.openjfx:javafx-base:$openjfx_version"
-//    implementation "org.openjfx:javafx:$openjfx_version"
-
-    // OpenJFX Natives
-//    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-//        implementation "org.openjfx:javafx-swing:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-media:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-fxml:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-web:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-controls:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-graphics:$openjfx_version:win"
-//        implementation "org.openjfx:javafx-base:$openjfx_version:win"
-//    }
-//
-//    if (Os.isFamily(Os.FAMILY_MAC)) {
-//        implementation "org.openjfx:javafx-swing:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-media:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-web:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-fxml:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-controls:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-graphics:$openjfx_version:mac"
-//        implementation "org.openjfx:javafx-base:$openjfx_version:mac"
-//    }
-//
-//    if (Os.isFamily(Os.FAMILY_UNIX)) {
-//        implementation "org.openjfx:javafx-swing:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-media:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-web:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-fxml:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-controls:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-graphics:$openjfx_version:linux"
-//        implementation "org.openjfx:javafx-base:$openjfx_version:linux"
-//    }
-
     // OSHi (For system info in crash reports)
     implementation "com.github.oshi:oshi-core:$oshi_version"
 
@@ -243,6 +202,18 @@ dependencies {
     implementation "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
     implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
 
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+
+    // ImGui
+    implementation "io.github.spair:imgui-java-binding:$imgui_version"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
 }
 
 processResources {
@@ -283,7 +254,6 @@ jar {
 }
 
 processResources {
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
 test {
