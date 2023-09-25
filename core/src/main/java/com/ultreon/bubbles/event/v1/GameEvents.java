@@ -1,13 +1,11 @@
 package com.ultreon.bubbles.event.v1;
 
 import com.ultreon.bubbles.event.v1.utils.FontLoader;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.GameWindow;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.libs.crash.v0.ApplicationCrash;
 import com.ultreon.libs.events.v1.Event;
-import com.ultreon.libs.events.v1.EventResult;
 
 import java.util.Locale;
 

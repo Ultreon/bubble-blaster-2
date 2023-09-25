@@ -3,7 +3,6 @@ package com.ultreon.commons.util;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
-import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.List;
 /**
  * Globally available utility classes, mostly for string manipulation.
  *
- * @author Jim Menard: <a href="mailto:jimm@io.com">jimm@io.com</a>, Qboi <a>no email</a>
+ * @author Jim Menard: <a href="mailto:jimm@io.com">jimm@io.com</a>, XyperCode <a>no email</a>
  */
 public class StringUtils {
     public static int count(String s, char c) {
@@ -173,7 +172,7 @@ public class StringUtils {
         return strings;
     }
 
-    public static AttributedString createFallbackString(String text, Font mainFont, BitmapFont fallbackFont) {
+    public static AttributedString createFallbackString(String text, BitmapFont mainFont, BitmapFont fallbackFont) {
         AttributedString result = new AttributedString(text);
 
         int textLength = text.length();
@@ -185,7 +184,7 @@ public class StringUtils {
         boolean fallback = false;
         int fallbackBegin = 0;
         for (int i = 0; i < text.length(); i++) {
-            boolean curFallback = !mainFont.canDisplay(text.charAt(i));
+            boolean curFallback = !mainFont.getData().hasGlyph(text.charAt(i));
             if (curFallback != fallback) {
                 System.out.println("curFallback = " + curFallback);
                 System.out.println("fallbackFont = " + fallbackFont);

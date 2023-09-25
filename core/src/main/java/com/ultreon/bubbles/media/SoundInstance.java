@@ -1,137 +1,86 @@
 package com.ultreon.bubbles.media;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.bubbles.common.exceptions.SoundLoadException;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.commons.function.ThrowingSupplier;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SoundInstance {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("GameAudio");
-    private final ThrowingSupplier<InputStream, IOException> factory;
+    private static final Map<Identifier, Sound> SOUNDS_BY_ID = new HashMap<>();
+    private final Sound sound;
     private final String name;
     private boolean playing = false;
-    private Player player;
     private static final Set<SoundInstance> ALL = new CopyOnWriteArraySet<>();
-
-    public SoundInstance(File file) {
-        this(file, "");
-    }
-
-    public SoundInstance(File file, String name) {
-        this(file.toURI(), name);
-    }
-
-    public SoundInstance(URI uri) {
-        this(uri, "");
-    }
-
-    public SoundInstance(URI uri, String name) {
-        this(url(uri), name);
-    }
-
-    private static URL url(URI uri) {
-        try {
-            return uri.toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public SoundInstance(URL url) {
-        this(url, "");
-    }
-
-    public SoundInstance(URL url, String name) {
-        this(url::openStream, name);
-    }
+    private long id;
 
     public SoundInstance(Identifier id) {
-        this(() -> BubbleBlaster.getInstance().getResourceManager().openResourceStream(id.mapPath(s -> "audio/" + s + ".mp3")));
+        this(cache(id), id.toString());
     }
 
+    @Deprecated(forRemoval = true)
     public SoundInstance(Identifier id, String name) {
-        this(() -> BubbleBlaster.getInstance().getResourceManager().openResourceStream(id.mapPath(s -> "audio/" + s + ".mp3")), name);
+        this(cache(id), name);
     }
 
-    protected SoundInstance(ThrowingSupplier<InputStream, IOException> factory) {
-        this(factory, "");
+    protected SoundInstance(Sound sound) {
+        this(sound, "");
     }
 
-    protected SoundInstance(ThrowingSupplier<InputStream, IOException> factory, String name) {
-        this.factory = factory;
+    protected SoundInstance(Sound sound, String name) {
+        this.sound = sound;
         this.name = name;
+    }
+
+    private static Sound cache(Identifier id) {
+        var identifier = id.mapPath(s -> "audio/" + s + ".mp3");
+
+        final Sound sound = SOUNDS_BY_ID.get(identifier);
+        if (sound != null) return sound;
+
+        Sound newSound = Gdx.audio.newSound(new ResourceFileHandle(identifier));
+        SOUNDS_BY_ID.put(identifier, newSound);
+        return newSound;
     }
 
     public static void stopAll() {
         ALL.forEach(SoundInstance::stop);
     }
 
-    private void playClip() throws IOException,
-            UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
-        Thread audioPlayer = new Thread(THREAD_GROUP, () -> {
-            playing = true;
-            try (BufferedInputStream stream = new BufferedInputStream(factory.get())) {
-                this.player = new Player(stream);
-                ALL.add(this);
-                try {
-                    playThread(player);
-                } catch (Exception e) {
-                    stop();
-                    throw new RuntimeException(e);
-                }
-                player = null;
-            } catch (Exception e) {
-                stop();
-                throw new SoundLoadException(e);
-            }
-            ALL.remove(this);
-            playing = false;
-        }, "AudioPlayer");
-        audioPlayer.setDaemon(false);
-        audioPlayer.start();
-    }
+    private void playClip() {
 
-    private void playThread(Player player) throws JavaLayerException {
-        player.play();
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public void play() {
-        try {
-            playClip();
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException | InterruptedException e) {
-            throw new SoundLoadException(e);
-        }
+        Thread audioPlayer = new Thread(THREAD_GROUP, () -> {
+            try {
+                playing = true;
+                ALL.add(this);
+                this.id = sound.play();
+                ALL.remove(this);
+                playing = false;
+            } catch (Exception e) {
+                BubbleBlaster.getLogger().error("Sound #" + this.id + " (" + name + ") failed to play:", e);
+            }
+        }, "AudioPlayer");
+        audioPlayer.setDaemon(true);
+        audioPlayer.start();
         playing = true;
     }
 
     public synchronized void stop() {
         playing = false;
-        if (player != null) {
-            player.close();
-            player = null;
-        }
+        sound.stop(id);
     }
 
-    public void setVolume(double v) {
-
+    public void setVolume(float v) {
+        sound.setVolume(this.id, v);
     }
 
     public double getVolume() {

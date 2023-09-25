@@ -3,7 +3,7 @@ package com.ultreon.commons.lang;
 import java.util.function.Consumer;
 
 /**
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 @Deprecated

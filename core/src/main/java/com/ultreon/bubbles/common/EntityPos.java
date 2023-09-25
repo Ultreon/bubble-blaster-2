@@ -3,7 +3,7 @@ package com.ultreon.bubbles.common;
 import java.io.Serializable;
 
 /**
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 public class EntityPos implements Serializable {

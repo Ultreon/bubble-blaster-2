@@ -5,12 +5,12 @@ import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 
 /**
  * Bubble properties, used for {@link Gamemode} objects / classes, and used by {@link BubbleRandomizer} for returning the randomized bubble properties.
  *
- * @author Qboi
+ * @author XyperCode
  * @see BubbleRandomizer
  */
 @SuppressWarnings("unused")

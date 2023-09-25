@@ -1,27 +1,30 @@
 package com.ultreon.bubbles.debug;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.bubbles.core.input.MouseInput;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.bubbles.render.Color;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.bubbles.render.font.SystemFont;
 import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.libs.commons.v0.size.FloatSize;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.text.v0.MutableText;
 import com.ultreon.libs.text.v0.TextObject;
 
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.*;
@@ -85,9 +88,9 @@ public class DebugRenderer {
         left(renderer, "TPS", game.getCurrentTps());
         left(renderer, "RPT", game.getGameFrameTime());
         left(renderer, "Game Bounds", gameBounds);
-        left(renderer, "Scaled Size", new Dimension(game.getScaledWidth(), game.getScaledHeight()));
-        left(renderer, "Window Size", new Dimension(game.getGameWindow().getWidth(), game.getGameWindow().getHeight()));
-        left(renderer, "Canvas Size", new Dimension(game.getWidth(), game.getHeight()));
+        left(renderer, "Scaled Size", new FloatSize(game.getScaledWidth(), game.getScaledHeight()));
+        left(renderer, "Window Size", new FloatSize(game.getGameWindow().getWidth(), game.getGameWindow().getHeight()));
+        left(renderer, "Canvas Size", new FloatSize(game.getWidth(), game.getHeight()));
         Environment environment = game.environment;
         if (environment != null) {
             GameplayEvent curGe = environment.getCurrentGameEvent();
@@ -101,7 +104,8 @@ public class DebugRenderer {
             left(renderer, "Seed", environment.getSeed());
 
             if (GameInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
-                Entity entityAt = environment.getEntityAt(MouseInput.getPos());
+                GridPoint2 pos = GameInput.getPos();
+                Entity entityAt = environment.getEntityAt(new Vec2i(pos.x, pos.y));
                 if (entityAt != null) {
                     left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
                     if (entityAt instanceof Bubble bubble) {
@@ -132,19 +136,19 @@ public class DebugRenderer {
             threads.sort(Comparator.comparing(Thread::getName));
 
             MutableText selInputText = TextObject.literal(selectInput);
-            selInputText.setColor(new Color(0xff4040));
+            selInputText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText typingText = TextObject.literal("Typing ");
-            typingText.setColor(new Color(0xffa040));
+            typingText.setColor(Color.rgb(0xffa040).toAwt());
             right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
 
             for (int i = 0, threadsSize = threads.size(); i < threadsSize; i++) {
                 Thread e = threads.get(i);
                 MutableText literal = TextObject.literal(" [" + e.getName() + "]");
-                literal.setColor(new Color(0xff4040));
+                literal.setColor(Color.rgb(0xff4040).toAwt());
                 MutableText thread = TextObject.literal("Thread");
                 MutableText index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(new Color(0x30ff30));
+                index.setColor(Color.rgb(0x30ff30).toAwt());
                 right(renderer, index.append(thread), literal);
             }
         } else {
@@ -164,23 +168,23 @@ public class DebugRenderer {
             }
 
             MutableText curMillisText = TextObject.literal(" (" + millis + "ms)");
-            curMillisText.setColor(new Color(0xff4040));
+            curMillisText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText curSectionText = TextObject.literal("Current Section: ");
-            curSectionText.setColor(new Color(0xffa040));
+            curSectionText.setColor(Color.rgb(0xffa040).toAwt());
             right(renderer, curSectionText, curMillisText);
             MutableText selInputText = TextObject.literal(selectInput);
-            selInputText.setColor(new Color(0xff4040));
+            selInputText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText typingText = TextObject.literal("Typing ");
-            typingText.setColor(new Color(0xffa040));
+            typingText.setColor(Color.rgb(0xffa040).toAwt());
             right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
             for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
                 Map.Entry<String, Section> e = entries.get(i);
                 MutableText millisText = TextObject.literal(" (" + e.getValue().getMillis() + "ms)");
-                millisText.setColor(new Color(0xff4040));
+                millisText.setColor(Color.rgb(0xff4040).toAwt());
                 MutableText name = TextObject.literal(e.getKey());
                 MutableText index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(new Color(0x30ff30));
+                index.setColor(Color.rgb(0x30ff30).toAwt());
                 right(renderer, index.append(name), millisText);
             }
         }
@@ -266,7 +270,7 @@ public class DebugRenderer {
         int width = (int) bounds.width;
         int y = yLeft += height + 5;
         if (game.isInGame()) {
-            y += game.getGameBounds().y;
+            y += (int) game.getGameBounds().y;
         }
 
         renderer.setColor(0, 0, 0, 0x99);
@@ -295,7 +299,7 @@ public class DebugRenderer {
         int width = (int) bounds.width;
         int y = yRight += height + 5;
         if (game.isInGame()) {
-            y += game.getGameBounds().y;
+            y += (int) game.getGameBounds().y;
         }
 
         renderer.setColor(0, 0, 0, 0x99);

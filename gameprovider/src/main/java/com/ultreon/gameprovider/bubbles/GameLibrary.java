@@ -21,7 +21,7 @@ import net.fabricmc.loader.impl.game.LibClassifier.LibraryType;
 
 enum GameLibrary implements LibraryType {
 	BB_DESKTOP("com/ultreon/bubbles/DesktopLauncher.class"),
-	BB_CORE("com/ultreon/bubbles/game/BubbleBlaster.class"),
+	BB_CORE("com/ultreon/bubbles/BubbleBlaster.class"),
 	BB_DEV("com/ultreon/dev/GameDevMain.class"),
 	BB_PRELOADER("com/ultreon/gameprovider/bubbles/PreGameLoader.class"),
 	BB_PREMAIN("com/ultreon/premain/PreMain.class"),

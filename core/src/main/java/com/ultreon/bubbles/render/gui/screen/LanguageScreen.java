@@ -1,13 +1,11 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.FontStyle;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.text.v0.TextObject;
 import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.libs.translations.v0.LanguageManager;
@@ -59,7 +57,6 @@ public final class LanguageScreen extends Screen {
     private void renderEntry(Renderer renderer, int width, int height, Language entry, boolean selected, boolean hovered) {
         Locale locale = entry.getLocale();
         String language = locale.getDisplayLanguage(Locale.ENGLISH);
-        String displayLanguage = locale.getDisplayLanguage(locale);
 
         fill(renderer, 0, 0, width, height, hovered ? 0x40ffffff : 0x20ffffff);
 
@@ -68,9 +65,8 @@ public final class LanguageScreen extends Screen {
         }
 
         renderer.setColor(0xc0ffffff);
-        font.draw(renderer, language, 20, 20, 20, Thickness.BOLD);
+        renderer.drawText(Fonts.SANS_BOLD_20.get(), language, 20, 20);
         renderer.setColor(0x60ffffff);
-        renderer.fallbackFont(font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage()));
 //        renderer.text(StringUtils.createFallbackString(displayLanguage, font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN), font.getGdxFont(14, Thickness.BOLD, FontStyle.PLAIN, locale.getLanguage())), 20 + font.width(14, language) + 40, 20 + font.height(14));
     }
 

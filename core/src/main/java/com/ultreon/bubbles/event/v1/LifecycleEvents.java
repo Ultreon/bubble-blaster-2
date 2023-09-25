@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.event.v1;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.libs.events.v1.Event;
 
 public class LifecycleEvents {

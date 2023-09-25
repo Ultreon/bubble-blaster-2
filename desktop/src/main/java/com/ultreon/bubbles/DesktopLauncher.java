@@ -1,9 +1,8 @@
 package com.ultreon.bubbles;
 
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.libs.crash.v0.CrashLog;
 import net.fabricmc.loader.impl.util.Arguments;
 
@@ -16,9 +15,10 @@ public class DesktopLauncher {
         config.setResizable(false);
         config.useVsync(true);
         config.setForegroundFPS(60);
-        config.setInitialVisible(true);
+        config.setInitialVisible(false);
         config.setWindowedMode(1280, 720);
         config.setTitle("Bubble Blaster 2");
+        config.setWindowIcon("assets/bubbles/icon.png");
         Arguments arguments = new Arguments();
         arguments.parse(argv);
         try {

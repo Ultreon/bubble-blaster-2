@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Levelup Bubble
  *
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 public class LevelUpBubble extends BubbleType {

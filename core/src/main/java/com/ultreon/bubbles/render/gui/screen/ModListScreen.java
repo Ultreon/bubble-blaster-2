@@ -1,19 +1,16 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.ultreon.bubbles.mod.ModDataManager;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
+import com.ultreon.libs.commons.v0.Anchor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,16 +54,19 @@ public class ModListScreen extends Screen {
                 var selected = modList.getSelected();
                 if (selected == null) return;
                 var metadata = selected.value.getMetadata();
+
+                layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
+
                 renderer.setColor(0xffffffff);
-                font.draw(renderer, metadata.getName(), 40, 20, 20);
+                renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), 20, 20);
                 renderer.setColor(0x80ffffff);
-                monospaced.draw(renderer, metadata.getVersion().getFriendlyString(), 24, 20 + font.width(40, metadata.getName() + "  "), 20 + (float)font.height(48) / 2, Thickness.BOLD, Anchor.W);
+                renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), 20 + layout.width, 20 + Fonts.SANS_REGULAR_48.get().getLineHeight() / 2, Anchor.W);
                 renderer.setColor(0x80ffffff);
-                monospaced.draw(renderer, metadata.getId(), 12, 20, 70, Thickness.BOLD);
+                renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), 20, 70);
                 String description = metadata.getDescription();
                 AtomicInteger i = new AtomicInteger();
                 renderer.setColor(0x60ffffff);
-                description.lines().forEachOrdered(line -> font.draw(renderer, line, 12, 20, 90 + i.getAndIncrement() * (font.height(12) + 1)));
+                description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, 20, 90 + i.getAndIncrement() * (font.getLineHeight() + 1)));
             }
         });
     }
@@ -76,7 +76,7 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation) {
+    public boolean mouseWheel(int x, int y, float rotation) {
         return super.mouseWheel(x, y, rotation);
     }
 
@@ -97,10 +97,8 @@ public class ModListScreen extends Screen {
 
         int iconSize = ENTRY_HEIGHT - 40;
         metadata.getIconPath(256).flatMap(entry::findPath).ifPresent(path1 -> {
-            BufferedImage bufferedImage = ModDataManager.getIcon(entry);
-            renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-            renderer.image(bufferedImage, 20, 20, iconSize, iconSize);
-            renderer.hint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+//            BufferedImage bufferedImage = ModDataManager.getIcon(entry);
+//            renderer.image(bufferedImage, 20, 20, iconSize, iconSize);
         });
 
         if (selected) {
@@ -110,10 +108,10 @@ public class ModListScreen extends Screen {
         int textX = 20 + iconSize + 20;
 
         renderer.setColor(0x7fffffff);
-        monospaced.draw(renderer, metadata.getId(), 12, textX, 20, Thickness.BOLD);
+        renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, 20);
         renderer.setColor(0xffffffff);
-        font.draw(renderer, metadata.getName(), 32, textX, 32);
+        renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, 32);
         renderer.setColor(0x80ffffff);
-        font.draw(renderer, metadata.getDescription(), 14, textX, ENTRY_HEIGHT - 18, Anchor.SW);
+        renderer.drawText(Fonts.SANS_REGULAR_14.get(), metadata.getDescription(), textX, ENTRY_HEIGHT - 18, Anchor.SW);
     }
 }

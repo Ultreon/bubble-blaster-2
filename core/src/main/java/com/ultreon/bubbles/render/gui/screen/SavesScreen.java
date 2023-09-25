@@ -1,10 +1,10 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.save.GameSave;
@@ -149,9 +149,9 @@ public class SavesScreen extends Screen {
             }
 
             renderer.setColor(0xc0ffffff);
-            font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
+            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20);
             renderer.setColor(0x60ffffff);
-            font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
+            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5);
             return;
         }
 
@@ -166,9 +166,9 @@ public class SavesScreen extends Screen {
         }
 
         renderer.setColor(0xc0ffffff);
-        font.draw(renderer, name, 20, 20, 20, Thickness.BOLD);
+        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20);
         renderer.setColor(0x60ffffff);
-        font.draw(renderer, description, 14, 20, 20 + font.height(20) + 5, Thickness.BOLD);
+        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5);
     }
 
     private int calculateWidth() {

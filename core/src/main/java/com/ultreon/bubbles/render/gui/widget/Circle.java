@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.gui.Shape;
 
 import static java.lang.Math.abs;

@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.gamemode;
 
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Ellipse;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.StateListener;
@@ -12,7 +14,7 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registries;
@@ -21,9 +23,9 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.commons.lang.Messenger;
+import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.crash.v0.CrashLog;
@@ -32,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import java.util.Objects;
  * GameType base class.
  * Base class for all game-types, such as {@link ClassicMode}
  *
- * @author Qboi
+ * @author XyperCode
  * @see ClassicMode
  */
 @ParametersAreNonnullByDefault
@@ -309,27 +310,27 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         for (Color color : colors) {
             if (i == 0) {
                 if (colors.length >= 2) {
-                    renderer.stroke(new BasicStroke(2.2f));
+                    renderer.setStrokeWidth(2.2f);
                 } else {
-                    renderer.stroke(new BasicStroke(2.0f));
+                    renderer.setStrokeWidth(2.0f);
                 }
             } else if (i == colors.length - 1) {
-                renderer.stroke(new BasicStroke(2.0f));
+                renderer.setStrokeWidth(2.0f);
             } else {
-                renderer.stroke(new BasicStroke(2.2f));
+                renderer.setStrokeWidth(2.2f);
             }
 
             renderer.setColor(color);
 
-            Ellipse2D ellipse = this.getEllipse(x - (float) radius / 2, y - (float) radius / 2, radius, i);
+            Circle ellipse = this.getCircle(x - (float) radius / 2, y - (float) radius / 2, radius, i);
             renderer.outline(ellipse);
 
             i += 2f;
         }
     }
 
-    private Ellipse2D getEllipse(double x, double y, double r, double i) {
-        return new Ellipse2D.Double(x + i, y + i, r - i * 2f, r - i * 2f);
+    private Circle getCircle(double x, double y, double r, double i) {
+        return new Circle((float) (x + i), (float) (y + i), (float) (r - i * 2f));
     }
 
     public void tick(Environment environment) {

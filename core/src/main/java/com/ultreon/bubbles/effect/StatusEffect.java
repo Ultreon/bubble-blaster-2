@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.event.v1.FilterBuilder;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.TextureManager;
 import com.ultreon.libs.commons.v0.Identifier;

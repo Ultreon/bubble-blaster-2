@@ -4,82 +4,65 @@
 package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.vector.Vec2d;
-import com.ultreon.bubbles.vector.Vec4i;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.*;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec4i;
 import com.ultreon.libs.text.v0.TextObject;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.lwjgl.opengl.GL40;
+import space.earlygrey.shapedrawer.JoinType;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
-import java.awt.image.RenderedImage;
-import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
-import java.text.AttributedString;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 /**
  * Renderer class.
  *
- * @author Qboi
- * @see Graphics
- * @see Graphics2D
- * @see Font
- * @see GraphicsConfiguration
+ * @author XyperCode
  * @see FontRenderContext
- * @see FontMetrics
  * @see Color
- * @see Paint
- * @see Composite
- * @see Stroke
  * @see String
  * @see ImageObserver
- * @see RenderingHints
- * @see Shape
  * @see AffineTransform
  * @see AttributedCharacterIterator
  * @see GlyphVector
  * @see Polygon
  * @see Rectangle
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class Renderer {
-    ////////////////////
-    //     Fields     //
-    ////////////////////
-    private State state;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
 //    private Texture curTexture;
-    private Vec2d globalTranslation = new Vec2d();
+    private final Stack<Vector3> globalTranslation = new Stack<>();
     private final GL20 gl20;
     private final GL30 gl30;
     private final Batch batch;
     private final ShapeDrawer shapes;
     private float strokeWidth;
+    private final MatrixStack matrixStack;
     private Texture curTexture;
     private BitmapFont font;
-    private MatrixStack matrixStack;
+    private final ThreadLocal<GlyphLayout> glyphLayout = new ThreadLocal<>();
+    private Color clearColor;
+    private Color color;
+    private boolean rendering;
 
     //////////////////////////
     //     Constructors     //
@@ -92,6 +75,7 @@ public class Renderer {
     //     Constructors     //
     //////////////////////////
     public Renderer(ShapeDrawer shapes, MatrixStack matrixStack) {
+        this.globalTranslation.push(new Vector3());
         this.font = game.getBitmapFont();
         this.gl20 = Gdx.gl20;
         this.gl30 = Gdx.gl30;
@@ -100,75 +84,967 @@ public class Renderer {
         this.matrixStack = matrixStack;
 
         // Projection matrix.
-        Consumer<Matrix4> projectionMatrixSetter = matrix -> {
-            shapes.getBatch().setTransformMatrix(matrix);
-        };
-        this.matrixStack.onPush = projectionMatrixSetter;
-        this.matrixStack.onPop = projectionMatrixSetter;
+        this.matrixStack.onEdit = matrix -> shapes.getBatch().setTransformMatrix(matrix);
     }
 
+    public void begin(Camera camera) {
+        if (this.rendering)
+            throw new IllegalStateException("Renderer is already rendering");
+
+        this.batch.setProjectionMatrix(camera.combined);
+        this.batch.begin();
+
+        this.clear();
+        this.enableBlend();
+
+        this.rendering = true;
+    }
+
+    public void end() {
+        if (!this.rendering)
+            throw new IllegalStateException("Renderer isn't rendering yet");
+
+        if (!ScissorStack.isEmpty())
+            clearScissors();
+
+        if (!matrixStack.isClear())
+            throw new IllegalStateException("Matrix stack isn't cleared before renderer dispose");
+
+        this.disableBlend();
+
+        this.batch.end();
+
+        this.rendering = false;
+    }
+
+    public void enableBlend() {
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
+        Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    public void disableBlend() {
+        Gdx.gl20.glDisable(GL20.GL_BLEND);
+    }
+
+    public void outline(Rectangle rect) {
+        if (!rendering) return;
+
+        rectLine(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    public void outline(Ellipse ellipse) {
+        if (!rendering) return;
+
+        ovalLine(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
+    }
+
+    public void outline(Circle ellipse) {
+        if (!rendering) return;
+
+        circleLine(ellipse.x, ellipse.y, ellipse.radius);
+    }
+
+    public void circle(float x, float y, float radius) {
+        if (!rendering) return;
+
+        y = game.getHeight() + radius - y;
+        shapes.filledCircle(x, y, radius);
+    }
+
+    public void circleLine(float x, float y, float radius) {
+        if (!rendering) return;
+
+        y = game.getHeight() + radius - y;
+        shapes.circle(x, y, radius);
+    }
+
+    public void fill(Shape2D s) {
+        if (!rendering) return;
+
+        if (s instanceof Circle circle) fill(circle);
+        else if (s instanceof Ellipse ellipse) fill(ellipse);
+        else if (s instanceof Rectangle rect) fill(rect);
+        else if (s instanceof Polygon rect) fill(rect);
+        else if (s instanceof Polyline rect) fill(rect);
+    }
+
+    public void fill(Circle ellipse) {
+        if (!rendering) return;
+
+        circle(ellipse.x, ellipse.y, ellipse.radius);
+    }
+
+    public void fill(Ellipse ellipse) {
+        if (!rendering) return;
+
+        ellipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
+    }
+
+    public void fill(Rectangle r) {
+        if (!rendering) return;
+
+        rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+
+    public void fill(Polygon polygon) {
+        if (!rendering) return;
+
+        polygon(polygon);
+    }
+
+    public void fill(Polyline polyline) {
+        if (!rendering) return;
+
+        polyline(polyline);
+    }
+
+    public void fill(Vec4i r) {
+        if (!rendering) return;
+
+        rect(r.x, r.y, r.z, r.w);
+    }
+
+    public void fillGradient(float x, float y, float width, float height, Color color1, Color color2) {
+        if (!rendering) return;
+
+        shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color1.toGdx(), color2.toGdx());
+    }
+
+    public void line(int x1, int y1, int x2, int y2) {
+        if (!rendering) return;
+
+        y1 = game.getHeight() - y1;
+        y2 = game.getHeight() - y2;
+        shapes.line(x1, y1, x2, y2);
+    }
+
+    public void line(float x1, float y1, float x2, float y2) {
+        if (!rendering) return;
+
+        y1 = game.getHeight() - y1;
+        y2 = game.getHeight() - y2;
+        shapes.line(x1, y1, x2, y2);
+    }
+
+    public void rectLine(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.rectangle(x, y, width, height, strokeWidth);
+    }
+
+    public void rectLine(float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.rectangle(x, y, width, height, strokeWidth);
+    }
+
+    public void rect(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledRectangle(x, y, width, height);
+    }
+
+    public void rect(float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledRectangle(x, y, width, height);
+    }
+
+    public void roundRectLine(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.rectangle(x, y, width, height, strokeWidth, JoinType.SMOOTH);
+    }
+
+    public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledRectangle(x, y, width, height, strokeWidth);
+    }
+
+    public void rect3DLine(int x, int y, int width, int height, boolean raised) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.rectangle(x, y, width, height, strokeWidth);
+    }
+
+    public void rect3D(int x, int y, int width, int height, boolean raised) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledRectangle(x, y, width, height);
+    }
+
+    public void ovalLine(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.ellipse(x, y, width, height);
+    }
+
+    public void ellipse(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledEllipse(x, y, width, height);
+    }
+
+    public void ovalLine(float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.ellipse(x, y, width, height);
+    }
+
+    public void ellipse(float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        height = -height;
+        shapes.filledEllipse(x, y, width, height);
+    }
+
+    public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        shapes.arc(x, y, width, startAngle, arcAngle);
+    }
+
+    public void arc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        shapes.arc(x, y, width, startAngle, arcAngle);
+    }
+
+    public void polygonLine(Polygon p) {
+        if (!rendering) return;
+
+        this.shapes.polygon(p);
+    }
+
+    public void polygon(Polygon p) {
+        if (!rendering) return;
+
+        this.shapes.filledPolygon(p);
+    }
+
+    public void polyline(Polyline p) {
+        if (!rendering) return;
+
+        this.shapes.polygon(p.getVertices());
+    }
+
+    public void blit(Texture tex, float x, float y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y - tex.getHeight();
+        batch.draw(tex, x, y);
+    }
+
+    public void blit(Texture tex, float x, float y, Color backgroundColor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y - tex.getHeight();
+        setColor(backgroundColor);
+        rect(x, y, tex.getWidth(), tex.getHeight());
+        batch.draw(tex, x, y);
+    }
+
+    public void blit(Texture tex, float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y - height;
+        batch.draw(tex, x, y, width, height);
+    }
+
+    public void blit(Texture tex, float x, float y, float width, float height, Color backgroundColor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y - height;
+        setColor(backgroundColor);
+        rect(x, y, width, height);
+        batch.draw(tex, x, y, width, height);
+    }
+
+    public void drawText(BitmapFont font, String str, int x, int y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(String str, float x, float y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(TextObject str, int x, int y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(TextObject str, float x, float y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(BitmapFont font, String str, float x, float y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(BitmapFont font, TextObject str, int x, int y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(BitmapFont font, TextObject str, float x, float y) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(String str, int x, int y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, str);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(String str, float x, float y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, str);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(TextObject str, int x, int y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        String text = str.getText();
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, text);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(TextObject str, float x, float y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        String text = str.getText();
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, text);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(BitmapFont font, String str, int x, int y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, str);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(BitmapFont font, String str, float x, float y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, str);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    public void drawText(BitmapFont font, TextObject str, int x, int y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        String text = str.getText();
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, text);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(BitmapFont font, TextObject str, float x, float y, Anchor anchor) {
+        if (!rendering) return;
+
+        y = game.getHeight() - y;
+
+        String text = str.getText();
+
+        GlyphLayout layout = glyphLayout.get();
+        if (layout == null) {
+            layout = new GlyphLayout();
+            glyphLayout.set(layout);
+        }
+
+        layout.setText(font, text);
+
+        float anchoredX = anchor.getX() * (layout.width / 2);
+        float anchoredY = anchor.getY() * (layout.height / 2);
+        font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawMultiLineText(String str, int x, int y) {
+        if (!rendering) return;
+
+        y -= (int) font.getLineHeight();
+
+        for (String line : str.split("\n"))
+            drawText(line, x, y += (int) font.getLineHeight());
+    }
+
+    public void drawMultiLineText(BitmapFont font, String str, int x, int y) {
+        if (!rendering) return;
+
+        y -= (int) font.getLineHeight();
+
+        for (String line : str.split("\n"))
+            drawText(font, line, x, y += (int) font.getLineHeight());
+    }
+
+    public void drawWrappedText(String str, int x, int y, int maxWidth) {
+        if (!rendering) return;
+
+        List<String> lines = StringUtils.wrap(str, font, new GlyphLayout(), maxWidth);
+        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        drawMultiLineText(joined, x, y);
+    }
+
+    public void drawWrappedText(BitmapFont font, String str, int x, int y, int maxWidth) {
+        if (!rendering) return;
+
+        List<String> lines = StringUtils.wrap(str, font, new GlyphLayout(), maxWidth);
+        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        drawMultiLineText(font, joined, x, y);
+    }
+
+    public void drawTabbedText(String str, int x, int y) {
+        if (!rendering) return;
+
+        for (String line : str.split("\t"))
+            drawText(line, x += (int) font.getLineHeight(), y);
+    }
+
+    public void drawTabbedText(BitmapFont font, String str, int x, int y) {
+        if (!rendering) return;
+
+        for (String line : str.split("\t"))
+            drawText(font, line, x += (int) font.getLineHeight(), y);
+    }
+
+    public void drawCenteredText(String text, int x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), this.font);
+    }
+
+    public void drawCenteredText(BitmapFont font, String text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), font);
+    }
+
+    public void drawLeftAnchoredText(String text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawLeftAnchoredString(this, text, new Vec2f(x, y), 0, this.font);
+    }
+
+    public void drawLeftAnchoredText(BitmapFont font, String text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawLeftAnchoredString(this, text, new Vec2f(x, y), 0, font);
+    }
+
+    public void drawRightAnchoredText(String text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawRightAnchoredString(this, text, new Vec2f(x, y), 0, this.font);
+    }
+
+    public void drawRightAnchoredText(BitmapFont font, String text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawRightAnchoredString(this, text, new Vec2f(x, y), 0, font);
+    }
+
+    public void clear() {
+        if (!rendering) return;
+
+        gl20.glClearColor(clearColor.getRed() / 255f, clearColor.getGreen() / 255f, clearColor.getBlue() / 255f, clearColor.getAlpha() / 255f);
+        gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    }
+
+    ////////////////////////////
+    //     Transformation     //
+    ////////////////////////////
+    public void translate(float x, float y) {
+        if (!rendering) return;
+
+        this.globalTranslation.peek().add(x, y, 0);
+        this.matrixStack.translate(x, y);
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public void translate(int x, int y) {
+        if (!rendering) return;
+
+        this.globalTranslation.peek().add(x, y, 0);
+        this.matrixStack.translate((float) x, (float) y);
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public void translate(float x, float y, float z) {
+        if (!rendering) return;
+
+        this.globalTranslation.peek().add(x, y, z);
+        this.matrixStack.translate(x, y, z);
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public void translate(int x, int y, int z) {
+        if (!rendering) return;
+
+        this.globalTranslation.peek().add(x, y, z);
+        this.matrixStack.translate((float) x, (float) y, (float) z);
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public void rotate(double theta) {
+        if (!rendering) return;
+
+        matrixStack.rotate(new Quaternion(1, 0, 0, (float) theta));
+    }
+
+    public void rotate(double theta, double x, double y) {
+        if (!rendering) return;
+
+        matrixStack.rotate(new Quaternion(1, 0, 0, (float) x));
+        matrixStack.rotate(new Quaternion(0, 1, 0, (float) y));
+    }
+
+    public void scale(double sx, double sy) {
+        if (!rendering) return;
+
+        matrixStack.scale((float) sx, (float) sy);
+    }
+
+    public void subInstance(Rectangle rectangle, Consumer<Renderer> consumer) {
+        if (!rendering) return;
+
+        this.subInstance((int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, consumer);
+    }
+
+    public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
+        if (!rendering) return;
+
+        this.pushMatrix();
+        this.translate(x, y);
+        this.pushScissors(x, y, width, height);
+        consumer.accept(this);
+        this.popScissors();
+        this.popMatrix();
+    }
+
+    public void pushScissorsRaw(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        ScissorStack.pushScissors(new Rectangle(x, y, width, height));
+    }
+
+    public void pushScissors(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        ScissorStack.pushScissors(new Rectangle(x, y, width, height));
+    }
+
+    public void pushScissors(float x, float y, float width, float height) {
+        if (!rendering) return;
+
+        ScissorStack.pushScissors(new Rectangle(x, y, width, height));
+    }
+
+    public void popScissors() {
+        if (!rendering) return;
+
+        ScissorStack.popScissors();
+    }
+
+    @ApiStatus.Experimental
+    public void clearScissors() {
+        if (!rendering) return;
+
+        while (ScissorStack.peekScissors() != null) {
+            ScissorStack.popScissors();
+        }
+    }
+
+    public void pushMatrix() {
+        if (!rendering) return;
+
+        this.globalTranslation.push(this.globalTranslation.peek().cpy());
+        this.matrixStack.push();
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public void popMatrix() {
+        if (!rendering) return;
+
+        if (matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already at last stack entry");
+
+        this.globalTranslation.pop();
+        this.matrixStack.pop();
+        this.batch.setTransformMatrix(this.matrixStack.last());
+    }
+
+    public boolean hitClip(int x, int y, int width, int height) {
+        return false;
+    }
+
+    ///////////////////////
+    //     To String     //
+    ///////////////////////
+    @Override
+    public String toString() {
+        return "Renderer{" +
+                "matrixStack=" + matrixStack +
+                '}';
+    }
+
+    public void drawEffectBox(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        drawEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    }
+
+    @ApiStatus.Experimental
+    public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
+        if (!rendering) return;
+
+        drawEffectBox(x, y, width, height, insets, 10);
+    }
+
+    @ApiStatus.Experimental
+    public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+        if (!rendering) return;
+
+        setColor(Color.rgb(0x00a0ff));
+        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
+        rect(x, y, width, height);
+//        GradientPaint p = getEffectPaint(speed);
+//        Border border = new Border(insets);
+//        border.setPaint(p);
+//        border.paintBorder(this, x, y, width, height);
+    }
+
+    public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
+        if (!rendering) return;
+
+        drawEffectBox(x, y, width, height, strokeWidth, 10);
+    }
+
+    public void drawEffectBox(int x, int y, int width, int height, float borderWidth, int speed) {
+        if (!rendering) return;
+
+        setColor(Color.rgb(0x00a0ff));
+        setStrokeWidth(borderWidth);
+        rectLine(x, y, width, height);
+//        GradientPaint p = getEffectPaint(speed);
+//        Border border = new Border(insets);
+//        border.setPaint(p);
+//        border.paintBorder(this, x, y, width, height);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        drawRoundEffectBox(x, y, width, height, 10);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius) {
+        if (!rendering) return;
+
+        drawRoundEffectBox(x, y, width, height, radius, 2);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth) {
+        if (!rendering) return;
+
+        drawRoundEffectBox(x, y, width, height, radius, borderWidth, 10);
+    }
+
+    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth, int speed) {
+        if (!rendering) return;
+
+//        radius -= borderWidth - 1;
+        setColor(Color.rgb(0x00a0ff));
+        setStrokeWidth(borderWidth);
+        roundRectLine(x, y, width, height, radius, radius);
+//        paint(getEffectPaint(speed));
+//        Stroke old = getStroke();
+//        stroke(new BasicStroke(borderWidth));
+//        roundRectLine(x, y, width, height, radius, radius);
+//        stroke(old);
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
+        if (!rendering) return;
+
+        drawErrorEffectBox(x, y, width, height, insets, 10);
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+        if (!rendering) return;
+
+        setColor(Color.rgb(0xff3000));
+        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
+        rectLine(x, y, width, height);
+//        GradientPaint p = getErrorEffectPaint(speed);
+//        Border border = new Border(insets);
+//        border.setPaint(p);
+//        border.paintBorder(this, x, y, width, height);
+    }
+
+    public void fillEffect(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        fillEffect(x, y, width, height, 10);
+    }
+
+    public void fillEffect(int x, int y, int width, int height, int speed) {
+        if (!rendering) return;
+
+        setColor(Color.rgb(0x00a0ff));
+        rect(x, y, width, height);
+//        GradientPaint p = getEffectPaint(speed);
+//        Paint old = getPaint();
+//        paint(p);
+//        rect(x, y, width, height);
+//        paint(old);
+    }
+
+//    @NotNull
+//    private GradientPaint getEffectPaint(int speed) {
+//        return getEffectPaint(speed, 0x00a0ff, 0x00ffa0);
+//    }
+//
+//    @NotNull
+//    private GradientPaint getErrorEffectPaint(int speed) {
+//        return getEffectPaint(speed, 0xff3000, 0xffa000);
+//    }
+//
+//    @NotNull
+//    private GradientPaint getEffectPaint(int speed, int color1, int color2) {
+//        var width = game.getScaledWidth();
+//        var shiftX = (((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed)) - globalTranslation.x;
+//        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
+//    }
+
+    public void blit(int x, int y) {
+        if (!rendering) return;
+
+        batch.draw(curTexture, x, y);
+    }
+
+    public void blit(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+        batch.draw(curTexture, x, y, width, height);
+    }
+
+    public void blit(Identifier texture) {
+        if (!rendering) return;
+
+        this.curTexture = game.getTextureManager().getTexture(texture);
+    }
+
+    ////////////////////////
+    //     Properties     //
+    ////////////////////////
     public MatrixStack getMatrixStack() {
         return matrixStack;
     }
 
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Renderer(Graphics gfx, ImageObserver observer) {
-        this(null);
+    public Matrix4 getTransform() {
+        return matrixStack.last();
     }
 
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Renderer(Graphics2D gfx2d, ImageObserver observer) {
-        this(null);
-    }
-    ////////////////////////
-    //     Properties     //
-    ////////////////////////
+    public void setTransform(Matrix4 matrix) {
+        if (!rendering) return;
 
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void composite(Composite comp) {
-//        gfx.setComposite(comp);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void paint(Paint paint) {
-//        gfx.setPaint(paint);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void stroke(Stroke s) {
-        if (s instanceof BasicStroke basicStroke) {
-            this.strokeWidth = basicStroke.getLineWidth();
-        }
+        matrixStack.last().set(matrix);
+        batch.setTransformMatrix(matrix);
     }
 
     public void setStrokeWidth(float strokeWidth) {
+        if (!rendering) return;
+
         this.strokeWidth = strokeWidth;
     }
 
+    public float getStrokeWidth() {
+        return strokeWidth;
+    }
+
     public void setColor(Color c) {
+        if (!rendering) return;
+
         if (c == null) return;
-//        switchToBatch();
-//        batch.setColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f);
-        shapes.setColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f);
+        font.setColor(c.toGdx());
+        shapes.setColor(c.toGdx());
     }
 
     public void setColor(int r, int g, int b) {
+        if (!rendering) return;
+
         setColor(Color.rgb(r, g, b));
     }
 
     public void setColor(float r, float g, float b) {
+        if (!rendering) return;
+
         setColor(Color.rgb(r, g, b));
     }
 
     public void setColor(int r, int g, int b, int a) {
+        if (!rendering) return;
+
         setColor(Color.rgba(r, g, b, a));
     }
 
     public void setColor(float r, float g, float b, float a) {
+        if (!rendering) return;
+
         setColor(Color.rgba(r, g, b, a));
     }
 
     public void setColor(int argb) {
+        if (!rendering) return;
+
         setColor(Color.argb(argb));
     }
 
@@ -185,550 +1061,9 @@ public class Renderer {
      * @param hex a color hex.
      */
     public void setColor(String hex) {
+        if (!rendering) return;
+
         setColor(Color.hex(hex));
-    }
-
-    public void clearColor(Color color) {
-        gl20.glClearColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
-
-    public void clearColor(int red, int green, int blue) {
-        clearColor(Color.rgb(red, green, blue));
-    }
-
-    public void clearColor(float red, float green, float blue) {
-        clearColor(Color.rgb(red, green, blue));
-    }
-
-    public void clearColor(int red, int green, int blue, int alpha) {
-        clearColor(Color.rgba(red, green, blue, alpha));
-    }
-
-    public void clearColor(float red, float green, float blue, float alpha) {
-        clearColor(Color.rgba(red, green, blue, alpha));
-    }
-
-    public void clearColor(int argb) {
-        clearColor(Color.argb(argb));
-    }
-
-    public void clearColor(String hex) {
-        clearColor(Color.hex(hex));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void paintMode() {
-//        gfx.setPaintMode();
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(Color c1) {
-//        gfx.setXORMode(c1.toAwt());
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(int red, int green, int blue) {
-        xorMode(Color.rgb(red, green, blue));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(float red, float green, float blue) {
-        xorMode(Color.rgb(red, green, blue));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(int red, int green, int blue, int alpha) {
-        xorMode(Color.rgba(red, green, blue, alpha));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(float red, float green, float blue, float alpha) {
-        xorMode(Color.rgba(red, green, blue, alpha));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(int argb) {
-        xorMode(Color.argb(argb));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void xorMode(String hex) {
-        xorMode(Color.hex(hex));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void hint(RenderingHints.Key hintKey, Object hintValue) {
-//        gfx.setRenderingHint(hintKey, hintValue);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void hints(Map<?, ?> hints) {
-//        gfx.setRenderingHints(hints);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void addHints(Map<?, ?> hints) {
-//        gfx.addRenderingHints(hints);
-    }
-
-    ////////////////////
-    //     Shapes     //
-    ////////////////////
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void outline(Shape s) {
-        if (s instanceof Ellipse2D ellipse) {
-            outline(ellipse);
-        } else if (s instanceof Rectangle2D rect) {
-            outline(rect);
-        } else if (s instanceof Line2D rect) {
-            outline(rect);
-        }
-    }
-
-    public void outline(Rectangle2D rect) {
-        rectLine((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
-    }
-
-    public void outline(Ellipse2D ellipse) {
-        ovalLine((float) ellipse.getX(), (float) ellipse.getY(), (float) ellipse.getWidth(), (float) ellipse.getHeight());
-    }
-
-    public void outline(Line2D s) {
-        line((float) s.getX1(), (float) s.getY1(), (float) s.getX2(), (float) s.getY2());
-    }
-
-    public void circle(float x, float y, float radius) {
-        y = game.getHeight() + radius - y;
-        shapes.filledCircle(x, y, radius);
-    }
-
-    public void circleLine(float x, float y, float radius) {
-        y = game.getHeight() + radius - y;
-        shapes.circle(x, y, radius);
-    }
-
-    public void fill(Shape s) {
-        if (s instanceof Ellipse2D ellipse) fill(ellipse);
-        else if (s instanceof Rectangle2D rect) fill(rect);
-        else if (s instanceof Line2D rect) fill(rect);
-    }
-
-    public void fill(Rectangle2D rect) {
-        rect((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
-    }
-
-    public void fill(Ellipse2D ellipse) {
-        oval((float) ellipse.getX(), (float) ellipse.getY(), (float) ellipse.getWidth(), (float) ellipse.getHeight());
-    }
-
-    public void fill(Line2D line) {
-        line((float) line.getX1(), (float) line.getY1(), (float) line.getX2(), (float) line.getY2());
-    }
-
-    public void fill(com.ultreon.bubbles.render.gui.widget.Rectangle r) {
-        rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-    }
-
-    public void fill(Vec4i r) {
-        rect(r.x, r.y, r.z, r.w);
-    }
-
-    public void line(int x1, int y1, int x2, int y2) {
-        y1 = game.getHeight() - y1;
-        y2 = game.getHeight() - y2;
-        shapes.line(x1, y1, x2, y2);
-    }
-
-    public void line(float x1, float y1, float x2, float y2) {
-        y1 = game.getHeight() - y1;
-        y2 = game.getHeight() - y2;
-        shapes.line(x1, y1, x2, y2);
-    }
-
-    public void rectLine(int x, int y, int width, int height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.rectangle(x, y, width, height, strokeWidth);
-    }
-
-    public void rectLine(float x, float y, float width, float height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.rectangle(x, y, width, height, strokeWidth);
-    }
-
-    public void rect(int x, int y, int width, int height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.filledRectangle(x, y, width, height);
-    }
-
-    public void rect(float x, float y, float width, float height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.filledRectangle(x, y, width, height);
-    }
-
-    public void roundRectLine(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.rectangle(x, y, width, height, strokeWidth);
-    }
-
-    public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.rectangle(x, y, width, height);
-    }
-
-    public void rect3DLine(int x, int y, int width, int height, boolean raised) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.rectangle(x, y, width, height, strokeWidth);
-    }
-
-    public void rect3D(int x, int y, int width, int height, boolean raised) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.filledRectangle(x, y, width, height);
-    }
-
-    public void ovalLine(int x, int y, int width, int height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.ellipse(x, y, width, height);
-    }
-
-    public void oval(int x, int y, int width, int height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.filledEllipse(x, y, width, height);
-    }
-
-    public void ovalLine(float x, float y, float width, float height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.ellipse(x, y, width, height);
-    }
-
-    public void oval(float x, float y, float width, float height) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.filledEllipse(x, y, width, height);
-    }
-
-    public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.arc(x, y, width, startAngle, arcAngle);
-    }
-
-    public void arc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        y = game.getHeight() - y;
-        height = -height;
-        shapes.arc(x, y, width, startAngle, arcAngle);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void polyline(int[] xPoints, int[] yPoints, int nPoints) {
-//        gfx.drawPolyline(xPoints, yPoints, nPoints);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void polygonLine(int[] xPoints, int[] yPoints, int nPoints) {
-//        gfx.drawPolygon(xPoints, yPoints, nPoints);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void polygonLine(Polygon p) {
-//        gfx.drawPolygon(p);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void polygon(int[] xPoints, int[] yPoints, int nPoints) {
-//        gfx.fillPolygon(xPoints, yPoints, nPoints);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void polygon(Polygon p) {
-//        gfx.fillPolygon(p);
-    }
-
-    ///////////////////
-    //     Image     //
-    ///////////////////
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int x, int y) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int x, int y, int width, int height) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int x, int y, Color backgroundColor) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int x, int y, int width, int height, Color backgroundColor) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color backgroundColor) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public boolean image(Image img, AffineTransform xForm) {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void image(BufferedImage img, BufferedImageOp op, int x, int y) {
-
-    }
-
-    public void texture(Texture tex, float x, float y) {
-        y = game.getHeight() - y - tex.getHeight();
-//        shapes.setTextureRegion(new TextureRegion(tex, tex.getWidth(), tex.getHeight()));
-//        rect(x, y, tex.getWidth(), tex.getHeight());
-//        shapes.setTextureRegion(null);
-        batch.draw(tex, x, y);
-    }
-
-    public void texture(Texture tex, float x, float y, Color backgroundColor) {
-        y = game.getHeight() - y - tex.getHeight();
-        setColor(backgroundColor);
-        rect(x, y, tex.getWidth(), tex.getHeight());
-        batch.draw(tex, x, y);
-    }
-
-    public void texture(Texture tex, float x, float y, float width, float height) {
-        y = game.getHeight() - y - height;
-        batch.draw(tex, x, y, width, height);
-    }
-
-    public void texture(Texture tex, float x, float y, float width, float height, Color backgroundColor) {
-        y = game.getHeight() - y - height;
-        setColor(backgroundColor);
-        rect(x, y, width, height);
-        batch.draw(tex, x, y, width, height);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void renderedImage(RenderedImage img, AffineTransform xForm) {
-
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void renderableImage(RenderableImage img, AffineTransform xForm) {
-         
-    }
-
-    //////////////////
-    //     Text     //
-    //////////////////
-    public void text(String str, int x, int y) {
-        y = game.getHeight() - y;
-        font.draw(batch, str, x, y);
-    }
-
-    public void text(String str, float x, float y) {
-        y = game.getHeight() - y;
-        font.draw(batch, str, x, y);
-    }
-
-    public void text(TextObject str, int x, int y) {
-        y = game.getHeight() - y;
-        font.draw(batch, str.getText(), x, y);
-    }
-
-    public void text(TextObject str, float x, float y) {
-        y = game.getHeight() - y;
-        font.draw(batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void text(AttributedCharacterIterator iterator, int x, int y) {
-        y = game.getHeight() - y;
-        font.draw(batch, iterator.toString(), x, y);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void text(AttributedCharacterIterator iterator, float x, float y) {
-        y = game.getHeight() - y;
-        font.draw(batch, iterator.toString(), x, y);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void text(AttributedString iterator, int x, int y) {
-        y = game.getHeight() - y;
-        font.draw(batch, iterator.toString(), x, y);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void text(AttributedString iterator, float x, float y) {
-        y = game.getHeight() - y;
-        font.draw(batch, iterator.toString(), x, y);
-    }
-
-    public void multiLineText(String str, int x, int y) {
-        y -= font.getLineHeight();
-
-        for (String line : str.split("\n"))
-            text(line, x, y += font.getLineHeight());
-    }
-
-    public void wrappedText(String str, int x, int y, int maxWidth) {
-        List<String> lines = StringUtils.wrap(str, font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        multiLineText(joined, x, y);
-    }
-
-    public void tabString(String str, int x, int y) {
-        for (String line : str.split("\t"))
-            text(line, x += font.getLineHeight(), y);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void chars(char[] data, int offset, int length, int x, int y) {
-
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void bytes(byte[] data, int offset, int length, int x, int y) {
-
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void font(Font font) {
-//        gfx.setFont(font);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void fallbackFont(BitmapFont font) {
-//        fallbackFont = font;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void clearRect(int x, int y, int width, int height) {
-        clear();
-    }
-
-    public void clear() {
-        gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void glyphVectorLine(GlyphVector g, float x, float y) {
-
-    }
-
-    ////////////////////////////
-    //     Transformation     //
-    ////////////////////////////
-    public void translate(double tx, double ty) {
-        globalTranslation.add(tx, ty);
-        matrixStack.translate(tx, ty);
-    }
-
-    public void translate(int x, int y) {
-        globalTranslation.add(x, y);
-        matrixStack.translate((float) x, (float) y);
-    }
-
-    public void rotate(double theta) {
-        matrixStack.rotate(new Quaternion(1, 0, 0, (float) theta));
-    }
-
-    public void rotate(double theta, double x, double y) {
-        matrixStack.rotate(new Quaternion(1, 0, 0, (float) x));
-        matrixStack.rotate(new Quaternion(0, 1, 0, (float) y));
-    }
-
-    public void scale(double sx, double sy) {
-        matrixStack.scale((float) sx, (float) sy);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void shear(double shx, double shy) {
-        
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void transform(AffineTransform Tx) {
-        
-    }
-
-    public void clip(Shape s) {
-        
-    }
-
-    public void clipRect(int x, int y, int width, int height) {
-        
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-//        gfx.copyArea(x, y, width, height, dx, dy);
-    }
-
-    /////////////////////
-    //     Setters     //
-    /////////////////////
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void setTransform(AffineTransform Tx) {
-        
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void simpleClip(int x, int y, int width, int height) {
-        
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public void simpleClip(Shape clip) {
-        
-    }
-
-    /////////////////////
-    //     Getters     //
-    /////////////////////
-    public Matrix4 getTransform() {
-        return matrixStack.last();
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Paint getPaint() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Composite getComposite() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Color getClearColor() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Stroke getStroke() {
-        return null;
-    }
-
-    public float getStrokeWidth() {
-        return strokeWidth;
     }
 
     public Color getColor() {
@@ -737,249 +1072,60 @@ public class Renderer {
         return Color.gdx(color);
     }
 
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public BitmapFont getFallbackFont() {
-        return null;
+    public void setClearColor(Color color) {
+        if (!rendering) return;
+
+        gl20.glClearColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
+
+    public void setClearColor(int red, int green, int blue) {
+        if (!rendering) return;
+
+        setClearColor(Color.rgb(red, green, blue));
+    }
+
+    public void setClearColor(float red, float green, float blue) {
+        if (!rendering) return;
+
+        setClearColor(Color.rgb(red, green, blue));
+    }
+
+    public void setClearColor(int red, int green, int blue, int alpha) {
+        if (!rendering) return;
+
+        setClearColor(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void setClearColor(float red, float green, float blue, float alpha) {
+        if (!rendering) return;
+
+        setClearColor(Color.rgba(red, green, blue, alpha));
+    }
+
+    public void setClearColor(int argb) {
+        if (!rendering) return;
+
+        setClearColor(Color.argb(argb));
+    }
+
+    public void setClearColor(String hex) {
+        if (!rendering) return;
+
+        setClearColor(Color.hex(hex));
+    }
+
+    public Color getClearColor() {
+        return clearColor;
+    }
+
+    public void setFont(BitmapFont font) {
+        if (!rendering) return;
+
+        this.font = font;
     }
 
     public BitmapFont getFont() {
         return font;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public FontMetrics fontMetrics(Font f) {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Shape getClip() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Rectangle getClipBounds() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Rectangle getClipBounds(Rectangle r) {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public FontMetrics fontMetrics() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public FontRenderContext getFontRenderContext() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public GraphicsConfiguration getDeviceConfiguration() {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Object getRenderingHint(RenderingHints.Key hintKey) {
-        return null;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public RenderingHints getRenderingHints() {
-        return new RenderingHints(Map.of());
-    }
-
-    ///////////////////////////
-    //     Miscellaneous     //
-    ///////////////////////////
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Renderer subInstance() {
-        return new Renderer(shapes, new MatrixStack(new Matrix4(matrixStack.last())));
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Renderer subInstance(int x, int y, int width, int height) {
-        return this;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.1.0-alpha.1")
-    public Renderer subInstance(com.ultreon.bubbles.render.gui.widget.Rectangle bounds) {
-        return subInstance(bounds.x, bounds.y, bounds.width, bounds.height);
-    }
-
-    public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
-        var rectangle = new com.badlogic.gdx.math.Rectangle(x, y, width, height);
-        boolean doPop = false;
-        if (!Objects.equals(ScissorStack.peekScissors(), rectangle)) {
-            doPop = true;
-            new RuntimeException("PUSH " + ScissorStack.peekScissors()).printStackTrace();
-            ScissorStack.pushScissors(rectangle);
-            new RuntimeException("PUSH " + ScissorStack.peekScissors()).printStackTrace();
-        }
-        matrixStack.push();
-        matrixStack.translate(x, y);
-
-        consumer.accept(this);
-
-        matrixStack.pop();
-        if (doPop) {
-            new RuntimeException("POP " + ScissorStack.peekScissors()).printStackTrace();
-            ScissorStack.popScissors();
-            new RuntimeException("POP " + ScissorStack.peekScissors()).printStackTrace();
-        }
-    }
-
-    public boolean hitClip(int x, int y, int width, int height) {
-        return false;
-    }
-
-    public void dispose() {
-
-    }
-
-    public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-        return false;
-    }
-
-    ///////////////////////
-    //     To String     //
-    ///////////////////////
-
-
-    @Override
-    public String toString() {
-        return "Renderer{" +
-                "matrixStack=" + matrixStack +
-                '}';
-    }
-
-    public void drawEffectBox(int x, int y, int width, int height) {
-        drawEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
-    }
-
-    @Deprecated
-    public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
-        drawEffectBox(x, y, width, height, insets, 10);
-    }
-
-    @Deprecated
-    public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
-        setColor(Color.rgb(0x00a0ff));
-        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
-        rect(x, y, width, height);
-//        GradientPaint p = getEffectPaint(speed);
-//        Border border = new Border(insets);
-//        border.setPaint(p);
-//        border.paintBorder(this, x, y, width, height);
-    }
-
-    public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
-        drawEffectBox(x, y, width, height, strokeWidth, 10);
-    }
-
-    public void drawEffectBox(int x, int y, int width, int height, float borderWidth, int speed) {
-        setColor(Color.rgb(0x00a0ff));
-        setStrokeWidth(borderWidth);
-        rectLine(x, y, width, height);
-//        GradientPaint p = getEffectPaint(speed);
-//        Border border = new Border(insets);
-//        border.setPaint(p);
-//        border.paintBorder(this, x, y, width, height);
-    }
-
-    public void drawRoundEffectBox(int x, int y, int width, int height) {
-        drawRoundEffectBox(x, y, width, height, 10);
-    }
-
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius) {
-        drawRoundEffectBox(x, y, width, height, radius, 2);
-    }
-
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth) {
-        drawRoundEffectBox(x, y, width, height, radius, borderWidth, 10);
-    }
-
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth, int speed) {
-//        radius -= borderWidth - 1;
-        setColor(Color.rgb(0x00a0ff));
-        setStrokeWidth(borderWidth);
-        rectLine(x, y, width, height);
-//        paint(getEffectPaint(speed));
-//        Stroke old = getStroke();
-//        stroke(new BasicStroke(borderWidth));
-//        roundRectLine(x, y, width, height, radius, radius);
-//        stroke(old);
-    }
-
-    public void drawErrorEffectBox(int x, int y, int width, int height) {
-        drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
-    }
-
-    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
-        drawErrorEffectBox(x, y, width, height, insets, 10);
-    }
-
-    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
-        setColor(Color.rgb(0xff3000));
-        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
-        rectLine(x, y, width, height);
-//        GradientPaint p = getErrorEffectPaint(speed);
-//        Border border = new Border(insets);
-//        border.setPaint(p);
-//        border.paintBorder(this, x, y, width, height);
-    }
-
-    public void fillEffect(int x, int y, int width, int height) {
-        fillEffect(x, y, width, height, 10);
-    }
-
-    public void fillEffect(int x, int y, int width, int height, int speed) {
-        setColor(Color.rgb(0x00a0ff));
-        rect(x, y, width, height);
-//        GradientPaint p = getEffectPaint(speed);
-//        Paint old = getPaint();
-//        paint(p);
-//        rect(x, y, width, height);
-//        paint(old);
-    }
-
-    @NotNull
-    private GradientPaint getEffectPaint(int speed) {
-        return getEffectPaint(speed, 0x00a0ff, 0x00ffa0);
-    }
-
-    @NotNull
-    private GradientPaint getErrorEffectPaint(int speed) {
-        return getEffectPaint(speed, 0xff3000, 0xffa000);
-    }
-
-    @NotNull
-    private GradientPaint getEffectPaint(int speed, int color1, int color2) {
-        var width = game.getScaledWidth();
-        var shiftX = (((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed)) - globalTranslation.x;
-        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
-    }
-
-    public void blit(int x, int y) {
-        batch.draw(curTexture, x, y);
-    }
-
-    public void blit(int x, int y, int width, int height) {
-        batch.draw(curTexture, x, y, width, height);
-    }
-
-    public void texture(Identifier texture) {
-        this.curTexture = game.getTextureManager().getTexture(texture);
-    }
-
-    public void setFont(BitmapFont font) {
-        this.font = font;
-    }
-
-    public State getState() {
-        return state;
     }
 
     public enum State {

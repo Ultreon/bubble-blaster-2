@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
@@ -30,7 +31,7 @@ public class IngameButton extends AbstractButton {
         }
 
         public IngameButton build() {
-            IngameButton button = new IngameButton(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+            IngameButton button = new IngameButton((int) _bounds.x, (int) _bounds.y, (int) _bounds.width, (int) _bounds.height);
 
             button.setText(text);
             button.setCommand(command);
@@ -73,7 +74,7 @@ public class IngameButton extends AbstractButton {
 
         if (isPressed()) {
             renderer.drawEffectBox(1, 1, width - 2, height - 2, new Insets(1, 1, 1, 1));
-            textColor = Color.white;
+            textColor = Color.WHITE;
         } else if (isHovered()) {
             renderer.drawEffectBox(0, 0, width, height, new Insets(2, 2, 2, 2));
             textColor = Color.rgb(0xffffff);

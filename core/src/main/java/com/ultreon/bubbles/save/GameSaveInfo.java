@@ -16,7 +16,7 @@ public class GameSaveInfo {
         this.name = tag.getString("name");
         this.savedTime = tag.getLong("savedTime");
         this.seed = tag.getLong("seed");
-        this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.MODERN.getId().toString())));
+        this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.MODERN.id().toString())));
     }
 
     public String getName() {

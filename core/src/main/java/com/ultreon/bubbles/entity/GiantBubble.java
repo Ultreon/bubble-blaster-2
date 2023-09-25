@@ -7,7 +7,7 @@ import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.init.Entities;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 
 /**
  * Bubble Entity.

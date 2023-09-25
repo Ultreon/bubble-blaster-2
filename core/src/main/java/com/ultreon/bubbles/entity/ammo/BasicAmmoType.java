@@ -1,17 +1,16 @@
 package com.ultreon.bubbles.entity.ammo;
 
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Shape2D;
 import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.render.Renderer;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-
 public class BasicAmmoType extends AmmoType {
     @Override
-    public Shape getShape(Bullet entity) {
-        return new Ellipse2D.Double(entity.getX() - 2.5, entity.getY() - 2.5, 5, 5);
+    public Shape2D getShape(Bullet entity) {
+        return new Circle(entity.getX() - 2.5f, entity.getY() - 2.5f, 5);
     }
 
     @Override

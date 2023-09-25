@@ -20,8 +20,8 @@ public class Label extends GuiComponent {
         super(x, y, width, height);
         this.text = text;
 
-        backgroundColor = Color.transparent;
-        foregroundColor = Color.white;
+        backgroundColor = Color.TRANSPARENT;
+        foregroundColor = Color.WHITE;
     }
 
     @Override
@@ -35,13 +35,8 @@ public class Label extends GuiComponent {
 
         renderer.setColor(foregroundColor);
 
-        if (wrapped) font.drawMultiline(renderer, font.wrap(fontSize, text.getText(), getWidth()), fontSize, 0, 0);
-        else font.drawMultiline(renderer, text.getText(), fontSize, 0, 0);
-    }
-
-    @Override
-    public void tick() {
-
+        if (wrapped) renderer.drawWrappedText(this.font, text.getText(), 0, 0, getWidth());
+        else renderer.drawMultiLineText(this.font , text.getText(), 0, 0);
     }
 
     public TextObject getText() {

@@ -3,13 +3,13 @@ package com.ultreon.bubbles.gamemode;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.ExceptionUtils;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.commons.lang.Messenger;
+import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
 
 /**
- * @author Qboi123
+ * @author XyperCode
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault

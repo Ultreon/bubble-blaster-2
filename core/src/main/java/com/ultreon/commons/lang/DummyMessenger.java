@@ -1,7 +1,7 @@
 package com.ultreon.commons.lang;
 
 /**
- * @author Qboi
+ * @author XyperCode
  * @see Messenger
  * @since 0.0.0
  */

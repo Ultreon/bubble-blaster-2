@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * The ability class. Made for players to do stuff like {@linkplain TeleportAbility teleporting}.
  * @param <T> the subclass type.
  * @since 0.0.0
- * @author Qboi123
+ * @author XyperCode
  */
 public abstract class Ability<T extends Ability<T>> implements StateHolder {
     private final AbilityType<T> type;
@@ -23,7 +23,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Ability constructor.
      * @param type the type of the ability.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public Ability(AbilityType<T> type) {
         this.type = type;
@@ -33,7 +33,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Get the key that triggers it.
      * @return the trigger key.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract int getTriggerKey();
 
@@ -41,7 +41,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Method for the trigger type create the ability.
      * @return the trigger type.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract AbilityTriggerType getTriggerType();
 
@@ -49,7 +49,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Method for have a key trigger for the Ability.
      * @return the key trigger type. Null for no key trigger.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public AbilityKeyTriggerType getKeyTriggerType() {
         return null;
@@ -59,7 +59,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Method for key trigger event.
      * @param trigger the key trigger.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public void onKeyTrigger(AbilityKeyTrigger trigger) {
 
@@ -69,7 +69,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Handle entity ticking.
      * @see Entity
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public void onEntityTick() {
         if (canRegenerate()) {
@@ -81,7 +81,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Save the ability instance.
      *
      * @return the compound nbt tag.
-     * @author Qboi123
+     * @author XyperCode
      * @since 0.0.0
      */
     @Override
@@ -97,7 +97,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Load the entity from a compound tag.
      * @param tag the compound tag to load from.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     @Override
     public void load(MapType tag) {
@@ -109,14 +109,14 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Handle trigger from a player.
      * @param trigger ability trigger instance.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract void trigger(AbilityTrigger trigger);
 
     /**
      * Handle trigger from a non-player entity.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract void triggerEntity();
 
@@ -125,7 +125,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @param entity the entity to check for.
      * @return true if it can be triggered.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract boolean canBeTriggered(@SuppressWarnings("unused") Entity entity);
 
@@ -133,7 +133,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Get whether the ability can regenerate.
      * @return true if it can.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public abstract boolean canRegenerate();
 
@@ -142,7 +142,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @return the speed to regenerate.
      * @see #canRegenerate()
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public int getRegenerationSpeed() {
         return 1;
@@ -152,7 +152,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Get the type of the ability.
      * @return the ability type.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public AbilityType<T> getType() {
         return type;
@@ -162,7 +162,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Get the ability cooldown (in seconds).
      * @return the amount of seconds to cooldown.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public int getCooldown() {
         return cooldown;
@@ -172,7 +172,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Set the ability cooldown.
      * @param cooldown the amount of seconds to cooldown.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public void setCooldown(int cooldown) {
         this.cooldown = cooldown;
@@ -182,7 +182,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * Get the ability value. Something like mana or energy.
      * @return the ability value.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public int getValue() {
         return value;
@@ -194,7 +194,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @see #useValue(int)
      * @see #addValue(int)
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public void setValue(int value) {
         this.value = value;
@@ -206,7 +206,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @see #setValue(int)
      * @deprecated use {@link #useValue(int)} instead.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     @Deprecated
     public void subtractValue(int amount) {
@@ -218,7 +218,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @param amount amount to use.
      * @see #setValue(int)
      * @since 0.1.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public void useValue(int amount) {
         this.value -= amount;
@@ -230,7 +230,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @see #setValue(int)
      * @deprecated use {@link #setValue(int)} instead.
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     @Deprecated
     public void addValue(int amount) {

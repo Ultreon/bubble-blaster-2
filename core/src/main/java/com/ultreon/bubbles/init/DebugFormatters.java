@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.init;
 
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.debug.Formatter;
 import com.ultreon.bubbles.debug.FormatterRegistry;
 import com.ultreon.bubbles.debug.IFormatterContext;
@@ -7,13 +9,14 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.vector.*;
+import com.ultreon.libs.commons.v0.Color;
+import com.ultreon.libs.commons.v0.size.FloatSize;
+import com.ultreon.libs.commons.v0.vector.*;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v0.MutableText;
 import com.ultreon.libs.text.v0.TextObject;
 import net.fabricmc.api.EnvType;
 
-import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -199,10 +202,10 @@ public final class DebugFormatters {
             }
         }
     });
-    public static final Formatter<Color> AWT_COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("java/awt/color")) {
+    public static final Formatter<Color> AWT_COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
         @Override
         public void format(Color obj, IFormatterContext context) {
-            String s = Integer.toHexString(obj.getRGB());
+            String s = Integer.toHexString(obj.getRgb());
 
             context.operator("#");
             context.hex("0".repeat(8 - s.length()) + s);
@@ -347,27 +350,27 @@ public final class DebugFormatters {
         }
     });
 
-    public static final Formatter<Point> POINT = FormatterRegistry.register(new Formatter<>(Point.class, new Identifier("java/awt/point")) {
+    public static final Formatter<Vector2> POINT = FormatterRegistry.register(new Formatter<>(Vector2.class, new Identifier("libgdx/vector2")) {
         @Override
-        public void format(Point obj, IFormatterContext context) {
+        public void format(Vector2 obj, IFormatterContext context) {
             context.parameter("x", roundTo(obj.x, 5));
             context.separator();
             context.parameter("y", roundTo(obj.y, 5));
         }
     });
 
-    public static final Formatter<Dimension> DIMENSION = FormatterRegistry.register(new Formatter<>(Dimension.class, new Identifier("java/awt/dimension")) {
+    public static final Formatter<FloatSize> DIMENSION = FormatterRegistry.register(new Formatter<>(FloatSize.class, new Identifier("corelibs/float_size")) {
         @Override
-        public void format(Dimension obj, IFormatterContext context) {
-            context.intValue(obj.width);
+        public void format(FloatSize obj, IFormatterContext context) {
+            context.floatValue(obj.width());
             context.space();
-            context.operator("\u00D7");
+            context.operator("×");
             context.space();
-            context.intValue(obj.height);
+            context.floatValue(obj.height());
         }
     });
 
-    public static final Formatter<Rectangle> RECTANGLE = FormatterRegistry.register(new Formatter<>(Rectangle.class, new Identifier("java/awt/rectangle")) {
+    public static final Formatter<Rectangle> RECTANGLE = FormatterRegistry.register(new Formatter<>(Rectangle.class, new Identifier("libgdx/rectangle")) {
         @Override
         public void format(Rectangle obj, IFormatterContext context) {
             context.operator("(");
@@ -376,11 +379,11 @@ public final class DebugFormatters {
             context.parameter("y", roundTo(obj.y, 5));
             context.operator(")");
             context.space();
-            context.intValue(obj.width);
+            context.floatValue(obj.width);
             context.space();
-            context.operator("\u00D7");
+            context.operator("×");
             context.space();
-            context.intValue(obj.height);
+            context.floatValue(obj.height);
         }
     });
 

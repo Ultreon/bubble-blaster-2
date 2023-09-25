@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.libs.translations.v0.Language;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;

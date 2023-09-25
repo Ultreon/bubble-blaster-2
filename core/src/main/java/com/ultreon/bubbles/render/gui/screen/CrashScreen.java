@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Thickness;
@@ -40,8 +40,8 @@ public class CrashScreen extends Screen {
         renderer.setColor(Color.rgb(0xc00000));
         renderer.rectLine(0, 0, game.getWidth(), game.getScaledHeight());
 
-        font.draw(renderer, "The game crashed!", 24, width / 2f, 25, Thickness.BOLD, Anchor.CENTER);
+        renderer.drawText(font, "The game crashed!", width / 2f, 25, Anchor.CENTER);
 
-        crashButton.setX(game.getScaledWidth() / 2 - crashButton.getBounds().width / 2);
+        crashButton.setX((int) (game.getScaledWidth() / 2 - crashButton.getBounds().width / 2));
     }
 }

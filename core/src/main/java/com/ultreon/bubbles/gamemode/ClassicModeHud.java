@@ -1,20 +1,22 @@
 package com.ultreon.bubbles.gamemode;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.LoadedGame;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.util.TimeUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -28,7 +30,7 @@ public class ClassicModeHud extends GameHud {
     private boolean gameOver;
 
     // Strokes
-    private static final Stroke HEALTH_LINE = new BasicStroke(1);
+    private static final float HEALTH_LINE_WIDTH = 1.0f;
 
     // Colors
     private static final Color LEVEL_UP_COLOR = Color.rgb(0xffbb00);
@@ -37,6 +39,10 @@ public class ClassicModeHud extends GameHud {
     private boolean showLevelUp;
     private long hideLevelUpTime;
     private int level;
+    private String levelUpText;
+    private final GlyphLayout levelUpLayout = new GlyphLayout();
+    private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_14.get();
+    private final BitmapFont infoFont = Fonts.SANS_BOLD_14.get();
 
     /**
      * Constructor create the hud, actually doesn't do much different from {@link GameHud}.
@@ -90,7 +96,7 @@ public class ClassicModeHud extends GameHud {
     private void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
         renderer.setColor(Color.argb(0x7f00a5dc));
-        font.draw(renderer, ((Integer) game.getFps()).toString(), 12, game.getWidth() - 10, 10, Anchor.NE);
+        renderer.drawText(((Integer) game.getFps()).toString(), game.getWidth() - 10, 10, Anchor.NE);
     }
 
     /**
@@ -107,27 +113,31 @@ public class ClassicModeHud extends GameHud {
             return;
         }
 
-        // Game over message.
+        // Level up message
         if (showLevelUp) {
             String text = "Level " + level;
+            if (!levelUpText.equals(text)) {
+                levelUpText = text;
+                levelUpLayout.setText(levelUpFont, text);
+            }
 
-            int textWidth = font.width(50, text);
-            int textHeight = font.height(50);
+            float textWidth = levelUpLayout.width;
+            float textHeight = levelUpLayout.height;
 
-            int width = textWidth + 16;
-            int height = textHeight + 16;
+            float width = textWidth + 16;
+            float height = textHeight + 16;
 
             Rectangle2D gameBounds = gamemode.getGameBounds();
 
             renderer.setColor(Color.argb(0x7f000000));
 
             renderer.rect(
-                    (int)(gameBounds.getX() + gameBounds.getWidth() - width) / 2,
-                    (int)(gameBounds.getY() + gameBounds.getHeight() - height) / 2, width, height);
+                    (float) (gameBounds.getX() + gameBounds.getWidth() - width / 2),
+                    (float) (gameBounds.getY() + gameBounds.getHeight() - height / 2), width, height);
 
             renderer.setColor(LEVEL_UP_COLOR);
 
-            font.draw(renderer, text, 50, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2), Thickness.BOLD, Anchor.S);
+            renderer.drawCenteredText(levelUpFont, text, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2));
         }
     }
 
@@ -184,7 +194,7 @@ public class ClassicModeHud extends GameHud {
         }
 
         // Render health bar.
-        renderer.stroke(HEALTH_LINE);
+        renderer.setStrokeWidth(HEALTH_LINE_WIDTH);
         renderer.setColor(Color.rgb(redValue, greenValue, 0));
         renderer.line(0, 69, (int) (game.getWidth() * playerDamage / playerMaxDamage), 69);
     }
@@ -201,9 +211,9 @@ public class ClassicModeHud extends GameHud {
     private void drawLevelText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Level
         renderer.setColor(titleColor);
-        font.draw(renderer, Language.translate("bubbles/Info/Level"), 18, 140, 20, Thickness.BOLD, Anchor.CENTER);
+        renderer.drawText(infoFont, Language.translate("bubbles/Info/Level"), 140, 20, Anchor.CENTER);
         renderer.setColor(valueColor);
-        font.draw(renderer, String.valueOf(player.getLevel()), 14, 140, 50, Anchor.CENTER);
+        renderer.drawText(font, String.valueOf(player.getLevel()), 140, 50, Anchor.CENTER);
     }
 
     /**
@@ -218,9 +228,9 @@ public class ClassicModeHud extends GameHud {
     private void drawScoreText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Score
         renderer.setColor(titleColor);
-        font.draw(renderer, Language.translate("bubbles/Info/Score"), 18, 70, 20, Thickness.BOLD, Anchor.CENTER);
+        renderer.drawText(infoFont, Language.translate("bubbles/Info/Score"), 70, 20, Anchor.CENTER);
         renderer.setColor(valueColor);
-        font.draw(renderer, String.valueOf((int) player.getScore()), 18, 70, 50, Anchor.CENTER);
+        renderer.drawText(font, String.valueOf((int) player.getScore()), 70, 50, Anchor.CENTER);
     }
 
     /**
@@ -234,7 +244,7 @@ public class ClassicModeHud extends GameHud {
         try {
             // EffectInstance image.
             Texture effectImage = game.getTextureManager().getOrLoadTexture(BubbleBlaster.id("ui/effect_banner"));
-            renderer.texture(BubbleBlaster.id("ui/effect_banner"));
+            renderer.blit(BubbleBlaster.id("ui/effect_banner"));
 
             int i = 0;
             for (AppliedEffect appliedEffect : player.getActiveEffects()) {
@@ -247,13 +257,12 @@ public class ClassicModeHud extends GameHud {
                     render.blit(0, 0, 192, 38);
 
                     // EffectInstance icon.
-                    render.texture(appliedEffect.getType().getIconId());
+                    render.blit(appliedEffect.getType().getIconId());
                     render.blit(5, 3, 32, 32);
                     render.setColor(Color.rgba(255, 255, 255, 192));
 
                     // Time. 0:00:00
-                    font.draw(render, time, 16, 56, 19.5f, Thickness.BOLD, Anchor.W);
-                    render.dispose();
+                    renderer.drawLeftAnchoredText(font, time, 56, 19.5f);
                 });
                 // Next
                 i++;
@@ -270,14 +279,7 @@ public class ClassicModeHud extends GameHud {
      * @param game     game instance.
      */
     private void drawTopShade(Renderer renderer, BubbleBlaster game) {
-        Rectangle2D topShade = new Rectangle2D.Double(0, 71, game.getWidth(), 30);
-        Paint old = renderer.getPaint();
-
-        GradientPaint paint = new GradientPaint(0f, 71f, Color.argb(0x30000000).toAwt(), 0f, 100f, Color.transparent.toAwt());
-        renderer.paint(paint);
-        renderer.fill(topShade);
-        renderer.outline(topShade);
-        renderer.paint(old);
+        renderer.fillGradient(0, 71, game.getWidth(), 30, Color.argb(0x30000000), Color.TRANSPARENT);
     }
 
     /**
@@ -287,7 +289,7 @@ public class ClassicModeHud extends GameHud {
      * @param game     game instance.
      */
     private void drawTopBar(Renderer renderer, BubbleBlaster game) {
-        Rectangle2D topBar = new Rectangle2D.Double(0, 0, game.getWidth(), 70);
+        Rectangle topBar = new Rectangle(0, 0, game.getWidth(), 70);
 
         // Top-bar.
         renderer.setColor(TOP_BAR_BG_COLOR);
@@ -302,15 +304,7 @@ public class ClassicModeHud extends GameHud {
      * @param game     game instance.
      */
     private void postDrawTopBar(Renderer renderer, BubbleBlaster game) {
-        Rectangle2D topBar = new Rectangle2D.Double(0, 0, game.getWidth(), 70);
-        Paint old = renderer.getPaint();
-
-        // Gradient.
-        GradientPaint gp = new GradientPaint(0f, 0f, Color.transparent.toAwt(), 0f, 70f, Color.argb(0x18000000).toAwt());
-        renderer.paint(gp);
-        renderer.fill(topBar);
-        renderer.outline(topBar);
-        renderer.paint(old);
+        renderer.fillGradient(0, 0, game.getWidth(), 70, Color.TRANSPARENT, Color.argb(0x18000000));
     }
 
     /**
@@ -322,7 +316,7 @@ public class ClassicModeHud extends GameHud {
      */
     private void drawHealthLineBackground(Renderer renderer, BubbleBlaster game) {
         // Health line.
-        renderer.stroke(HEALTH_LINE);
+        renderer.setStrokeWidth(HEALTH_LINE_WIDTH);
         renderer.setColor(HEALTH_LINE_BG_COLOR);
         renderer.line(0, 69, game.getWidth(), 69);
     }

@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.entity.player;
 
-import com.ultreon.bubbles.common.PolygonBuilder;
+import com.badlogic.gdx.math.*;
 import com.ultreon.bubbles.effect.AppliedEffect;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
@@ -10,9 +10,9 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.Constants;
-import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
@@ -21,49 +21,50 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
-import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 /**
  * <p>These are the vertex coordinates:</p>
  * <br>
  * <code>
- *     |- Middle point<br>
- *     |<br>
- *     9876543210123456789<br>
- *     --------------------,<br>
- *     ....#*********#.....| -8<br>
- *     ....*.........*.....| -7<br>
- *     ....#***#.#***#.....| -6<br>
- *     ........*.*.........| -5<br>
- *     ..#*****#.#******#..| -4<br>
- *     .*..................| -3<br>
- *     #..................#| -2<br>
- *     *..................*| -1<br>
- *     *..................*| 0  // Middle point.<br>
- *     *..................*| 1<br>
- *     #..................#| 2<br>
- *     .*................*.| 3<br>
- *     ..#..............#..| 4<br>
+ * |- Middle point<br>
+ * |<br>
+ * 9876543210123456789<br>
+ * --------------------,<br>
+ * ....#*********#.....| -8<br>
+ * ....*.........*.....| -7<br>
+ * ....#***#.#***#.....| -6<br>
+ * ........*.*.........| -5<br>
+ * ..#*****#.#******#..| -4<br>
+ * .*..................| -3<br>
+ * #..................#| -2<br>
+ * *..................*| -1<br>
+ * *..................*| 0  // Middle point.<br>
+ * *..................*| 1<br>
+ * #..................#| 2<br>
+ * .*................*.| 3<br>
+ * ..#..............#..| 4<br>
  * </code>
  */
 public class Player extends LivingEntity implements InputController {
+    private static final float[] ARROW_VERTICES = {
+            -5, 0,
+            -10, -10,
+            15, 0,
+            -10, 10
+    };
     /*
-    */
+     */
 
-    private final Area shipShape;
-    private final Area arrowShape;
+    private final Circle shipShape;
+    private final Polygon arrowShape;
     private int invincibilityTicks;
 
     // Types
@@ -81,14 +82,14 @@ public class Player extends LivingEntity implements InputController {
     private float rotationSpeed = 120f;
 
     // Delta velocity.
-    private double velocityDelta;
+    private float velocityDelta;
 
     // Motion (XInput).
     private float joyStickX;
     private float joyStickY;
 
     // Normal values/
-    private double score = 0d;
+    private double score = 0.0f;
     private int level = 1;
 
     // Modifiers.
@@ -110,31 +111,18 @@ public class Player extends LivingEntity implements InputController {
 
         this.markAsCollidable(Entities.BUBBLE);
 
-        // Ship shape.
-        Ellipse2D shipShape1 = new Ellipse2D.Double(-20, -20, 40, 40);
-        this.shipShape = new Area(shipShape1);
+        this.shipShape = new Circle(-20, -20, 40);
+        this.arrowShape = new Polygon(ARROW_VERTICES);
 
-        // Arrow shape.
-        Polygon arrowShape1 = new PolygonBuilder()
-                .add(-5, 0)
-                .add(-10, -10)
-                .add(15, 0)
-                .add(-10, 10)
-                .build();
-        this.arrowShape = new Area(arrowShape1);
-
-        // Velocity.
         this.velocityX = 0;
         this.velocityY = 0;
 
-        // Set attributes.
         this.attributes.setBase(Attribute.DEFENSE, 1f);
         this.attributes.setBase(Attribute.ATTACK, 0.75f);
         this.attributes.setBase(Attribute.MAX_HEALTH, 30f);
         this.attributes.setBase(Attribute.SPEED, 16f);
         this.attributes.setBase(Attribute.SCORE_MODIFIER, 1f);
 
-        // Health
         this.health = 30f;
 
         for (EntityType<?> entityType : Registries.ENTITIES.values()) {
@@ -165,10 +153,10 @@ public class Player extends LivingEntity implements InputController {
     public void prepareSpawn(SpawnInformation information) {
         super.prepareSpawn(information);
         BubbleBlaster game = this.environment.game();
-        Rectangle2D gameBounds = game.getGameBounds();
-        this.x = (float) Mth.clamp(x, gameBounds.getMinX(), gameBounds.getMaxX());
-        this.y = (float) Mth.clamp(y, gameBounds.getMinY(), gameBounds.getMaxY());
-        make();
+        Rectangle gameBounds = game.getGameBounds();
+        this.x = Mth.clamp(x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
+        this.y = Mth.clamp(y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
+        this.make();
     }
 
     @Override
@@ -182,60 +170,50 @@ public class Player extends LivingEntity implements InputController {
     }
 
     @Override
-    protected boolean isValid() {
-        return this.valid;
+    public Circle getShape() {
+        return new Circle(x - 40 * scale / 2, y - 40 * scale / 2, 40 * scale);
     }
 
     @Override
-    public Ellipse2D getShape() {
-        return new Ellipse2D.Double(x - 40 * scale / 2, y - 40 * scale / 2, 40 * scale, 40 * scale);
+    public Rectangle getBounds() {
+        return new Rectangle(x - 20, y - 20, 40, 40);
     }
 
-    @NotNull
-    private Area transformArea(Area shipShape) {
-        Area area = new Area(shipShape);
-        AffineTransform transform = new AffineTransform();
-        transform.scale(scale, scale);
-        transform.translate(x, y);
+    private Circle transformShip(Circle shipShape) {
+        Circle circle = new Circle(shipShape);
+        shipShape.x = x;
+        shipShape.y = y;
 
-        area.transform(transform);
-
-        return area;
+        return circle;
     }
 
-    @NotNull
-    private Area transformAreaRotated(Area shipShape) {
-        Area area = new Area(shipShape);
-        AffineTransform transform = new AffineTransform();
-        transform.scale(scale, scale);
-        transform.translate(x, y);
-        transform.rotate(Math.toRadians(rotation));
+    private Polygon transformArrow(Polygon shipShape) {
+        shipShape.setPosition(this.x, this.y);
+        shipShape.setRotation(this.rotation);
 
-        area.transform(transform);
-
-        return area;
+        return shipShape;
     }
 
     /**
      * @return the shape create the ship.
      */
-    public Area getShipArea() {
-        return transformArea(shipShape);
+    public Circle getShipShape() {
+        return this.transformShip(shipShape);
     }
 
     /**
      * @return the arrow shape create the ship.
      */
-    public Area getArrowArea() {
-        return transformAreaRotated(arrowShape);
+    public Polygon getArrowShape() {
+        return this.transformArrow(this.arrowShape);
     }
 
     /**
      * @return the center position.
      */
     @SuppressWarnings("unused")
-    public Vec2i getCenter() {
-        return new Vec2i((int) getBounds().getCenterX(), (int) getBounds().getCenterY());
+    public Vector2 getCenter() {
+        return new Vector2(this.x, this.y);
     }
 
     /**
@@ -268,15 +246,15 @@ public class Player extends LivingEntity implements InputController {
         // Player motion. //
         //****************//
 
-        double motion = 0.0f;
-        double rotate = 0.0f;
+        float motion = 0.0f;
+        float rotate = 0.0f;
 
         // Check each direction, to create velocity
         if (this.forward) motion += getSpeed() * 10;
         if (this.backward) motion -= getSpeed() * 10;
         if (this.left) rotate -= this.rotationSpeed;
         if (this.right) rotate += this.rotationSpeed;
-        if (this.joyStickY != 0) motion = this.joyStickY * this.attributes.getBase(Attribute.SPEED);
+        if (this.joyStickY != 0) motion = (float) (this.joyStickY * this.attributes.getBase(Attribute.SPEED));
         if (this.joyStickX != 0) rotate = this.joyStickX * this.rotationSpeed;
 
         // Update X, and Y.
@@ -285,13 +263,13 @@ public class Player extends LivingEntity implements InputController {
         }
 
         // Calculate Velocity X and Y.
-        double angelRadians = Math.toRadians(this.rotation);
-        double tempVelX = Math.cos(angelRadians) * motion;
-        double tempVelY = Math.sin(angelRadians) * motion;
+        float angelRadians = this.rotation * MathUtils.degRad;
+        float tempVelX = MathUtils.cos(angelRadians) * motion;
+        float tempVelY = MathUtils.sin(angelRadians) * motion;
 
         if (isMobile()) {
-            this.accelerateX += tempVelX / ((double) TPS);
-            this.accelerateY += tempVelY / ((double) TPS);
+            this.accelerateX += tempVelX / TPS;
+            this.accelerateY += tempVelY / TPS;
         }
 
         // Velocity on X-axis.
@@ -348,8 +326,8 @@ public class Player extends LivingEntity implements InputController {
 
         this.activeEffects.removeIf((effectInstance -> effectInstance.getRemainingTime() < 0d));
 
-        this.accelerateX = this.getAccelerateX() / ((0.05 / (1 * (double) TPS / 20)) + 1);
-        this.accelerateY = this.getAccelerateY() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+        this.accelerateX = this.getAccelerateX() / ((0.05f / (1 * (float) TPS / 20)) + 1);
+        this.accelerateY = this.getAccelerateY() / ((0.05f / (1 * (float) TPS / 20)) + 1);
 
         this.prevX = this.getX();
         this.prevY = this.getY();
@@ -408,18 +386,18 @@ public class Player extends LivingEntity implements InputController {
         // Modifiers
         if (other instanceof Bubble bubble) {
             AttributeContainer attributeMap = bubble.getAttributes();
-            double scoreMultiplier = attributeMap.getBase(Attribute.SCORE);
-            double attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
-            double defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
+            double scoreMultiplier = attributeMap.get(Attribute.SCORE);
+            double attack = attributeMap.get(Attribute.ATTACK);  // Maybe used.
+            double defense = attributeMap.get(Attribute.DEFENSE);  // Maybe used.
 
             // Attributes
-            double radius = bubble.getRadius();
-            double speed = bubble.getSpeed();
+            float radius = bubble.getRadius();
+            float speed = bubble.getSpeed();
 
             // Calculate score value.
             double visibleValue = radius * speed;
             double nonVisibleValue = attack * defense;
-            double scoreValue = ((visibleValue * (nonVisibleValue + 1)) * scoreMultiplier * scoreMultiplier) * getAttributes().getBase(Attribute.SCORE_MODIFIER) * deltaTime / Constants.BUBBLE_SCORE_REDUCTION_SELF;
+            double scoreValue = ((visibleValue * (nonVisibleValue + 1)) * scoreMultiplier * scoreMultiplier) * getAttributes().get(Attribute.SCORE_MODIFIER) * deltaTime / Constants.BUBBLE_SCORE_REDUCTION_SELF;
 
             // Add score.
             addScore(scoreValue);
@@ -431,6 +409,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Renders the player.
+     *
      * @param renderer the renderer to use.
      */
     @Override
@@ -439,16 +418,17 @@ public class Player extends LivingEntity implements InputController {
         if (isNotSpawned()) return;
 
         // Fill the ship with the correct color.
-        renderer.setColor(Color.red);
-        renderer.fill(getShipArea());
+        renderer.setColor(Color.RED);
+        renderer.circleLine(this.x, this.y, 40);
 
         // Fill the arrow with the correct color.
-        renderer.setColor(Color.white);
-        renderer.fill(getArrowArea());
+        renderer.setColor(Color.WHITE);
+        renderer.polygon(getArrowShape());
     }
 
     /**
      * Rotate the player.
+     *
      * @param deltaRotation amount of degrees to rotate.
      * @deprecated use {@link #rotate(float)} instead.
      */
@@ -459,6 +439,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Handles deleting of the player.
+     *
      * @see #delete()
      */
     @Override
@@ -468,6 +449,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Checks health, if health is zero or less, it will trigger game-over.
+     *
      * @see #getHealth()
      */
     @Override
@@ -502,6 +484,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Load the player data.
+     *
      * @param data the player data.
      */
     @Override
@@ -515,6 +498,7 @@ public class Player extends LivingEntity implements InputController {
     /**
      * Get the speed of the rotation.
      * The speed is in degrees per second.
+     *
      * @return the rotation speed.
      */
     public float getRotationSpeed() {
@@ -524,6 +508,7 @@ public class Player extends LivingEntity implements InputController {
     /**
      * Set the speed of the rotation.
      * The speed is in degrees per second.
+     *
      * @param rotationSpeed the rotation speed to set.
      */
     public void setRotationSpeed(float rotationSpeed) {
@@ -531,26 +516,9 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Get the player's rotation.<br>
-     * NOTE: Rotation is in degrees.
-     * @return the rotation of the player.
-     */
-    public double getRotation() {
-        return rotation;
-    }
-
-    /**
-     * Set the player's rotation.<br>
-     * NOTE: Rotation is in degrees.
-     * @param rotation the rotation to set to.
-     */
-    public void setRotation(float rotation) {
-        this.rotation = rotation % 360;
-    }
-
-    /**
      * Rotate the player.<br>
      * NOTE: Rotation is in degrees.
+     *
      * @param rotation amount of degrees to rotate.
      */
     public void rotate(float rotation) {
@@ -559,6 +527,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Get the player's current score.
+     *
      * @return the score of the player.
      */
     public double getScore() {
@@ -567,6 +536,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Increment score of the player.
+     *
      * @param value amount of score to increment.
      */
     public void addScore(double value) {
@@ -575,6 +545,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Decrement score of the player.
+     *
      * @param value amount of score to decrement.
      */
     public void subtractScore(double value) {
@@ -583,6 +554,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Set the player's score.
+     *
      * @param value the score of the player to set.
      */
     public void setScore(double value) {
@@ -591,6 +563,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Get the player's current level.
+     *
      * @return the level.
      */
     public int getLevel() {
@@ -613,6 +586,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Set the player's level.
+     *
      * @param level the level to set.
      */
     public void setLevel(int level) {
@@ -652,18 +626,8 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Set current ship scale.
-     *
-     * @param scale the scale to set.
-     * @see #getScale()
-     */
-    @Override
-    public void setScale(double scale) {
-        this.scale = scale;
-    }
-
-    /**
      * Deactivate / activate the forwards motion.
+     *
      * @param bool true to activate, false to deactivate.
      */
     public void forward(boolean bool) {
@@ -672,6 +636,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Deactivate / activate the backwards motion.
+     *
      * @param bool true to activate, false to deactivate.
      */
     public void backward(boolean bool) {
@@ -680,6 +645,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Deactivate / activate the left rotation.
+     *
      * @param bool true to activate, false to deactivate.
      */
     public void left(boolean bool) {
@@ -688,17 +654,18 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Deactivate / activate the right rotation.
+     *
      * @param bool true to activate, false to deactivate.
      */
     public void right(boolean bool) {
         this.right = bool;
     }
 
-    public double getVelocityDelta() {
+    public float getVelocityDelta() {
         return velocityDelta;
     }
 
-    public void setVelocityDelta(double velocityDelta) {
+    public void setVelocityDelta(float velocityDelta) {
         this.velocityDelta = velocityDelta;
     }
 
@@ -738,6 +705,7 @@ public class Player extends LivingEntity implements InputController {
 
     /**
      * Shoot a bullet from the {@linkplain #getCurrentAmmo() current ammo}.
+     *
      * @see #setCurrentAmmo(AmmoType)
      */
     public void shoot() {

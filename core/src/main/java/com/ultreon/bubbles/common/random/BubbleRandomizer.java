@@ -1,20 +1,19 @@
 package com.ultreon.bubbles.common.random;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
-import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.geom.Rectangle2D;
 
 /**
  * Bubble randomizer class.
  *
- * @author Qboi
+ * @author XyperCode
  */
 @SuppressWarnings("unused")
 @MethodsReturnNonnullByDefault
@@ -62,7 +61,7 @@ public class BubbleRandomizer extends EntityRandomizer {
      * @return a random bubble properties instance.
      */
     @Override
-    public BubbleProperties getRandomProperties(Rectangle2D bounds, long spawnIndex, int retry, Environment environment) {
+    public BubbleProperties getRandomProperties(Rectangle bounds, long spawnIndex, int retry, Environment environment) {
         BubbleType type = environment.getRandomBubble(spawnIndex);
 
         // Properties
@@ -78,16 +77,16 @@ public class BubbleRandomizer extends EntityRandomizer {
         double speed = speedRng.getNumber(minSpeed, maxSpeed, spawnIndex, retry);
         int radius = radiusRng.getNumber(minRad, maxRad, spawnIndex, retry);
 
-        if (bounds.getMinX() > bounds.getMaxX() || bounds.getMinY() > bounds.getMaxY()) {
+        if (bounds.getX() > bounds.getX() + bounds.getWidth() || bounds.getY() > bounds.getY() + bounds.getHeight()) {
             throw new IllegalStateException("Game bounds is invalid: negative size");
         }
 
-        if (bounds.getMinX() == bounds.getMaxX() || bounds.getMinY() == bounds.getMaxY()) {
+        if (bounds.getX() == bounds.getX() + bounds.getWidth() || bounds.getY() == bounds.getY() + bounds.getHeight()) {
             throw new IllegalStateException("Game bounds is invalid: zero size");
         }
 
-        int x = xRng.getNumber((int) bounds.getMinX(), (int) bounds.getMaxX(), spawnIndex, retry);
-        int y = yRng.getNumber((int) bounds.getMinY(), (int) bounds.getMaxY(), spawnIndex, retry);
+        int x = xRng.getNumber((int) bounds.getX(), (int) bounds.getX() + (int) bounds.getWidth(), spawnIndex, retry);
+        int y = yRng.getNumber((int) bounds.getY(), (int) bounds.getY() + (int) bounds.getHeight(), spawnIndex, retry);
 
         int rad = radius + (type.getColors().size() * 3) + 4;
         float defense = type.getDefense(environment, defenseRng);

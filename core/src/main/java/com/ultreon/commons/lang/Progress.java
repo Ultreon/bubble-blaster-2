@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 @Deprecated

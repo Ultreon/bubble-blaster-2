@@ -1,16 +1,18 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.event.v1.LifecycleEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.*;
+import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.Util;
+import com.ultreon.bubbles.util.Utils;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.MessengerImpl;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
@@ -25,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -62,13 +63,8 @@ public final class LoadScreen extends Screen implements Runnable {
     }
 
     @Override
-    public Cursor getDefaultCursor() {
-        return BubbleBlaster.getInstance().getBlankCursor();
-    }
-
-    @Override
     public void init() {
-        BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getDefaultCursor());
+        Utils.hideCursor();
 
         new Thread(this).start();
     }
@@ -76,7 +72,10 @@ public final class LoadScreen extends Screen implements Runnable {
     @Override
     public boolean onClose(Screen to) {
         boolean done = isDone();
-        if (done) return super.onClose(to);
+        if (done) {
+            Utils.showCursor();
+            return super.onClose(to);
+        }
         return false;
     }
 
@@ -98,7 +97,7 @@ public final class LoadScreen extends Screen implements Runnable {
             // Draw current 1st line message.
             if (curMainMsg != null) {
                 renderer.setColor(Color.rgb(0x808080));
-                font.draw(renderer, curMainMsg, 20, width / 2f, height / 2f, Anchor.CENTER);
+                renderer.drawText(font, curMainMsg, width / 2f, height / 2f, Anchor.CENTER);
             }
 
             renderer.setColor(Color.rgb(0x808080));
@@ -115,7 +114,7 @@ public final class LoadScreen extends Screen implements Runnable {
                 // Draw current 2nd line message.
                 if (curAltMsg != null) {
                     renderer.setColor(Color.rgb(0x808080));
-                    font.draw(renderer, curAltMsg, 20, width / 2f, height / 2f + 75, Anchor.CENTER);
+                    renderer.drawText(font, curAltMsg, width / 2f, height / 2f + 75, Anchor.CENTER);
                 }
 
                 renderer.setColor(Color.rgb(0x808080));
@@ -131,13 +130,15 @@ public final class LoadScreen extends Screen implements Runnable {
 
     private void setupGradient(Renderer renderer) {
         renderer.setColor(Color.rgb(0x00c0ff));
-        GradientPaint p = new GradientPaint(0, (float) BubbleBlaster.getInstance().getWidth() / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) BubbleBlaster.getInstance().getWidth() / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
-        renderer.paint(p);
+//        GradientPaint p = new GradientPaint(0, (float) BubbleBlaster.getInstance().getWidth() / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) BubbleBlaster.getInstance().getWidth() / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
+//        renderer.paint(p);
     }
 
     @Override
     public void run() {
         LOGGER.info("Loading started");
+
+        GameSettings.nopInit();
 
         this.progMain = new ProgressMessenger(msgMain, 11);
 

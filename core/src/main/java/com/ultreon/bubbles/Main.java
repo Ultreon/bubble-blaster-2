@@ -1,6 +1,5 @@
 package com.ultreon.bubbles;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.libs.crash.v0.CrashLog;
 import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.impl.util.Arguments;
@@ -10,8 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
-    public static boolean rpcReady;
-
     // Main (static) method. Game starts from here.
     @SuppressWarnings("unused")
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {

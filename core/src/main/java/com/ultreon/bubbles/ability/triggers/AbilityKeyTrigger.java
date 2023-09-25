@@ -1,12 +1,9 @@
 package com.ultreon.bubbles.ability.triggers;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.ability.AbilityTrigger;
 import com.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
 import com.ultreon.bubbles.input.GameInput;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -46,23 +43,23 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     }
 
     public boolean isShiftPressed() {
-        return KeyboardInput.isShiftDown(modifiers);
+        return GameInput.isShiftDown(modifiers);
     }
 
     public boolean isCtrlPressed() {
-        return KeyboardInput.isCtrlDown(modifiers);
+        return GameInput.isCtrlDown(modifiers);
     }
 
     public boolean isMetaPressed() {
-        return KeyboardInput.isMetaDown(modifiers);
+        return GameInput.isMetaDown(modifiers);
     }
 
     public boolean isAltPressed() {
-        return KeyboardInput.isAltDown(modifiers);
+        return GameInput.isAltDown(modifiers);
     }
 
     public boolean isAltGraphPressed() {
-        return KeyboardInput.isAltGraphDown(modifiers);
+        return GameInput.isAltGraphDown(modifiers);
     }
 
     public boolean isDown(int keyCode) {
@@ -72,13 +69,6 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     @Deprecated
     public HashMap<Integer, Boolean> getCurrentlyPressed() {
         return new HashMap<>();
-    }
-
-    @Nullable
-    @Contract("->null")
-    @Deprecated
-    public KeyboardInput getController() {
-        return null;
     }
 
 }

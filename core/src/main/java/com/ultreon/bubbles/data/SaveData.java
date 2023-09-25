@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Qboi
+ * @author XyperCode
  */
 public class SaveData {
     public final HashMap<List<String>, Object> saveData = new HashMap<>();

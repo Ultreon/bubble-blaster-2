@@ -1,11 +1,13 @@
 package com.ultreon.bubbles.entity;
 
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.Constants;
+import com.ultreon.bubbles.Constants;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
@@ -16,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.*;
 
 @MethodsReturnNonnullByDefault
 @FieldsAreNonnullByDefault
@@ -90,7 +91,7 @@ public class Bullet extends Entity {
     }
 
     @Override
-    public Shape getShape() {
+    public Shape2D getShape() {
         return ammoType.getShape(this);
     }
 
@@ -107,6 +108,11 @@ public class Bullet extends Entity {
     @Override
     protected void invalidate() {
 
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, 1, 1);
     }
 
     @Override

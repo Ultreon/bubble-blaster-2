@@ -2,30 +2,60 @@ package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.GridPoint2;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.PauseScreen;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.render.gui.screen.ScreenManager;
-import com.ultreon.bubbles.vector.Vec2i;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class GameInput extends InputAdapter {
-
+    private static final Set<Integer> KEYS_DOWN = new CopyOnWriteArraySet<>();
+    private static final GridPoint2 POS = new GridPoint2(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
-    private static final IntSet KEYS_DOWN = new IntArraySet();
-    private static final Map<Integer, Boolean> buttonMap = new HashMap<>();
-    private static final Int2ReferenceArrayMap<Vec2i> dragStarts = new Int2ReferenceArrayMap<>();
-    private Vec2i pos;
+    private final Map<Integer, Boolean> pressedByPointer = new HashMap<>();
+    private final Int2ReferenceArrayMap<GridPoint2> dragStarts = new Int2ReferenceArrayMap<>();
 
-    public static boolean isKeyDown(int keyCode) {
-        return KEYS_DOWN.contains(keyCode);
+    private static final int SHIFT_MASK = 1;
+    private static final int CTRL_MASK = 1 << 1;
+    private static final int META_MASK = 1 << 2;
+    private static final int ALT_MASK = 1 << 3;
+    private static final int ALT_GRAPH_MASK = 1 << 5;
+
+    public static boolean isShiftDown(int modifiers) {
+        return (modifiers & SHIFT_MASK) != 0;
+    }
+
+    public static boolean isCtrlDown(int modifiers) {
+        return (modifiers & CTRL_MASK) != 0;
+    }
+
+    public static boolean isMetaDown(int modifiers) {
+        return (modifiers & META_MASK) != 0;
+    }
+
+    public static boolean isAltDown(int modifiers) {
+        return (modifiers & ALT_MASK) != 0;
+    }
+
+    public static boolean isAltGraphDown(int modifiers) {
+        return (modifiers & ALT_GRAPH_MASK) != 0;
+    }
+
+    public static GridPoint2 getPos() {
+        return POS.cpy();
+    }
+
+    public static boolean isKeyDown(int keycode) {
+        return KEYS_DOWN.contains(keycode);
     }
 
     @Override
@@ -38,14 +68,13 @@ public class GameInput extends InputAdapter {
             KEYS_DOWN.add(keycode);
         }
 
-        ScreenManager screenManager = this.game.getScreenManager();
-        Screen screen = screenManager.getCurrentScreen();
+        Screen currentScreen = this.game.getCurrentScreen();
         Environment environment = game.environment;
-
-        if (screen != null)
-            screen.keyPress(keycode);
-        else if (keycode == Input.Keys.ESCAPE && environment != null && environment.isAlive())
+        if (currentScreen != null) {
+            currentScreen.keyPress(keycode);
+        } else if (keycode == Input.Keys.ESCAPE && environment != null && environment.isAlive()) {
             BubbleBlaster.getInstance().showScreen(new PauseScreen());
+        }
 
         return true;
     }
@@ -55,10 +84,11 @@ public class GameInput extends InputAdapter {
         KEYS_DOWN.remove(keycode);
         InputEvents.KEY_RELEASE.factory().onKeyRelease(keycode);
 
-        ScreenManager screenManager = this.game.getScreenManager();
-        Screen screen = screenManager.getCurrentScreen();
+        Screen currentScreen = this.game.getCurrentScreen();
 
-        if (screen != null) screen.keyRelease(keycode);
+        if (currentScreen != null) {
+            currentScreen.keyRelease(keycode);
+        }
 
         return true;
     }
@@ -67,99 +97,90 @@ public class GameInput extends InputAdapter {
     public boolean keyTyped(char character) {
         InputEvents.CHAR_TYPE.factory().onCharType(character);
 
-        ScreenManager screenManager = this.game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
+        Screen currentScreen = this.game.getCurrentScreen();
         if (currentScreen != null) {
             currentScreen.charType(character);
         }
-        return true;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        this.pos = new Vec2i(screenX, screenY);
-
-        InputEvents.MOUSE_MOVE.factory().onMouseMove(screenX, screenY);
-
-        ScreenManager screenManager = game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
-
-        if (currentScreen != null) currentScreen.mouseMove(screenX, screenY);
-
-        return true;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        this.pos = new Vec2i(screenX, screenY);
-
-        buttonMap.put(button, false);
-        dragStarts.remove(button);
-
-        InputEvents.MOUSE_RELEASE.factory().onMouseRelease(screenX, screenY, button);
-
-        ScreenManager screenManager = game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
-
-        if (currentScreen != null) currentScreen.mouseRelease(screenX, screenY, button);
 
         return true;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        this.pos = new Vec2i(screenX, screenY);
+        if (pointer == 0) POS.set(screenX, screenY);
+        pressedByPointer.put(pointer, true);
 
-        buttonMap.put(button, true);
-        dragStarts.put(button, new Vec2i(screenX, screenY));
+        dragStarts.put(button, new GridPoint2(screenX, screenY));
 
         InputEvents.MOUSE_PRESS.factory().onMousePress(screenX, screenY, button);
-        InputEvents.MOUSE_CLICK.factory().onMouseClick(screenX, screenY, button, 1);
+        Screen currentScreen = game.getCurrentScreen();
+        if (currentScreen != null) {
+            currentScreen.mousePress(screenX, screenY, button);
+        }
 
-        ScreenManager screenManager = game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
+        return true;
+    }
 
-        if (currentScreen != null) currentScreen.mousePress(screenX, screenY, button);
-        if (currentScreen != null) currentScreen.mouseClick(screenX, screenY, button, 1);
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (pointer == 0) POS.set(screenX, screenY);
+
+        pressedByPointer.put(pointer, false);
+
+        dragStarts.remove(button);
+
+        InputEvents.MOUSE_RELEASE.factory().onMouseRelease(screenX, screenY, button);
+
+        @Nullable Screen currentScreen = game.getCurrentScreen();
+        if (currentScreen != null) {
+            currentScreen.mouseRelease(screenX, screenY, button);
+        }
 
         return true;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        this.pos = new Vec2i(screenX, screenY);
-
-        InputEvents.MOUSE_DRAG.factory().onMouseDrag(screenX, screenY, Input.Buttons.LEFT);
+        if (pointer == 0) POS.set(screenX, screenY);
 
         for (var entry : dragStarts.int2ReferenceEntrySet()) {
-            ScreenManager screenManager = game.getScreenManager();
-            Screen currentScreen = screenManager.getCurrentScreen();
-            Vec2i vec = entry.getValue();
-
-            if (currentScreen != null) currentScreen.mouseDrag(vec.x, vec.y, screenX, screenY, entry.getIntKey());
+            Screen currentScreen = game.getCurrentScreen();
+            if (currentScreen != null) {
+                GridPoint2 vec = entry.getValue();
+                currentScreen.mouseDrag(vec.x, vec.y, screenX, screenY, entry.getIntKey());
+            }
         }
 
-        ScreenManager screenManager = game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
+        @Nullable Screen currentScreen = game.getCurrentScreen();
+        if (currentScreen != null) {
+            currentScreen.mouseMove(screenX, screenY);
+        }
 
-        if (currentScreen != null) currentScreen.mouseMove(screenX, screenY);
+        return true;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        POS.set(screenX, screenY);
+
+        InputEvents.MOUSE_MOVE.factory().onMouseMove(screenX, screenY);
+
+        @Nullable Screen currentScreen = game.getCurrentScreen();
+        if (currentScreen != null) {
+            currentScreen.mouseMove(screenX, screenY);
+        }
 
         return true;
     }
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        if (this.pos == null) {
-            return false;
-        }
-        InputEvents.MOUSE_SCROLL.factory().onMouseScroll(pos.x, pos.y, amountY);
+        InputEvents.MOUSE_SCROLL.factory().onMouseScroll(POS.x, POS.y, amountY);
 
-        ScreenManager screenManager = game.getScreenManager();
-        Screen currentScreen = screenManager.getCurrentScreen();
+        Screen currentScreen = game.getCurrentScreen();
         if (currentScreen != null) {
-            currentScreen.mouseWheel(pos.x, pos.y, amountY);
+            currentScreen.mouseWheel(POS.x, POS.y, amountY);
         }
-
         return true;
     }
 }

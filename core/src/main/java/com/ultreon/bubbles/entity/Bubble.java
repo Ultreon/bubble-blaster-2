@@ -1,9 +1,10 @@
 package com.ultreon.bubbles.entity;
 
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.entity.ai.AiTask;
@@ -13,17 +14,16 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
 import java.util.Random;
 
 /**
@@ -181,7 +181,8 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public Rectangle getBounds() {
-        Rectangle rectangle = super.getBounds();
+        Circle circle = getShape();
+        Rectangle rectangle = new Rectangle(this.x - circle.radius / 2, this.y - circle.radius / 2, circle.radius, circle.radius);
         rectangle.width += 4;
         rectangle.height += 4;
         return rectangle;
@@ -231,8 +232,8 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     @Override
-    public double getSpeed() {
-        return super.getSpeed() * (this.environment.getPlayer().getLevel() / 2d + 1) * getEnvironment().getGlobalBubbleSpeedModifier();
+    public float getSpeed() {
+        return (float) (super.getSpeed() * (this.environment.getPlayer().getLevel() / 2d + 1) * getEnvironment().getGlobalBubbleSpeedModifier());
     }
 
     /**
@@ -245,7 +246,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, x - radius / 2.0, y - radius / 2.0, radius, destroyFrame, bubbleType.getColors());
+        EnvironmentRenderer.drawBubble(renderer, (float) (x - radius / 2.0), (float) (y - radius / 2.0), radius, destroyFrame, bubbleType.getColors());
     }
 
     public boolean isBeingDestroyed() {
@@ -256,9 +257,9 @@ public class Bubble extends AbstractBubbleEntity {
      * @return the bubble's shape.
      */
     @Override
-    public Ellipse2D getShape() {
+    public Circle getShape() {
         int rad = radius;
-        return new Ellipse2D.Double(this.x - (float) rad / 2, this.y - (float) rad / 2, rad, rad);
+        return new Circle(this.x - (float) rad / 2, this.y - (float) rad / 2, rad);
     }
 
     @Override
@@ -326,7 +327,7 @@ public class Bubble extends AbstractBubbleEntity {
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
         if (invincible) return;
         if (isValid() && isVisible()) {
-            BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3);
+            BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3f);
         }
         isBeingDestroyed = true;
         attributes.removeModifiers(Attribute.SCORE);

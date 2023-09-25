@@ -1,19 +1,19 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.render.Anchor;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.bubbles.vector.Vec2i;
-import com.ultreon.bubbles.vector.size.IntSize;
+import com.ultreon.libs.commons.v0.size.IntSize;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 import org.checkerframework.checker.builder.qual.ReturnsReceiver;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -23,6 +23,8 @@ public class OptionsTextEntry extends GuiComponent {
 
     // Values.
     protected String text;
+
+    protected GlyphLayout layout = new GlyphLayout();
 
     // State
     protected boolean activated;
@@ -57,8 +59,8 @@ public class OptionsTextEntry extends GuiComponent {
     public boolean keyPress(int keyCode) {
         if (!activated) return false;
 
-        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
-            if (text.length() == 0) return false;
+        if (keyCode == Input.Keys.BACKSPACE) {
+            if (text.isEmpty()) return false;
 
             String leftText = text.substring(0, cursorIndex - 1);
             String rightText = text.substring(cursorIndex);
@@ -66,13 +68,14 @@ public class OptionsTextEntry extends GuiComponent {
             String text = leftText + rightText;
             if (responder.test(text)) {
                 this.text = text;
+                layout.setText(font, text.substring(0, cursorIndex));
                 cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
 
-        if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
-            if (text.length() == 0) return false;
+        if (keyCode == Input.Keys.ESCAPE) {
+            if (text.isEmpty()) return false;
             if (cursorIndex >= text.length() - 1) return false;
 
             String leftText = text.substring(0, cursorIndex);
@@ -81,17 +84,18 @@ public class OptionsTextEntry extends GuiComponent {
             String text = leftText + rightText;
             if (responder.test(text)) {
                 this.text = text;
+                layout.setText(font, text.substring(0, cursorIndex));
                 cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
 
-        if (keyCode == KeyboardInput.Map.KEY_LEFT) {
+        if (keyCode == Input.Keys.LEFT) {
             cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
             return true;
         }
 
-        if (keyCode == KeyboardInput.Map.KEY_RIGHT) {
+        if (keyCode == Input.Keys.RIGHT) {
             cursorIndex = Mth.clamp(cursorIndex + 1, 0, this.text.length());
             return true;
         }
@@ -107,6 +111,7 @@ public class OptionsTextEntry extends GuiComponent {
             String text = leftText + character + rightText;
             if (responder.test(text)) {
                 this.text = text;
+                layout.setText(font, text.substring(0, cursorIndex));
                 cursorIndex++;
             }
 
@@ -121,23 +126,23 @@ public class OptionsTextEntry extends GuiComponent {
         if (activated) {
             fill(renderer, 0, 0, width, height, 0xff808080);
 
-            Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0x00c0ff).toAwt(), 0f, getHeight(), Color.rgb(0x00ffc0).toAwt());
-            renderer.paint(p);
-            renderer.fill(new Rectangle(0, height, width, 4));
-            renderer.paint(old);
+//            Paint old = renderer.getPaint();
+//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0x00c0ff).toAwt(), 0f, getHeight(), Color.rgb(0x00ffc0).toAwt());
+//            renderer.paint(p);
+//            renderer.fill(new Rectangle(0, height, width, 4));
+//            renderer.paint(old);
         } else {
             fill(renderer, 0, 0, width, height, 0xff404040);
         }
 
         renderer.setColor(Color.rgb(0xffffffff));
-        font.draw(renderer, text, 24, 0, 0, Anchor.NW);
+        renderer.drawText(text, 0, 0);
 
         int cursorX;
         renderer.setColor(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
-            if (text.length() != 0) {
-                cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;
+            if (!text.isEmpty()) {
+                cursorX = (int) (layout.width + 2);
             } else {
                 cursorX = 0;
             }
@@ -145,13 +150,13 @@ public class OptionsTextEntry extends GuiComponent {
             renderer.line(cursorX, 2, cursorX, getHeight() - 2);
             renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
         } else {
-            if (text.length() != 0) {
-                cursorX = font.width(24, text.substring(0, cursorIndex));
+            if (!text.isEmpty()) {
+                cursorX = (int) layout.width;
             } else {
                 cursorX = 0;
             }
 
-            int width = font.width(24, text.charAt(cursorIndex));
+            int width = font.getData().getGlyph(text.charAt(cursorIndex)).width;
 
             renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
             renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
@@ -190,7 +195,7 @@ public class OptionsTextEntry extends GuiComponent {
         public OptionsTextEntry build() {
             if (bounds == null) throw new IllegalArgumentException("Missing bounds for creating OptionsTextEntry.");
 
-            OptionsTextEntry obj = new OptionsTextEntry(bounds.x, bounds.y, bounds.width, bounds.height);
+            OptionsTextEntry obj = new OptionsTextEntry((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
             obj.setText(text);
 
             return obj;

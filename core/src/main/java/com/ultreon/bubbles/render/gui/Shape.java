@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
-import com.ultreon.bubbles.render.gui.widget.Rectangle;
+import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Shape {
     public abstract Rectangle getBounds();

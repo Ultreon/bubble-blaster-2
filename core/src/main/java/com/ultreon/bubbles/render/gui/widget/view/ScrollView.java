@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.widget.view;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.render.gui.widget.Rectangle;
+import com.badlogic.gdx.math.Rectangle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -21,7 +21,7 @@ public class ScrollView extends View {
     private boolean eventsActive;
 
     public ScrollView(Screen screen, Rectangle innerBounds, Rectangle outerBounds) {
-        super(outerBounds.x, outerBounds.y, outerBounds.width, outerBounds.height);
+        super((int) outerBounds.x, (int) outerBounds.y, (int) outerBounds.width, (int) outerBounds.height);
         this.innerBounds = innerBounds;
         this.outerBounds = outerBounds;
         this.screen = screen;
@@ -38,7 +38,7 @@ public class ScrollView extends View {
 
     @Override
     public void render(@NotNull Renderer renderer) {
-        renderer.subInstance(outerBounds.getX(), outerBounds.getY(), outerBounds.getWidth(), outerBounds.getHeight(), containerGraphics -> {
+        renderer.subInstance((int) outerBounds.getX(), (int) outerBounds.getY(), (int) outerBounds.getWidth(), (int) outerBounds.getHeight(), containerGraphics -> {
             for (GuiComponent child : this.children) {
                 child.render(containerGraphics);
             }

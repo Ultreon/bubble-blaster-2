@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common.gamestate;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;

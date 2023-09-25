@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.common;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 
 import java.io.File;
 import java.io.IOException;

@@ -61,7 +61,7 @@ package com.ultreon.commons.map;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- * This was edited by Qboi123
+ * This was edited by XyperCode
  */
 
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +86,7 @@ import java.util.*;
  * @author <a href="mailto:mas@apache.org">Michael A. Smith</a>
  * @author <a href="mailto:dlr@collab.net">Daniel Rall</a>
  * @author <a href="mailto:hps@intermeta.de">Henning P. Schmiedehausen</a>
- * @author <a href="mailto:qboiwastaken@gmail.com">Qboi123</a>
+ * @author <a href="mailto:qboiwastaken@gmail.com">XyperCode</a>
  * @since 2.0
  */
 @SuppressWarnings({"unused", "JavaDoc"})

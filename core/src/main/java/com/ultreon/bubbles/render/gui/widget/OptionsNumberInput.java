@@ -1,14 +1,12 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.render.Anchor;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.bubbles.util.helpers.Mth;
 
-import java.awt.*;
 
 @SuppressWarnings("unused")
 public class OptionsNumberInput extends OptionsTextEntry {
@@ -21,7 +19,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
     private int max;
 
     public OptionsNumberInput(Rectangle bounds, int value, int min, int max) {
-        this(bounds.x, bounds.y, bounds.width, bounds.height, value, min, max);
+        this((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height, value, min, max);
     }
 
     public OptionsNumberInput(int x, int y, int width, int height, int value, int min, int max) {
@@ -76,26 +74,27 @@ public class OptionsNumberInput extends OptionsTextEntry {
     public boolean keyPress(int keyCode) {
         if (super.keyPress(keyCode)) return true;
 
-        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE) {
+        if (keyCode == Input.Keys.BACKSPACE) {
             if (cursorIndex == 0) return false;
             String leftText = text.substring(0, cursorIndex - 1);
             String rightText = text.substring(cursorIndex);
 
             text = leftText + rightText;
+            layout.setText(font, text.substring(0, cursorIndex));
 
             cursorIndex--;
             cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
             return true;
         }
 
-        if (keyCode == KeyboardInput.Map.KEY_LEFT) {
+        if (keyCode == Input.Keys.LEFT) {
             cursorIndex--;
 
             cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
             return true;
         }
 
-        if (keyCode == KeyboardInput.Map.KEY_RIGHT) {
+        if (keyCode == Input.Keys.RIGHT) {
             cursorIndex++;
 
             cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
@@ -113,6 +112,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
             String rightText = text.substring(cursorIndex);
 
             text = leftText + character + rightText;
+            layout.setText(font, text.substring(0, cursorIndex));
 
             cursorIndex++;
 
@@ -155,14 +155,14 @@ public class OptionsNumberInput extends OptionsTextEntry {
     @Override
     public void render(Renderer renderer) {
         upButton.setY(0);
-        upButton.setX(getBounds().width - 24);
-        upButton.setHeight(getBounds().height / 2);
+        upButton.setX((int) (getBounds().width - 24));
+        upButton.setHeight((int) (getBounds().height / 2));
         upButton.setWidth(24);
         upButton.setText("+");
 
-        downButton.setY(getBounds().height / 2);
-        downButton.setX(getBounds().width - 24);
-        downButton.setHeight(getBounds().height / 2);
+        downButton.setY((int) (getBounds().height / 2));
+        downButton.setX((int) (getBounds().width - 24));
+        downButton.setHeight((int) (getBounds().height / 2));
         downButton.setWidth(24);
         downButton.setText("-");
 
@@ -176,13 +176,13 @@ public class OptionsNumberInput extends OptionsTextEntry {
         }
 
         renderer.setColor(Color.rgb(0xffffffff));
-        font.draw(renderer, text, 24, 2, getHeight() / 2f, Anchor.W);
+        renderer.drawLeftAnchoredText(font, text, 2, getHeight() / 2f);
 
-        int cursorX;
+        float cursorX;
         renderer.setColor(Color.rgb(0xff00c0c0));
         if (cursorIndex >= text.length()) {
-            if (text.length() != 0) {
-                cursorX = font.width(24, text.substring(0, cursorIndex)) + 2;
+            if (!text.isEmpty()) {
+                cursorX = layout.width + 2;
             } else {
                 cursorX = 0;
             }
@@ -190,13 +190,13 @@ public class OptionsNumberInput extends OptionsTextEntry {
             renderer.line(cursorX, 2, cursorX, getHeight() - 2);
             renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
         } else {
-            if (text.length() != 0) {
-                cursorX = font.width(24, text.substring(0, cursorIndex));
+            if (!text.isEmpty()) {
+                cursorX = layout.width;
             } else {
                 cursorX = 0;
             }
 
-            int width = font.width(24, text.charAt(cursorIndex));
+            int width = font.getData().getGlyph(text.charAt(cursorIndex)).width;
 
             renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
             renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
@@ -245,23 +245,18 @@ public class OptionsNumberInput extends OptionsTextEntry {
             Rectangle bounds = getBounds();
 
             if (isPressed() && isHovered()) {
-                // Border
-                Paint old = renderer.getPaint();
-                GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + getHeight(), Color.rgb(0x00ff80).toAwt());
-                renderer.paint(p);
-                renderer.fill(bounds);
-                renderer.paint(old);
+                renderer.fillGradient(0, y, 0, getHeight(), Color.rgb(0x0080ff), Color.rgb(0x00ff80));
 
-                textColor = Color.white;
+                textColor = Color.WHITE;
             } else if (isHovered()) {
                 renderer.setColor(Color.rgb(0x808080));
                 renderer.fill(bounds);
 
                 // Border
-                GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + getHeight(), Color.rgb(0x00ff80).toAwt());
-                Border border = new Border(2, 2, 2, 2);
-                border.setPaint(p);
-                border.paintBorder(renderer, bounds.x, bounds.y, bounds.width, bounds.height);
+//                GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + getHeight(), Color.rgb(0x00ff80).toAwt());
+//                Border border = new Border(2, 2, 2, 2);
+//                border.setPaint(p);
+//                border.paintBorder(renderer, bounds.x, bounds.y, bounds.width, bounds.height);
 
                 textColor = Color.rgb(0xffffff);
             } else {

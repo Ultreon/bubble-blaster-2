@@ -1,6 +1,8 @@
 package com.ultreon.bubbles.entity;
 
-import com.ultreon.libs.commons.v0.Identifier;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.AppliedEffect;
@@ -10,32 +12,30 @@ import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.GameObject;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GameObject;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.vector.Vec2d;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.commons.util.CollisionUtil;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.translations.v0.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 /**
  * Entity base class.
  * The base for all entities, such as the player or a bubble.
  *
- * @author Qboi
+ * @author XyperCode
  * @see LivingEntity
  * @see AbstractBubbleEntity
  * @since 0.0.0
@@ -50,14 +50,14 @@ public abstract class Entity extends GameObject implements StateHolder {
     protected EntityType<?> type;
 
     // Misc
-    protected Shape shape;
+    protected Shape2D shape;
     protected final HashSet<EntityType<?>> canCollideWith = new HashSet<>();
     protected final HashSet<EntityType<?>> canAttack = new HashSet<>();
     protected final HashSet<EntityType<?>> invulnerableTo = new HashSet<>();
     protected final Set<AppliedEffect> activeEffects = new CopyOnWriteArraySet<>();
 
     // Attributes
-    protected double scale = 1;
+    protected float scale = 1;
     protected AttributeContainer attributes = new AttributeContainer();
     protected AttributeContainer bases = new AttributeContainer();
 
@@ -66,11 +66,11 @@ public abstract class Entity extends GameObject implements StateHolder {
 
     protected float x, y;
     protected float prevX, prevY;
-    protected double velocityX;
-    protected double velocityY;
+    protected float velocityX;
+    protected float velocityY;
 
-    protected double accelerateX = 0.0d;
-    protected double accelerateY = 0.0d;
+    protected float accelerateX = 0.0f;
+    protected float accelerateY = 0.0f;
     protected boolean valid;
     private boolean spawned;
     protected final Environment environment;
@@ -215,11 +215,11 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param velocityY the amount velocity for bounce.
      * @param delta     the delta change.
      */
-    public void applyForce(double velocityX, double velocityY, double delta) {
+    public void applyForce(float velocityX, float velocityY, float delta) {
         setAcceleration(velocityX, velocityY);
     }
 
-    private void setAcceleration(double x, double y) {
+    private void setAcceleration(float x, float y) {
         accelerateX = x;
         accelerateY = y;
     }
@@ -232,7 +232,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param velocity the amount velocity for bounce.
      * @param delta    the delta change.
      */
-    public void applyForce(Vec2d velocity, double delta) {
+    public void applyForce(Vec2f velocity, float delta) {
         this.applyForce(velocity.getX(), velocity.getY(), delta);
     }
 
@@ -243,9 +243,9 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param velocity the amount velocity for bounce.
      * @param delta    the delta change.
      */
-    public void applyForce(float direction, float velocity, double delta) {
-        double x = Math.cos(direction) * velocity;
-        double y = Math.sin(direction) * velocity;
+    public void applyForceDir(float direction, float velocity, float delta) {
+        float x = MathUtils.cos(direction) * velocity;
+        float y = MathUtils.sin(direction) * velocity;
         this.applyForce(x, y, delta);
     }
 
@@ -256,35 +256,35 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param velocity the amount velocity for bounce.
      * @param delta    the delta change.
      */
-    public void bounceOff(Entity source, float velocity, double delta) {
-        this.applyForce((float) Math.toDegrees(Math.atan2(source.getY() - y, source.getX() - x)), velocity, delta);
+    public void bounceOff(Entity source, float velocity, float delta) {
+        this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - y, source.getX() - x)), velocity, delta);
     }
 
     /**
      * @return the x acceleration.
      */
-    public double getAccelerateX() {
+    public float getAccelerateX() {
         return accelerateX;
     }
 
     /**
      * @return the y acceleration.
      */
-    public double getAccelerateY() {
+    public float getAccelerateY() {
         return accelerateY;
     }
 
     /**
      * @param accelerateX the x acceleration to set.
      */
-    public void setAccelerateX(double accelerateX) {
+    public void setAccelerateX(float accelerateX) {
         this.accelerateX = accelerateX;
     }
 
     /**
      * @param accelerateY the y acceleration to set.
      */
-    public void setAccelerateY(double accelerateY) {
+    public void setAccelerateY(float accelerateY) {
         this.accelerateY = accelerateY;
     }
 
@@ -300,13 +300,13 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         this.activeEffects.removeIf((effectInstance -> effectInstance.getRemainingTime() < 0d));
 
-        this.accelerateX = this.getAccelerateX() / ((0.05 / (1 * (double) TPS / 20)) + 1);
-        this.accelerateY = this.getAccelerateY() / ((0.05 / (1 * (double) TPS / 20)) + 1);
+        this.accelerateX = this.getAccelerateX() / ((0.05f / (1 * (float) TPS / 20)) + 1);
+        this.accelerateY = this.getAccelerateY() / ((0.05f / (1 * (float) TPS / 20)) + 1);
 
         // Calculate Velocity X and Y.
         double angelRadians = Math.toRadians(this.getRotation());
-        this.velocityX = Math.cos(angelRadians) * this.getSpeed();
-        this.velocityY = Math.sin(angelRadians) * this.getSpeed();
+        this.velocityX = (float) (Math.cos(angelRadians) * this.getSpeed());
+        this.velocityY = (float) (Math.sin(angelRadians) * this.getSpeed());
 
         this.prevX = this.getX();
         this.prevY = this.getY();
@@ -373,7 +373,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      *
      * @return the requested shape.
      */
-    public abstract Shape getShape();
+    public abstract Shape2D getShape();
 
     @Override
     public boolean equals(Object o) {
@@ -390,10 +390,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Get Bounds     //
     ////////////////////////
-    public Rectangle getBounds() {
-        Shape shapeObj = getShape();
-        return shapeObj.getBounds();
-    }
+    public abstract Rectangle getBounds();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Getters     //
@@ -441,7 +438,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.velocityY = velY;
     }
 
-    public double getVelocityX() {
+    public float getVelocityX() {
         return velocityX;
     }
 
@@ -449,7 +446,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.velocityX = velocityX;
     }
 
-    public double getVelocityY() {
+    public float getVelocityY() {
         return velocityY;
     }
 
@@ -561,7 +558,7 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         this.entityId = data.getLong("id");
         this.uniqueId = data.getUUID("uuid");
-        this.scale = data.getDouble("scale");
+        this.scale = data.getFloat("scale");
         this.rotation = data.getFloat("rotation");
     }
 
@@ -671,7 +668,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Get the entity's scale.
      * @return the scale of the entity.
      */
-    public double getScale() {
+    public float getScale() {
         return scale;
     }
 
@@ -679,7 +676,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Set the entity's scale.
      * @param scale the scale to set.
      */
-    public void setScale(double scale) {
+    public void setScale(float scale) {
         this.scale = scale;
     }
 
@@ -717,9 +714,10 @@ public abstract class Entity extends GameObject implements StateHolder {
 
     /**
      * Get the entity's rotation in degrees.
+     *
      * @return the rotation of the entity.
      */
-    public double getRotation() {
+    public float getRotation() {
         return rotation;
     }
 
@@ -728,7 +726,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param rotation the rotation to set.
      */
     public void setRotation(float rotation) {
-        this.rotation = rotation;
+        this.rotation = rotation % 360;
     }
 
     /**
@@ -927,8 +925,8 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Get the entity's speed.
      * @return the speed.
      */
-    public double getSpeed() {
-        return getAttributes().get(Attribute.SPEED);
+    public float getSpeed() {
+        return (float) getAttributes().get(Attribute.SPEED);
     }
 
     public boolean isBad() {

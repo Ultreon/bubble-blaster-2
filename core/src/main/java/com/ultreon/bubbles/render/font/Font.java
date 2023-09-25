@@ -3,9 +3,9 @@ package com.ultreon.bubbles.render.font;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.event.v1.GameEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.commons.util.StringUtils;
@@ -186,7 +186,7 @@ public class Font {
             case SW -> y = y;
         }
         renderer.setFont(font);
-        renderer.text(string, x, y);
+        renderer.drawText(string, x, y);
     }
 
     private Rectangle2D.Float bounds(TextObject text) {
@@ -267,7 +267,7 @@ public class Font {
 
     @ApiStatus.Internal
     public void register() {
-        Identifier key = Registries.FONTS.getKey(this);
+        final Identifier key = new Identifier("lmao_get_deleted_bro");
         if (key == null)
             throw new IllegalStateException("Expected font to be registered. (Is the mod accessing internal functions?)");
         this.info = BubbleBlaster.getInstance().loadFont(key);

@@ -1,12 +1,13 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Cursor;
 import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.checkerframework.common.value.qual.IntRange;
 
-import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
@@ -48,7 +49,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     /**
      * Show Scene
      *
-     * @author Qboi
+     * @author XyperCode
      */
     public abstract void init();
 
@@ -57,7 +58,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      *
      * @param to the next scene to go.
      * @return true to cancel change screen.
-     * @author Qboi
+     * @author XyperCode
      */
     public boolean onClose(Screen to) {
         for (GuiComponent child : children) {
@@ -79,7 +80,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     @Override
     public boolean keyPress(int keyCode) {
-        if (keyCode == KeyboardInput.Map.KEY_ESCAPE) {
+        if (keyCode == Input.Keys.ESCAPE) {
             if (backScreen != null) {
                 game.showScreen(backScreen);
                 return true;
@@ -90,7 +91,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
         if (super.keyPress(keyCode)) return true;
 
-        if (keyCode == KeyboardInput.Map.KEY_TAB) {
+        if (keyCode == Input.Keys.TAB) {
             this.focusIndex++;
             onChildFocusChanged();
             return true;
@@ -101,7 +102,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     @Override
     public boolean keyRelease(int keyCode) {
-        if (keyCode == KeyboardInput.Map.KEY_TAB) return true;
+        if (keyCode == Input.Keys.TAB) return true;
 
         return this.focused != null && this.focused.keyRelease(keyCode);
     }
@@ -170,8 +171,8 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      *
      * @return the default cursor.
      */
-    public Cursor getDefaultCursor() {
-        return BubbleBlaster.getInstance().getDefaultCursor();
+    public Cursor.SystemCursor getDefaultCursor() {
+        return Cursor.SystemCursor.None;
     }
 
     /**

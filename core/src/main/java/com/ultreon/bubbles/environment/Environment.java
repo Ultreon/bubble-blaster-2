@@ -1,8 +1,10 @@
 package com.ultreon.bubbles.environment;
 
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Difficulty;
+import com.ultreon.libs.commons.v0.DummyMessenger;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
@@ -16,9 +18,9 @@ import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.Constants;
-import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
@@ -28,10 +30,9 @@ import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
-import com.ultreon.bubbles.vector.Vec2f;
-import com.ultreon.bubbles.vector.Vec2i;
-import com.ultreon.commons.lang.DummyMessenger;
-import com.ultreon.commons.lang.Messenger;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
+import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
@@ -42,7 +43,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -81,7 +81,7 @@ public final class Environment {
     private ValueAnimator bloodMoonValueAnimator1;
 
     // Modifiers
-    private double globalBubbleSpeedModifier = 1;
+    private float globalBubbleSpeedModifier = 1;
     private float stateDifficultyModifier = 1;
     private final HashSet<GameplayEvent> gameplayEventActive = new HashSet<>();
     private final Rng bloodMoonRng;
@@ -230,7 +230,7 @@ public final class Environment {
         tag.putLong("seed", this.seed);
         tag.putLong("savedTime", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC));
         Identifier key = Registries.GAMEMODES.getKey(this.gamemode);
-        tag.putString("gamemode", (key == null ? Gamemodes.MODERN.getId() : key).toString());
+        tag.putString("gamemode", (key == null ? Gamemodes.MODERN.id() : key).toString());
         return tag;
     }
 
@@ -268,11 +268,11 @@ public final class Environment {
         this.difficulty = difficulty;
     }
 
-    public void setGlobalBubbleSpeedModifier(double speedModifier) {
+    public void setGlobalBubbleSpeedModifier(float speedModifier) {
         this.globalBubbleSpeedModifier = speedModifier;
     }
 
-    public double getGlobalBubbleSpeedModifier() {
+    public float getGlobalBubbleSpeedModifier() {
         return globalBubbleFreeze ? 0 : globalBubbleSpeedModifier * Constants.BUBBLE_SPEED_MODIFIER;
     }
 
@@ -320,7 +320,7 @@ public final class Environment {
             }
         } else {
             if (bloodMoonValueAnimator != null) {
-                setGlobalBubbleSpeedModifier(bloodMoonValueAnimator.animate());
+                setGlobalBubbleSpeedModifier((float) bloodMoonValueAnimator.animate());
                 if (bloodMoonValueAnimator.isEnded()) {
                     GameplayEvents.BLOOD_MOON_EVENT.activate();
                     this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT);
@@ -333,7 +333,7 @@ public final class Environment {
                     bloodMoonValueAnimator1 = new ValueAnimator(8d, 1d, 1000d);
                 }
             } else if (bloodMoonValueAnimator1 != null) {
-                setGlobalBubbleSpeedModifier(bloodMoonValueAnimator1.animate());
+                setGlobalBubbleSpeedModifier((float) bloodMoonValueAnimator1.animate());
                 if (bloodMoonValueAnimator1.isEnded()) {
                     bloodMoonValueAnimator1 = null;
                 }
@@ -656,7 +656,7 @@ public final class Environment {
     @Nullable
     public Entity getEntityAt(Vec2i pos) {
         for (Entity entity : entities) {
-            if (entity.getShape().contains(new Point(pos.x, pos.y))) {
+            if (entity.getShape().contains(new Vector2(pos.x, pos.y))) {
                 return entity;
             }
         }

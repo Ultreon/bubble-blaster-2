@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Ability container. Similar to {@link AttributeContainer} but without modifiers, and with some extra additions.
  * This class is bound to a specific {@link Entity}.
  * @since 0.0.0
- * @author Qboi123
+ * @author XyperCode
  */
 public class AbilityContainer {
     private final HashMap<AbilityType<? extends Ability<?>>, Ability<?>> abilities = new HashMap<>();

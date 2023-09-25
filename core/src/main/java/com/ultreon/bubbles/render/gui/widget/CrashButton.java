@@ -1,13 +1,11 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
-import com.ultreon.bubbles.render.gui.border.Border;
-import com.ultreon.bubbles.render.gui.border.OuterBorder;
 import com.ultreon.libs.text.v0.TextObject;
 
-import java.awt.*;
 
 public class CrashButton extends AbstractButton implements GuiStateListener {
     private Runnable command;
@@ -35,7 +33,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         }
 
         public CrashButton build() {
-            CrashButton button = new CrashButton(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+            CrashButton button = new CrashButton((int) _bounds.x, (int) _bounds.y, (int) _bounds.width, (int) _bounds.height);
 
             button.setText(_text);
             button.setCommand(_command);
@@ -77,33 +75,33 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         Color textColor;
 
         if (isPressed()) {
-            Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
-            renderer.paint(p);
-            renderer.rect(0, 0, width, height);
-            renderer.paint(old);
+//            Paint old = renderer.getPaint();
+//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
+//            renderer.paint(p);
+//            renderer.rect(0, 0, width, height);
+//            renderer.paint(old);
 
-            textColor = Color.white;
+            textColor = Color.WHITE;
         } else if (isHovered()) {
-            renderer.stroke(new BasicStroke(4.0f));
+            renderer.setStrokeWidth(4.0f);
 
-            Paint old = renderer.getPaint();
-            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
-            renderer.paint(p);
-            Border border = new OuterBorder(2, 2, 2, 2);
-            border.setPaint(p);
-            border.paintBorder(renderer, 1, 1, width - 2, height - 2);
-
-            renderer.paint(old);
+//            Paint old = renderer.getPaint();
+//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
+//            renderer.paint(p);
+//            Border border = new OuterBorder(2, 2, 2, 2);
+//            border.setPaint(p);
+//            border.paintBorder(renderer, 1, 1, width - 2, height - 2);
+//
+//            renderer.paint(old);
 
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.stroke(new BasicStroke(1.0f));
+            renderer.setStrokeWidth(1.0f);
 
             renderer.setColor(Color.rgb(0xffffff));
-            Border border = new Border(1, 1, 1, 1);
-            border.setPaint(Color.rgb(0xffffff).toAwt());
-            border.paintBorder(renderer, 0, 0, width, height);
+//            Border border = new Border(1, 1, 1, 1);
+//            border.setPaint(Color.rgb(0xffffff).toAwt());
+//            border.paintBorder(renderer, 0, 0, width, height);
 
             textColor = Color.rgb(0xffffff);
         }

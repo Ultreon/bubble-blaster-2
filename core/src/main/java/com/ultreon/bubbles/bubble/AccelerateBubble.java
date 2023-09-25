@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.bubble;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
@@ -22,11 +23,11 @@ public class AccelerateBubble extends BubbleType {
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof Player player) {
             // Calculate Velocity X and Y.
-            double accelerateX = 0;
-            double accelerateY = 0;
+            float accelerateX = 0;
+            float accelerateY = 0;
             if (player.isMobile()) {
-                accelerateX += Math.cos(Math.toRadians(player.getRotation())) * 0.375d;
-                accelerateY += Math.sin(Math.toRadians(player.getRotation())) * 0.375d;
+                accelerateX += MathUtils.cos(player.getRotation() * MathUtils.degRad) * 0.375f;
+                accelerateY += MathUtils.sin(player.getRotation() * MathUtils.degRad) * 0.375f;
             }
 
             // Set velocity X and Y.

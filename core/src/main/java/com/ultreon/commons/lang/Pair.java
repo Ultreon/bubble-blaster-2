@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @param <F> first object,
  * @param <S> second object.
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 @Deprecated

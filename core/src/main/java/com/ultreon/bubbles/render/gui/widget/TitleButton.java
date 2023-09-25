@@ -1,11 +1,11 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.libs.text.v0.TextObject;
 
-import java.awt.*;
 
 @SuppressWarnings("unused")
 public class TitleButton extends AbstractButton {
@@ -34,7 +34,7 @@ public class TitleButton extends AbstractButton {
         }
 
         public TitleButton build() {
-            TitleButton button = new TitleButton(bounds.x, bounds.y, bounds.width, bounds.height);
+            TitleButton button = new TitleButton((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
 
             button.setText(text);
             button.setCommand(command);
@@ -80,27 +80,20 @@ public class TitleButton extends AbstractButton {
         renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, Math.min(width, height)-2);
 
         if (isPressed()) {
-            // Shadow
-            Paint old = renderer.getPaint();
-
             renderer.setColor(0xff484848);
             renderer.roundRect(0, 0, width-1, height-1, Math.min(width, height)-4, 10);
 
             renderer.drawRoundEffectBox(0, 0, width-1, height-1, Math.min(width, height)-4, 1);
-            renderer.paint(old);
-            textColor = Color.white;
+            textColor = Color.WHITE;
         } else if (isHovered()) {
-            Paint old = renderer.getPaint();
-
             renderer.drawRoundEffectBox(1, 1, width-4, height-4, Math.min(width, height)-8, 2);
-            renderer.paint(old);
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.stroke(new BasicStroke(1.0f));
+            renderer.setStrokeWidth(1.0f);
             textColor = Color.rgb(0xe0e0e0);
         }
 
-        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
+//        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
     }
 
     @SuppressWarnings("EmptyMethod")

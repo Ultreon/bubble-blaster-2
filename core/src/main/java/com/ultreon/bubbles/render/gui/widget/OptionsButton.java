@@ -1,13 +1,12 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.render.Anchor;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Font;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
-import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.text.v0.TextObject;
 
 @SuppressWarnings("unused")
@@ -36,7 +35,7 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
         }
 
         public OptionsButton build() {
-            OptionsButton button = new OptionsButton(bounds.x, bounds.y, bounds.width, bounds.height);
+            OptionsButton button = new OptionsButton((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
 
             button.setText(text);
             button.setCommand(command);
@@ -81,23 +80,23 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
         if (isPressed()) {
             renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(1, 1, 1, 1));
 
-            textColor = Color.white;
+            textColor = Color.WHITE;
         } else if (isHovered()) {
             renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
 
             textColor = Color.rgb(0xffffff);
         } else {
-            textColor = Color.lightGray;
+            textColor = Color.LIGHT_GRAY;
         }
 
         drawText(renderer, textColor, getSize(), text, font);
     }
 
-    static void drawText(Renderer renderer, Color textColor, Vec2i size, TextObject text, Font font) {
+    static void drawText(Renderer renderer, Color textColor, Vec2i size, TextObject text, BitmapFont font) {
         renderer.subInstance(4, 4, size.x - 8, size.y - 8, subRender -> {
             subRender.setColor(textColor);
-            font.draw(subRender, text, 16, (size.x - 8) / 2f, (size.y - 8) / 2f, Thickness.BOLD, Anchor.CENTER);
-            subRender.dispose();
+            subRender.setFont(font);
+            subRender.drawCenteredText(text.getText(), (int) ((size.x - 8) / 2f), (size.y - 8) / 2f);
         });
     }
 }

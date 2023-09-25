@@ -158,7 +158,7 @@ public abstract class Container extends GuiComponent {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation) {
+    public boolean mouseWheel(int x, int y, float rotation) {
         GuiComponent widgetAt = getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;

@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.entity.ammo;
 
+import com.badlogic.gdx.math.Shape2D;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
@@ -7,13 +8,12 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.item.ItemType;
 import com.ultreon.bubbles.render.Renderer;
 
-import java.awt.*;
 
 /**
  * Ammo type, handles things for {@link Bullet}.
  * This also adds a new {@link ItemType} to the registry.
  *
- * @author Qboi123
+ * @author XyperCode
  */
 @Beta
 public abstract class AmmoType {
@@ -32,7 +32,7 @@ public abstract class AmmoType {
 
     public abstract AttributeContainer getDefaultAttributes();
 
-    public abstract Shape getShape(Bullet bullet);
+    public abstract Shape2D getShape(Bullet bullet);
 
     public abstract float getSpeed();
 }

@@ -2,8 +2,8 @@ package com.ultreon.bubbles.entity;
 
 import com.ultreon.bubbles.command.Command;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

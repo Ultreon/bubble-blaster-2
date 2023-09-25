@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.registry;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
@@ -9,10 +10,10 @@ import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.event.v1.GameEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
-import com.ultreon.bubbles.media.Sound;
+import com.ultreon.bubbles.media.SoundEvent;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.commons.map.OrderedHashMap;
@@ -21,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.*;
 
 @Deprecated
@@ -45,7 +45,7 @@ public class Registry<T> {
     @Beta
     public static final Registry<ItemType> ITEMS = Registry.create(new Identifier("item"));
     public static final Registry<TextureCollection> TEXTURE_COLLECTIONS = Registry.create(new Identifier("texture_collection"));
-    public static final Registry<Sound> SOUNDS = Registry.create(new Identifier("sound"));
+    public static final Registry<SoundEvent> SOUNDS = Registry.create(new Identifier("sound"));
     public static final Registry<Font> FONTS = Registry.create(new Identifier("font"));
 
     protected Registry(Class<T> clazz, Identifier id) throws IllegalStateException {

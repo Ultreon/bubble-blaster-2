@@ -1,13 +1,15 @@
 package com.ultreon.bubbles.render.gui;
 
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Font;
-import com.ultreon.bubbles.render.gui.widget.Rectangle;
-import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.bubbles.util.FunctionUtils;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.Objects;
@@ -16,23 +18,31 @@ import java.util.Objects;
  * Controllable widget, a widget that can be controlled by the user.
  * This widget contains input event handlers like {@link #keyPress(int)} and {@link #mouseClick(int, int, int, int)}
  *
- * @author Qboi123
+ * @author XyperCode
  */
 @SuppressWarnings("unused")
 public abstract class GuiComponent implements GuiStateListener, Renderable {
+    protected final BubbleBlaster game = BubbleBlaster.getInstance();
+    protected final GlyphLayout layout = new GlyphLayout();
+
+    public final BitmapFont font = Fonts.DEFAULT.get();
+    public final BitmapFont monospaced = FunctionUtils.tryCall(Fonts.MONOSPACED_14);
+
     protected int x;
     protected int y;
     protected int width;
     protected int height;
-    private final long hash;
+
+    protected Color backgroundColor;
+
     public boolean enabled = true;
     public boolean visible = true;
+
     private boolean valid;
-    protected Color backgroundColor;
-    protected final BubbleBlaster game = BubbleBlaster.getInstance();
-    public final Font font = Fonts.DEFAULT.get();
-    public final Font monospaced = Fonts.MONOSPACED;
+    private final long hash;
+
     private boolean hovered = false;
+
     private int lastMouseX;
     private int lastMouseY;
 
@@ -42,6 +52,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * @param width  size create the widget
      * @param height size create the widget
      */
+    @SuppressWarnings("ConstantValue")
     public GuiComponent(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         if (width < 0) throw new IllegalArgumentException("Width is negative");
         if (height < 0) throw new IllegalArgumentException("Height is negative");
@@ -155,13 +166,13 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
         hovered = true;
     }
 
-    public boolean mouseWheel(int x, int y, double rotation) {
+    public boolean mouseWheel(int x, int y, float rotation) {
         return false;
     }
 
     /**
      * Key press handler.
-     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is pressed.
+     * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is pressed.
      *
      * @param keyCode   the code for the key pressed.
      * @return to cancel out other usage create this method.
@@ -172,7 +183,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
 
     /**
      * Key release handler.
-     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is released.
+     * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is released.
      *
      * @param keyCode   the code for the key released.
      * @return to cancel out other usage create this method.
@@ -183,7 +194,7 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
 
     /**
      * Key type handler.
-     * Match a constant {@link KeyboardInput.Map} with the {@code keyCode} parameter for checking which key is typed.
+     * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is typed.
      *
      * @param character the character typed.
      * @return to cancel out other usage create this method.
@@ -266,10 +277,10 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
     }
 
     public void setBounds(Rectangle bounds) {
-        this.x = bounds.x;
-        this.y = bounds.y;
-        this.width = bounds.width;
-        this.height = bounds.height;
+        this.x = (int) bounds.x;
+        this.y = (int) bounds.y;
+        this.width = (int) bounds.width;
+        this.height = (int) bounds.height;
     }
 
     public Color getBackgroundColor() {

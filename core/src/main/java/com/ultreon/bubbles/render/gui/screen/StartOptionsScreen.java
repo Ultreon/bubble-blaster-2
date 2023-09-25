@@ -1,21 +1,17 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.vector.Vec2i;
 import com.ultreon.libs.text.v0.TextObject;
 
-import java.awt.*;
 import java.util.Random;
 
 public class StartOptionsScreen extends Screen {
     private final Screen back;
-    private OptionsNumberInput seedInput;
-    private OptionsButton startBtn;
     private int seed;
 
     public StartOptionsScreen(Screen back) {
@@ -27,7 +23,7 @@ public class StartOptionsScreen extends Screen {
         clearWidgets();
 
         seed = new Random().nextInt();
-        seedInput = add(new OptionsNumberInput(width / 2 - 150, height / 2 - 35, 300, 30, seed, Integer.MIN_VALUE, Integer.MAX_VALUE));
+        OptionsNumberInput seedInput = add(new OptionsNumberInput(width / 2 - 150, height / 2 - 35, 300, 30, seed, Integer.MIN_VALUE, Integer.MAX_VALUE));
         seedInput.setResponder(text -> {
             try {
                 seed = Integer.parseInt(text);
@@ -37,7 +33,7 @@ public class StartOptionsScreen extends Screen {
                 }
             }
         });
-        startBtn = add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(TextObject.translation("bubbles/screen/start_options/start")).command(this::start).build());
+        add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(TextObject.translation("bubbles/screen/start_options/start")).command(this::start).build());
     }
 
     private void start() {
@@ -54,7 +50,7 @@ public class StartOptionsScreen extends Screen {
 
 //        renderer.color(Theme.getMenuLabelColor()); // TODO: Add themes
         renderer.setColor(255, 255, 255, 96);
-        GraphicsUtils.drawRightAnchoredString(renderer, "Seed:", new Vec2i(width / 2 - 120, height / 2 - 35), 30, new Font("Helvetica", Font.PLAIN, 20));
+        renderer.drawRightAnchoredText(Fonts.SANS_REGULAR_20.get(), "Seed:", width / 2f - 120, height / 2f - 35);
     }
 
     public void back() {

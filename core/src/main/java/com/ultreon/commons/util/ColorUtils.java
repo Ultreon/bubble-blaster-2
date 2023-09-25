@@ -39,44 +39,29 @@ public final class ColorUtils {
      * @param hex e.g. "#FFFFFF" or with alpha "#FFFFFF00"
      * @return a new java.awt.Color instance based on the color hex code
      * @see java.awt.Color
-     * @see #unpackHex(String)
-     * @deprecated use {@link #unpackHex(String)} instead.
      */
-    @Deprecated
-    public static java.awt.Color hex2Rgb(String hex) {
-        return unpackHex(hex);
-    }
-
-    /**************************************************************************
-     * Converts a color hex code (e.g. "#FFFFFF ) to a color instance.
-     *
-     * @param hex e.g. "#FFFFFF" or with alpha "#FFFFFF00"
-     * @return a new java.awt.Color instance based on the color hex code
-     * @see java.awt.Color
-     */
-    @Deprecated
-    public static java.awt.Color unpackHex(String hex) {
+    public static Color unpackHex(String hex) {
         if (Pattern.matches("#[0-9a-fA-F]{6}", hex)) {
             int rgb = Integer.valueOf(hex.substring(1), 16);
-            return new java.awt.Color(rgb, false);
+            return Color.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{8}", hex)) {
             int rgb = Integer.valueOf(hex.substring(1), 16);
-            return new java.awt.Color(rgb, true);
+            return Color.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{3}", hex)) {
             int rgb = Integer.valueOf(new String(new char[]{
                     hex.charAt(1), hex.charAt(1),
                     hex.charAt(2), hex.charAt(2),
                     hex.charAt(3), hex.charAt(3)}), 16);
-            return new java.awt.Color(rgb, false);
+            return Color.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{4}", hex)) {
             int rgb = Integer.valueOf(new String(new char[]{
                     hex.charAt(1), hex.charAt(1),
                     hex.charAt(2), hex.charAt(2),
                     hex.charAt(3), hex.charAt(3),
                     hex.charAt(4), hex.charAt(4)}), 16);
-            return new java.awt.Color(rgb, true);
+            return Color.rgb(rgb);
         } else {
-            if (hex.length() >= 1) {
+            if (!hex.isEmpty()) {
                 if (hex.charAt(0) != '#') {
                     throw new InvalidValueException("First character create color code isn't '#'.");
                 } else if (hex.length() != 3 && hex.length() != 4 && hex.length() != 6 && hex.length() != 8) {
@@ -91,14 +76,14 @@ public final class ColorUtils {
     }
 
     @Deprecated
-    public static java.awt.Color[] multiConvertHexToRgb(String... colorStrings) {
-        ArrayList<java.awt.Color> colors = new ArrayList<>();
+    public static Color[] multiConvertHexToRgb(String... colorStrings) {
+        ArrayList<Color> colors = new ArrayList<>();
 
         for (String colorStr : colorStrings) {
             colors.add(unpackHex(colorStr));
         }
 
-        return colors.toArray(new java.awt.Color[]{});
+        return colors.toArray(new Color[0]);
     }
 
     /**
@@ -111,7 +96,7 @@ public final class ColorUtils {
      * @return an array create colors parsed from the color string.
      */
     @Deprecated
-    public static java.awt.Color[] parseColorString(String colorString) {
+    public static Color[] parseColorString(String colorString) {
         return parseColorString(colorString, false);
     }
 
@@ -123,7 +108,7 @@ public final class ColorUtils {
      * @return an array create colors parsed from the color string.
      */
     @Deprecated
-    public static java.awt.Color[] parseColorString(String colorString, boolean addPrefix) {
+    public static Color[] parseColorString(String colorString, boolean addPrefix) {
         String[] strings = colorString.split(",");
         if (addPrefix) {
             for (int i = 0; i < strings.length; i++) {

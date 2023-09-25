@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Percentage utility object.
  *
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 @Deprecated

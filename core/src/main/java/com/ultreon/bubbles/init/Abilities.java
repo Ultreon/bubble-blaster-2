@@ -10,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Class holding all abilities.
  *
  * @since 0.0.0
- * @author Qboi123
+ * @author XyperCode
  */
 public class Abilities {
     /**
@@ -27,7 +27,7 @@ public class Abilities {
      * @param ability the ability type.
      * @return the registry supplier.
      * @param <T> the ability type.
-     * @author Qboi123
+     * @author XyperCode
      * @since 0.0.0
      */
     private static <T extends AbilityType<?>> T register(String name, T ability) {
@@ -36,7 +36,7 @@ public class Abilities {
     }
 
     /**
-     * @author Qboi123
+     * @author XyperCode
      * @since 0.0.0
      */
     @ApiStatus.Internal

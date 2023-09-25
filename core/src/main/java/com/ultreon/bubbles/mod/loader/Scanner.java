@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.mod.loader;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.commons.exceptions.TODO;
 import com.ultreon.libs.crash.v0.CrashCategory;
 import com.ultreon.libs.crash.v0.CrashLog;

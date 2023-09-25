@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.data;
 
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.data.types.MapType;
 
 public class DataManager {

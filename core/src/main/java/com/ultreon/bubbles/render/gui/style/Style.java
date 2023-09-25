@@ -1,11 +1,12 @@
 package com.ultreon.bubbles.render.gui.style;
 
-import java.awt.*;
+
+import com.ultreon.bubbles.render.Color;
 
 public class Style {
-    public static final Color DEFAULT_ACCENT = new Color(0, 96, 128);
-    public static final Color DEFAULT_BACKGROUND = new Color(96, 96, 96);
-    public static final Color DEFAULT_FOREGROUND = new Color(160, 160, 160);
+    public static final Color DEFAULT_ACCENT = Color.rgb(0, 96, 128);
+    public static final Color DEFAULT_BACKGROUND = Color.rgb(96, 96, 96);
+    public static final Color DEFAULT_FOREGROUND = Color.rgb(160, 160, 160);
 
     public static final StateBundle<Float> DEFAULT_BORDER_WIDTHS = new StateBundle<>(1f, 1f, 1f);
     public static final StateBundle<Color> DEFAULT_BORDER_COLORS = new StateBundle<>(DEFAULT_BACKGROUND.brighter().brighter(), DEFAULT_BACKGROUND.brighter(), DEFAULT_BACKGROUND.darker());

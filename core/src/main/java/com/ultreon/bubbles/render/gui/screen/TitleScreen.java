@@ -1,10 +1,9 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
 import com.ultreon.libs.text.v0.TextObject;
 import net.fabricmc.loader.api.FabricLoader;
@@ -95,13 +94,13 @@ public class TitleScreen extends Screen {
         renderer.fillEffect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
 
         renderer.setColor(0xffffffff);
-        Fonts.DONGLE.draw(renderer, "Bubble Blaster", 140, (float) BubbleBlaster.getInstance().getWidth() / 2, 87, Thickness.BOLD, Anchor.S);
+        renderer.drawText(Fonts.DONGLE_140.get(), "Bubble Blaster", (float) BubbleBlaster.getInstance().getWidth() / 2, 87, Anchor.S);
 
         renderer.setColor(0xffffffff);
-        monospaced.draw(renderer, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 11, 10, 10, Thickness.BOLD);
-        monospaced.draw(renderer, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 11, 10, 22, Thickness.BOLD);
-        monospaced.draw(renderer, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 11, 10, 34, Thickness.BOLD);
-        monospaced.draw(renderer, "High Score: " + (int)game.getGlobalData().getHighScore(), 11, 10, 46, Thickness.BOLD);
+        renderer.drawText(monospaced, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 10, 10);
+        renderer.drawText(monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 10, 22);
+        renderer.drawText(monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 10, 34);
+        renderer.drawText(monospaced, "High Score: " + (int)game.getGlobalData().getHighScore(), 10, 46);
 
         this.renderChildren(renderer);
     }

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Difficulty enum, used as api for difficulty information.
  *
- * @author Qboi
+ * @author XyperCode
  * @since 0.0.0
  */
 public enum Difficulty {

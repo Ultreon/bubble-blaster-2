@@ -1,10 +1,8 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.ultreon.bubbles.core.input.MouseInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.init.Sounds;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
 public abstract class AbstractButton extends GuiComponent {
@@ -28,7 +26,7 @@ public abstract class AbstractButton extends GuiComponent {
     public boolean mouseRelease(int x, int y, int button) {
         if (isHovered() && button == 1 && enabled && visible && pressed) {
             this.pressed = false;
-            Sounds.MENU_EVENT.play(0.2d);
+            SoundEvents.MENU_EVENT.play(0.2f);
             this.command.run();
             return true;
         }
@@ -48,7 +46,6 @@ public abstract class AbstractButton extends GuiComponent {
     public void make() {
         super.make();
 
-        Vec2i mousePos = MouseInput.getPos();
         if (isHovered()) {
             BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getPointerCursor());
         }

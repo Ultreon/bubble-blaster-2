@@ -38,26 +38,22 @@ public abstract class LivingEntity extends Entity {
     }
 
     public double getMaxHealth() {
-        return attributes.get(Attribute.MAX_HEALTH);
+        return getAttributes().get(Attribute.MAX_HEALTH);
     }
 
     @Deprecated
     public void setMaxHealth(double baseMaxDamage) {
-        attributes.setBase(Attribute.MAX_HEALTH, baseMaxDamage);
-    }
-
-    public double getSpeed() {
-        return attributes.get(Attribute.SPEED);
+        getAttributes().setBase(Attribute.MAX_HEALTH, baseMaxDamage);
     }
 
     @Deprecated
     public void setSpeed(double baseSpeed) {
-        attributes.setBase(Attribute.SPEED, baseSpeed);
+        getAttributes().setBase(Attribute.SPEED, baseSpeed);
     }
 
     @Deprecated
     public double getBaseSpeed() {
-        return attributes.getBase(Attribute.SPEED);
+        return getAttributes().getBase(Attribute.SPEED);
     }
 
     /**

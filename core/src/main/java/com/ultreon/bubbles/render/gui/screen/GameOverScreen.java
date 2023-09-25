@@ -1,11 +1,12 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.data.GlobalSaveData;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.libs.text.v0.TextObject;
@@ -18,6 +19,8 @@ public class GameOverScreen extends Screen {
     private final boolean isHighScore;
     private final long score;
     private long gameOverTime;
+    private final BitmapFont gameOverTitleFont = Fonts.SANS_BOLD_60.get();
+    private final BitmapFont gameOverDescriptionFont = Fonts.SANS_BOLD_14.get();
 
     public GameOverScreen(long score) {
         this.score = score;
@@ -64,8 +67,8 @@ public class GameOverScreen extends Screen {
 
         if (isHighScore) {
             renderer.setColor(0xffffffff);
-            font.draw(renderer, "Congratulations!", 64, width / 2f, 152, Thickness.BOLD, Anchor.CENTER);
-            font.draw(renderer, "You beat your high-score!", 14, width / 2f, 216, Thickness.BOLD, Anchor.CENTER);
+            renderer.drawText(gameOverTitleFont, "Congratulations!", width / 2f, 152, Anchor.CENTER);
+            renderer.drawText(gameOverDescriptionFont, "You beat your high-score!", width / 2f, 216, Anchor.CENTER);
         } else {
             long cycled = (System.currentTimeMillis() - gameOverTime) % 4000;
             int phase = (int) (Math.floorDiv(cycled, 1000));
@@ -75,12 +78,11 @@ public class GameOverScreen extends Screen {
                 case 0 -> Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
             }
             renderer.setColor(Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
-
-            font.draw(renderer, "Game Over", 64, width / 2f, 152, Thickness.BOLD, Anchor.CENTER);
+            renderer.drawText(gameOverTitleFont, "Game Over", width / 2f, 152, Anchor.CENTER);
         }
 
         renderer.setColor(0x7fffffff);
-        font.draw(renderer, Long.toString(score), 32, game.getScaledWidth() / 2f, 280, Thickness.BOLD, Anchor.CENTER);
+        renderer.drawText(Fonts.SANS_REGULAR_20.get(), Long.toString(score), game.getScaledWidth() / 2f, 280, Anchor.CENTER);
     }
 
     public boolean isHighScore() {

@@ -2,7 +2,7 @@ package com.ultreon.bubbles.common;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.SyntaxException;
 import com.ultreon.commons.lang.Pair;

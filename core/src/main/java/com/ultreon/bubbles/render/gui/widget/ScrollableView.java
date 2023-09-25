@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
@@ -31,19 +32,19 @@ public class ScrollableView extends Container {
         this.viewport.setHeight(getHeight());
         this.viewport.setX(0);
         this.viewport.setY(0);
-        this.viewport.render(renderer.subInstance(viewport.getBounds()));
+        renderer.subInstance(viewport.getBounds(), this.viewport::render);
         this.scrollBar.setWidth(SCROLLBAR_WIDTH);
         this.scrollBar.setHeight(getHeight());
         this.scrollBar.setX(getWidth() - SCROLLBAR_WIDTH);
         this.scrollBar.setY(0);
-        this.scrollBar.render(renderer.subInstance(scrollBar.getBounds()));
+        renderer.subInstance(scrollBar.getBounds(), this.scrollBar::render);
     }
 
     @Override
     public void render(Renderer renderer) {
         this.updateXYOffset();
         this.scrollBar.setPercent(this.viewport.getYPercent());
-        this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().height - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().height));
+        this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().y - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().y));
 
         renderComponent(renderer);
         renderChildren(renderer);
@@ -78,11 +79,11 @@ public class ScrollableView extends Container {
         this.viewport = viewport;
     }
 
-    public void setXScroll(double percent) {
+    public void setXScroll(float percent) {
         this.viewport.setXScroll(percent);
     }
 
-    public void setYScroll(double percent) {
+    public void setYScroll(float percent) {
         this.viewport.setYScroll(percent);
     }
 
@@ -143,7 +144,7 @@ public class ScrollableView extends Container {
     }
 
     @Override
-    public boolean mouseWheel(int x, int y, double rotation) {
+    public boolean mouseWheel(int x, int y, float rotation) {
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         if (viewport.isWithinBounds(x, y) && viewport.mouseWheel(x, y, rotation)) {

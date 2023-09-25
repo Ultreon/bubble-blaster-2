@@ -18,7 +18,7 @@ import java.util.Objects;
  * Teleport ability.
  * 
  * @since 0.0.0
- * @author Qboi123
+ * @author XyperCode
  * @see Abilities#TELEPORT_ABILITY
  */
 public class TeleportAbility extends Ability<TeleportAbility> {
@@ -26,7 +26,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
      * Constructor for the teleport ability.
      * 
      * @since 0.0.0
-     * @author Qboi123
+     * @author XyperCode
      */
     public TeleportAbility() {
         super(Objects.requireNonNull(Abilities.TELEPORT_ABILITY));

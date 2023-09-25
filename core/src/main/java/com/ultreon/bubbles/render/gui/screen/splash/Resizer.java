@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen.splash;
 
-import com.ultreon.bubbles.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
 
 public class Resizer {
     private final float ratio;

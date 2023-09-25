@@ -6,13 +6,13 @@ import com.ultreon.bubbles.entity.player.Player;
 import java.util.LinkedList;
 
 /**
- * @author Qboi
+ * @author XyperCode
  */
 public class Handler {
     final LinkedList<Entity> object = new LinkedList<>();
 
     /**
-     * @author Qboi
+     * @author XyperCode
      */
     @SuppressWarnings("EmptyMethod")
     public void tick() {
@@ -23,7 +23,7 @@ public class Handler {
     }
 
     /**
-     * @author Qboi
+     * @author XyperCode
      */
     @SuppressWarnings("EmptyMethod")
     public void render() {
@@ -35,7 +35,7 @@ public class Handler {
     }
 
     /**
-     * @author Qboi
+     * @author XyperCode
      */
     public void addObject(Entity object) {
         this.object.add(object);

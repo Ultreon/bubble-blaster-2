@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
@@ -87,7 +88,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public <C extends T> ListEntry<T, C> addItem(C item) {
-        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, getViewport().getViewportSize().height + gap, width, height);
+        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (getViewport().getViewportSize().y + gap), width, height);
         entries.add(entry);
         listContent.add(entry);
         recalculateViewport();

@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.GameWindow;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GameWindow;
 
 public class RenderSettings {
     private final boolean antialiasingBackup = BubbleBlaster.getInstance().isAntialiasEnabled();

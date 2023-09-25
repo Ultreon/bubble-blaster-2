@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.mod.loader;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 
 import java.io.IOException;
 import java.io.InputStream;

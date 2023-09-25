@@ -1,6 +1,6 @@
 package com.ultreon.commons.time;
 
-import static com.ultreon.bubbles.game.BubbleBlaster.TPS;
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 /**
  * Time processing utilities.

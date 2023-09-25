@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.save;
 
-import com.ultreon.bubbles.game.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.References;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * Save loader for saved game instances.
  *
- * @author Qboi (Qboi)
+ * @author XyperCode (XyperCode)
  */
 public class SaveLoader {
     // Static

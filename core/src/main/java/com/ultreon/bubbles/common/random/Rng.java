@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * RNG Class, for randomizing or get random numbers from arguments.
  *
- * @author Qboi
+ * @author XyperCode
  */
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
 public class Rng {

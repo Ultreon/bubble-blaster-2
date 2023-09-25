@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.event.v1.ScreenEvents;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.vector.size.IntSize;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.libs.events.v1.ValueEventResult;
 import org.apache.logging.log4j.LogManager;

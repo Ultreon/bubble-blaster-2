@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -29,7 +30,7 @@ public class ScrollBar extends GuiComponent {
 
         Rectangle thumbBounds = getThumbBounds();
         fill(renderer, 0, 0, width, height, 0x40000000);
-        fill(renderer, thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 0xff555555);
+        fill(renderer, (int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, 0xff555555);
     }
 
     private Rectangle getThumbBounds() {
@@ -91,6 +92,6 @@ public class ScrollBar extends GuiComponent {
 
     @FunctionalInterface
     public interface ScrollHandler {
-        void onScroll(double percent);
+        void onScroll(float percent);
     }
 }

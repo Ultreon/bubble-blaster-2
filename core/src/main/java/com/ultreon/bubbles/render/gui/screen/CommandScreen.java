@@ -1,20 +1,23 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.command.CommandConstructor;
-import com.ultreon.bubbles.core.input.KeyboardInput;
-import com.ultreon.bubbles.game.BubbleBlaster;
-import com.ultreon.bubbles.game.LoadedGame;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.bubbles.vector.Vec2i;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 public class CommandScreen extends Screen {
-    private final Font defaultFont = new Font(Font.MONOSPACED, Font.BOLD, 30);
+    private final BitmapFont font = Fonts.MONOSPACED_14.get();
+    private final GlyphLayout layout = new GlyphLayout();
+    private final GlyphLayout beginLayout = new GlyphLayout();
     private String currentText = "/";
     private int cursorIndex = 1;
 
@@ -41,30 +44,36 @@ public class CommandScreen extends Screen {
 
         if ((int) character >= 0x20) {
             currentText += character;
+            this.revalidate();
             cursorIndex++;
             return true;
         }
         return false;
     }
 
+    private void revalidate() {
+        layout.setText(font, currentText);
+        beginLayout.setText(font, currentText.substring(0, cursorIndex));
+    }
+
     @Override
     public boolean keyPress(int keyCode) {
         if (super.keyPress(keyCode)) return true;
 
-        if (keyCode == KeyboardInput.Map.KEY_BACK_SPACE && !currentText.isEmpty()) {
+        if (keyCode == Input.Keys.BACKSPACE && !currentText.isEmpty()) {
             currentText = currentText.substring(0, currentText.length() - 1);
             cursorIndex--;
             return true;
         }
-        if (keyCode == KeyboardInput.Map.KEY_LEFT && cursorIndex > 0) {
+        if (keyCode == Input.Keys.LEFT && cursorIndex > 0) {
             cursorIndex--;
             return true;
         }
-        if (keyCode == KeyboardInput.Map.KEY_RIGHT && cursorIndex < currentText.length() - 1) {
+        if (keyCode == Input.Keys.RIGHT && cursorIndex < currentText.length() - 1) {
             cursorIndex++;
             return true;
         }
-        if (keyCode == KeyboardInput.Map.KEY_ENTER) {
+        if (keyCode == Input.Keys.ENTER) {
             LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
             if (loadedGame != null) {
                 if (!currentText.isEmpty()) {
@@ -138,7 +147,7 @@ public class CommandScreen extends Screen {
                     } else if ("\"".equals(nextTok)) {
                         state = inDoubleQuote;
                     } else if (" ".equals(nextTok)) {
-                        if (lastTokenHasBeenQuoted || current.length() > 0) {
+                        if (lastTokenHasBeenQuoted || !current.isEmpty()) {
                             result.add(current.toString());
                             current.setLength(0);
                         }
@@ -149,7 +158,7 @@ public class CommandScreen extends Screen {
                 }
             }
         }
-        if (lastTokenHasBeenQuoted || current.length() > 0) {
+        if (lastTokenHasBeenQuoted || !current.isEmpty()) {
             result.add(current.toString());
         }
         return result.toArray(new String[0]);
@@ -164,16 +173,13 @@ public class CommandScreen extends Screen {
         renderer.rect(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
 
         renderer.setColor(Color.argb(0xffffffff));
-        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, height - 28), 28, defaultFont);
+        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, height - 28), 28, font);
 
-        FontMetrics fontMetrics = renderer.fontMetrics(defaultFont);
-
-
-        int cursorX;
+        float cursorX;
         renderer.setColor(Color.argb(0xff0090c0));
         if (cursorIndex >= currentText.length()) {
-            if (currentText.length() != 0) {
-                cursorX = fontMetrics.stringWidth(currentText.substring(0, cursorIndex)) + 2;
+            if (!currentText.isEmpty()) {
+                cursorX = beginLayout.width + 2;
             } else {
                 cursorX = 0;
             }
@@ -181,13 +187,13 @@ public class CommandScreen extends Screen {
             renderer.line(cursorX, height - 30, cursorX, height - 2);
             renderer.line(cursorX + 1, height - 30, cursorX + 1, height - 2);
         } else {
-            if (currentText.length() != 0) {
-                cursorX = fontMetrics.stringWidth(currentText.substring(0, cursorIndex));
+            if (!currentText.isEmpty()) {
+                cursorX = beginLayout.width;
             } else {
                 cursorX = 0;
             }
 
-            int width = fontMetrics.charWidth(currentText.charAt(cursorIndex));
+            int width = font.getData().getGlyph(currentText.charAt(cursorIndex)).width;
             renderer.line(cursorX, height - 2, cursorX + width, height - 2);
             renderer.line(cursorX, height - 1, cursorX + width, height - 1);
         }

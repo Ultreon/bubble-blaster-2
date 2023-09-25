@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.entity.bubble;
 
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.commons.util.ColorUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

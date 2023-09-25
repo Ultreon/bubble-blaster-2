@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.common.exceptions;
 
-import java.awt.*;
 
 public class FontLoadException extends RuntimeException {
     public FontLoadException() {

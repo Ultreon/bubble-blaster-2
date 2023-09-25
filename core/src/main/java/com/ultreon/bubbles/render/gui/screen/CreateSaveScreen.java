@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.Anchor;
+import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.font.Thickness;
@@ -70,7 +70,7 @@ public class CreateSaveScreen extends Screen {
         }
 
         renderer.setColor(0xc0ffffff);
-        font.draw(renderer, name, 16, 10, height / 2f, Thickness.BOLD, Anchor.W);
+        renderer.drawText(font, name, 10, height / 2f, Anchor.W);
     }
 
     @Override
