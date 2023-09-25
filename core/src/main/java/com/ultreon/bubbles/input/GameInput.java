@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.GridPoint2;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.render.gui.screen.PauseScreen;

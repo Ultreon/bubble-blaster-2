@@ -3,25 +3,25 @@ package com.ultreon.bubbles;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-public class GarbageCollector extends Thread {
-    private final BubbleBlaster game;
-    private final Marker marker = MarkerFactory.getMarker("GC");
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-    public GarbageCollector(BubbleBlaster game) {
-        super("Garbage Collector");
-        this.game = game;
+public class GarbageCollector {
+    private static final Marker MARKER = MarkerFactory.getMarker("GC");
+    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(3, r -> {
+        Thread thread = new Thread(r);
+        thread.setPriority(1);
+        return thread;
+    });
+
+    public GarbageCollector() {
+        service.scheduleAtFixedRate(System::gc, 10, 5, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void run() {
-        try {
-            while (game.isRunning()) {
-                System.gc();
-                Thread.sleep(50);
-            }
-        } catch (InterruptedException ignored) {
-            BubbleBlaster.getLogger().warn(marker, "Unexpected interruption in garbage collector");
-        }
-        BubbleBlaster.getLogger().info("Shutting down garbage collector.");
+    public void shutdown() {
+        service.shutdownNow();
+
+        BubbleBlaster.getLogger().info(MARKER, "Shutting down garbage collector.");
     }
 }

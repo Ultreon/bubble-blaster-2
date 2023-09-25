@@ -45,8 +45,8 @@ public final class LoadScreen extends Screen implements Runnable {
     private final String title = "";
     private final String description = "";
     private static boolean done;
-    private ProgressMessenger progMain = null;
-    private ProgressMessenger progAlt = null;
+    private volatile ProgressMessenger progMain = null;
+    private volatile ProgressMessenger progAlt = null;
     private final Messenger msgMain = new MessengerImpl(this::logMain);
     private final Messenger msgAlt = new MessengerImpl(this::logAlt);
     private String curMainMsg = "";
@@ -85,7 +85,7 @@ public final class LoadScreen extends Screen implements Runnable {
             startTime = System.currentTimeMillis();
         }
 
-        renderBackground(renderer);
+        this.renderBackground(renderer);
 
         int i = 0;
 
@@ -97,13 +97,13 @@ public final class LoadScreen extends Screen implements Runnable {
             // Draw current 1st line message.
             if (curMainMsg != null) {
                 renderer.setColor(Color.rgb(0x808080));
-                renderer.drawText(font, curMainMsg, width / 2f, height / 2f, Anchor.CENTER);
+                renderer.drawCenteredText(font, curMainMsg, width / 2f, height / 2f);
             }
 
             renderer.setColor(Color.rgb(0x808080));
-            renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 15, 300, 3);
+            renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 20, 300, 3);
 
-            setupGradient(renderer);
+            renderer.setColor(Color.rgb(0x0040ff));
             renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 15, (int) (300d * (double) progress / (double) max), 3);
 
             // Draw 2nd progress components.
@@ -114,22 +114,20 @@ public final class LoadScreen extends Screen implements Runnable {
                 // Draw current 2nd line message.
                 if (curAltMsg != null) {
                     renderer.setColor(Color.rgb(0x808080));
-                    renderer.drawText(font, curAltMsg, width / 2f, height / 2f + 75, Anchor.CENTER);
+                    renderer.drawCenteredText(font, curAltMsg, width / 2f, height / 2f + 75);
                 }
 
                 renderer.setColor(Color.rgb(0x808080));
-                renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 90, 300, 3);
+                renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 95, 300, 3);
 
-                setupGradient(renderer);
+                renderer.setColor(Color.rgb(0x0040ff));
                 renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 90, (int) (300d * (double) progressSub / (double) maxSub), 3);
             }
         }
-
-        renderer.setColor(Color.rgb(0x7f7f7f));
     }
 
     private void setupGradient(Renderer renderer) {
-        renderer.setColor(Color.rgb(0x00c0ff));
+//        renderer.setColor(Color.rgb(0x00c0ff));
 //        GradientPaint p = new GradientPaint(0, (float) BubbleBlaster.getInstance().getWidth() / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) BubbleBlaster.getInstance().getWidth() / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
 //        renderer.paint(p);
     }
@@ -246,7 +244,7 @@ public final class LoadScreen extends Screen implements Runnable {
             GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
             this.progAlt.sendNext(String.valueOf(Registries.TEXTURE_COLLECTIONS.getKey(collection)));
         }
-        progAlt = null;
+        this.progAlt = null;
 
         // BubbleSystem
         this.progMain.sendNext("Initialize bubble system...");
@@ -254,7 +252,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         // Load complete.
         this.progMain.sendNext("Load Complete!");
-        game.finalizeSetup();
+        this.game.finalizeSetup();
 
         // Registry dump.
         this.progMain.sendNext("Registry Dump.");
@@ -262,7 +260,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         LoadScreen.done = true;
 
-        game.finish();
+        BubbleBlaster.invoke(this.game::finish);
     }
 
     private BubbleBlaster game() {

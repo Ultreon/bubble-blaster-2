@@ -283,6 +283,18 @@ public final class BubbleBlaster extends ApplicationAdapter {
         LockSupport.park();
     }
 
+    public static void invoke(Runnable func) {
+        Thread thread = Thread.currentThread();
+        if (isOnRenderingThread()) {
+            func.run();
+            return;
+        }
+
+        RENDER_CALLS.addLast(renderer -> {
+            func.run();
+        });
+    }
+
     public static Instant getBootTime() {
         return BOOT_TIME;
     }
@@ -313,7 +325,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         this.textureManager = TextureManager.instance();
         this.debugRenderer = new DebugRenderer(this);
         this.camera = new OrthographicCamera();
-        this.camera.setToOrtho(false, getWidth(), getHeight()); // Set up the camera's projection matrix
+        this.camera.setToOrtho(true, this.getWidth(), this.getHeight()); // Set up the camera's projection matrix
         this.viewport = new ScreenViewport(camera);
 
         this.transX = Gdx.graphics.getWidth() / 2;
@@ -364,13 +376,13 @@ public final class BubbleBlaster extends ApplicationAdapter {
         this.load(new ProgressMessenger(this::log, 1000));
         this.screenManager = createScreenManager();
 
+        this.discordRpc = new DiscordRPC();
+
         setActivity(() -> {
             var activity = new Activity();
             activity.setState("Loading game.");
             return activity;
         });
-
-        this.discordRpc = new DiscordRPC();
 
         LOGGER.info("Discord RPC is initializing!");
 
@@ -439,22 +451,19 @@ public final class BubbleBlaster extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        camera.setToOrtho(false, width, height); // Set up the camera's projection matrix
-//        this.camera.translate(-this.transX, -this.transY);
+        camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
+        this.camera.translate(-this.transX, -this.transY);
         this.transX = (int) (viewport.getWorldWidth() / 2);
         this.transY = (int) (viewport.getWorldHeight() / 2);
-//        this.camera.translate(this.transX, this.transY);
+        this.camera.translate(this.transX, this.transY);
     }
 
     @Override
     public void render() {
         if (this.renderingThread == null) renderingThread = Thread.currentThread();
 
-        super.render();
-
         if (Gdx.graphics.getFrameId() == 2) {
-            window.setVisible(true);
-            window.setFullscreen(true);
+            this.firstRender();
         }
 
         tasks.forEach(Runnable::run);
@@ -462,6 +471,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         camera.update();
         renderer.begin(camera);
+//        renderer.pushScissorsRaw(0, 0, getWidth(), getHeight());
         currentRenderer = renderer;
 
         int size = RENDER_CALLS.size();
@@ -487,8 +497,14 @@ public final class BubbleBlaster extends ApplicationAdapter {
             this.renderImGui(renderer);
         }
 
+//        renderer.popScissors();
         currentRenderer = null;
         renderer.end();
+    }
+
+    private void firstRender() {
+        window.setVisible(true);
+        window.setFullscreen(true);
     }
 
     private void renderImGui(Renderer renderer) {
@@ -989,6 +1005,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         }
         var generator = new FreeTypeFontGenerator(handle);
         var parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.flip = true;
         parameter.size = size;
         var font = generator.generateFont(parameter); // font size 12 pixels
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
@@ -1033,9 +1050,9 @@ public final class BubbleBlaster extends ApplicationAdapter {
         LOGGER.info("Shutting down Bubble Blaster");
 
         this.discordRpc.stop();
+        this.garbageCollector.shutdown();
 
         this.tickingThread.interrupt();
-        this.garbageCollector.interrupt();
 
         final var loadedGame = this.loadedGame;
         if (loadedGame != null) {
@@ -1050,8 +1067,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         SoundInstance.stopAll();
 
         try {
-            this.tickingThread.join();
-            this.garbageCollector.join();
+            this.tickingThread.join(1000);
             this.discordRpc.join();
         } catch (Exception e) {
             LOGGER.warn("Failed to stop threads:", e);
@@ -1573,14 +1589,14 @@ public final class BubbleBlaster extends ApplicationAdapter {
     }
 
     private void postRender(Renderer renderer) {
-        if (fadeIn) {
-            final var timeDiff = System.currentTimeMillis() - fadeInStart;
-            if (timeDiff <= fadeInDuration) {
-                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
-                var color = Color.rgba(0, 0, 0, clamp);
-                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
-            }
-        }
+//        if (fadeIn) {
+//            final var timeDiff = System.currentTimeMillis() - fadeInStart;
+//            if (timeDiff <= fadeInDuration) {
+//                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
+//                var color = Color.rgba(0, 0, 0, clamp);
+//                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
+//            }
+//        }
     }
 
     /**
@@ -1848,12 +1864,9 @@ public final class BubbleBlaster extends ApplicationAdapter {
         this.running = true;
 
         this.tickingThread = new Thread(BubbleBlaster.this::ticking, "Ticker");
-        this.tickingThread.setDaemon(false);
         this.tickingThread.start();
 
-        this.garbageCollector = new GarbageCollector(this);
-        this.garbageCollector.setDaemon(false);
-        this.garbageCollector.start();
+        this.garbageCollector = new GarbageCollector();
 
         BubbleBlaster.getLogger().info("Game threads started!");
     }

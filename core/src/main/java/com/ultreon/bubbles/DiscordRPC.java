@@ -34,7 +34,7 @@ public class DiscordRPC {
 
         this.thread = new Thread(this::run, "DiscordRPC");
         this.thread.setDaemon(true);
-        this.thread.setPriority(Thread.MIN_PRIORITY);
+        this.thread.setPriority(3);
         this.thread.start();
     }
 
@@ -142,7 +142,8 @@ public class DiscordRPC {
             this.dirty = false;
             Activity activity = this.activity.get();
             core.activityManager().updateActivity(activity, this::handleResult);
-            this.currentActivity.close();
+            Activity cur = this.currentActivity;
+            if (cur != null) cur.close();
             this.currentActivity = activity;
         }
         this.updateLock.unlock();
@@ -171,7 +172,7 @@ public class DiscordRPC {
         this.activity = () -> {
             Activity ret = activity.get();
             String state = ret.getState();
-            Gdx.graphics.setTitle("Bubble Blaster 2 - " + this.gameVersion + " - " + state);
+            BubbleBlaster.invoke(() -> Gdx.graphics.setTitle("Bubble Blaster 2 - " + this.gameVersion + " - " + state));
             ret.assets().setLargeImage("icon");
             ret.assets().setLargeText(this.gameVersion);
             return ret;

@@ -35,10 +35,10 @@ public class NativeImage extends Texture {
     private static ByteBuffer readAndClose(InputStream inputStream) throws IOException {
         ByteBuffer read = read(inputStream);
         inputStream.close();
-        return read;
+        return read.flip();
     }
 
     private static ByteBuffer read(InputStream inputStream) throws IOException {
-        return ByteBuffer.wrap(inputStream.readAllBytes());
+        return ByteBuffer.wrap(inputStream.readAllBytes()).flip();
     }
 }

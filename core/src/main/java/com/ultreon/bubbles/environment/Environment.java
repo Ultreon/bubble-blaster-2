@@ -600,6 +600,7 @@ public final class Environment {
 
     public void start() {
         this.gameEventHandlerThread = new Thread(this::gameEventHandlerThread, "GameEventHandler");
+        this.gameEventHandlerThread.setDaemon(true);
         this.gameEventHandlerThread.start();
     }
 

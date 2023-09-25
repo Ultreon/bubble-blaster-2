@@ -77,11 +77,11 @@ public class LoadedGame {
         autoSaver.start();
 
         this.collisionThread = new Thread(this::collisionThread, "Collision");
-        this.collisionThread.setDaemon(false);
+        this.collisionThread.setDaemon(true);
         this.collisionThread.start();
 
         this.ambientAudioThread = new Thread(this::ambientAudioThread, "audio-Thread");
-        this.ambientAudioThread.setDaemon(false);
+        this.ambientAudioThread.setDaemon(true);
         this.ambientAudioThread.start();
     }
 

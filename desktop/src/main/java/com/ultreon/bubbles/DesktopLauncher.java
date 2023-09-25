@@ -13,10 +13,11 @@ public class DesktopLauncher {
     public static void main(String[] argv) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setResizable(false);
-        config.useVsync(true);
+        config.useVsync(false);
         config.setForegroundFPS(60);
+        config.setIdleFPS(10);
         config.setInitialVisible(false);
-        config.setWindowedMode(1280, 720);
+        config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         config.setTitle("Bubble Blaster 2");
         config.setWindowIcon("assets/bubbles/icon.png");
         Arguments arguments = new Arguments();

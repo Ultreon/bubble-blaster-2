@@ -4,12 +4,15 @@
 package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.util.GraphicsUtils;
@@ -49,8 +52,6 @@ import java.util.function.Consumer;
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class Renderer {
     private final BubbleBlaster game = BubbleBlaster.getInstance();
-//    private Texture curTexture;
-    private final Stack<Vector3> globalTranslation = new Stack<>();
     private final GL20 gl20;
     private final GL30 gl30;
     private final Batch batch;
@@ -60,7 +61,7 @@ public class Renderer {
     private Texture curTexture;
     private BitmapFont font;
     private final ThreadLocal<GlyphLayout> glyphLayout = new ThreadLocal<>();
-    private Color clearColor;
+    private final Color clearColor = Color.BLACK;
     private Color color;
     private boolean rendering;
 
@@ -75,7 +76,6 @@ public class Renderer {
     //     Constructors     //
     //////////////////////////
     public Renderer(ShapeDrawer shapes, MatrixStack matrixStack) {
-        this.globalTranslation.push(new Vector3());
         this.font = game.getBitmapFont();
         this.gl20 = Gdx.gl20;
         this.gl30 = Gdx.gl30;
@@ -94,10 +94,11 @@ public class Renderer {
         this.batch.setProjectionMatrix(camera.combined);
         this.batch.begin();
 
+        this.rendering = true;
+
         this.clear();
         this.enableBlend();
-
-        this.rendering = true;
+        this.enableDepthTest();
     }
 
     public void end() {
@@ -105,11 +106,12 @@ public class Renderer {
             throw new IllegalStateException("Renderer isn't rendering yet");
 
         if (!ScissorStack.isEmpty())
-            clearScissors();
+            throw new IllegalStateException("Scissor stack isn't cleared before renderer completes");
 
         if (!matrixStack.isClear())
-            throw new IllegalStateException("Matrix stack isn't cleared before renderer dispose");
+            throw new IllegalStateException("Matrix stack isn't cleared before renderer completes");
 
+        this.disableDepthTest();
         this.disableBlend();
 
         this.batch.end();
@@ -122,8 +124,17 @@ public class Renderer {
         Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
+    private void enableDepthTest() {
+        Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+    }
+
     public void disableBlend() {
         Gdx.gl20.glDisable(GL20.GL_BLEND);
+    }
+
+    public void disableDepthTest() {
+        Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
     }
 
     public void outline(Rectangle rect) {
@@ -147,14 +158,12 @@ public class Renderer {
     public void circle(float x, float y, float radius) {
         if (!rendering) return;
 
-        y = game.getHeight() + radius - y;
         shapes.filledCircle(x, y, radius);
     }
 
     public void circleLine(float x, float y, float radius) {
         if (!rendering) return;
 
-        y = game.getHeight() + radius - y;
         shapes.circle(x, y, radius);
     }
 
@@ -215,10 +224,10 @@ public class Renderer {
 
         switch (axis) {
             case HORIZONTAL -> {
-                shapes.filledRectangle(x, y, width, height, color2.toGdx(), color1.toGdx(), color2.toGdx(), color1.toGdx());
+                shapes.filledRectangle(x, y, width, height, color2.toGdx(), color2.toGdx(), color1.toGdx(), color1.toGdx());
             }
             case VERTICAL -> {
-                shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color1.toGdx(), color2.toGdx());
+                shapes.filledRectangle(x, y, width, height, color1.toGdx(), color1.toGdx(), color2.toGdx(), color2.toGdx());
             }
         }
     }
@@ -242,110 +251,84 @@ public class Renderer {
     public void rectLine(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.rectangle(x, y, width, height, strokeWidth);
     }
 
     public void rectLine(float x, float y, float width, float height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.rectangle(x, y, width, height, strokeWidth);
     }
 
     public void rect(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledRectangle(x, y, width, height);
     }
 
     public void rect(float x, float y, float width, float height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledRectangle(x, y, width, height);
     }
 
     public void roundRectLine(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.rectangle(x, y, width, height, strokeWidth, JoinType.SMOOTH);
     }
 
     public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledRectangle(x, y, width, height, strokeWidth);
     }
 
     public void rect3DLine(int x, int y, int width, int height, boolean raised) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.rectangle(x, y, width, height, strokeWidth);
     }
 
     public void rect3D(int x, int y, int width, int height, boolean raised) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledRectangle(x, y, width, height);
     }
 
     public void ovalLine(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.ellipse(x, y, width, height);
     }
 
     public void ellipse(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledEllipse(x, y, width, height);
     }
 
     public void ovalLine(float x, float y, float width, float height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.ellipse(x, y, width, height);
     }
 
     public void ellipse(float x, float y, float width, float height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
-        height = -height;
         shapes.filledEllipse(x, y, width, height);
     }
 
     public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         shapes.arc(x, y, width, startAngle, arcAngle);
     }
 
     public void arc(int x, int y, int width, int height, int startAngle, int arcAngle) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         shapes.arc(x, y, width, startAngle, arcAngle);
     }
 
@@ -370,39 +353,34 @@ public class Renderer {
     public void blit(Texture tex, float x, float y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y - tex.getHeight();
-        batch.draw(tex, x, y);
+        batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(Texture tex, float x, float y, Color backgroundColor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y - tex.getHeight();
         setColor(backgroundColor);
         rect(x, y, tex.getWidth(), tex.getHeight());
-        batch.draw(tex, x, y);
+        batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(Texture tex, float x, float y, float width, float height) {
         if (!rendering) return;
 
-        y = game.getHeight() - y - height;
-        batch.draw(tex, x, y, width, height);
+        batch.draw(tex, x, y + height, width, -height);
     }
 
     public void blit(Texture tex, float x, float y, float width, float height, Color backgroundColor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y - height;
         setColor(backgroundColor);
         rect(x, y, width, height);
-        batch.draw(tex, x, y, width, height);
+        batch.draw(tex, x, y + height, width, -height);
     }
 
     public void drawText(BitmapFont font, String str, int x, int y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str, x, y);
     }
@@ -410,7 +388,6 @@ public class Renderer {
     public void drawText(String str, float x, float y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str, x, y);
     }
@@ -418,7 +395,6 @@ public class Renderer {
     public void drawText(TextObject str, int x, int y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str.getText(), x, y);
     }
@@ -426,7 +402,6 @@ public class Renderer {
     public void drawText(TextObject str, float x, float y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str.getText(), x, y);
     }
@@ -434,7 +409,6 @@ public class Renderer {
     public void drawText(BitmapFont font, String str, float x, float y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str, x, y);
     }
@@ -442,7 +416,6 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, int x, int y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str.getText(), x, y);
     }
@@ -450,7 +423,6 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, float x, float y) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
         font.setColor(getColor().toGdx());
         font.draw(batch, str.getText(), x, y);
     }
@@ -458,7 +430,6 @@ public class Renderer {
     public void drawText(String str, int x, int y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         GlyphLayout layout = glyphLayout.get();
         if (layout == null) {
@@ -477,7 +448,6 @@ public class Renderer {
     public void drawText(String str, float x, float y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         GlyphLayout layout = glyphLayout.get();
         if (layout == null) {
@@ -496,7 +466,6 @@ public class Renderer {
     public void drawText(TextObject str, int x, int y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         String text = str.getText();
 
@@ -517,7 +486,6 @@ public class Renderer {
     public void drawText(TextObject str, float x, float y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         String text = str.getText();
 
@@ -538,7 +506,6 @@ public class Renderer {
     public void drawText(BitmapFont font, String str, int x, int y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         GlyphLayout layout = glyphLayout.get();
         if (layout == null) {
@@ -557,7 +524,6 @@ public class Renderer {
     public void drawText(BitmapFont font, String str, float x, float y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         GlyphLayout layout = glyphLayout.get();
         if (layout == null) {
@@ -576,7 +542,6 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, int x, int y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         String text = str.getText();
 
@@ -597,7 +562,6 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, float x, float y, Anchor anchor) {
         if (!rendering) return;
 
-        y = game.getHeight() - y;
 
         String text = str.getText();
 
@@ -702,8 +666,7 @@ public class Renderer {
     public void clear() {
         if (!rendering) return;
 
-        gl20.glClearColor(clearColor.getRed() / 255f, clearColor.getGreen() / 255f, clearColor.getBlue() / 255f, clearColor.getAlpha() / 255f);
-        gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        ScreenUtils.clear(clearColor.toGdx(), true);
     }
 
     ////////////////////////////
@@ -712,7 +675,6 @@ public class Renderer {
     public void translate(float x, float y) {
         if (!rendering) return;
 
-        this.globalTranslation.peek().add(x, y, 0);
         this.matrixStack.translate(x, y);
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -720,7 +682,6 @@ public class Renderer {
     public void translate(int x, int y) {
         if (!rendering) return;
 
-        this.globalTranslation.peek().add(x, y, 0);
         this.matrixStack.translate((float) x, (float) y);
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -728,7 +689,6 @@ public class Renderer {
     public void translate(float x, float y, float z) {
         if (!rendering) return;
 
-        this.globalTranslation.peek().add(x, y, z);
         this.matrixStack.translate(x, y, z);
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -736,7 +696,6 @@ public class Renderer {
     public void translate(int x, int y, int z) {
         if (!rendering) return;
 
-        this.globalTranslation.peek().add(x, y, z);
         this.matrixStack.translate((float) x, (float) y, (float) z);
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -810,10 +769,18 @@ public class Renderer {
         }
     }
 
+    @ApiStatus.Experimental
+    public void clearMatrixStack() {
+        if (!rendering) return;
+
+        while (matrixStack.last() != null) {
+            matrixStack.pop();
+        }
+    }
+
     public void pushMatrix() {
         if (!rendering) return;
 
-        this.globalTranslation.push(this.globalTranslation.peek().cpy());
         this.matrixStack.push();
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -823,7 +790,6 @@ public class Renderer {
 
         if (matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already at last stack entry");
 
-        this.globalTranslation.pop();
         this.matrixStack.pop();
         this.batch.setTransformMatrix(this.matrixStack.last());
     }
@@ -949,7 +915,6 @@ public class Renderer {
     public void fillErrorEffect(int x, int y, int width, int height) {
         if (!rendering) return;
 
-
         this.fillScrollingGradient(x, y, width, height, 10, 0xff3000, 0xffa000);
     }
 
@@ -972,10 +937,25 @@ public class Renderer {
     }
 
     private void fillScrollingGradient(int x, int y, int width, int height, int speed, int color1, int color2) {
-        var shiftX = (width * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - globalTranslation.peek().x) % (width * 2);
-        fillGradient(x - shiftX, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
-        fillGradient(x - shiftX + width, y, width, height, Color.rgb(color2), Color.rgb(color1), Axis2D.HORIZONTAL);
-        fillGradient(x - shiftX + width * 2, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+        float gameWidth = this.getWidth();
+        float gameHeight = this.getHeight();
+        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - matrixStack.last().getTranslation(new Vector3()).x) % (gameWidth * 2);
+
+//        this.pushScissors((float) x, (float) y, (float) width, (float) height);
+        {
+            this.fillGradient(x - shiftX, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+            this.fillGradient(x - shiftX + width, y, width, height, Color.rgb(color2), Color.rgb(color1), Axis2D.HORIZONTAL);
+            this.fillGradient(x - shiftX + width * 2, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+        }
+//        this.popScissors();
+    }
+
+    public float getWidth() {
+        return Gdx.graphics.getWidth();
+    }
+
+    public float getHeight() {
+        return Gdx.graphics.getHeight();
     }
 
 //    @NotNull
@@ -1043,8 +1023,8 @@ public class Renderer {
 
     public void setColor(Color c) {
         if (!rendering) return;
-
         if (c == null) return;
+
         font.setColor(c.toGdx());
         shapes.setColor(c.toGdx());
     }

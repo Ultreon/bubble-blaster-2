@@ -2,7 +2,6 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Cursor;
-import com.ultreon.bubbles.core.input.KeyboardInput;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
@@ -140,12 +139,8 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     }
 
     public void renderBackground(Renderer renderer) {
-        if (game.environment != null) {
-            renderer.setColor(0x80000000);
-        } else {
-            renderer.setColor(0xff1e1e1e);
-        }
-        renderer.fill(getBounds());
+        int color = game.environment != null ? 0x80000000 : 0xff1e1e1e;
+        fill(renderer, 0, 0, this.getWidth(), this.getHeight(), color);
     }
 
     /**

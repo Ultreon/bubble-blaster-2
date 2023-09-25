@@ -123,6 +123,9 @@ dependencies {
     implementation(runtimeOnly project(":gameprovider"))
     implementation(runtimeOnly project(":core"))
     implementation(runtimeOnly project(":desktop"))
+    implementation(compileOnly project(":gameprovider"))
+    implementation(compileOnly project(":core"))
+    implementation(compileOnly project(":desktop"))
 }
 
 allprojects {

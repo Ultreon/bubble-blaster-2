@@ -90,10 +90,10 @@ public class GraphicsUtils {
         layout.setText(renderer.getFont(), text);
 
         // Determine the X coordinate for the text
-        int x = (int) (pos.x + layout.width / 2);
+        int x = (int) (pos.x - layout.width / 2);
 
         // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
-        int y = (int) (pos.y + layout.height / 2);
+        int y = (int) (pos.y - layout.height / 2);
 
         // Set the font
         renderer.setFont(font);

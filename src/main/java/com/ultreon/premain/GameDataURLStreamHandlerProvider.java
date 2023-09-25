@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.core;
+package com.ultreon.premain;
 
 import com.ultreon.bubbles.BubbleBlaster;
 
@@ -10,7 +10,7 @@ import java.net.URLStreamHandler;
 import java.net.spi.URLStreamHandlerProvider;
 import java.util.Objects;
 
-public class DataURLHandler extends URLStreamHandlerProvider {
+public class GameDataURLStreamHandlerProvider extends URLStreamHandlerProvider {
     @Override
     public URLStreamHandler createURLStreamHandler(String protocol) {
         return Objects.equals(protocol, "gamedata") ? new URLStreamHandler() {

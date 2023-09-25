@@ -4,11 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Rectangle;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class ScissorStack {
 
-	public static Stack<Rectangle> scissorStack = new Stack<>();
+	public static Deque<Rectangle> scissorStack = new ArrayDeque<>();
 
 	public static void pushScissors(Rectangle rectangle) {
 		float x = rectangle.x;
@@ -16,13 +17,14 @@ public class ScissorStack {
 		float width = rectangle.width;
 		float height = rectangle.height;
 
-		if (scissorStack.size() > 0) {
+		if (!scissorStack.isEmpty()) {
 			Rectangle scissor = scissorStack.peek();
 			x = Math.max(scissor.x, x);
 			y = Math.max(scissor.y, y);
 			width = x + width > scissor.x + scissor.width ? scissor.x + scissor.width - x : width;
 			height = y + height > scissor.y + scissor.height ? scissor.y + scissor.height - y : height;
 		} else {
+			System.out.println("Enable Scissor Test");
 			Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
 		}
 
@@ -31,9 +33,8 @@ public class ScissorStack {
 	}
 
 	public static void popScissors() {
-		if (!scissorStack.isEmpty()) {
-			scissorStack.pop();
-		}
+		if (!scissorStack.isEmpty()) scissorStack.pop();
+
 		restoreScissors();
 	}
 
@@ -46,6 +47,7 @@ public class ScissorStack {
 			Rectangle scissor = scissorStack.peek();
 			Gdx.gl.glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
 		} else {
+			System.out.println("Disable Scissor Test");
 			Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
 		}
 	}
