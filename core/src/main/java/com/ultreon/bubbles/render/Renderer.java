@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.*;
+import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
@@ -19,7 +20,6 @@ import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.libs.commons.v0.vector.Vec4i;
 import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.opengl.GL40;
 import space.earlygrey.shapedrawer.JoinType;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -207,7 +207,20 @@ public class Renderer {
     public void fillGradient(float x, float y, float width, float height, Color color1, Color color2) {
         if (!rendering) return;
 
-        shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color1.toGdx(), color2.toGdx());
+        this.fillGradient(x, y, width, height, color1, color2, Axis2D.VERTICAL);
+    }
+
+    public void fillGradient(float x, float y, float width, float height, Color color1, Color color2, Axis2D axis) {
+        if (!rendering) return;
+
+        switch (axis) {
+            case HORIZONTAL -> {
+                shapes.filledRectangle(x, y, width, height, color2.toGdx(), color1.toGdx(), color2.toGdx(), color1.toGdx());
+            }
+            case VERTICAL -> {
+                shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color1.toGdx(), color2.toGdx());
+            }
+        }
     }
 
     public void line(int x1, int y1, int x2, int y2) {
@@ -829,12 +842,14 @@ public class Renderer {
                 '}';
     }
 
+    @Deprecated
     public void drawEffectBox(int x, int y, int width, int height) {
         if (!rendering) return;
 
         drawEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
     }
 
+    @Deprecated
     @ApiStatus.Experimental
     public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
         if (!rendering) return;
@@ -842,6 +857,7 @@ public class Renderer {
         drawEffectBox(x, y, width, height, insets, 10);
     }
 
+    @Deprecated
     @ApiStatus.Experimental
     public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
         if (!rendering) return;
@@ -849,18 +865,16 @@ public class Renderer {
         setColor(Color.rgb(0x00a0ff));
         setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
         rect(x, y, width, height);
-//        GradientPaint p = getEffectPaint(speed);
-//        Border border = new Border(insets);
-//        border.setPaint(p);
-//        border.paintBorder(this, x, y, width, height);
     }
 
+    @Deprecated
     public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
         if (!rendering) return;
 
         drawEffectBox(x, y, width, height, strokeWidth, 10);
     }
 
+    @Deprecated
     public void drawEffectBox(int x, int y, int width, int height, float borderWidth, int speed) {
         if (!rendering) return;
 
@@ -905,18 +919,21 @@ public class Renderer {
 //        stroke(old);
     }
 
+    @Deprecated
     public void drawErrorEffectBox(int x, int y, int width, int height) {
         if (!rendering) return;
 
         drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
     }
 
+    @Deprecated
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
         if (!rendering) return;
 
         drawErrorEffectBox(x, y, width, height, insets, 10);
     }
 
+    @Deprecated
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
         if (!rendering) return;
 
@@ -929,22 +946,36 @@ public class Renderer {
 //        border.paintBorder(this, x, y, width, height);
     }
 
+    public void fillErrorEffect(int x, int y, int width, int height) {
+        if (!rendering) return;
+
+
+        this.fillScrollingGradient(x, y, width, height, 10, 0xff3000, 0xffa000);
+    }
+
+    public void fillErrorEffect(int x, int y, int width, int height, int speed) {
+        if (!rendering) return;
+
+        this.fillScrollingGradient(x, y, width, height, speed, 0xff3000, 0xffa000);
+    }
+
     public void fillEffect(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        fillEffect(x, y, width, height, 10);
+        this.fillScrollingGradient(x, y, width, height, 10, 0x00a0ff, 0x00ffa0);
     }
 
     public void fillEffect(int x, int y, int width, int height, int speed) {
         if (!rendering) return;
 
-        setColor(Color.rgb(0x00a0ff));
-        rect(x, y, width, height);
-//        GradientPaint p = getEffectPaint(speed);
-//        Paint old = getPaint();
-//        paint(p);
-//        rect(x, y, width, height);
-//        paint(old);
+        this.fillScrollingGradient(x, y, width, height, speed, 0x00a0ff, 0x00ffa0);
+    }
+
+    private void fillScrollingGradient(int x, int y, int width, int height, int speed, int color1, int color2) {
+        var shiftX = (width * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - globalTranslation.peek().x) % (width * 2);
+        fillGradient(x - shiftX, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+        fillGradient(x - shiftX + width, y, width, height, Color.rgb(color2), Color.rgb(color1), Axis2D.HORIZONTAL);
+        fillGradient(x - shiftX + width * 2, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
     }
 
 //    @NotNull

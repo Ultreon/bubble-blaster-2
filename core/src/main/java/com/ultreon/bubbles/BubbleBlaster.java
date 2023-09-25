@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -41,7 +40,6 @@ import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.font.FontInfo;
 import com.ultreon.bubbles.render.font.FontStyle;
@@ -52,10 +50,10 @@ import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
+import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.libs.commons.v0.util.FileUtils;
 import com.ultreon.libs.crash.v0.ApplicationCrash;
 import com.ultreon.libs.crash.v0.CrashLog;
@@ -63,8 +61,6 @@ import com.ultreon.libs.registries.v0.Registry;
 import com.ultreon.libs.resources.v0.Resource;
 import com.ultreon.libs.resources.v0.ResourceManager;
 import com.ultreon.libs.translations.v0.LanguageManager;
-import de.jcm.discordgamesdk.Core;
-import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -111,7 +107,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -134,9 +129,12 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 public final class BubbleBlaster extends ApplicationAdapter {
     public static final int TPS = 40;
     public static final String NAMESPACE = "bubbles";
+
     // Logger.
-    private static final Logger logger = LoggerFactory.getLogger("Generic");
-    private static final WatchManager watcher = new WatchManager(new ConfigurationScheduler("File Watcher"));
+    public static final Logger LOGGER = LoggerFactory.getLogger("Generic");
+    public static final Instant BOOT_TIME = Instant.now();
+
+    private static final WatchManager WATCHER = new WatchManager(new ConfigurationScheduler("File Watcher"));
     private static final ImBoolean SHOW_INFO_WINDOW = new ImBoolean(false);
     private static final ImBoolean SHOW_FPS_GRAPH = new ImBoolean(false);
     private static final ImBoolean SHOW_ENTITY_MODIFIER = new ImBoolean(false);
@@ -176,7 +174,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private RenderSettings renderSettings;
     // Tasks
     final List<Runnable> tasks = new CopyOnWriteArrayList<>();
-    private Thread rpcThread;
+    private DiscordRPC discordRpc;
     // Fonts.
     private BitmapFont sansFont;
     // Font names.
@@ -192,24 +190,30 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private final BufferedImage background = null;
     private final Object rpcUpdateLock = new Object();
     private final Ticker ticker = new Ticker();
-    //    private final ScannerResult scanResults;
+
     // Utility objects.
     public InputController input;
+
     // Environment
     @Nullable
     public Environment environment;
+
     // Player entity
     public Player player;
     BufferedImage cachedImage;
+
     // Values
     @IntRange(from = 0) int fps;
     private int currentTps;
     private PlayerController playerController;
+
     // Game states.
     private boolean loaded;
     private static boolean crashed;
-    private volatile boolean running = false;
+
     // Running value.
+    private volatile boolean running = false;
+
     // Threads
     private Thread renderingThread;
     private Thread tickingThread;
@@ -219,6 +223,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private BitmapFont monospaceFont;
     private BitmapFont pixelFont;
     private BitmapFont logoFont;
+
     // Loaded game.
     @Nullable
     private LoadedGame loadedGame;
@@ -233,8 +238,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private long fadeInStart = 0L;
     private final boolean firstFrame = true;
     private final GlobalSaveData globalSaveData = GlobalSaveData.instance();
-    private SpriteBatch batch;
-    private ShapeDrawer shapes;
     private OrthographicCamera camera;
     private Viewport viewport;
     private boolean focused;
@@ -259,7 +262,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         AtomicReference<T> ref = new AtomicReference<>();
         RENDER_CALLS.addLast(renderer -> {
-            System.out.println("func = " + func);
             ref.set(func.get());
             LockSupport.unpark(thread);
         });
@@ -275,11 +277,14 @@ public final class BubbleBlaster extends ApplicationAdapter {
         }
 
         RENDER_CALLS.addLast(renderer -> {
-            System.out.println("func = " + func);
             func.run();
             LockSupport.unpark(thread);
         });
         LockSupport.park();
+    }
+
+    public static Instant getBootTime() {
+        return BOOT_TIME;
     }
 
     @Override
@@ -298,13 +303,13 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl3.init("#version 150");
-        this.batch = new SpriteBatch();
+        SpriteBatch batch = new SpriteBatch();
         Pixmap singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         singlePxPixmap.setColor(Color.rgb(0xffffff).toGdx());
         singlePxPixmap.drawPixel(0, 0);
         com.badlogic.gdx.graphics.Texture singlePxTex = new com.badlogic.gdx.graphics.Texture(singlePxPixmap);
         TextureRegion pixel = new TextureRegion(singlePxTex);
-        this.shapes = new ShapeDrawer(batch, pixel);
+        ShapeDrawer shapes = new ShapeDrawer(batch, pixel);
         this.textureManager = TextureManager.instance();
         this.debugRenderer = new DebugRenderer(this);
         this.camera = new OrthographicCamera();
@@ -365,18 +370,11 @@ public final class BubbleBlaster extends ApplicationAdapter {
             return activity;
         });
 
-        rpcThread = new Thread(() -> {
-            try {
-                rpc();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        rpcThread.start();
+        this.discordRpc = new DiscordRPC();
 
-        logger.info("Discord RPC is initializing!");
+        LOGGER.info("Discord RPC is initializing!");
 
-        environmentRenderer = new EnvironmentRenderer();
+        this.environmentRenderer = new EnvironmentRenderer();
 
         List<Path> paths = FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow().getOrigin().getPaths();
         for (Path path : paths) {
@@ -586,7 +584,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     }
 
     public static WatchManager getWatcher() {
-        return watcher;
+        return WATCHER;
     }
 
     public static boolean hasRendered() {
@@ -713,7 +711,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     //     Loggers     //
     /////////////////////
     public static Logger getLogger() {
-        return logger;
+        return LOGGER;
     }
 
     /////////////////////////////////////
@@ -859,87 +857,16 @@ public final class BubbleBlaster extends ApplicationAdapter {
         return gameFile;
     }
 
-    @SuppressWarnings("BusyWait")
-    private void rpc() throws IOException {
-        try {
-            var discordLibrary = new DownloadDiscordSDK().download();
-            if (discordLibrary == null) {
-                System.err.println("Error downloading Discord SDK.");
-                return;
-            }
-            // Initialize the Core
-            Core.init(discordLibrary);
-        } catch (Throwable t) {
-            logger.warn("Discord RPC failed to initialize:", t);
-            return;
-        }
-
-        // Set parameters for the Core
-        try (var params = new CreateParams()) {
-            params.setClientID(933147296311427144L);
-            params.setFlags(CreateParams.getDefaultFlags());
-
-            // Create the Core
-            try (var core = new Core(params)) {
-                // Create the Activity
-                try (var activity = new Activity()) {
-                    activity.setDetails("Developer mode");
-                    activity.setState("RPC Testing");
-
-                    // Setting a start time causes an "elapsed" field to appear
-                    activity.timestamps().setStart(Instant.now());
-
-                    // Make a "cool" image show up
-                    activity.assets().setLargeImage("icon");
-
-                    // Finally, update the current activity to our activity
-                    core.activityManager().updateActivity(activity);
-                }
-
-                // Run callbacks forever
-                while (true) {
-                    core.runCallbacks();
-                    synchronized (rpcUpdateLock) {
-                        if (rpcUpdated) {
-                            rpcUpdated = false;
-                            core.activityManager().updateActivity(activity.get());
-                        }
-                    }
-                    try {
-                        // Sleep a bit to save CPU
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        try {
-                            core.close();
-                        } catch (Exception ex) {
-                            return;
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
     public void updateRPC() {
 //        DiscordRPC.discordUpdatePresence(presence);
     }
 
-    public Supplier<Activity> getActivity() {
-        return activity;
+    public Activity getActivity() {
+        return discordRpc.getActivity();
     }
 
-    public void setActivity(Supplier<Activity> activity) {
-        synchronized (rpcUpdateLock) {
-            this.activity = () -> {
-                var ret = activity.get();
-                var state = ret.getState();
-                Gdx.graphics.setTitle("Bubble Blaster - " + getGameVersion().getFriendlyString() + " - " + state);
-                ret.assets().setLargeImage("icon");
-                return ret;
-            };
-            rpcUpdated = true;
-        }
+    public static void setActivity(Supplier<Activity> activity) {
+        instance.discordRpc.setActivity(activity);
     }
 
     private void initialGameTick() {
@@ -1056,8 +983,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     BitmapFont loadBitmapFreeTypeFont(FileHandle handle, int size) {
         if (!isOnRenderingThread()) {
-            System.out.println("Thread.currentThread().getId() = " + Thread.currentThread().getId());
-
             BitmapFont bitmapFont = invokeAndWait(() -> loadBitmapFreeTypeFont(handle, size));
             if (bitmapFont == null) throw new FontLoadException("Render call failed");
             return bitmapFont;
@@ -1105,11 +1030,12 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     public void onClose() {
         // Shut-down game.
-        logger.info("Shutting down Bubble Blaster");
+        LOGGER.info("Shutting down Bubble Blaster");
+
+        this.discordRpc.stop();
 
         this.tickingThread.interrupt();
         this.garbageCollector.interrupt();
-        this.rpcThread.interrupt();
 
         final var loadedGame = this.loadedGame;
         if (loadedGame != null) {
@@ -1126,9 +1052,9 @@ public final class BubbleBlaster extends ApplicationAdapter {
         try {
             this.tickingThread.join();
             this.garbageCollector.join();
-            this.rpcThread.join();
+            this.discordRpc.join();
         } catch (Exception e) {
-            logger.warn("Failed to stop threads:", e);
+            LOGGER.warn("Failed to stop threads:", e);
             this.annihilate();
         }
         checkForExitEvents();
@@ -1311,7 +1237,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
             this.loadedGame = loadedGame;
         } catch (Throwable t) {
-            logger.error("Bubble Blaster failed to launch", t);
+            LOGGER.error("Bubble Blaster failed to launch", t);
             var crashLog = new CrashLog("Game save being loaded", t);
             crashLog.add("Save Directory", save.getDirectory());
             crashLog.add("Current Description", screen.getDescription());
@@ -1576,11 +1502,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
                     ticksPassed = 0;
                     tickTime = 0;
                 }
-
-                Thread.sleep(2);
             }
-        } catch (InterruptedException e) {
-            logger.info("Ticking interrupted.");
         } catch (Throwable t) {
             var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
@@ -1638,9 +1560,9 @@ public final class BubbleBlaster extends ApplicationAdapter {
                 screen.render(this, renderer, frameTime);
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
-//            if (environment != null && environmentRenderer != null) {
-//                renderer.fillEffect(0, 0, BubbleBlaster.getInstance().getWidth(), 3);
-//            }
+            if (environment != null && environmentRenderer != null) {
+                renderer.fillEffect(0, 0, BubbleBlaster.getInstance().getWidth(), 3);
+            }
         });
 
         // Post render.
@@ -1733,7 +1655,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     public void keyPress(int keyCode) {
         if (keyCode == Input.Keys.F12) {
             debugGuiOpen.set(!debugGuiOpen.get());
-            logger.debug("Toggling debug gui");
+            LOGGER.debug("Toggling debug gui");
         } else if (keyCode == Input.Keys.F10 && (debugMode || devMode)) {
             var env = environment;
             if (env != null) {
@@ -1909,12 +1831,12 @@ public final class BubbleBlaster extends ApplicationAdapter {
         try {
             GameEvents.CRASH.factory().onCrash(crash);
         } catch (Throwable t) {
-            logger.error("Error occurred in 3rd party crash handling:", t);
+            LOGGER.error("Error occurred in 3rd party crash handling:", t);
         }
 
         if (!overridden) {
             crashLog.defaultSave();
-            logger.error(crashLog.toString());
+            LOGGER.error(crashLog.toString());
         }
 
         instance.shutdown();

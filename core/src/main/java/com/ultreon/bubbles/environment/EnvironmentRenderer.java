@@ -118,15 +118,7 @@ public class EnvironmentRenderer implements IRenderer {
                 renderer.setColor(currentGameplayEvent.getBackgroundColor());
                 renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
             } else {
-//                if (cached == null) {
-//                    BufferRender bufferRender = new BufferRender(new Dimension(game.getWidth(), game.getHeight()), game.getObserver());
-//                    Renderer buffered = bufferRender.getRenderer();
-//                    buffered.color(0xff006080);
-//                    buffered.paint(new GradientPaint(0f, 0f, UPPER_COLOR.toAwt(), 0f, BubbleBlaster.getInstance().getHeight(), LOWER_COLOR.toAwt()));
-//                    buffered.rect(0, 0, game.getWidth(), game.getHeight());
-//                    cached = bufferRender.done();
-//                }
-//                renderer.image(cached, 0, 0);
+                renderer.fillGradient(0, 0, game.getWidth(), game.getHeight(), UPPER_COLOR, LOWER_COLOR);
                 BubbleBlaster.getLogger().warn("Background not rendering");
             }
         });

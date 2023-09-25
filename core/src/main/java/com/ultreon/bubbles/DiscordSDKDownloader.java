@@ -1,9 +1,12 @@
 package com.ultreon.bubbles;
 
-import com.ultreon.bubbles.common.IDownloader;
+import com.ultreon.libs.commons.v0.IDownloader;
+import com.ultreon.libs.commons.v0.Mth;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Locale;
@@ -14,8 +17,28 @@ import java.util.zip.ZipInputStream;
  * An examples showing how to automatically download, extract and load
  * Discord's native library.
  */
-class DownloadDiscordSDK implements IDownloader {
-    public File download() throws IOException {
+class DiscordSDKDownloader implements IDownloader {
+    private final URL url;
+    private File file;
+    private boolean failed;
+    private boolean completed;
+    private int length;
+    private long bytesDownloaded;
+
+    public DiscordSDKDownloader() {
+        this(Constants.DISCORD_GAME_SDK_VERSION);
+    }
+
+    public DiscordSDKDownloader(String version) {
+        try {
+            this.url = new URL("https://dl-game-sdk.discordapp.net/" + version + "/discord_game_sdk.zip");
+        } catch (MalformedURLException e) {
+            throw new DownloadException();
+        }
+    }
+
+    @Override
+    public void downloadSync() throws IOException {
         // Find out which name Discord's library has (.dll for Windows, .so for Linux)
         String name = "discord_game_sdk";
         String suffix;
@@ -30,7 +53,7 @@ class DownloadDiscordSDK implements IDownloader {
         } else if (osName.contains("mac os")) {
             suffix = ".dylib";
         } else {
-            throw new RuntimeException("cannot determine OS type: " + osName);
+            throw new IOException("cannot determine OS type: " + osName);
         }
 
 		/*
@@ -45,12 +68,18 @@ class DownloadDiscordSDK implements IDownloader {
         String zipPath = "lib/" + arch + "/" + name + suffix;
 
         // Open the URL as a ZipInputStream
-        URL downloadUrl = new URL("https://dl-game-sdk.discordapp.net/2.5.6/discord_game_sdk.zip");
-        ZipInputStream zin = new ZipInputStream(downloadUrl.openStream());
+        InputStream inputStream = this.url.openStream();
+
+        this.length = inputStream.available();
+
+        ZipInputStream zin = new ZipInputStream(inputStream);
 
         // Search for the right file inside the ZIP
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) {
+            int left = inputStream.available();
+            this.bytesDownloaded = this.length - left;
+
             if (entry.getName().equals(zipPath)) {
                 // Create a new temporary directory
                 // We need to do this, because we may not change the filename on Windows
@@ -71,13 +100,60 @@ class DownloadDiscordSDK implements IDownloader {
                 zin.close();
 
                 // Return our temporary file
-                return temp;
+                this.file = temp;
+                this.failed = false;
+                this.completed = true;
+                return;
             }
+
             // next entry
             zin.closeEntry();
         }
         zin.close();
         // We couldn't find the library inside the ZIP
-        return null;
+        this.file = null;
+        this.failed = true;
+        this.completed = true;
+    }
+
+    @Override
+    public int getBlockSize() {
+        return 512;
+    }
+
+    @Override
+    public long getBytesDownloaded() {
+        return this.bytesDownloaded;
+    }
+
+    @Override
+    public long getLength() {
+        return this.length;
+    }
+
+    @Override
+    public float getPercent() {
+        return 100 * getRatio();
+    }
+
+    @Override
+    public float getRatio() {
+        return Mth.clamp(getBytesDownloaded() / getLength(), 0, 1);
+    }
+
+    public boolean isFailed() {
+        return this.failed;
+    }
+
+    public boolean isCompleted() {
+        return this.completed;
+    }
+
+    public URL getUrl() {
+        return this.url;
+    }
+
+    public File getFile() {
+        return this.file;
     }
 }
