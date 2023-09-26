@@ -1,12 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -31,12 +28,12 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
         this.listContent = this.add(new Container(0, 0, width, getViewport().getHeight()) {
             @Override
-            public void render(Renderer renderer) {
+            public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
                 var y = 0;
                 for (var entry : ObjectList.this.entries) {
                     entry.setPos(0, y);
                     entry.setSize(width, entryHeight);
-                    renderer.subInstance(0, y, ObjectList.this.width, entryHeight, entry::render);
+                    renderer.subInstance(0, y, ObjectList.this.width, entryHeight, renderer1 -> entry.render(renderer1, mouseX, mouseY, deltaTime));
                     y += entryHeight + gap;
                 }
             }
@@ -184,7 +181,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
             this.value = value;
         }
 
-        public void render(Renderer renderer1) {
+        public void render(Renderer renderer1, int mouseX, int mouseY, float deltaTime) {
             list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, value, list.selected == this && list.selectable, isHovered());
         }
 

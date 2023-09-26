@@ -1,6 +1,8 @@
 package com.ultreon.bubbles.render.gui.screen.splash;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.crashinvaders.vfx.VfxManager;
+import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.render.Color;
@@ -25,6 +27,8 @@ public class SplashScreen extends Screen {
     private long startTime = -1L;
     private Resizer resizer;
     private boolean ended;
+    private VfxManager vfxManager;
+    private FilmGrainEffect vfxEffect;
 
     //from https://www.java2s.com
     public static double interpolate(double a, double b, double d) {
@@ -48,7 +52,7 @@ public class SplashScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         if (this.startTime == -1L) {
             this.startTime = System.currentTimeMillis();
 

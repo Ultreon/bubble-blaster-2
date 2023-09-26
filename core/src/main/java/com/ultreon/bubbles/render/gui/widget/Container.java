@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
-import com.ultreon.bubbles.render.gui.Renderable;
+import com.ultreon.bubbles.render.gui.RenderableListener;
 import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Container extends GuiComponent {
     protected final List<GuiComponent> children = new CopyOnWriteArrayList<>();
-    protected final List<Renderable> statics = new CopyOnWriteArrayList<>();
+    protected final List<RenderableListener> statics = new CopyOnWriteArrayList<>();
     protected GuiComponent hoveredInteractable;
     int innerXOffset;
     int innerYOffset;
@@ -23,16 +23,13 @@ public abstract class Container extends GuiComponent {
     }
 
     @Override
-    public void render(Renderer renderer) {
-        renderChildren(renderer);
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
-    protected void renderChildren(Renderer renderer) {
-        for (GuiComponent child : this.children) {
-            if (child.visible) {
-                renderer.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight(), child::render);
-            }
-        }
+    protected void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        for (GuiComponent child : this.children)
+            if (child.visible) child.render(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Nullable

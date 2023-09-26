@@ -25,7 +25,7 @@ public class Label extends GuiComponent {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderComponent(renderer);
     }
 

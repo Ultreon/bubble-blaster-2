@@ -1,8 +1,9 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.libs.commons.v0.Anchor;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
 import com.ultreon.libs.text.v0.TextObject;
@@ -81,27 +82,28 @@ public class TitleScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        ticks += partialTicks;
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        this.renderBackground(renderer);
+
+        ticks += deltaTime;
         renderer.setColor(0xff404040);
         renderer.fill(BubbleBlaster.getInstance().getGameBounds());
 
         renderer.setColor(0xff1e1e1e);
-        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), 175);
+        renderer.rect(0, 0, game.getWidth(), 175);
 
-        float shiftX = (float) BubbleBlaster.getInstance().getWidth() * 2f * ticks / ((float) BubbleBlaster.TPS * 10f);
-
-        renderer.fillEffect(0, 175, BubbleBlaster.getInstance().getWidth(), 3);
-
-        renderer.setColor(0xffffffff);
-        renderer.drawText(Fonts.DONGLE_140.get(), "Bubble Blaster", (float) BubbleBlaster.getInstance().getWidth() / 2, 87, Anchor.S);
+        renderer.fillEffect(0, 175, game.getWidth(), 3);
+        renderer.fillGradient(0, 178, game.getWidth(), 20, Color.argb(0x20000000), Color.argb(0x00000000));
 
         renderer.setColor(0xffffffff);
-        renderer.drawText(monospaced, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 10, 10);
-        renderer.drawText(monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 10, 22);
-        renderer.drawText(monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 10, 34);
-        renderer.drawText(monospaced, "High Score: " + (int)game.getGlobalData().getHighScore(), 10, 46);
+        renderer.drawCenteredText(Fonts.DONGLE_140.get(), "Bubble Blaster", Gdx.graphics.getWidth() / 2f, 87);
 
-        this.renderChildren(renderer);
+        renderer.setColor(0xffffffff);
+        renderer.drawText(monospaced, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 20, 20);
+        renderer.drawText(monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 20, 32);
+        renderer.drawText(monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 20, 44);
+        renderer.drawText(monospaced, "High Score: " + (int)game.getGlobalData().getHighScore(), 20, 56);
+
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 }

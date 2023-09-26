@@ -27,7 +27,7 @@ public abstract class GameHud extends Screen {
 
     }
 
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
 
     }
 

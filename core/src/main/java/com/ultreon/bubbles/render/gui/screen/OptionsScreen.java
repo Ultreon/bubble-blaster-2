@@ -66,7 +66,7 @@ public class OptionsScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         maxBubblesOption.setX((int) BubbleBlaster.getMiddleX() - 322);
         maxBubblesOption.setY((int) BubbleBlaster.getMiddleY() + 101);
         maxBubblesOption.setWidth(321);
@@ -87,7 +87,7 @@ public class OptionsScreen extends Screen {
         languageButton.setText(Language.translate("bubbles/screen/options/language"));
         saveButton.setText(Language.translate("bubbles/other/save"));
 
-        super.render(game, renderer, partialTicks);
+        super.render(game, renderer, mouseX, mouseY, deltaTime);
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {

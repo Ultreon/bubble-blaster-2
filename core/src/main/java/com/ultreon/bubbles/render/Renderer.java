@@ -4,17 +4,19 @@
 package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.gl.GLScissorState;
+import com.ultreon.bubbles.mixins.ScissorStackMixin;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
@@ -31,9 +33,11 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Renderer class.
@@ -56,8 +60,9 @@ public class Renderer {
     private final GL30 gl30;
     private final Batch batch;
     private final ShapeDrawer shapes;
+    private final OrthographicCamera camera;
     private float strokeWidth;
-    private final MatrixStack matrixStack;
+    private final Deque<Matrix4> matrixStack = new ArrayDeque<>();
     private Texture curTexture;
     private BitmapFont font;
     private final ThreadLocal<GlyphLayout> glyphLayout = new ThreadLocal<>();
@@ -65,33 +70,22 @@ public class Renderer {
     private Color color;
     private boolean rendering;
 
-    //////////////////////////
-    //     Constructors     //
-    //////////////////////////
-    public Renderer(ShapeDrawer shapes) {
-        this(shapes, new MatrixStack());
-    }
-
-    //////////////////////////
-    //     Constructors     //
-    //////////////////////////
-    public Renderer(ShapeDrawer shapes, MatrixStack matrixStack) {
-        this.font = game.getBitmapFont();
+    @ApiStatus.Internal
+    public Renderer(ShapeDrawer shapes, OrthographicCamera camera) {
+        this.font = this.game.getBitmapFont();
         this.gl20 = Gdx.gl20;
         this.gl30 = Gdx.gl30;
         this.batch = shapes.getBatch();
         this.shapes = shapes;
-        this.matrixStack = matrixStack;
-
-        // Projection matrix.
-        this.matrixStack.onEdit = matrix -> shapes.getBatch().setTransformMatrix(matrix);
+        this.camera = camera;
     }
 
-    public void begin(Camera camera) {
+    @ApiStatus.Internal
+    public void begin() {
         if (this.rendering)
             throw new IllegalStateException("Renderer is already rendering");
 
-        this.batch.setProjectionMatrix(camera.combined);
+        this.batch.setProjectionMatrix(this.camera.combined);
         this.batch.begin();
 
         this.rendering = true;
@@ -101,14 +95,15 @@ public class Renderer {
         this.enableDepthTest();
     }
 
+    @ApiStatus.Internal
     public void end() {
         if (!this.rendering)
             throw new IllegalStateException("Renderer isn't rendering yet");
 
-        if (!ScissorStack.isEmpty())
+        if (!ScissorStackMixin.getScissors().isEmpty())
             throw new IllegalStateException("Scissor stack isn't cleared before renderer completes");
 
-        if (!matrixStack.isClear())
+        if (!matrixStack.isEmpty())
             throw new IllegalStateException("Matrix stack isn't cleared before renderer completes");
 
         this.disableDepthTest();
@@ -223,12 +218,8 @@ public class Renderer {
         if (!rendering) return;
 
         switch (axis) {
-            case HORIZONTAL -> {
-                shapes.filledRectangle(x, y, width, height, color2.toGdx(), color2.toGdx(), color1.toGdx(), color1.toGdx());
-            }
-            case VERTICAL -> {
-                shapes.filledRectangle(x, y, width, height, color1.toGdx(), color1.toGdx(), color2.toGdx(), color2.toGdx());
-            }
+            case HORIZONTAL -> shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color2.toGdx(), color1.toGdx());
+            case VERTICAL -> shapes.filledRectangle(x, y, width, height, color2.toGdx(), color2.toGdx(), color1.toGdx(), color1.toGdx());
         }
     }
 
@@ -281,7 +272,7 @@ public class Renderer {
     public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!rendering) return;
 
-        shapes.filledRectangle(x, y, width, height, strokeWidth);
+        shapes.filledRectangle(x, y, width, height);
     }
 
     public void rect3DLine(int x, int y, int width, int height, boolean raised) {
@@ -675,48 +666,63 @@ public class Renderer {
     public void translate(float x, float y) {
         if (!rendering) return;
 
-        this.matrixStack.translate(x, y);
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        this.editMatrix(m -> m.translate(x, y, 0));
+    }
+
+    private void editMatrix(Function<Matrix4, Matrix4> editor) {
+        Matrix4 m = this.batch.getTransformMatrix();
+        this.batch.setTransformMatrix(editor.apply(m));
     }
 
     public void translate(int x, int y) {
         if (!rendering) return;
 
-        this.matrixStack.translate((float) x, (float) y);
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        this.editMatrix(m -> m.translate(x, y, 0));
     }
 
     public void translate(float x, float y, float z) {
         if (!rendering) return;
 
-        this.matrixStack.translate(x, y, z);
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        this.editMatrix(m -> m.translate(x, y, z));
     }
 
     public void translate(int x, int y, int z) {
         if (!rendering) return;
 
-        this.matrixStack.translate((float) x, (float) y, (float) z);
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        this.editMatrix(m -> m.translate(x, y, z));
     }
 
-    public void rotate(double theta) {
+    public void rotate(float theta) {
         if (!rendering) return;
 
-        matrixStack.rotate(new Quaternion(1, 0, 0, (float) theta));
+        float halfTheta = theta / 2;
+        float sinHalfTheta = (float) Math.sin(halfTheta);
+        this.editMatrix(m -> m.rotate(new Quaternion(0, 0, sinHalfTheta, (float) Math.cos(halfTheta))));
     }
 
     public void rotate(double theta, double x, double y) {
         if (!rendering) return;
 
-        matrixStack.rotate(new Quaternion(1, 0, 0, (float) x));
-        matrixStack.rotate(new Quaternion(0, 1, 0, (float) y));
+        this.editMatrix(m -> m.rotate(new Quaternion(1, 0, 0, (float) x)).rotate(new Quaternion(0, 1, 0, (float) y)));
     }
 
+    @Deprecated(forRemoval = true)
     public void scale(double sx, double sy) {
         if (!rendering) return;
 
-        matrixStack.scale((float) sx, (float) sy);
+        this.editMatrix(m -> m.scale((float) sx, (float) sy, 0));
+    }
+
+    public void scale(float sx, float sy) {
+        if (!rendering) return;
+
+        this.editMatrix(m -> m.scale(sx, sy, 0));
+    }
+
+    public void scale(float sx, float sy, float sz) {
+        if (!rendering) return;
+
+        this.editMatrix(m -> m.scale(sx, sy, sz));
     }
 
     public void subInstance(Rectangle rectangle, Consumer<Renderer> consumer) {
@@ -773,7 +779,7 @@ public class Renderer {
     public void clearMatrixStack() {
         if (!rendering) return;
 
-        while (matrixStack.last() != null) {
+        while (matrixStack.peek() != null) {
             matrixStack.pop();
         }
     }
@@ -781,17 +787,18 @@ public class Renderer {
     public void pushMatrix() {
         if (!rendering) return;
 
-        this.matrixStack.push();
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        Matrix4 matrix = this.batch.getTransformMatrix();
+        this.matrixStack.push(matrix);
+        this.batch.setTransformMatrix(matrix.cpy());
     }
 
     public void popMatrix() {
         if (!rendering) return;
 
-        if (matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already at last stack entry");
+        if (matrixStack.isEmpty()) throw new IllegalStateException("Matrix stack is already empty");
 
-        this.matrixStack.pop();
-        this.batch.setTransformMatrix(this.matrixStack.last());
+        Matrix4 matrix = this.matrixStack.pop();
+        this.batch.setTransformMatrix(matrix);
     }
 
     public boolean hitClip(int x, int y, int width, int height) {
@@ -828,7 +835,7 @@ public class Renderer {
     public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
         if (!rendering) return;
 
-        setColor(Color.rgb(0x00a0ff));
+        setColor(Color.rgb(0x00d0d0));
         setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
         rect(x, y, width, height);
     }
@@ -875,7 +882,7 @@ public class Renderer {
         if (!rendering) return;
 
 //        radius -= borderWidth - 1;
-        setColor(Color.rgb(0x00a0ff));
+        setColor(Color.rgb(0x00d0d0));
         setStrokeWidth(borderWidth);
         roundRectLine(x, y, width, height, radius, radius);
 //        paint(getEffectPaint(speed));
@@ -939,15 +946,18 @@ public class Renderer {
     private void fillScrollingGradient(int x, int y, int width, int height, int speed, int color1, int color2) {
         float gameWidth = this.getWidth();
         float gameHeight = this.getHeight();
-        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - matrixStack.last().getTranslation(new Vector3()).x) % (gameWidth * 2);
+        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - batch.getTransformMatrix().getTranslation(new Vector3()).x) % (gameWidth * 2);
 
-//        this.pushScissors((float) x, (float) y, (float) width, (float) height);
-        {
-            this.fillGradient(x - shiftX, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
-            this.fillGradient(x - shiftX + width, y, width, height, Color.rgb(color2), Color.rgb(color1), Axis2D.HORIZONTAL);
-            this.fillGradient(x - shiftX + width * 2, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
-        }
-//        this.popScissors();
+        // Todo: do the effect!
+//        GLScissorState state = GLScissorState.captureScissor();
+//        Gdx.gl20.glEnable(GL20.GL_SCISSOR_TEST);
+//        Gdx.gl20.glScissor(x, y, Math.abs(width), Math.abs(height));
+//        this.fillGradient(-shiftX, 0, gameWidth, gameHeight, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+//        this.fillGradient(-shiftX + gameWidth, 0, gameWidth, gameHeight, Color.rgb(color2), Color.rgb(color1), Axis2D.HORIZONTAL);
+//        this.fillGradient(-shiftX + gameWidth * 2, 0, gameWidth, gameHeight, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
+//        state.reapplyState();
+
+        this.fillGradient(x, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
     }
 
     public float getWidth() {
@@ -996,19 +1006,22 @@ public class Renderer {
     ////////////////////////
     //     Properties     //
     ////////////////////////
-    public MatrixStack getMatrixStack() {
+    public Deque<Matrix4> getMatrixStack() {
         return matrixStack;
     }
 
     public Matrix4 getTransform() {
-        return matrixStack.last();
+        return matrixStack.peek();
     }
 
     public void setTransform(Matrix4 matrix) {
         if (!rendering) return;
 
-        matrixStack.last().set(matrix);
-        batch.setTransformMatrix(matrix);
+        Matrix4 m = matrixStack.peek();
+        if (m != null) {
+            m.set(matrix);
+            batch.setTransformMatrix(m);
+        }
     }
 
     public void setStrokeWidth(float strokeWidth) {
@@ -1137,6 +1150,10 @@ public class Renderer {
 
     public BitmapFont getFont() {
         return font;
+    }
+
+    public void roundedLine(float x1, float y1, float x2, float y2) {
+        shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), strokeWidth, JoinType.SMOOTH, false);
     }
 
     public enum State {

@@ -22,12 +22,13 @@
       }
     }
   ],
+  "accessWidener": "bubbles.accesswidener",
   "depends": {
     "fabricloader": "*",
     "bb-preloader": "*"
   },
   "mixins": [
-
+    { "config": "bubbles.mixins.json" }
   ],
   "license": "Ultreon-API-v1.2",
   "icon": "bubbles/icon.png",

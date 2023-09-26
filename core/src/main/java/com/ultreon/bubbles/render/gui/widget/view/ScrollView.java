@@ -37,10 +37,10 @@ public class ScrollView extends View {
     }
 
     @Override
-    public void render(@NotNull Renderer renderer) {
+    public void render(@NotNull Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.subInstance((int) outerBounds.getX(), (int) outerBounds.getY(), (int) outerBounds.getWidth(), (int) outerBounds.getHeight(), containerGraphics -> {
             for (GuiComponent child : this.children) {
-                child.render(containerGraphics);
+                child.render(containerGraphics, mouseX, mouseY, deltaTime);
             }
         });
     }

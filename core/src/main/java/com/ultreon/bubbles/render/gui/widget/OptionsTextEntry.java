@@ -122,7 +122,7 @@ public class OptionsTextEntry extends GuiComponent {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         if (activated) {
             fill(renderer, 0, 0, width, height, 0xff808080);
 

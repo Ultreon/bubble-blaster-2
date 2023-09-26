@@ -147,18 +147,20 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * Renders the screen.<br>
      * <b>Note: <i>super calls are recommended to make the gui work correctly.</i></b>
      *
-     * @param game         the game's instance.
-     * @param renderer     the renderer.
-     * @param partialTicks partial ticks / frame time.
+     * @param game      the game's instance.
+     * @param renderer  the renderer.
+     * @param mouseX    the mouse's current x position
+     * @param mouseY    the mouse's current y position
+     * @param deltaTime partial ticks / frame time.
      */
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
-        render(renderer);
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        render(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderBackground(renderer);
-        renderChildren(renderer);
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     /**

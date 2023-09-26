@@ -44,12 +44,14 @@ public class MessengerScreen extends Screen {
      * Renders the environment loading scene.<br>
      * Shows the title in the blue accent color (#00b0ff), and the description in a 50% black color (#7f7f7f).
      *
-     * @param game         the game launched.
-     * @param renderer     the graphics 2D processor.
-     * @param partialTicks game frame time.
+     * @param game      the game launched.
+     * @param renderer  the graphics 2D processor.
+     * @param mouseX
+     * @param mouseY
+     * @param deltaTime game frame time.
      */
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.rgb(0x404040));
         renderer.rect(0, 0, game.getWidth(), game.getHeight());
 

@@ -4,7 +4,6 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.CrashButton;
 import com.ultreon.commons.crash.CrashLog;
 
@@ -36,7 +35,7 @@ public class CrashScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.rgb(0xc00000));
         renderer.rectLine(0, 0, game.getWidth(), game.getScaledHeight());
 

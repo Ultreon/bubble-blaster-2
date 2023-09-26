@@ -165,7 +165,7 @@ public class CommandScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.argb(0x40000000));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), height);
 

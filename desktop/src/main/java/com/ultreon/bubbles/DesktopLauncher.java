@@ -12,16 +12,19 @@ import net.fabricmc.loader.impl.util.Arguments;
 public class DesktopLauncher {
     public static void main(String[] argv) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8);
         config.setResizable(false);
-        config.useVsync(false);
-        config.setForegroundFPS(60);
+        config.useVsync(true);
+        config.setForegroundFPS(120);
         config.setIdleFPS(10);
         config.setInitialVisible(false);
         config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         config.setTitle("Bubble Blaster 2");
         config.setWindowIcon("assets/bubbles/icon.png");
+
         Arguments arguments = new Arguments();
         arguments.parse(argv);
+
         try {
             new Lwjgl3Application(BubbleBlaster.launch(arguments), config);
         } catch (Throwable t) {

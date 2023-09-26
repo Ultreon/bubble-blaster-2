@@ -15,9 +15,9 @@ public class Panel extends Container {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderComponent(renderer);
-        renderChildren(renderer);
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Override

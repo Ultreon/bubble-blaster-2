@@ -1,58 +1,46 @@
 package com.ultreon.bubbles.render;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.ultreon.bubbles.mixins.ScissorStackMixin;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class ScissorStack {
+	public static Deque<Rectangle> scissors = new ArrayDeque<>();
 
-	public static Deque<Rectangle> scissorStack = new ArrayDeque<>();
+	@CanIgnoreReturnValue
+	public static boolean pushScissors(Rectangle scissor) {
+		return com.badlogic.gdx.scenes.scene2d.utils.ScissorStack.pushScissors(scissor);
+    }
 
-	public static void pushScissors(Rectangle rectangle) {
-		float x = rectangle.x;
-		float y = rectangle.y;
-		float width = rectangle.width;
-		float height = rectangle.height;
-
-		if (!scissorStack.isEmpty()) {
-			Rectangle scissor = scissorStack.peek();
-			x = Math.max(scissor.x, x);
-			y = Math.max(scissor.y, y);
-			width = x + width > scissor.x + scissor.width ? scissor.x + scissor.width - x : width;
-			height = y + height > scissor.y + scissor.height ? scissor.y + scissor.height - y : height;
-		} else {
-			System.out.println("Enable Scissor Test");
-			Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-		}
-
-		Gdx.gl.glScissor((int) x, (int) y, (int) width, (int) height);
-		scissorStack.push(new Rectangle(x, y, width, height));
+	@CanIgnoreReturnValue
+	public static Rectangle popScissors() {
+		return com.badlogic.gdx.scenes.scene2d.utils.ScissorStack.popScissors();
 	}
 
-	public static void popScissors() {
-		if (!scissorStack.isEmpty()) scissorStack.pop();
-
-		restoreScissors();
+	private static void fix(Rectangle rect) {
+		rect.x = Math.round(rect.x);
+		rect.y = Math.round(rect.y);
+		rect.width = Math.round(rect.width);
+		rect.height = Math.round(rect.height);
+		if (rect.width < 0) {
+			rect.width = -rect.width;
+			rect.x -= rect.width;
+		}
+		if (rect.height < 0) {
+			rect.height = -rect.height;
+			rect.y -= rect.height;
+		}
 	}
 
 	public static Rectangle peekScissors() {
-		return !scissorStack.isEmpty() ? scissorStack.peek() : null;
-	}
-
-	private static void restoreScissors() {
-		if (!scissorStack.isEmpty()) {
-			Rectangle scissor = scissorStack.peek();
-			Gdx.gl.glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
-		} else {
-			System.out.println("Disable Scissor Test");
-			Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
-		}
+		return com.badlogic.gdx.scenes.scene2d.utils.ScissorStack.peekScissors();
 	}
 
 	public static boolean isEmpty() {
-		return scissorStack.isEmpty();
+		return ScissorStackMixin.getScissors().isEmpty();
 	}
 }

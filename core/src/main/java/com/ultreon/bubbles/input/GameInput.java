@@ -2,6 +2,7 @@ package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.environment.Environment;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class GameInput extends InputAdapter {
+public class GameInput implements InputProcessor {
     private static final Set<Integer> KEYS_DOWN = new CopyOnWriteArraySet<>();
     private static final GridPoint2 POS = new GridPoint2(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
@@ -61,21 +62,13 @@ public class GameInput extends InputAdapter {
     public boolean keyDown(int keycode) {
         if (isKeyDown(keycode)) {
             InputEvents.KEY_PRESS.factory().onKeyPress(keycode, true);
-        } else {
-            BubbleBlaster.getInstance().keyPress(keycode);
-            InputEvents.KEY_PRESS.factory().onKeyPress(keycode, false);
-            KEYS_DOWN.add(keycode);
+            return true;
         }
 
-        Screen currentScreen = this.game.getCurrentScreen();
-        Environment environment = game.environment;
-        if (currentScreen != null) {
-            currentScreen.keyPress(keycode);
-        } else if (keycode == Input.Keys.ESCAPE && environment != null && environment.isAlive()) {
-            BubbleBlaster.getInstance().showScreen(new PauseScreen());
-        }
+        KEYS_DOWN.add(keycode);
+        InputEvents.KEY_PRESS.factory().onKeyPress(keycode, false);
 
-        return true;
+        return this.game.keyPress(keycode);
     }
 
     @Override
@@ -83,25 +76,14 @@ public class GameInput extends InputAdapter {
         KEYS_DOWN.remove(keycode);
         InputEvents.KEY_RELEASE.factory().onKeyRelease(keycode);
 
-        Screen currentScreen = this.game.getCurrentScreen();
-
-        if (currentScreen != null) {
-            currentScreen.keyRelease(keycode);
-        }
-
-        return true;
+        return this.game.keyRelease(keycode);
     }
 
     @Override
     public boolean keyTyped(char character) {
         InputEvents.CHAR_TYPE.factory().onCharType(character);
 
-        Screen currentScreen = this.game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.charType(character);
-        }
-
-        return true;
+        return this.game.charType(character);
     }
 
     @Override
@@ -112,12 +94,8 @@ public class GameInput extends InputAdapter {
         dragStarts.put(button, new GridPoint2(screenX, screenY));
 
         InputEvents.MOUSE_PRESS.factory().onMousePress(screenX, screenY, button);
-        Screen currentScreen = game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.mousePress(screenX, screenY, button);
-        }
 
-        return true;
+        return this.game.mousePress(screenX, screenY, pointer, button);
     }
 
     @Override
@@ -130,12 +108,7 @@ public class GameInput extends InputAdapter {
 
         InputEvents.MOUSE_RELEASE.factory().onMouseRelease(screenX, screenY, button);
 
-        @Nullable Screen currentScreen = game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.mouseRelease(screenX, screenY, button);
-        }
-
-        return true;
+        return this.game.mouseRelease(screenX, screenY, pointer, button);
     }
 
     @Override
@@ -143,16 +116,8 @@ public class GameInput extends InputAdapter {
         if (pointer == 0) POS.set(screenX, screenY);
 
         for (var entry : dragStarts.int2ReferenceEntrySet()) {
-            Screen currentScreen = game.getCurrentScreen();
-            if (currentScreen != null) {
-                GridPoint2 vec = entry.getValue();
-                currentScreen.mouseDrag(vec.x, vec.y, screenX, screenY, entry.getIntKey());
-            }
-        }
-
-        @Nullable Screen currentScreen = game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.mouseMove(screenX, screenY);
+            GridPoint2 vec = entry.getValue();
+            this.game.mouseDragged(vec.x, vec.y, screenX, screenY, pointer, entry.getIntKey());
         }
 
         return true;
@@ -164,22 +129,13 @@ public class GameInput extends InputAdapter {
 
         InputEvents.MOUSE_MOVE.factory().onMouseMove(screenX, screenY);
 
-        @Nullable Screen currentScreen = game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.mouseMove(screenX, screenY);
-        }
-
-        return true;
+        return this.game.mouseMove(screenX, screenY);
     }
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
         InputEvents.MOUSE_SCROLL.factory().onMouseScroll(POS.x, POS.y, amountY);
 
-        Screen currentScreen = game.getCurrentScreen();
-        if (currentScreen != null) {
-            currentScreen.mouseWheel(POS.x, POS.y, amountY);
-        }
-        return true;
+        return this.game.mouseWheel(POS.x, POS.y, amountX, amountY);
     }
 }

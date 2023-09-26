@@ -153,7 +153,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         upButton.setY(0);
         upButton.setX((int) (getBounds().width - 24));
         upButton.setHeight((int) (getBounds().height / 2));
@@ -239,7 +239,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
         }
 
         @Override
-        public void render(Renderer renderer) {
+        public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
             Color textColor;
 
             Rectangle bounds = getBounds();
@@ -266,7 +266,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
                 textColor = Color.rgb(0x808080);
             }
 
-            drawText(renderer, textColor, getSize(), text, font);
+            drawText(renderer, textColor, getPos(), getSize(), text, font);
         }
 
         @Override

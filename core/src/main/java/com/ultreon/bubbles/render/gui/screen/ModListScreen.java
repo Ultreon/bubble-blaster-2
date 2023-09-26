@@ -44,9 +44,9 @@ public class ModListScreen extends Screen {
 
         detailsPane = add(new Container(calcWidth, 0, width - calcWidth, height) {
             @Override
-            public void render(Renderer renderer) {
+            public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
                 renderComponent(renderer);
-                super.render(renderer);
+                super.render(renderer, mouseX, mouseY, deltaTime);
             }
 
             @Override
@@ -81,13 +81,13 @@ public class ModListScreen extends Screen {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         modList.setHeight(this.height);
         detailsPane.setX(this.modList.getWidth());
         detailsPane.setWidth(this.width - modList.getWidth());
         detailsPane.setHeight(this.height);
 
-        super.render(renderer);
+        super.render(renderer, mouseX, mouseY, deltaTime);
     }
 
     private void renderEntry(Renderer renderer, int width, int height, ModContainer entry, boolean selected, boolean hovered) {

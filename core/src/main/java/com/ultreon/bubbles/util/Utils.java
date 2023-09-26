@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Cursor;
 import com.ultreon.libs.commons.v0.vector.Vec3d;
 import com.ultreon.libs.commons.v0.vector.Vec3i;
 import com.badlogic.gdx.math.Vector3;
@@ -23,10 +24,11 @@ public class Utils {
     }
 
     public static void hideCursor() {
-        Gdx.input.setCursorCatched(true);
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
     }
 
     public static void showCursor() {
-        Gdx.input.setCursorCatched(false);
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 }

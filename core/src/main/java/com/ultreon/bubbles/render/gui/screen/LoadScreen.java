@@ -12,7 +12,6 @@ import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.Utils;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.MessengerImpl;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
@@ -80,7 +79,7 @@ public final class LoadScreen extends Screen implements Runnable {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         if (startTime == 0L) {
             startTime = System.currentTimeMillis();
         }
@@ -94,6 +93,8 @@ public final class LoadScreen extends Screen implements Runnable {
             int progress = progMain.getProgress();
             int max = progMain.getMax();
 
+            renderer.setStrokeWidth(9.0f);
+
             // Draw current 1st line message.
             if (curMainMsg != null) {
                 renderer.setColor(Color.rgb(0x808080));
@@ -101,10 +102,14 @@ public final class LoadScreen extends Screen implements Runnable {
             }
 
             renderer.setColor(Color.rgb(0x808080));
-            renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 20, 300, 3);
+            renderer.roundedLine(this.width / 2f - 150, this.height / 2f + 20, this.width / 2f + 150, this.height / 2f + 20);
+            renderer.circle(this.width / 2f - 150, this.height / 2f + 20, 4.5f);
+            renderer.circle(this.width / 2f + 150, this.height / 2f + 20, 4.5f);
 
             renderer.setColor(Color.rgb(0x0040ff));
-            renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 15, (int) (300d * (double) progress / (double) max), 3);
+            int effectWidth = (int) (300d * (double) progress / (double) max);
+            if (effectWidth >= 1)
+                renderer.fillEffect(this.width / 2 - 150, this.height / 2 + 19, effectWidth, 3);
 
             // Draw 2nd progress components.
             if (progAlt != null) {
@@ -118,17 +123,20 @@ public final class LoadScreen extends Screen implements Runnable {
                 }
 
                 renderer.setColor(Color.rgb(0x808080));
-                renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 95, 300, 3);
+                renderer.roundedLine(this.width / 2f - 150, this.height / 2f + 95, this.width / 2f + 150, this.height / 2f + 95);
+                renderer.circle(this.width / 2f - 150, this.height / 2f + 95, 4.5f);
+                renderer.circle(this.width / 2f + 150, this.height / 2f + 95, 4.5f);
 
-                renderer.setColor(Color.rgb(0x0040ff));
-                renderer.rect(BubbleBlaster.getInstance().getWidth() / 2 - 150, BubbleBlaster.getInstance().getHeight() / 2 + 90, (int) (300d * (double) progressSub / (double) maxSub), 3);
+                int effectWidthSub = (int) (300d * (double) progressSub / (double) maxSub);
+                if (effectWidthSub >= 1)
+                    renderer.fillEffect(this.width / 2 - 150, this.height / 2 + 94, effectWidthSub, 3);
             }
         }
     }
 
     private void setupGradient(Renderer renderer) {
 //        renderer.setColor(Color.rgb(0x00c0ff));
-//        GradientPaint p = new GradientPaint(0, (float) BubbleBlaster.getInstance().getWidth() / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) BubbleBlaster.getInstance().getWidth() / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
+//        GradientPaint p = new GradientPaint(0, (float) this.width / 2 - 150, Color.rgb(0x00c0ff).toAwt(), (float) this.width / 2 + 150, 0f, Color.rgb(0x00ffc0).toAwt());
 //        renderer.paint(p);
     }
 

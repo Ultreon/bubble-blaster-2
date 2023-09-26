@@ -83,9 +83,6 @@ public class GameWindow {
 
         BubbleBlaster.getLogger().info(MARKER, "Post-init stage of game window.");
 
-        GameInput input = new GameInput();
-        Gdx.input.setInputProcessor(input);
-
         this.initialized = true;
 
         BubbleBlaster.getLogger().info(MARKER, "Initialized game window");

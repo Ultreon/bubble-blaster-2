@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.HdpiMode;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -37,6 +40,8 @@ import com.ultreon.bubbles.media.SoundPlayer;
 import com.ultreon.bubbles.mod.loader.GameJar;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
 import com.ultreon.bubbles.mod.loader.ScannerResult;
+import com.ultreon.bubbles.notification.Notification;
+import com.ultreon.bubbles.notification.Notifications;
 import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.player.PlayerController;
 import com.ultreon.bubbles.registry.Registries;
@@ -49,9 +54,9 @@ import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.libs.commons.v0.util.FileUtils;
@@ -246,6 +251,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private final ImBoolean showDebugUtils = new ImBoolean(FabricLoader.getInstance().isDevelopmentEnvironment());
     private Renderer currentRenderer;
     private Renderer renderer;
+    private Notifications notifications;
 
     public BubbleBlaster() {
         imGuiGlfw = new ImGuiImplGlfw();
@@ -290,9 +296,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
             return;
         }
 
-        RENDER_CALLS.addLast(renderer -> {
-            func.run();
-        });
+        RENDER_CALLS.addLast(renderer -> func.run());
     }
 
     public static Instant getBootTime() {
@@ -301,11 +305,13 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     @Override
     public void create() {
+        if (this.renderingThread == null) renderingThread = Thread.currentThread();
+
+        // Pre-init ImGui
         GLFWErrorCallback.createPrint(System.err).set();
-        if (!glfwInit())
-        {
-            throw new IllegalStateException("Unable to initialize GLFW");
-        }
+        if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
+
+        // Initialize ImGui
         ImGui.createContext();
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
@@ -315,24 +321,37 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl3.init("#version 150");
-        SpriteBatch batch = new SpriteBatch();
-        Pixmap singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+
+        // Set game input processor for LibGDX
+        GameInput input = new GameInput();
+        Gdx.input.setInputProcessor(input);
+
+        // Set notification manager
+        this.notifications = new Notifications();
+
+        // Set HiDpi mode
+        HdpiUtils.setMode(HdpiMode.Pixels);
+
+        // Create CPU sprite batch
+        var batch = new CpuSpriteBatch();
+
+        // Create a pixmap with a single white pixel
+        var singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         singlePxPixmap.setColor(Color.rgb(0xffffff).toGdx());
         singlePxPixmap.drawPixel(0, 0);
-        com.badlogic.gdx.graphics.Texture singlePxTex = new com.badlogic.gdx.graphics.Texture(singlePxPixmap);
-        TextureRegion pixel = new TextureRegion(singlePxTex);
-        ShapeDrawer shapes = new ShapeDrawer(batch, pixel);
+        var singlePxTex = new com.badlogic.gdx.graphics.Texture(singlePxPixmap);
+        var pixel = new TextureRegion(singlePxTex);
+
+        // Create shape drawer
+        var shapes = new ShapeDrawer(batch, pixel);
+
         this.textureManager = TextureManager.instance();
         this.debugRenderer = new DebugRenderer(this);
         this.camera = new OrthographicCamera();
         this.camera.setToOrtho(true, this.getWidth(), this.getHeight()); // Set up the camera's projection matrix
         this.viewport = new ScreenViewport(camera);
 
-        this.transX = Gdx.graphics.getWidth() / 2;
-        this.transY = Gdx.graphics.getHeight() / 2;
-        this.camera.translate(transX, transY);
-
-        this.renderer = new Renderer(shapes, new MatrixStack(camera.combined));
+        this.renderer = new Renderer(shapes, camera);
 
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
@@ -359,7 +378,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         // Prepare for loading.
         this.prepare();
 
-        sansFont = new BitmapFont();
+        sansFont = this.loadBitmapFreeTypeFont(Gdx.files.internal("assets/bubbles/fonts/noto_sans/noto_sans_regular.ttf"), 14);
 
         Bubbles.register();
         AmmoTypes.register();
@@ -376,6 +395,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         this.load(new ProgressMessenger(this::log, 1000));
         this.screenManager = createScreenManager();
 
+        // Enable Discord RPC
         this.discordRpc = new DiscordRPC();
 
         setActivity(() -> {
@@ -386,8 +406,10 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         LOGGER.info("Discord RPC is initializing!");
 
+        // Set environment renderer
         this.environmentRenderer = new EnvironmentRenderer();
 
+        // Import resources for the game
         List<Path> paths = FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow().getOrigin().getPaths();
         for (Path path : paths) {
             try {
@@ -452,16 +474,10 @@ public final class BubbleBlaster extends ApplicationAdapter {
     public void resize(int width, int height) {
         viewport.update(width, height);
         camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
-        this.camera.translate(-this.transX, -this.transY);
-        this.transX = (int) (viewport.getWorldWidth() / 2);
-        this.transY = (int) (viewport.getWorldHeight() / 2);
-        this.camera.translate(this.transX, this.transY);
     }
 
     @Override
     public void render() {
-        if (this.renderingThread == null) renderingThread = Thread.currentThread();
-
         if (Gdx.graphics.getFrameId() == 2) {
             this.firstRender();
         }
@@ -470,9 +486,14 @@ public final class BubbleBlaster extends ApplicationAdapter {
         tasks.clear();
 
         camera.update();
-        renderer.begin(camera);
-//        renderer.pushScissorsRaw(0, 0, getWidth(), getHeight());
+        renderer.begin();
         currentRenderer = renderer;
+
+        GridPoint2 mousePos = GameInput.getPos();
+        int mouseX = mousePos.x;
+        int mouseY = mousePos.y;
+
+        float deltaTime = Gdx.graphics.getDeltaTime();
 
         int size = RENDER_CALLS.size();
         for (int counter = 0; counter < size; counter++) {
@@ -484,20 +505,21 @@ public final class BubbleBlaster extends ApplicationAdapter {
         } else {
             var filters = BubbleBlaster.instance.getCurrentFilters();
 
-            profiler.section("renderGame", () -> this.render(renderer, gameFrameTime));
+            profiler.section("renderGame", () -> this.renderGame(renderer, mouseX, mouseY, gameFrameTime));
 
-            if (isDebugMode() || debugGuiOpen.get()) {
-                debugRenderer.render(renderer);
+            if (isDebugMode() || this.debugGuiOpen.get()) {
+                this.debugRenderer.render(this.renderer);
             }
 
             this.fps = Gdx.graphics.getFramesPerSecond();
         }
 
+        this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
+
         if (showDebugUtils.get()) {
             this.renderImGui(renderer);
         }
 
-//        renderer.popScissors();
         currentRenderer = null;
         renderer.end();
     }
@@ -932,7 +954,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     }
 
     private BitmapFont loadFontInternally(Identifier location) {
-        return loadBitmapFreeTypeFont(Gdx.files.internal("/assets/" + location.location() + "/fonts/" + location.path() + ".ttf"));
+        return loadBitmapFreeTypeFont(Gdx.files.internal("assets/" + location.location() + "/fonts/" + location.path() + ".ttf"), 14);
     }
 
     public FontInfo loadFont(Identifier fontId) {
@@ -1549,8 +1571,10 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     /**
      * @param renderer the renderer to render the game with.
+     * @param mouseX
+     * @param mouseY
      */
-    private void render(Renderer renderer, float frameTime) {
+    private void renderGame(Renderer renderer, int mouseX, int mouseY, float frameTime) {
         // Call to game environment rendering.
         // Get field and set local variable. For multithreaded null-safety.
         @Nullable Screen screen = screenManager.getCurrentScreen();
@@ -1573,7 +1597,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         profiler.section("Render Screen", () -> {
             if (screen != null) {
                 RenderEvents.RENDER_SCREEN_BEFORE.factory().onRenderScreenBefore(screen, renderer);
-                screen.render(this, renderer, frameTime);
+                screen.render(this, renderer, mouseX, mouseY, frameTime);
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
             if (environment != null && environmentRenderer != null) {
@@ -1589,14 +1613,16 @@ public final class BubbleBlaster extends ApplicationAdapter {
     }
 
     private void postRender(Renderer renderer) {
-//        if (fadeIn) {
-//            final var timeDiff = System.currentTimeMillis() - fadeInStart;
-//            if (timeDiff <= fadeInDuration) {
-//                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / fadeInDuration), 0, 255);
-//                var color = Color.rgba(0, 0, 0, clamp);
-//                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
-//            }
-//        }
+        if (this.fadeIn) {
+            final var timeDiff = System.currentTimeMillis() - this.fadeInStart;
+            if (timeDiff <= this.fadeInDuration) {
+                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / this.fadeInDuration), 0, 255);
+                var color = Color.rgba(0, 0, 0, clamp);
+                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
+            } else {
+                this.fadeIn = false;
+            }
+        }
     }
 
     /**
@@ -1666,18 +1692,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
         }
 
         BubbleBlaster.ticks++;
-    }
-
-    public void keyPress(int keyCode) {
-        if (keyCode == Input.Keys.F12) {
-            debugGuiOpen.set(!debugGuiOpen.get());
-            LOGGER.debug("Toggling debug gui");
-        } else if (keyCode == Input.Keys.F10 && (debugMode || devMode)) {
-            var env = environment;
-            if (env != null) {
-                env.triggerBloodMoon();
-            }
-        }
     }
 
     /**
@@ -1808,8 +1822,8 @@ public final class BubbleBlaster extends ApplicationAdapter {
         return this.loaded;
     }
 
-    private void markLoaded() {
-        this.loaded = true;
+    public boolean isLoading() {
+        return !loaded;
     }
 
     public int getTps() {
@@ -1936,6 +1950,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     public void finish() {
         glitchRenderer = new GlitchRenderer(this);
         showScreen(new TitleScreen());
+        this.loaded = true;
     }
 
     public long serializeSeed(String text) {
@@ -1974,6 +1989,84 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     public Renderer getRenderer() {
         return currentRenderer;
+    }
+
+    public boolean keyPress(int keycode) {
+        Screen currentScreen = this.getCurrentScreen();
+        Environment environment = this.environment;
+
+        if (keycode == Input.Keys.F12) {
+            debugGuiOpen.set(!debugGuiOpen.get());
+            LOGGER.debug("Toggling debug gui");
+            return true;
+        } else if (keycode == Input.Keys.F2) {
+            LOGGER.debug("Creating screenshot");
+            Screenshot screenshot = Screenshot.take();
+            notifications.addNotification(new Notification("Screenshot saved!", screenshot.fileHandle().name(), "SCREENSHOT MANAGER"));
+            return true;
+        } else if (keycode == Input.Keys.F10 && (debugMode || devMode)) {
+            if (environment != null) {
+                environment.triggerBloodMoon();
+            }
+            return true;
+        }
+
+        if (currentScreen != null) {
+            return currentScreen.keyPress(keycode);
+        } else if (keycode == Input.Keys.ESCAPE && environment != null && environment.isAlive()) {
+            BubbleBlaster.getInstance().showScreen(new PauseScreen());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean keyRelease(int keycode) {
+        @Nullable Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) return currentScreen.keyRelease(keycode);
+
+        return false;
+    }
+
+    public boolean charType(char character) {
+        @Nullable Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) return currentScreen.charType(character);
+
+        return false;
+    }
+
+    public boolean mousePress(int screenX, int screenY, int pointer, int button) {
+        @Nullable Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) return currentScreen.mousePress(screenX, screenY, button);
+
+        return false;
+    }
+
+    public boolean mouseRelease(int screenX, int screenY, int pointer, int button) {
+        @Nullable Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) return currentScreen.mouseRelease(screenX, screenY, button);
+
+        return false;
+    }
+
+    public boolean mouseDragged(int oldX, int oldY, int newX, int newY, int pointer, int button) {
+        Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) currentScreen.mouseDrag(oldX, oldY, newX, newY, button);
+
+        return true;
+    }
+
+    public boolean mouseMove(int screenX, int screenY) {
+        @Nullable Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) currentScreen.mouseMove(screenX, screenY);
+
+        return true;
+    }
+
+    public boolean mouseWheel(int x, int y, float amountX, float amountY) {
+        Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) return currentScreen.mouseWheel(x, y, amountY);
+
+        return false;
     }
 
     protected static class BootOptions {

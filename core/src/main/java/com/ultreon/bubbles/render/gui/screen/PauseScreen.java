@@ -11,7 +11,6 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.FontStyle;
 import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -129,7 +128,7 @@ public class PauseScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {
             return;
@@ -152,10 +151,10 @@ public class PauseScreen extends Screen {
         //     Exit button     //
         /////////////////////////
         exitButton.setText(Language.translate("bubbles/screen/pause/exit"));
-        renderer.subInstance(exitButton.getBounds(), subRender -> exitButton.render(subRender));
+        renderer.subInstance(exitButton.getBounds(), subRender -> exitButton.render(subRender, mouseX, mouseY, deltaTime));
 
         forfeitButton.setText(Language.translate("bubbles/screen/pause/forfeit"));
-        renderer.subInstance(forfeitButton.getBounds(), subRender -> forfeitButton.render(subRender));
+        renderer.subInstance(forfeitButton.getBounds(), subRender -> forfeitButton.render(subRender, mouseX, mouseY, deltaTime));
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Navigation Buttons & border     //
@@ -165,8 +164,8 @@ public class PauseScreen extends Screen {
         nextButton.setText(Language.translate("bubbles/other/next"));
         prevButton.setText(Language.translate("bubbles/other/prev"));
 
-        if (helpIndex > 0) renderer.subInstance(prevButton.getBounds(), subRender -> prevButton.render(subRender));
-        if (helpIndex < differentBubbles - 1) renderer.subInstance(nextButton.getBounds(), subRender -> nextButton.render(subRender));
+        if (helpIndex > 0) renderer.subInstance(prevButton.getBounds(), subRender -> prevButton.render(subRender, mouseX, mouseY, deltaTime));
+        if (helpIndex < differentBubbles - 1) renderer.subInstance(nextButton.getBounds(), subRender -> nextButton.render(subRender, mouseX, mouseY, deltaTime));
 
         // Border
         renderer.setColor(Color.argb(0x80ffffff));

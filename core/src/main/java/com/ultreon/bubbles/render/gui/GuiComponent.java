@@ -21,17 +21,17 @@ import java.util.Objects;
  * @author XyperCode
  */
 @SuppressWarnings("unused")
-public abstract class GuiComponent implements GuiStateListener, Renderable {
+public abstract class GuiComponent implements GuiStateListener, RenderableListener {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     protected final GlyphLayout layout = new GlyphLayout();
 
     public final BitmapFont font = Fonts.DEFAULT.get();
     public final BitmapFont monospaced = FunctionUtils.tryCall(Fonts.MONOSPACED_14);
 
-    protected int x;
-    protected int y;
-    protected int width;
-    protected int height;
+    protected volatile int x;
+    protected volatile int y;
+    protected volatile int width;
+    protected volatile int height;
 
     protected Color backgroundColor;
 
@@ -82,9 +82,12 @@ public abstract class GuiComponent implements GuiStateListener, Renderable {
      * Rendering method, should not be called unless you know what you are doing.
      * Override is fine.
      *
-     * @param renderer the renderer to render with.
+     * @param renderer  the renderer to render with.
+     * @param mouseX
+     * @param mouseY
+     * @param deltaTime
      */
-    public abstract void render(Renderer renderer);
+    public abstract void render(Renderer renderer, int mouseX, int mouseY, float deltaTime);
 
     /**
      * Handler for mouse clicking.<br>

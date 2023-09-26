@@ -52,6 +52,7 @@ public class Fonts {
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_48 = register("sans_bold_48", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 48));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_60 = register("sans_bold_60", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 60));
     public static final RegistrySupplier<BitmapFont> SANS_ITALIC_16 = register("sans_italic_16", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_italic"), 16));
+    public static final RegistrySupplier<BitmapFont> SANS_BOLD_ITALIC_10 = register("sans_italic_16", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold_italic"), 10));
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends BitmapFont> RegistrySupplier<T> register(String name, Supplier<T> font) {

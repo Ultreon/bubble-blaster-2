@@ -176,8 +176,8 @@ public class SavesScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, float partialTicks) {
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderBackground(renderer);
-        renderChildren(renderer);
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 }

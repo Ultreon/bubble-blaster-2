@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
-import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.Renderable;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 
@@ -11,7 +11,7 @@ import com.ultreon.libs.commons.v0.vector.Vec2i;
  * @author XyperCode
  * @see GuiComponent
  */
-public interface Renderable extends GuiStateListener {
+public interface RenderableListener extends GuiStateListener, Renderable {
     /**
      * @return the x position create the widget.
      */
@@ -31,13 +31,6 @@ public interface Renderable extends GuiStateListener {
      * @return the height create the widget.
      */
     int getHeight();
-
-    /**
-     * Rendering method, should not be called if you don't know what you are doing.
-     *
-     * @param renderer renderer to draw/render with.
-     */
-    void render(Renderer renderer);
 
     /**
      * @return the position create the widget.

@@ -1,9 +1,13 @@
 package com.ultreon.bubbles.debug;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Lists;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
@@ -11,26 +15,21 @@ import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
-import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Font;
-import com.ultreon.bubbles.render.font.SystemFont;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
+import com.ultreon.libs.registries.v0.RegistrySupplier;
 import com.ultreon.libs.text.v0.MutableText;
 import com.ultreon.libs.text.v0.TextObject;
 
-import java.awt.geom.Rectangle2D;
-import java.util.List;
 import java.util.*;
 
 public class DebugRenderer {
-    private static final int FONT_SIZE = 13;
     private static final Formatter<Object> DEFAULT_FORMATTER = new Formatter<>(Object.class, BubbleBlaster.id("object")) {
         @Override
         public void format(Object obj, IFormatterContext context) {
@@ -41,7 +40,7 @@ public class DebugRenderer {
             context.hexValue(obj.hashCode());
         }
     };
-    private final Font font;
+    private final RegistrySupplier<BitmapFont> font;
     private final BubbleBlaster game;
     private int yLeft;
     private int yRight;
@@ -50,10 +49,11 @@ public class DebugRenderer {
     private String selectInput = "";
     private final Stack<String> pathStack = new Stack<>();
     private final Stack<Section> sectionStack = new Stack<>();
+    private final GlyphLayout layout = new GlyphLayout();
 
     public DebugRenderer(BubbleBlaster game) {
         this.game = game;
-        font = new SystemFont("monospaced");
+        this.font = Fonts.MONOSPACED_14;
 
         InputEvents.KEY_RELEASE.listen(this::keyPress);
     }
@@ -78,9 +78,10 @@ public class DebugRenderer {
     }
 
     public void render(Renderer renderer) {
+        if (game.isLoading()) return;
+
         reset();
 
-//        renderer.font(font);
         renderer.setColor(255, 255, 255);
 
         Rectangle gameBounds = game.getGameBounds();
@@ -128,7 +129,7 @@ public class DebugRenderer {
             }
         }
         Screen screen = game.getCurrentScreen();
-        left(renderer, "Screen: ", (screen == null ? null : screen.getClass()));
+        left(renderer, "Screen", (screen == null ? null : screen.getClass()));
 
         lastProfile = BubbleBlaster.getLastProfile();
         if (selectedThread == null) {
@@ -265,9 +266,11 @@ public class DebugRenderer {
     }
 
     public void left(Renderer renderer, MutableText text) {
-        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
-        int height = (int) bounds.height;
-        int width = (int) bounds.width;
+        String text1 = text.getText();
+        layout.setText(font.get(), text1);
+        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
+        int width = (int) bounds.x;
+        int height = (int) bounds.y;
         int y = yLeft += height + 5;
         if (game.isInGame()) {
             y += (int) game.getGameBounds().y;
@@ -276,7 +279,7 @@ public class DebugRenderer {
         renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(10, y, width + 4, height + 4);
         renderer.setColor("#fff");
-        font.draw(renderer, text, FONT_SIZE, 12, y + 1);
+        renderer.drawText(font.get(), text1, 12, y + 1);
     }
 
     public void right(Renderer renderer, String text, Object o) {
@@ -294,9 +297,11 @@ public class DebugRenderer {
     }
 
     public void right(Renderer renderer, MutableText text) {
-        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
-        int height = (int) bounds.height;
-        int width = (int) bounds.width;
+        String text1 = text.getText();
+        layout.setText(font.get(), text1);
+        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
+        int width = (int) bounds.x;
+        int height = (int) bounds.y;
         int y = yRight += height + 5;
         if (game.isInGame()) {
             y += (int) game.getGameBounds().y;
@@ -305,21 +310,23 @@ public class DebugRenderer {
         renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(game.getWidth() - width - 10, y, width + 4, height + 4);
         renderer.setColor("#fff");
-        font.draw(renderer, text, FONT_SIZE, game.getWidth() - 8, y + 1, Anchor.NW);
+        renderer.drawRightAnchoredText(font.get(), text1, game.getWidth() - 8, y + 1);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
-        Rectangle2D.Float bounds = font.bounds(FONT_SIZE, text);
+        String text2 = text.getText();
+        layout.setText(font.get(), text2);
+        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
         int height;
         if (!text1.getText().isEmpty()) {
-            Rectangle2D.Float bounds1 = font.bounds(FONT_SIZE, text1);
-            height = Math.max((int) bounds.height, (int) bounds1.height);
+            Vector2 bounds1 = new Vector2(layout.width, font.get().getLineHeight());
+            height = Math.max((int) bounds.y, (int) bounds1.y);
         } else {
-            height = (int) bounds.height;
+            height = (int) bounds.y;
         }
         int y = yRight += height + 5;
         if (game.isInGame()) {
-            y += game.getGameBounds().y;
+            y += (int) game.getGameBounds().y;
         }
 
         int i = 400;
@@ -327,9 +334,9 @@ public class DebugRenderer {
         renderer.setColor(0, 0, 0, 0x99);
         renderer.rect(game.getWidth() - i - 10, y, i, height + 4);
         renderer.setColor("#fff");
-        font.draw(renderer, text, FONT_SIZE, game.getWidth() - i - 8, y + 1, Anchor.NW);
+        renderer.drawRightAnchoredText(font.get(), text2, game.getWidth() - i - 8, y + 1);
         if (!text1.getText().isEmpty()) {
-            font.draw(renderer, text1, FONT_SIZE, game.getWidth() - 12, y + 1, Anchor.NE);
+            renderer.drawRightAnchoredText(font.get(), text2, game.getWidth() - 12, y + 1);
         }
     }
 }

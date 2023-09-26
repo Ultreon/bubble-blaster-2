@@ -27,27 +27,27 @@ public class ScrollableView extends Container {
     }
 
     @Override
-    public void renderChildren(Renderer renderer) {
+    public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         this.viewport.setWidth(getWidth() - SCROLLBAR_WIDTH);
         this.viewport.setHeight(getHeight());
         this.viewport.setX(0);
         this.viewport.setY(0);
-        renderer.subInstance(viewport.getBounds(), this.viewport::render);
+        renderer.subInstance(viewport.getBounds(), renderer1 -> this.viewport.render(renderer1, mouseX, mouseY, deltaTime));
         this.scrollBar.setWidth(SCROLLBAR_WIDTH);
         this.scrollBar.setHeight(getHeight());
         this.scrollBar.setX(getWidth() - SCROLLBAR_WIDTH);
         this.scrollBar.setY(0);
-        renderer.subInstance(scrollBar.getBounds(), this.scrollBar::render);
+        renderer.subInstance(scrollBar.getBounds(), renderer1 -> this.scrollBar.render(renderer1, mouseX, mouseY, deltaTime));
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         this.updateXYOffset();
         this.scrollBar.setPercent(this.viewport.getYPercent());
         this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().y - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().y));
 
         renderComponent(renderer);
-        renderChildren(renderer);
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     private void updateXYOffset() {

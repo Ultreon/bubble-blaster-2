@@ -203,6 +203,10 @@ dependencies {
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 
+    // GDX Visual Effects
+    implementation 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
+    implementation 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
+
     // ImGui
     implementation "io.github.spair:imgui-java-binding:$imgui_version"
     implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"

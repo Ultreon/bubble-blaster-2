@@ -71,7 +71,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
 
         if (isPressed()) {
@@ -106,7 +106,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
             textColor = Color.rgb(0xffffff);
         }
 
-        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getSize(), text, font);
+        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getPos(), getSize(), text, font);
     }
 
     public Runnable getCommand() {
