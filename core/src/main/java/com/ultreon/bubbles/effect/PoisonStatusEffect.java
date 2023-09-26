@@ -1,32 +1,43 @@
 package com.ultreon.bubbles.effect;
 
-import com.jhlabs.image.HSBAdjustFilter;
+import com.crashinvaders.vfx.effects.VignettingEffect;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.damage.DamageSourceType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
-import com.ultreon.bubbles.event.v1.FilterBuilder;
+import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 
-public class PoisonEffect extends StatusEffect {
-    public PoisonEffect() throws InvalidValueException {
+import java.util.UUID;
+
+public class PoisonStatusEffect extends StatusEffect {
+    private static final UUID EFFECT_ID = UUID.fromString("2883cf1e-2639-4dcb-a65c-0e562b79e717");
+
+    public PoisonStatusEffect() throws InvalidValueException {
         super();
     }
 
     @Override
-    public void onFilter(AppliedEffect appliedEffect, FilterBuilder builder) {
-        HSBAdjustFilter filter = new HSBAdjustFilter();
-        filter.setHFactor((float) (System.currentTimeMillis() - appliedEffect.getStartTime()) / 3000 % 1);
-        builder.addFilter(filter);
+    public void buildVfx(StatusEffectInstance appliedEffect, VfxEffectBuilder builder) {
+        VignettingEffect effect = new VignettingEffect(true);
+        long timeActive = appliedEffect.getTimeActive();
+        if (timeActive < 100) {
+            effect.setIntensity(timeActive / 100f);
+        }
+        long remainingTime = appliedEffect.getRemainingTime();
+        if (remainingTime < 1500) {
+            effect.setIntensity(remainingTime / 1500f);
+        }
+        builder.set(EFFECT_ID, effect);
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return System.currentTimeMillis() >= appliedEffect.getTag().getLong("nextDamage");
     }
 
     @Override
-    public void execute(Entity entity, AppliedEffect appliedEffect) {
+    public void execute(Entity entity, StatusEffectInstance appliedEffect) {
         entity.getEnvironment().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageSourceType.POISON));
         MapType tag = appliedEffect.getTag();
         long nextDamage = tag.getLong("nextDamage");
@@ -34,7 +45,7 @@ public class PoisonEffect extends StatusEffect {
     }
 
     @Override
-    public void onStart(AppliedEffect appliedEffect, Entity entity) {
+    public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         MapType tag = appliedEffect.getTag();
         tag.putLong("nextDamage", System.currentTimeMillis() + 2000);
         tag.putLong("startTime", System.currentTimeMillis());

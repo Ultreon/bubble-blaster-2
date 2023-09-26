@@ -55,7 +55,7 @@ public class Notifications implements Renderable {
         this.lock.unlock();
     }
 
-    public void addNotification(Notification notification) {
+    public void notifyPlayer(Notification notification) {
         this.lock.lock();
         this.notifications.addLast(notification);
         this.lock.lock();

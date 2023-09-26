@@ -11,7 +11,7 @@ public class AttackBoostEffect extends StatusEffect {
     }
 
     @Override
-    public void execute(Entity entity, AppliedEffect appliedEffect) {
+    public void execute(Entity entity, StatusEffectInstance appliedEffect) {
 
     }
 
@@ -21,7 +21,7 @@ public class AttackBoostEffect extends StatusEffect {
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
     }
 

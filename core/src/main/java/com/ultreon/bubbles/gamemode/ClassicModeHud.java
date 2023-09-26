@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.libs.translations.v0.Language;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
@@ -194,7 +194,7 @@ public class ClassicModeHud extends GameHud {
         }
 
         // Render health bar.
-        renderer.setStrokeWidth(HEALTH_LINE_WIDTH);
+        renderer.setLineWidth(HEALTH_LINE_WIDTH);
         renderer.setColor(Color.rgb(redValue, greenValue, 0));
         renderer.line(0, 69, (int) (game.getWidth() * playerDamage / playerMaxDamage), 69);
     }
@@ -247,7 +247,7 @@ public class ClassicModeHud extends GameHud {
             renderer.blit(BubbleBlaster.id("ui/effect_banner"));
 
             int i = 0;
-            for (AppliedEffect appliedEffect : player.getActiveEffects()) {
+            for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
                 // Renderer 2D
                 renderer.subInstance(320 + i * 196, 16, 192, 38, render -> {
                     // Format duration to string.
@@ -316,7 +316,7 @@ public class ClassicModeHud extends GameHud {
      */
     private void drawHealthLineBackground(Renderer renderer, BubbleBlaster game) {
         // Health line.
-        renderer.setStrokeWidth(HEALTH_LINE_WIDTH);
+        renderer.setLineWidth(HEALTH_LINE_WIDTH);
         renderer.setColor(HEALTH_LINE_BG_COLOR);
         renderer.line(0, 69, game.getWidth(), 69);
     }

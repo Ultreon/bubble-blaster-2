@@ -1,15 +1,19 @@
 package com.ultreon.bubbles.environment;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.common.collect.Lists;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.libs.commons.v0.DummyMessenger;
-import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.bubbles.common.gamestate.GameplayContext;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.PseudoRandom;
 import com.ultreon.bubbles.common.random.Rng;
+import com.ultreon.bubbles.data.DataKeys;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.LivingEntity;
@@ -18,10 +22,8 @@ import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.Constants;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.gameplay.GameplayStorage;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
 import com.ultreon.bubbles.registry.Registries;
@@ -30,13 +32,15 @@ import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
-import com.ultreon.libs.commons.v0.vector.Vec2i;
-import com.ultreon.libs.commons.v0.Messenger;
-import com.ultreon.commons.time.DateTime;
+import com.ultreon.bubbles.util.RngUtils;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
 import com.ultreon.data.types.StringType;
+import com.ultreon.libs.commons.v0.DummyMessenger;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.Messenger;
+import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.registries.v0.Registry;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.ApiStatus;
@@ -44,9 +48,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -65,7 +69,6 @@ public final class Environment {
     // Flags.
     private volatile boolean gameOver = false;
     private boolean globalBubbleFreeze = false;
-    private boolean bloodMoonActive;
     private boolean bloodMoonTriggered;
 
     // Enums.
@@ -110,6 +113,8 @@ public final class Environment {
     private String name = "UNKNOWN WORLD";
     private int freezeTicks;
     boolean shuttingDown;
+    private boolean saving;
+    private GameplayStorage gameplayStorage;
     /// Constructors.
 
     public Environment(GameSave save, Gamemode gamemode, int seed) {
@@ -139,6 +144,8 @@ public final class Environment {
 
         loadEnvironment(save.load("environment", true));
 
+        this.gameplayStorage = new GameplayStorage(save.load("gameplay"));
+
         this.initialized = true;
     }
 
@@ -151,17 +158,20 @@ public final class Environment {
     }
 
     public void save(GameSave save, Messenger messenger) throws IOException {
+        this.saving = true;
         this.gamemode.onSave(this, save, messenger);
 
         dumpRegistries(save, messenger);
         dumpPlayers(save, messenger);
         save.dump("environment", saveEnvironment(), true);
         save.dump("info", saveInfo(), true);
+        save.dump("gameplay", this.gameplayStorage.save());
+        this.saving = false;
     }
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
         messenger.send("Saving players...");
-        for (Player p : players) {
+        for (Player p : this.players) {
             dumpPlayer(save, p);
         }
     }
@@ -169,7 +179,7 @@ public final class Environment {
     private void dumpPlayer(GameSave save, Player player) throws IOException {
         MapType data = player.save();
         UUID uniqueId = player.getUniqueId();
-        save.dump("Players/" + uniqueId, data, true);
+        save.dump("players/" + uniqueId, data, true);
     }
 
     private void loadPlayer(GameSave save, UUID uuid) throws IOException {
@@ -284,20 +294,30 @@ public final class Environment {
         return this.globalBubbleFreeze;
     }
 
-    public boolean isGameStateActive(GameplayEvent gameplayEvent) {
+    public boolean isGameplayEventActive(GameplayEvent gameplayEvent) {
         return gameplayEventActive.contains(gameplayEvent);
     }
 
+    private GameplayContext createGameplayContext() {
+        return new GameplayContext(Instant.now(), this, this.gamemode, this.gameplayStorage);
+    }
+
+    @Deprecated
     public void addGameStateActive(GameplayEvent gameplayEvent) {
         gameplayEventActive.add(gameplayEvent);
     }
 
+    @Deprecated
     public void removeGameStateActive(GameplayEvent gameplayEvent) {
         gameplayEventActive.remove(gameplayEvent);
     }
 
     public boolean isBloodMoonActive() {
-        return bloodMoonActive;
+        return this.gameplayStorage.get(BubbleBlaster.NAMESPACE).getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
+    }
+
+    public GameplayStorage getGameplayStorage() {
+        return gameplayStorage;
     }
 
     public void tickBloodMoon() {
@@ -324,7 +344,7 @@ public final class Environment {
                 if (bloodMoonValueAnimator.isEnded()) {
                     GameplayEvents.BLOOD_MOON_EVENT.activate();
                     this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT);
-                    bloodMoonActive = true;
+                    gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
 
                     if (loadedGame.getAmbientAudio() != null) {
                         loadedGame.getAmbientAudio().stop();
@@ -361,8 +381,8 @@ public final class Environment {
             return;
         }
 
-        if (bloodMoonActive) {
-            bloodMoonActive = false;
+        if (this.isBloodMoonActive()) {
+            gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
             bloodMoonTriggered = false;
             GameplayEvents.BLOOD_MOON_EVENT.deactivate();
             loadedGame.getAmbientAudio().stop();
@@ -471,21 +491,16 @@ public final class Environment {
         this.entities.add(entity);
     }
 
-    private void gameEventHandlerThread() {
-        while (BubbleBlaster.getInstance().environment == this) {
-            if (currentGameplayEvent != null) {
-                if (!currentGameplayEvent.isActive(DateTime.current())) {
-                    currentGameplayEvent = null;
-                }
-
-                continue;
-            }
-            for (GameplayEvent gameplayEvent : Registries.GAMEPLAY_EVENTS.values()) {
-                if (gameplayEvent.isActive(DateTime.current())) {
-                    currentGameplayEvent = gameplayEvent;
-                    break;
-                }
-            }
+    /**
+     * Runs the function only every tick given.<br>
+     * Note: this isn't reliable off the ticking thread.
+     *
+     * @param ticks the #th tick to run the function on.
+     * @param func the function to run.
+     */
+    public void onlyTickEvery(long ticks, Runnable func) {
+        if (this.ticks % ticks == 0L) {
+            func.run();
         }
     }
 
@@ -548,29 +563,60 @@ public final class Environment {
      */
     @ApiStatus.Internal
     public void tick() {
-        if (globalBubbleFreeze && freezeTicks-- <= 0) {
-            freezeTicks = 0;
-            globalBubbleFreeze = false;
+        if (this.globalBubbleFreeze && this.freezeTicks-- <= 0) {
+            this.freezeTicks = 0;
+            this.globalBubbleFreeze = false;
         }
 
-        if (initialized) {
-            synchronized (entitiesLock) {
+        if (this.initialized) {
+            synchronized (this.entitiesLock) {
+                // Tick entities
                 this.entities.removeIf(Entity::willBeDeleted);
                 for (Entity entity : this.entities) {
+                    if (entity.isNotSpawned()) continue;
                     entity.tick(this);
                 }
-                if (entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().getMaxBubbles()) {
-                    EntityType<? extends Bubble> entityType = Bubble.getRandomType(this, bubbleRandomizer.getVariantRng());
 
-                    Bubble bubble = BubbleSpawnContext.inContext(ticks, 0, () -> entityType.create(this));
-                    if (bubble.getBubbleType().canSpawn(this)) {
-                        spawn(bubble, gamemode.getSpawnLocation(bubble, BUBBLE_SPAWN_USAGE, ticks, 0));
-                    }
-                }
+                // Tick entity spawning
+                tickSpawning();
             }
 
-            this.ticks++;
             tickBloodMoon();
+
+            // Tick gameplay events
+            gamePlayEvent: {
+                if (this.currentGameplayEvent != null) {
+                    if (!this.currentGameplayEvent.shouldContinue(this.createGameplayContext())) {
+                        this.currentGameplayEvent = null;
+                    }
+
+                    break gamePlayEvent;
+                }
+
+                this.onlyTickEvery(5, () -> {
+                    List<GameplayEvent> choices = RngUtils.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
+                    for (GameplayEvent gameplayEvent : choices) {
+                        if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
+                            this.currentGameplayEvent = gameplayEvent;
+                            break;
+                        }
+                    }
+                });
+            }
+
+            // Advance ticks
+            this.ticks++;
+        }
+    }
+
+    private void tickSpawning() {
+        if (entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().getMaxBubbles()) {
+            EntityType<? extends Bubble> entityType = Bubble.getRandomType(this, bubbleRandomizer.getVariantRng());
+
+            Bubble bubble = BubbleSpawnContext.inContext(ticks, 0, () -> entityType.create(this));
+            if (bubble.getBubbleType().canSpawn(this)) {
+                spawn(bubble, gamemode.getSpawnLocation(bubble, BUBBLE_SPAWN_USAGE, ticks, 0));
+            }
         }
     }
 
@@ -599,9 +645,7 @@ public final class Environment {
     }
 
     public void start() {
-        this.gameEventHandlerThread = new Thread(this::gameEventHandlerThread, "GameEventHandler");
-        this.gameEventHandlerThread.setDaemon(true);
-        this.gameEventHandlerThread.start();
+
     }
 
     public void shutdown() {
@@ -703,5 +747,28 @@ public final class Environment {
     public void triggerBubbleFreeze(int ticks) {
         this.freezeTicks = ticks;
         this.globalBubbleFreeze = true;
+    }
+
+    public boolean isSaving() {
+        return this.saving;
+    }
+
+    public void dispose() throws InterruptedException {
+        this.gamemode.end();
+        this.entities.clear();
+        this.gameEventHandlerThread.interrupt();
+        this.gameEventHandlerThread.join();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void annihilate() {
+        this.gamemode.end();
+        this.entities.clear();
+        this.players.clear();
+        this.player = null;
+        this.gameplayEventActive.forEach(gameplayEvent -> {
+
+        });
+        this.gameEventHandlerThread.stop();
     }
 }

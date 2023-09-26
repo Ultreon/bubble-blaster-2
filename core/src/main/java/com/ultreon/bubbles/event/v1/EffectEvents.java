@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.event.v1;
 
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.libs.events.v1.Event;
 import com.ultreon.libs.events.v1.EventResult;
 
@@ -10,14 +10,14 @@ public class EffectEvents {
     public static final Event<Lose> LOSE = Event.create();
 
     public interface Gain {
-        EventResult onGain(AppliedEffect effect);
+        EventResult onGain(StatusEffectInstance effect);
     }
 
     public interface Update {
-        EventResult onLose(AppliedEffect from, AppliedEffect to);
+        EventResult onLose(StatusEffectInstance from, StatusEffectInstance to);
     }
 
     public interface Lose {
-        void onLose(AppliedEffect effect);
+        void onLose(StatusEffectInstance effect);
     }
 }

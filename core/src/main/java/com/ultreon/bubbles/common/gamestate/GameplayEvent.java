@@ -2,11 +2,12 @@ package com.ultreon.bubbles.common.gamestate;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.commons.time.DateTime;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"unused"})
@@ -18,34 +19,24 @@ public abstract class GameplayEvent {
 
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isActive(DateTime dateTime) {
+    public boolean shouldActivate(GameplayContext context) {
         @Nullable Screen currentScreen = game.getCurrentScreen();
+        if (currentScreen != null) return false;
 
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
-        if (loadedGame == null) {
-            return false;
-        }
-
-        return loadedGame.getEnvironment().isGameStateActive(this);
+        return loadedGame != null;
     }
 
-    public final Color getBackgroundColor() {
-        return backgroundColor;
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean shouldContinue(GameplayContext context) {
+        return BubbleBlaster.getInstance().getLoadedGame() != null;
     }
 
-    public void renderBackground(BubbleBlaster game, Renderer renderer) {
-        if (backgroundColor == null) return;
-        if (!isActive(DateTime.current())) return;
+    public abstract void buildVfx(VfxEffectBuilder builder);
 
-        renderer.setColor(getBackgroundColor());
-        renderer.fill(BubbleBlaster.getInstance().getGameBounds());
+    public void renderBackground(Environment environment, Renderer renderer) {
+
     }
-
-    public final void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
 
     @Override
     public String toString() {

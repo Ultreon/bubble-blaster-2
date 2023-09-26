@@ -4,18 +4,18 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.commons.exceptions.InvalidValueException;
 
-public class ParalyzeEffect extends StatusEffect {
-    public ParalyzeEffect() throws InvalidValueException {
+public class ParalyzeStatusEffect extends StatusEffect {
+    public ParalyzeStatusEffect() throws InvalidValueException {
         super();
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
     }
 
     @Override
-    public void onStart(AppliedEffect appliedEffect, Entity entity) {
+    public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         if (entity instanceof Player) {
             entity.setMobile(false);
         }

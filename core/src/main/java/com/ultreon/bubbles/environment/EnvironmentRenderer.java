@@ -1,18 +1,16 @@
 package com.ultreon.bubbles.environment;
 
 import com.badlogic.gdx.math.Circle;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.renderer.IRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
 
 import javax.annotation.Nullable;
-import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class EnvironmentRenderer implements IRenderer {
@@ -20,7 +18,6 @@ public class EnvironmentRenderer implements IRenderer {
     private static final Color LOWER_COLOR = Color.argb(0xff004BA1);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = game.profiler;
-    private BufferedImage cached;
 
     public EnvironmentRenderer() {
 
@@ -53,31 +50,31 @@ public class EnvironmentRenderer implements IRenderer {
     public static void drawBubble(Renderer renderer, float x, float y, int radius, int destroyFrame, List<com.ultreon.bubbles.render.Color> colors) {
         // Define ellipse-depth (pixels).
         float i = 0f;
-        destroyFrame = Mth.clamp(destroyFrame, 0, 10);
+        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         // Loop colors.
         for (Color color : colors) {
             // Set stroke width.
             if (i == 0) {
                 if (colors.size() > 1) {
-                    renderer.setStrokeWidth(1.4f);
+                    renderer.setLineWidth(1.4f);
                 } else {
-                    renderer.setStrokeWidth(1.2f);
+                    renderer.setLineWidth(1.2f);
                 }
             } else if (i == colors.size() - 1) {
-                renderer.setStrokeWidth(1.2f);
+                renderer.setLineWidth(1.2f);
             } else {
-                renderer.setStrokeWidth(1.4f);
+                renderer.setLineWidth(1.4f);
             }
 
             // Set color.
             renderer.setColor(color);
 
-            // Draw ellipse.
-            Circle ellipse = getCircle(x, y, radius, i);
-            renderer.outline(ellipse);
+            // Draw circle.
+            Circle circle = getCircle(x, y, radius, i);
+            renderer.circleLine(circle.x, circle.y, circle.radius);
 
-            // Add 2 to ellipse-depth (pixels).
+            // Add 2 to circle-depth (pixels).
             i += 1.2f;
         }
     }
@@ -98,9 +95,7 @@ public class EnvironmentRenderer implements IRenderer {
 
     @Nullable
     public Environment getEnvironment() {
-        if (BubbleBlaster.getInstance() == null) {
-            return null;
-        }
+        if (BubbleBlaster.getInstance() == null) return null;
 
         return BubbleBlaster.getInstance().environment;
     }
@@ -115,8 +110,7 @@ public class EnvironmentRenderer implements IRenderer {
         profiler.section("Render BG", () -> {
             GameplayEvent currentGameplayEvent = environment.getCurrentGameEvent();
             if (currentGameplayEvent != null) {
-                renderer.setColor(currentGameplayEvent.getBackgroundColor());
-                renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+                currentGameplayEvent.renderBackground(this.getEnvironment(), renderer);
             } else {
                 renderer.fillGradient(0, 0, game.getWidth(), game.getHeight(), UPPER_COLOR, LOWER_COLOR);
                 BubbleBlaster.getLogger().warn("Background not rendering");

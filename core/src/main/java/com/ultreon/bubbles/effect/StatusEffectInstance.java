@@ -20,7 +20,7 @@ import java.util.Objects;
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class AppliedEffect implements TagHolder {
+public class StatusEffectInstance implements TagHolder {
     private final StatusEffect type;
     private int strength;
     private long endTime;
@@ -32,7 +32,7 @@ public class AppliedEffect implements TagHolder {
     /**
      * @throws ClassCastException when effect couldn't be recognized.
      */
-    private AppliedEffect(MapType document) {
+    private StatusEffectInstance(MapType document) {
         this.tag = document.getMap("Tag");
         Identifier id = Identifier.tryParse(document.getString("id"));
         if (id == null) {
@@ -46,7 +46,7 @@ public class AppliedEffect implements TagHolder {
         this.strength = document.getInt("strength");
     }
 
-    public AppliedEffect(StatusEffect type, long duration, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
+    public StatusEffectInstance(StatusEffect type, long duration, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
         //noinspection ConstantConditions
         if (strength < 1) {
             throw new InvalidValueException("Cannot create effect instance with strength < 1");
@@ -57,8 +57,8 @@ public class AppliedEffect implements TagHolder {
         this.setRemainingTime(duration);
     }
 
-    public static @NotNull AppliedEffect load(MapType activeEffectData) {
-        return new AppliedEffect(activeEffectData);
+    public static @NotNull StatusEffectInstance load(MapType activeEffectData) {
+        return new StatusEffectInstance(activeEffectData);
     }
 
     public @NotNull MapType save() {
@@ -191,7 +191,7 @@ public class AppliedEffect implements TagHolder {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        AppliedEffect appliedEffect = (AppliedEffect) o;
+        StatusEffectInstance appliedEffect = (StatusEffectInstance) o;
         return Objects.equals(this.getType(), appliedEffect.getType());
     }
 
@@ -207,6 +207,10 @@ public class AppliedEffect implements TagHolder {
 
     public long getStartTime() {
         return this.getEndTime() - this.baseDuration;
+    }
+
+    public long getTimeActive() {
+        return System.currentTimeMillis() - getStartTime();
     }
 
     public long getBaseDuration() {

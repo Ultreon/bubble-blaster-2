@@ -8,15 +8,15 @@ import com.ultreon.commons.exceptions.InvalidValueException;
 import java.util.UUID;
 
 @SuppressWarnings("GrazieInspection")
-public class SpeedBoostEffect extends StatusEffect {
+public class SpeedStatusEffect extends StatusEffect {
     private static final UUID SPEED_MODIFIER = UUID.fromString("6893c418-6fa3-457b-b012-6b07d1af7e12");
 
-    public SpeedBoostEffect() throws InvalidValueException {
+    public SpeedStatusEffect() throws InvalidValueException {
         super();
     }
 
     @Override
-    public void onStart(AppliedEffect appliedEffect, Entity entity) {
+    public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         super.onStart(appliedEffect, entity);
 
         entity.getAttributes().addModifier(Attribute.SPEED, new AttributeModifier(SPEED_MODIFIER, AttributeModifier.Type.MULTIPLY, 1.5));
@@ -30,7 +30,7 @@ public class SpeedBoostEffect extends StatusEffect {
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
     }
 }

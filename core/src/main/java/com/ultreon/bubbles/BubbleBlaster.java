@@ -2,7 +2,7 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
@@ -39,7 +39,6 @@ import com.ultreon.bubbles.media.SoundInstance;
 import com.ultreon.bubbles.media.SoundPlayer;
 import com.ultreon.bubbles.mod.loader.GameJar;
 import com.ultreon.bubbles.mod.loader.LibraryJar;
-import com.ultreon.bubbles.mod.loader.ScannerResult;
 import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.notification.Notifications;
 import com.ultreon.bubbles.player.InputController;
@@ -90,7 +89,6 @@ import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.checkerframework.common.value.qual.IntRange;
-import org.checkerframework.common.value.qual.IntVal;
 import org.fusesource.jansi.AnsiConsole;
 import org.jdesktop.swingx.util.OS;
 import org.jetbrains.annotations.ApiStatus;
@@ -167,23 +165,28 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private static final Lock RENDER_CALL_LOCK = new ReentrantLock(true);
     private static final Deque<Consumer<Renderer>> RENDER_CALLS = Queues.synchronizedDeque(Queues.newArrayDeque());
 
+    // Public Game Components
+    public final Notifications notifications;
     public final Profiler profiler = new Profiler();
+
+    // ImGui Implementations
     private final ImGuiImplGlfw imGuiGlfw;
     private final ImGuiImplGl3 imGuiGl3;
+
+    // Tasks
+    final List<Runnable> tasks = new CopyOnWriteArrayList<>();
+
+    // Fonts.
+    private BitmapFont sansFont;
+    private String fontName;
+
     private URL gameFile;
-    @IntVal(20)
-    private final int tps = 20;
+
     private ResourceManager resourceManager;
     private GameWindow window;
     private ScreenManager screenManager;
     private RenderSettings renderSettings;
-    // Tasks
-    final List<Runnable> tasks = new CopyOnWriteArrayList<>();
     private DiscordRPC discordRpc;
-    // Fonts.
-    private BitmapFont sansFont;
-    // Font names.
-    private String fontName;
     // Rendering
     private DebugRenderer debugRenderer;
     private EnvironmentRenderer environmentRenderer;
@@ -251,13 +254,13 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private final ImBoolean showDebugUtils = new ImBoolean(FabricLoader.getInstance().isDevelopmentEnvironment());
     private Renderer currentRenderer;
     private Renderer renderer;
-    private Notifications notifications;
 
     public BubbleBlaster() {
         imGuiGlfw = new ImGuiImplGlfw();
         imGuiGl3 = new ImGuiImplGl3();
 
         instance = this;
+        notifications = new Notifications();
     }
 
     public static <T> T invokeAndWait(Supplier<T> func) {
@@ -325,9 +328,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
         // Set game input processor for LibGDX
         GameInput input = new GameInput();
         Gdx.input.setInputProcessor(input);
-
-        // Set notification manager
-        this.notifications = new Notifications();
 
         // Set HiDpi mode
         HdpiUtils.setMode(HdpiMode.Pixels);
@@ -438,7 +438,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         // Register events.
         InputEvents.KEY_PRESS.listen(this::onKeyPress);
-        InputEvents.KEY_RELEASE.listen(this::onKeyRelease);
         InputEvents.MOUSE_CLICK.listen(this::onMouseClick);
 
         GameEvents.CLIENT_STARTED.factory().onClientStarted(this);
@@ -489,35 +488,39 @@ public final class BubbleBlaster extends ApplicationAdapter {
         renderer.begin();
         currentRenderer = renderer;
 
-        GridPoint2 mousePos = GameInput.getPos();
-        int mouseX = mousePos.x;
-        int mouseY = mousePos.y;
+        try {
+            GridPoint2 mousePos = GameInput.getPos();
+            int mouseX = mousePos.x;
+            int mouseY = mousePos.y;
 
-        float deltaTime = Gdx.graphics.getDeltaTime();
+            float deltaTime = Gdx.graphics.getDeltaTime();
 
-        int size = RENDER_CALLS.size();
-        for (int counter = 0; counter < size; counter++) {
-            RENDER_CALLS.removeFirst().accept(renderer);
-        }
-
-        if (isGlitched) {
-            glitchRenderer.render(renderer);
-        } else {
-            var filters = BubbleBlaster.instance.getCurrentFilters();
-
-            profiler.section("renderGame", () -> this.renderGame(renderer, mouseX, mouseY, gameFrameTime));
-
-            if (isDebugMode() || this.debugGuiOpen.get()) {
-                this.debugRenderer.render(this.renderer);
+            int size = RENDER_CALLS.size();
+            for (int counter = 0; counter < size; counter++) {
+                RENDER_CALLS.removeFirst().accept(renderer);
             }
 
-            this.fps = Gdx.graphics.getFramesPerSecond();
-        }
+            if (isGlitched) {
+                glitchRenderer.render(renderer);
+            } else {
+                var filters = BubbleBlaster.instance.getCurrentFilters();
 
-        this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
+                profiler.section("renderGame", () -> this.renderGame(renderer, mouseX, mouseY, gameFrameTime));
 
-        if (showDebugUtils.get()) {
-            this.renderImGui(renderer);
+                if (isDebugMode() || this.debugGuiOpen.get()) {
+                    this.debugRenderer.render(this.renderer);
+                }
+
+                this.fps = Gdx.graphics.getFramesPerSecond();
+            }
+
+            this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
+
+            if (showDebugUtils.get()) {
+                this.renderImGui(renderer);
+            }
+        } catch (OutOfMemoryError error) {
+            this.outOfMemory(error);
         }
 
         currentRenderer = null;
@@ -840,12 +843,6 @@ public final class BubbleBlaster extends ApplicationAdapter {
         if (loadedGame != null) {
             final var environment = loadedGame.getEnvironment();
 
-            if (!holding) {
-                if (keyCode == KeyEvent.VK_SLASH && !hasScreenOpen()) {
-                    BubbleBlaster.getInstance().showScreen(new CommandScreen());
-                }
-            }
-
             if (keyCode == KeyEvent.VK_F1 && BubbleBlaster.isDevMode()) {
                 environment.triggerBloodMoon();
             } else if (keyCode == KeyEvent.VK_F3 && BubbleBlaster.isDevMode()) {
@@ -862,29 +859,13 @@ public final class BubbleBlaster extends ApplicationAdapter {
                 }
             }
         }
-
-        if (player != null && !holding) {
-            if (keyCode == Input.Keys.UP) player.forward(true);
-            if (keyCode == Input.Keys.DOWN) player.backward(true);
-            if (keyCode == Input.Keys.LEFT) player.left(true);
-            if (keyCode == Input.Keys.RIGHT) player.right(true);
-        }
-    }
-
-    private void onKeyRelease(int keyCode) {
-        if (player != null) {
-            if (keyCode == Input.Keys.UP) player.forward(true);
-            if (keyCode == Input.Keys.DOWN) player.backward(true);
-            if (keyCode == Input.Keys.LEFT) player.left(true);
-            if (keyCode == Input.Keys.RIGHT) player.right(true);
-        }
     }
 
     private void onMouseClick(int x, int y, int button, int clicks) {
         var loadedGame = this.loadedGame;
         if (isDevMode()) {
             if (loadedGame != null && button == 1) {
-                if (GameInput.isKeyDown(Input.Keys.F1)) {
+                if (GameInput.isKeyDown(Keys.F1)) {
                     Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
                 }
             }
@@ -924,33 +905,66 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
         try {
             while (running) {
-                var canTick = false;
+                try {
+                    var canTick = false;
 
-                var time2 = TimeProcessor.now();
-                var passed = time2 - time;
-                unprocessed += passed;
+                    var time2 = TimeProcessor.now();
+                    var passed = time2 - time;
+                    unprocessed += passed;
 
-                time = time2;
+                    time = time2;
 
-                while (unprocessed >= tickCap) {
-                    unprocessed -= tickCap;
+                    while (unprocessed >= tickCap) {
+                        unprocessed -= tickCap;
 
-                    canTick = true;
-                }
-
-                if (canTick) {
-                    try {
-                        internalTick();
-                    } catch (Throwable t) {
-                        var crashLog = new CrashLog("Game being ticked.", t);
-                        crash(crashLog.createCrash());
+                        canTick = true;
                     }
+
+                    if (canTick) {
+                        try {
+                            internalTick();
+                        } catch (Throwable t) {
+                            var crashLog = new CrashLog("Game being ticked.", t);
+                            crash(crashLog.createCrash());
+                        }
+                    }
+                } catch (OutOfMemoryError error) {
+                    if (this.outOfMemory(error)) return;
                 }
             }
         } catch (Throwable t) {
             var crashLog = new CrashLog("Running game loop.", t);
             crash(crashLog.createCrash());
         }
+    }
+
+    private boolean outOfMemory(OutOfMemoryError error) {
+        System.gc();
+
+        if (screenManager.getCurrentScreen() instanceof OutOfMemoryScreen) {
+            crash(error);
+            annihilate();
+            return true;
+        }
+
+        if (this.environment != null && !this.environment.isSaving()) {
+            try {
+                this.environment.save();
+            } catch (OutOfMemoryError anotherError) {
+                System.gc();
+            } catch (Throwable throwable) {
+                this.crash(throwable);
+            }
+        }
+
+        this.environment.annihilate();
+        this.environment = null;
+        this.environmentRenderer = null;
+        this.player = null;
+        System.gc();
+
+        this.showScreen(new OutOfMemoryScreen());
+        return false;
     }
 
     private BitmapFont loadFontInternally(Identifier location) {
@@ -1499,7 +1513,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
     @SuppressWarnings("DuplicatedCode")
     private void ticking() {
-        var tickCap = 1000.0 / (double) tps;
+        var tickCap = 1000.0 / (double) TPS;
         var tickTime = 0d;
         var gameFrameTime = 0d;
         var ticksPassed = 0;
@@ -1655,7 +1669,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         }
 
         if (player != null) {
-            if (GameInput.isKeyDown(Input.Keys.SPACE)) {
+            if (GameInput.isKeyDown(Keys.SPACE)) {
                 player.shoot();
             }
         }
@@ -1827,12 +1841,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     }
 
     public int getTps() {
-        return tps;
-    }
-
-    @Deprecated
-    public ScannerResult getScanResults() {
-        return new ScannerResult(new HashMap<>());
+        return TPS;
     }
 
     public boolean isStopping() {
@@ -1861,6 +1870,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         try {
             GameEvents.CRASH.factory().onCrash(crash);
         } catch (Throwable t) {
+            if (t instanceof VirtualMachineError e) throw e;
             LOGGER.error("Error occurred in 3rd party crash handling:", t);
         }
 
@@ -1995,34 +2005,59 @@ public final class BubbleBlaster extends ApplicationAdapter {
         Screen currentScreen = this.getCurrentScreen();
         Environment environment = this.environment;
 
-        if (keycode == Input.Keys.F12) {
+        if (keycode == Keys.F12) {
             debugGuiOpen.set(!debugGuiOpen.get());
             LOGGER.debug("Toggling debug gui");
             return true;
-        } else if (keycode == Input.Keys.F2) {
-            LOGGER.debug("Creating screenshot");
+        } else if (keycode == Keys.F2) {
             Screenshot screenshot = Screenshot.take();
-            notifications.addNotification(new Notification("Screenshot saved!", screenshot.fileHandle().name(), "SCREENSHOT MANAGER"));
+            notifications.notifyPlayer(new Notification("Screenshot saved!", screenshot.fileHandle().name(), "SCREENSHOT MANAGER"));
             return true;
-        } else if (keycode == Input.Keys.F10 && (debugMode || devMode)) {
-            if (environment != null) {
-                environment.triggerBloodMoon();
-            }
-            return true;
+        } else if (environment != null) {
+            if (keyPressEnv(keycode, environment)) return true;
         }
 
         if (currentScreen != null) {
             return currentScreen.keyPress(keycode);
-        } else if (keycode == Input.Keys.ESCAPE && environment != null && environment.isAlive()) {
+        } else if (keycode == Keys.ESCAPE && environment != null && environment.isAlive()) {
             BubbleBlaster.getInstance().showScreen(new PauseScreen());
             return true;
         }
         return false;
     }
 
+    private boolean keyPressEnv(int keycode, Environment environment) {
+        Player player = this.player;
+        boolean shouldTriggerDevCommand = debugMode || devMode;
+
+        if (this.isInGame() && player != null) {
+            if (keycode == Keys.UP) player.forward(true);
+            if (keycode == Keys.DOWN) player.backward(true);
+            if (keycode == Keys.LEFT) player.left(true);
+            if (keycode == Keys.RIGHT) player.right(true);
+        }
+
+        if (keycode == Keys.F10 && (shouldTriggerDevCommand)) {
+            environment.triggerBloodMoon();
+            return true;
+        } else if (keycode == KeyEvent.VK_SLASH && !hasScreenOpen()) {
+            BubbleBlaster.getInstance().showScreen(new CommandScreen());
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean keyRelease(int keycode) {
         @Nullable Screen currentScreen = this.getCurrentScreen();
         if (currentScreen != null) return currentScreen.keyRelease(keycode);
+
+        if (this.isInGame() && player != null) {
+            if (keycode == Keys.UP) player.forward(false);
+            if (keycode == Keys.DOWN) player.backward(false);
+            if (keycode == Keys.LEFT) player.left(false);
+            if (keycode == Keys.RIGHT) player.right(false);
+        }
 
         return false;
     }

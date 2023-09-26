@@ -4,18 +4,18 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.commons.exceptions.InvalidValueException;
 
-public class BubbleFreezeEffect extends StatusEffect {
-    public BubbleFreezeEffect() throws InvalidValueException {
+public class BubbleFreezeStatusEffect extends StatusEffect {
+    public BubbleFreezeStatusEffect() throws InvalidValueException {
         super();
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
     }
 
     @Override
-    public void onStart(AppliedEffect appliedEffect, Entity entity) {
+    public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         if (entity instanceof Player) {
             if (!entity.getEnvironment().isGlobalBubbleFreeze()) {
                 entity.getEnvironment().setGlobalBubbleFreeze(true);

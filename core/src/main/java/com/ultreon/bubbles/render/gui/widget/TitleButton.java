@@ -90,7 +90,7 @@ public class TitleButton extends AbstractButton {
             renderer.drawRoundEffectBox(x + 1, y + 1, width-4, height-4, Math.min(width, height)-8, 2);
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.setStrokeWidth(1.0f);
+            renderer.setLineWidth(1.0f);
             textColor = Color.rgb(0xe0e0e0);
         }
 

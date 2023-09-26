@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
@@ -174,7 +174,7 @@ public class ModernHud extends GameHud {
      */
     private void drawStatusEffects(@NotNull Renderer renderer, @NotNull Player player) {
         int y = 0;
-        for (AppliedEffect appliedEffect : player.getActiveEffects()) {
+        for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
             renderer.subInstance(0, y, 300, 50, effectRender -> {
                 Identifier id = appliedEffect.getType().getId();
 

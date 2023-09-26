@@ -2,7 +2,7 @@ package com.ultreon.bubbles.bubble;
 
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.LivingEntity;
@@ -61,7 +61,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Effect     //
     ////////////////////
-    public AppliedEffect getEffect(Bubble source, Entity target) {
+    public StatusEffectInstance getEffect(Bubble source, Entity target) {
         return effect.get(source, target);
     }
 
@@ -156,7 +156,7 @@ public abstract class BubbleType implements Serializable, Translatable {
 
     @FunctionalInterface
     public interface BubbleEffectCallback {
-        AppliedEffect get(Bubble source, Entity target);
+        StatusEffectInstance get(Bubble source, Entity target);
 
     }
     public double getPriority() {
@@ -432,7 +432,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof LivingEntity livingEntity && livingEntity.isInvincible()) return;
 
-        AppliedEffect appliedEffect = getEffect(source, target);
+        StatusEffectInstance appliedEffect = getEffect(source, target);
         if (appliedEffect == null) {
             return;
         }

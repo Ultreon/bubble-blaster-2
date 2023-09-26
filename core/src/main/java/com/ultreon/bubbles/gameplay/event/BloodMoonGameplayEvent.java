@@ -1,24 +1,32 @@
 package com.ultreon.bubbles.gameplay.event;
 
-import com.jhlabs.image.NoiseFilter;
-import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.event.v1.FilterBuilder;
-import com.ultreon.bubbles.event.v1.TickEvents;
+import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.bubbles.common.gamestate.GameplayContext;
+import com.ultreon.bubbles.common.gamestate.GameplayEvent;
+import com.ultreon.bubbles.data.DataKeys;
+import com.ultreon.bubbles.entity.player.Player;
+import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.event.v1.TickEvents;
+import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.commons.time.Date;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.commons.time.Time;
+import com.ultreon.data.types.MapType;
 
 import java.time.DayOfWeek;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
 public class BloodMoonGameplayEvent extends GameplayEvent {
+    private static final UUID NOISE_EFFECT_ID = UUID.fromString("7d6dfafe-bbe6-4795-bc09-8c778af55115");
+    private static final int UPPER_COLOR = 0xff3000;
+    private static final int LOWER_COLOR = 0xdc143c;
     private final Date date = new Date(31, 10, 0);
     private final Time timeLo = new Time(3, 0, 0);
     private final Time timeHi = new Time(3, 59, 59);
@@ -33,8 +41,6 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
     public BloodMoonGameplayEvent() {
         super();
-
-        setBackgroundColor(Color.hex("#af0000"));
 
         TickEvents.TICK_GAME.listen(this::onUpdate);
     }
@@ -83,29 +89,33 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         }
     }
 
-    public void onFilter(FilterBuilder builder) {
-        if (!isActive(DateTime.current())) return;
-
-        NoiseFilter filter = new NoiseFilter();
-
-        filter.setMonochrome(true);
-        filter.setDensity(0.25f);
-        filter.setAmount(60);
-        filter.setDistribution(1);
-
-        builder.addFilter(filter);
+    @Override
+    public void buildVfx(VfxEffectBuilder builder) {
+        FilmGrainEffect effect = new FilmGrainEffect();
+        effect.setNoiseAmount(0.4f);
+        builder.set(NOISE_EFFECT_ID, effect);
     }
 
     @Override
-    public final boolean isActive(DateTime dateTime) {
-        super.isActive(dateTime);
+    public final boolean shouldActivate(GameplayContext context) {
+        if (!super.shouldActivate(context)) return false;
 
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
-        if (loadedGame == null) {
-            return false;
-        }
+        MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
+        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE);
+    }
 
-        return loadedGame.getEnvironment().isBloodMoonActive();
+    @Override
+    public final boolean shouldContinue(GameplayContext context) {
+        if (!super.shouldContinue(context)) return false;
+
+        MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
+        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE);
+    }
+
+    @Override
+    public void renderBackground(Environment environment, Renderer renderer) {
+        BubbleBlaster instance = BubbleBlaster.getInstance();
+        renderer.fillGradient(instance.getBounds(), Color.rgb(UPPER_COLOR), Color.rgb(LOWER_COLOR));
     }
 
     public final boolean wouldActive(DateTime dateTime) {

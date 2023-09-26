@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.command;
 
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.registry.Registries;
@@ -19,7 +19,7 @@ public class EffectCommand implements CommandExecutor {
 
                 int amount = player.getActiveEffects().size();
 
-                for (AppliedEffect appliedEffect : player.getActiveEffects()) {
+                for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
                     player.removeEffect(appliedEffect);
                 }
 
@@ -29,13 +29,13 @@ public class EffectCommand implements CommandExecutor {
             }
         } else if (args.length == 2) {
             if (args[0].equals("give")) {
-                AppliedEffect appliedEffect;
+                StatusEffectInstance appliedEffect;
                 try {
                     StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
-                        appliedEffect = new AppliedEffect(statusEffect, 15, (byte) 1);
+                        appliedEffect = new StatusEffectInstance(statusEffect, 15, (byte) 1);
                     }
                 } catch (InvalidValueException exception) {
                     player.sendMessage("Invalid key: " + args[1]);
@@ -59,13 +59,13 @@ public class EffectCommand implements CommandExecutor {
                     return false;
                 }
 
-                AppliedEffect appliedEffect;
+                StatusEffectInstance appliedEffect;
                 try {
                     StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
-                        appliedEffect = new AppliedEffect(statusEffect, duration, 1);
+                        appliedEffect = new StatusEffectInstance(statusEffect, duration, 1);
                     }
                 } catch (InvalidValueException exception) {
                     player.sendMessage("Invalid key: " + args[1]);
@@ -107,13 +107,13 @@ public class EffectCommand implements CommandExecutor {
                     return false;
                 }
 
-                AppliedEffect appliedEffect;
+                StatusEffectInstance appliedEffect;
                 try {
                     StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                     if (statusEffect == null) {
                         appliedEffect = null;
                     } else {
-                        appliedEffect = new AppliedEffect(statusEffect, duration, strength);
+                        appliedEffect = new StatusEffectInstance(statusEffect, duration, strength);
                     }
                 } catch (InvalidValueException exception) {
                     player.sendMessage("Invalid key: " + args[1]);

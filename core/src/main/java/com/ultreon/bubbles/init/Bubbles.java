@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.init;
 
 import com.ultreon.bubbles.bubble.*;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.ai.AiAttack;
 import com.ultreon.bubbles.entity.ai.AiTarget;
 import com.ultreon.bubbles.registry.Registries;
@@ -56,7 +56,7 @@ public class Bubbles {
             .radius(Range.between(28, 87))
             .speed(Range.between(1.215d, 2.845d))
             .score(0.325f)
-            .effect((source, target) -> (new AppliedEffect(StatusEffects.PARALYZE, source.getRadius() / 16, (byte) 1)))
+            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.PARALYZE, source.getRadius() / 16, (byte) 1)))
             .colors("#ffff00,#ffff5f,#ffffdf,#ffffff")
             .difficulty(10)
             .build());
@@ -71,7 +71,7 @@ public class Bubbles {
             .score(0.375f)
             .hardness(1.0d)
             .colors("#7fff00,#9faf1f,#bf7f3f,#df3f5f,#ff007f")
-            .effect((source, target) -> (new AppliedEffect(StatusEffects.POISON, source.getRadius() / 8, 4)))
+            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.POISON, source.getRadius() / 8, 4)))
             .addAiTask(0, new AiAttack())
             .addAiTask(1, new AiTarget(Entities.PLAYER))
             .build());

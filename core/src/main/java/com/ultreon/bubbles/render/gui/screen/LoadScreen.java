@@ -93,7 +93,7 @@ public final class LoadScreen extends Screen implements Runnable {
             int progress = progMain.getProgress();
             int max = progMain.getMax();
 
-            renderer.setStrokeWidth(9.0f);
+            renderer.setLineWidth(9.0f);
 
             // Draw current 1st line message.
             if (curMainMsg != null) {

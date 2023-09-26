@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.bubble;
 
 import com.jhlabs.image.HSBAdjustFilter;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
@@ -38,11 +38,11 @@ public class UltraBubble extends BubbleType {
     public void onCollision(Bubble source, Entity target) {
         super.onCollision(source, target);
         if (target instanceof Player player) {
-            player.addEffect(new AppliedEffect(StatusEffects.ATTACK_BOOST, 10, 3));
-            player.addEffect(new AppliedEffect(StatusEffects.DEFENSE_BOOST, 10, 3));
-            player.addEffect(new AppliedEffect(StatusEffects.MULTI_SCORE, 12, 10));
-            player.addEffect(new AppliedEffect(StatusEffects.BUBBLE_FREEZE, 8, 1));
-            player.addEffect(new AppliedEffect(StatusEffects.LUCK, 8, 1));
+            player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, 10, 3));
+            player.addEffect(new StatusEffectInstance(StatusEffects.DEFENSE_BOOST, 10, 3));
+            player.addEffect(new StatusEffectInstance(StatusEffects.MULTI_SCORE, 12, 10));
+            player.addEffect(new StatusEffectInstance(StatusEffects.BUBBLE_FREEZE, 8, 1));
+            player.addEffect(new StatusEffectInstance(StatusEffects.LUCK, 8, 1));
         }
     }
 }

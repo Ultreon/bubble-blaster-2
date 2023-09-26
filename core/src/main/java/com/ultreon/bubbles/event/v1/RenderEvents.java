@@ -73,6 +73,6 @@ public class RenderEvents {
 
     @FunctionalInterface
     public interface Filter {
-        void onFilter(FilterBuilder builder);
+        void onFilter(VfxEffectBuilder builder);
     }
 }

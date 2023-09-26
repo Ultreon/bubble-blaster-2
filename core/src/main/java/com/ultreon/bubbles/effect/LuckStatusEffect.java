@@ -4,25 +4,16 @@ import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 
-public class DefenseBoostEffect extends StatusEffect {
-    public DefenseBoostEffect() {
-        super();
-    }
-
+public class LuckStatusEffect extends StatusEffect {
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
-    }
-
-    @Override
-    public void execute(Entity entity, AppliedEffect appliedEffect) {
-
     }
 
     @Override
     public AttributeContainer getAttributeModifiers() {
         AttributeContainer map = new AttributeContainer();
-        map.setBase(Attribute.DEFENSE, 1f);
+        map.setBase(Attribute.LUCK, 2.0f);
         return map;
     }
 }

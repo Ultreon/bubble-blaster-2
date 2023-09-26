@@ -83,7 +83,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
 
             textColor = Color.WHITE;
         } else if (isHovered()) {
-            renderer.setStrokeWidth(4.0f);
+            renderer.setLineWidth(4.0f);
 
 //            Paint old = renderer.getPaint();
 //            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
@@ -96,7 +96,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
 
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.setStrokeWidth(1.0f);
+            renderer.setLineWidth(1.0f);
 
             renderer.setColor(Color.rgb(0xffffff));
 //            Border border = new Border(1, 1, 1, 1);

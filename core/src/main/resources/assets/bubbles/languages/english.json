@@ -97,6 +97,12 @@
       },
       "start_options": {
         "start": "Start!"
+      },
+      "out_of_memory": {
+        "title": "Bubble Blaster ran out of memory!",
+        "line1": "Either you have modded the game too much or there's a serious memory leak in the game!",
+        "line2": "If there's a serious memory leak in the game, pls report an issue on the GitHub <3",
+        "back_to_title": "Go to the title screen"
       }
     },
     "bubble": {

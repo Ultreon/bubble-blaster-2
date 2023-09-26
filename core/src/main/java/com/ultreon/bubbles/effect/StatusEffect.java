@@ -3,7 +3,7 @@ package com.ultreon.bubbles.effect;
 import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
-import com.ultreon.bubbles.event.v1.FilterBuilder;
+import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.TextureManager;
@@ -55,24 +55,24 @@ public abstract class StatusEffect {
         return cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 
-    public final void tick(Entity entity, AppliedEffect appliedEffect) {
+    public final void tick(Entity entity, StatusEffectInstance appliedEffect) {
         if (canExecute(entity, appliedEffect)) {
             execute(entity, appliedEffect);
         }
     }
 
-    protected abstract boolean canExecute(Entity entity, AppliedEffect appliedEffect);
+    protected abstract boolean canExecute(Entity entity, StatusEffectInstance appliedEffect);
 
     @SuppressWarnings("EmptyMethod")
-    public void execute(Entity entity, AppliedEffect appliedEffect) {
+    public void execute(Entity entity, StatusEffectInstance appliedEffect) {
 
     }
 
-    public void onFilter(AppliedEffect appliedEffect, FilterBuilder builder) {
+    public void buildVfx(StatusEffectInstance appliedEffect, VfxEffectBuilder builder) {
 
     }
 
-    public void onStart(AppliedEffect appliedEffect, Entity entity) {
+    public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
 
     }
 

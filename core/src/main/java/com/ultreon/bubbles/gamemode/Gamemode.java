@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.gamemode;
 
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Ellipse;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.StateListener;
@@ -34,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -62,7 +60,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     protected boolean initialized = false;
     private BubbleType defaultBubble = Bubbles.NORMAL;
     protected GameHud hud;
-    private boolean valid;
+    private boolean active;
 
     // Random & seeding.
     public PseudoRandom getRNG() {
@@ -215,17 +213,17 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         return missing;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
     @Override
-    public void make() {
-        valid = true;
+    public void begin() {
+        this.active = true;
     }
 
-    public void destroy() {
-        valid = false;
+    public void end() {
+        this.active = false;
+    }
+
+    public boolean isActive() {
+        return this.active;
     }
 
     /**
@@ -310,14 +308,14 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
         for (Color color : colors) {
             if (i == 0) {
                 if (colors.length >= 2) {
-                    renderer.setStrokeWidth(2.2f);
+                    renderer.setLineWidth(2.2f);
                 } else {
-                    renderer.setStrokeWidth(2.0f);
+                    renderer.setLineWidth(2.0f);
                 }
             } else if (i == colors.length - 1) {
-                renderer.setStrokeWidth(2.0f);
+                renderer.setLineWidth(2.0f);
             } else {
-                renderer.setStrokeWidth(2.2f);
+                renderer.setLineWidth(2.2f);
             }
 
             renderer.setColor(color);
@@ -391,7 +389,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
             BubbleBlaster.crash(crashLog.createCrash());
         }
 
-        this.make();
+        this.begin();
         this.initialized = true;
     }
 

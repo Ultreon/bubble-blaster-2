@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
 import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
@@ -54,7 +54,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     protected final HashSet<EntityType<?>> canCollideWith = new HashSet<>();
     protected final HashSet<EntityType<?>> canAttack = new HashSet<>();
     protected final HashSet<EntityType<?>> invulnerableTo = new HashSet<>();
-    protected final Set<AppliedEffect> activeEffects = new CopyOnWriteArraySet<>();
+    protected final Set<StatusEffectInstance> activeEffects = new CopyOnWriteArraySet<>();
 
     // Attributes
     protected float scale = 1;
@@ -294,7 +294,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param environment the environment where the entity is from.
      */
     public void tick(Environment environment) {
-        for (AppliedEffect appliedEffect : this.activeEffects) {
+        for (StatusEffectInstance appliedEffect : this.activeEffects) {
             appliedEffect.tick(this);
         }
 
@@ -480,7 +480,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      *
      * @return the active effects.
      */
-    public Set<AppliedEffect> getActiveEffects() {
+    public Set<StatusEffectInstance> getActiveEffects() {
         return activeEffects;
     }
 
@@ -488,8 +488,8 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Add an effect to the entity.
      * @param appliedEffect the applied effect to add.
      */
-    public void addEffect(AppliedEffect appliedEffect) {
-        for (AppliedEffect appliedEffect1 : activeEffects) {
+    public void addEffect(StatusEffectInstance appliedEffect) {
+        for (StatusEffectInstance appliedEffect1 : activeEffects) {
             if (appliedEffect1.getType() == appliedEffect.getType()) {
                 if (appliedEffect1.getRemainingTime() < appliedEffect.getRemainingTime()) {
                     appliedEffect1.setRemainingTime(appliedEffect.getRemainingTime());
@@ -505,7 +505,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Remove a status effect from the entity.
      * @param appliedEffect the applied status effect.
      */
-    public void removeEffect(AppliedEffect appliedEffect) {
+    public void removeEffect(StatusEffectInstance appliedEffect) {
         activeEffects.remove(appliedEffect);
         if (appliedEffect.isActive()) {
             appliedEffect.stop(this);
@@ -553,7 +553,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
         clearEffects();
         for (var activeEffectData : activeEffectsData) {
-            this.activeEffects.add(AppliedEffect.load(activeEffectData));
+            this.activeEffects.add(StatusEffectInstance.load(activeEffectData));
         }
 
         this.entityId = data.getLong("id");
@@ -609,7 +609,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     private void clearEffects() {
-        for (AppliedEffect activeEffect : new HashSet<>(activeEffects)) {
+        for (StatusEffectInstance activeEffect : new HashSet<>(activeEffects)) {
             removeEffect(activeEffect);
         }
     }

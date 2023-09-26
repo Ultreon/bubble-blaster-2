@@ -91,7 +91,7 @@ public class LoadedGame {
         game.environment = null;
 
         // Unbind events.
-        gamemode.destroy();
+        gamemode.end();
         shutdown();
 
         if (ambientAudio != null) {

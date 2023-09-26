@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
-import com.ultreon.bubbles.effect.AppliedEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
@@ -320,7 +320,7 @@ public class Player extends LivingEntity implements InputController {
             invincible = false;
         }
 
-        for (AppliedEffect appliedEffect : this.activeEffects) {
+        for (StatusEffectInstance appliedEffect : this.activeEffects) {
             appliedEffect.tick(this);
         }
 

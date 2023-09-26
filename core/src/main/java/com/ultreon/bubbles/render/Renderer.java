@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.gl.GLScissorState;
 import com.ultreon.bubbles.mixins.ScissorStackMixin;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
@@ -61,7 +60,7 @@ public class Renderer {
     private final Batch batch;
     private final ShapeDrawer shapes;
     private final OrthographicCamera camera;
-    private float strokeWidth;
+    private float lineWidth;
     private final Deque<Matrix4> matrixStack = new ArrayDeque<>();
     private Texture curTexture;
     private BitmapFont font;
@@ -159,7 +158,7 @@ public class Renderer {
     public void circleLine(float x, float y, float radius) {
         if (!rendering) return;
 
-        shapes.circle(x, y, radius);
+        shapes.circle(x, y, radius, lineWidth);
     }
 
     public void fill(Shape2D s) {
@@ -208,6 +207,18 @@ public class Renderer {
         rect(r.x, r.y, r.z, r.w);
     }
 
+    public void fillGradient(Rectangle bounds, Color color1, Color color2) {
+        if (!rendering) return;
+
+        this.fillGradient(bounds.x, bounds.y, bounds.width, bounds.height, color1, color2, Axis2D.VERTICAL);
+    }
+
+    public void fillGradient(Rectangle bounds, Color color1, Color color2, Axis2D axis) {
+        if (!rendering) return;
+
+        this.fillGradient(bounds.x, bounds.y, bounds.width, bounds.height, color1, color2, axis);
+    }
+
     public void fillGradient(float x, float y, float width, float height, Color color1, Color color2) {
         if (!rendering) return;
 
@@ -242,13 +253,13 @@ public class Renderer {
     public void rectLine(int x, int y, int width, int height) {
         if (!rendering) return;
 
-        shapes.rectangle(x, y, width, height, strokeWidth);
+        shapes.rectangle(x, y, width, height, lineWidth);
     }
 
     public void rectLine(float x, float y, float width, float height) {
         if (!rendering) return;
 
-        shapes.rectangle(x, y, width, height, strokeWidth);
+        shapes.rectangle(x, y, width, height, lineWidth);
     }
 
     public void rect(int x, int y, int width, int height) {
@@ -266,7 +277,7 @@ public class Renderer {
     public void roundRectLine(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!rendering) return;
 
-        shapes.rectangle(x, y, width, height, strokeWidth, JoinType.SMOOTH);
+        shapes.rectangle(x, y, width, height, lineWidth, JoinType.SMOOTH);
     }
 
     public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -278,7 +289,7 @@ public class Renderer {
     public void rect3DLine(int x, int y, int width, int height, boolean raised) {
         if (!rendering) return;
 
-        shapes.rectangle(x, y, width, height, strokeWidth);
+        shapes.rectangle(x, y, width, height, lineWidth);
     }
 
     public void rect3D(int x, int y, int width, int height, boolean raised) {
@@ -836,7 +847,7 @@ public class Renderer {
         if (!rendering) return;
 
         setColor(Color.rgb(0x00d0d0));
-        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
+        setLineWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
         rect(x, y, width, height);
     }
 
@@ -852,7 +863,7 @@ public class Renderer {
         if (!rendering) return;
 
         setColor(Color.rgb(0x00a0ff));
-        setStrokeWidth(borderWidth);
+        setLineWidth(borderWidth);
         rectLine(x, y, width, height);
 //        GradientPaint p = getEffectPaint(speed);
 //        Border border = new Border(insets);
@@ -883,7 +894,7 @@ public class Renderer {
 
 //        radius -= borderWidth - 1;
         setColor(Color.rgb(0x00d0d0));
-        setStrokeWidth(borderWidth);
+        setLineWidth(borderWidth);
         roundRectLine(x, y, width, height, radius, radius);
 //        paint(getEffectPaint(speed));
 //        Stroke old = getStroke();
@@ -911,7 +922,7 @@ public class Renderer {
         if (!rendering) return;
 
         setColor(Color.rgb(0xff3000));
-        setStrokeWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
+        setLineWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
         rectLine(x, y, width, height);
 //        GradientPaint p = getErrorEffectPaint(speed);
 //        Border border = new Border(insets);
@@ -1024,14 +1035,14 @@ public class Renderer {
         }
     }
 
-    public void setStrokeWidth(float strokeWidth) {
+    public void setLineWidth(float lineWidth) {
         if (!rendering) return;
 
-        this.strokeWidth = strokeWidth;
+        this.lineWidth = lineWidth;
     }
 
-    public float getStrokeWidth() {
-        return strokeWidth;
+    public float getLineWidth() {
+        return lineWidth;
     }
 
     public void setColor(Color c) {
@@ -1153,7 +1164,7 @@ public class Renderer {
     }
 
     public void roundedLine(float x1, float y1, float x2, float y2) {
-        shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), strokeWidth, JoinType.SMOOTH, false);
+        shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), lineWidth, JoinType.SMOOTH, false);
     }
 
     public enum State {

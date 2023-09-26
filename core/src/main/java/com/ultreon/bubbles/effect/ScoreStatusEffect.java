@@ -5,8 +5,8 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.commons.exceptions.InvalidValueException;
 
-public class MultiScoreEffect extends StatusEffect {
-    public MultiScoreEffect() throws InvalidValueException {
+public class ScoreStatusEffect extends StatusEffect {
+    public ScoreStatusEffect() throws InvalidValueException {
         super();
     }
 
@@ -18,7 +18,7 @@ public class MultiScoreEffect extends StatusEffect {
     }
 
     @Override
-    protected boolean canExecute(Entity entity, AppliedEffect appliedEffect) {
+    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;
     }
 }
