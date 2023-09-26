@@ -21,23 +21,32 @@
       }
     },
     "status_effect": {
+      "none": {
+        "name": "N/A"
+      },
+      "luck": {
+        "name": "Lucky"
+      },
       "poison": {
         "name": "Poisoned"
+      },
+      "paralyze": {
+        "name": "Paralyzed"
       },
       "blindness": {
         "name": "Blinded"
       },
-      "multi_score": {
-        "name": "Multi Score"
+      "score": {
+        "name": "Score Boost"
       },
-      "speed_boost": {
-        "name": "Speed Boost"
+      "swiftness": {
+        "name": "Swiftness"
       },
       "attack_boost": {
         "name": "Attack Boost"
       },
-      "defense_boost": {
-        "name": "Defense Boost"
+      "resistance": {
+        "name": "Resistance"
       }
     },
     "Info": {

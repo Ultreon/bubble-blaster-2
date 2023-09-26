@@ -21,6 +21,6 @@ public class DefenseBoostBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.DEFENSE_BOOST, source.getRadius() / 8, (byte) ((byte) source.getRadius() / 24 + 1));
+        return new StatusEffectInstance(StatusEffects.RESISTANCE, source.getRadius() / 8, (byte) ((byte) source.getRadius() / 24 + 1));
     }
 }

@@ -39,8 +39,8 @@ public class UltraBubble extends BubbleType {
         super.onCollision(source, target);
         if (target instanceof Player player) {
             player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, 10, 3));
-            player.addEffect(new StatusEffectInstance(StatusEffects.DEFENSE_BOOST, 10, 3));
-            player.addEffect(new StatusEffectInstance(StatusEffects.MULTI_SCORE, 12, 10));
+            player.addEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 3));
+            player.addEffect(new StatusEffectInstance(StatusEffects.SCORE, 12, 10));
             player.addEffect(new StatusEffectInstance(StatusEffects.BUBBLE_FREEZE, 8, 1));
             player.addEffect(new StatusEffectInstance(StatusEffects.LUCK, 8, 1));
         }

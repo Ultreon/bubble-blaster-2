@@ -1,8 +1,12 @@
 package com.ultreon.bubbles.effect;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
+import com.ultreon.bubbles.entity.attribute.AttributeModifier;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
@@ -13,7 +17,10 @@ import com.ultreon.libs.resources.v0.Resource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 
 public abstract class StatusEffect {
@@ -37,7 +44,7 @@ public abstract class StatusEffect {
     }
 
     public @Nullable Resource getIconResource() {
-        Identifier resId = getIconId();
+        Identifier resId = this.getIconId();
         @Nullable Resource stream = BubbleBlaster.getInstance().getResourceManager().getResource(resId);
         if (stream == null) {
             BubbleBlaster.getLogger().warn("Cannot find effect-icon: " + resId);
@@ -56,8 +63,8 @@ public abstract class StatusEffect {
     }
 
     public final void tick(Entity entity, StatusEffectInstance appliedEffect) {
-        if (canExecute(entity, appliedEffect)) {
-            execute(entity, appliedEffect);
+        if (this.canExecute(entity, appliedEffect)) {
+            this.execute(entity, appliedEffect);
         }
     }
 
@@ -78,11 +85,6 @@ public abstract class StatusEffect {
 
     public void onStop(Entity entity) {
 
-    }
-
-    @Deprecated
-    public AttributeContainer getAttributeModifiers() {
-        return new AttributeContainer();
     }
 
     @SuppressWarnings("EmptyMethod")

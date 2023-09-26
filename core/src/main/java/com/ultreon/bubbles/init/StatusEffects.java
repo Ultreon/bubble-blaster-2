@@ -23,13 +23,13 @@ public class StatusEffects {
         }
     });
 
-    public static final ResistanceStatusEffect DEFENSE_BOOST = register("defense", new ResistanceStatusEffect());
+    public static final ResistanceStatusEffect RESISTANCE = register("resistance", new ResistanceStatusEffect());
 
     public static final BubbleFreezeStatusEffect BUBBLE_FREEZE = register("bubble_freeze", new BubbleFreezeStatusEffect());
 
-    public static final AttackBoostEffect ATTACK_BOOST = register("attack", new AttackBoostEffect());
-    public static final ScoreStatusEffect MULTI_SCORE = register("multi_score", new ScoreStatusEffect());
-    public static final SpeedStatusEffect SPEED_BOOST = register("speed_boost", new SpeedStatusEffect());
+    public static final AttackBoostStatusEffect ATTACK_BOOST = register("attack", new AttackBoostStatusEffect());
+    public static final ScoreStatusEffect SCORE = register("multi_score", new ScoreStatusEffect());
+    public static final SwiftnessStatusEffect SWIFTNESS = register("swiftness", new SwiftnessStatusEffect());
     public static final BlindnessStatusEffect BLINDNESS = register("blindness", new BlindnessStatusEffect());
     public static final ParalyzeStatusEffect PARALYZE = register("paralyze", new ParalyzeStatusEffect());
     public static final PoisonStatusEffect POISON = register("poison", new PoisonStatusEffect());

@@ -21,6 +21,6 @@ public class TripleStateBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.MULTI_SCORE, source.getRadius() / 8, 3);
+        return new StatusEffectInstance(StatusEffects.SCORE, source.getRadius() / 8, 3);
     }
 }
