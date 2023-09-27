@@ -54,7 +54,7 @@ public final class LanguageScreen extends Screen {
         this.cancelButton.setCommand(this::cancel);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, Language entry, boolean selected, boolean hovered) {
+    private void renderEntry(Renderer renderer, int width, int height, float y, Language entry, boolean selected, boolean hovered) {
         Locale locale = entry.getLocale();
         String language = locale.getDisplayLanguage(Locale.ENGLISH);
 

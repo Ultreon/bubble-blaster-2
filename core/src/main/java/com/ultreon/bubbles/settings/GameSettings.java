@@ -11,8 +11,10 @@ import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.Keybind;
+import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.libs.translations.v0.LanguageManager;
 
 import java.io.File;
@@ -21,7 +23,10 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @SuppressWarnings("FieldMayBeFinal")
 public final class GameSettings implements Serializable {
@@ -37,7 +42,7 @@ public final class GameSettings implements Serializable {
     @SerializedName("max-bubbles")
     private int maxBubbles = 200;
     @SerializedName("lang")
-    private String language = new Locale("en").getLanguage();
+    private String language = "en_US";
 
     @SerializedName("gamemode")
     private Identifier gamemode = Gamemodes.MODERN.id();
@@ -59,6 +64,16 @@ public final class GameSettings implements Serializable {
 
     private GameSettings() {
         LanguageManager.setCurrentLanguage(Locale.forLanguageTag(language));
+        List<Language> languages = LanguageManager.INSTANCE.getLanguages();
+        if (languages.stream().noneMatch(language1 -> language1.getLocale().equals(Locale.forLanguageTag(language)))) {
+            BubbleBlaster.whenLoaded(UUID.fromString("fa7d8d9a-f707-4e83-8228-7af3af478857"), () -> {
+                BubbleBlaster game = BubbleBlaster.getInstance();
+                game.notifications.notifyOnce(
+                    UUID.fromString("f904e6ae-9dc1-4534-8bf8-c87fc58d6182"),
+                    new Notification("Error!", "Language not found: " + language, "Language Manager", Duration.ofSeconds(10))
+                );
+            });
+        }
     }
 
     public synchronized static boolean reload() {

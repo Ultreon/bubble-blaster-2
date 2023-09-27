@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     private boolean selectable;
     private EntryRenderer<T> entryRenderer;
     private ListEntry<T, ? extends T> selected;
-    private List<SelectHandler<T>> selectHandlers = new ArrayList<>();
+    private final List<SelectHandler<T>> selectHandlers = new ArrayList<>();
 
     public ObjectList(List<T> items, int entryHeight, int gap, int x, int y, int width, int height) {
         super(new Rectangle(0, 0, width, calculateViewHeight(items, entryHeight, gap)), x, y, width, height);
@@ -33,7 +34,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
                 for (var entry : ObjectList.this.entries) {
                     entry.setPos(0, y);
                     entry.setSize(width, entryHeight);
-                    renderer.subInstance(0, y, ObjectList.this.width, entryHeight, renderer1 -> entry.render(renderer1, mouseX, mouseY, deltaTime));
+                    entry.render(renderer, mouseX, mouseY, deltaTime);
                     y += entryHeight + gap;
                 }
             }
@@ -84,8 +85,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         return entryType;
     }
 
+    @CanIgnoreReturnValue
     public <C extends T> ListEntry<T, C> addItem(C item) {
-        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (getViewport().getViewportSize().y + gap), width, height);
+        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (getViewport().getViewportSize().y + gap), width, height, entries.size());
         entries.add(entry);
         listContent.add(entry);
         recalculateViewport();
@@ -97,6 +99,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         return (ListEntry<T, ? extends T>) getExactWidgetAt(x, y);
     }
 
+    @CanIgnoreReturnValue
     public <C extends T> C removeItem(ListEntry<T, C> entry) {
         entries.remove(entry);
         listContent.remove(entry);
@@ -104,6 +107,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         return entry.value;
     }
 
+    @CanIgnoreReturnValue
     public ListEntry<T, ? extends T> removeItem(int index) {
         ListEntry<T, ? extends T> item = entries.remove(index);
         recalculateViewport();
@@ -161,12 +165,13 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @FunctionalInterface
     public interface EntryRenderer<T> {
-        void render(Renderer renderer, int width, int height, T entry, boolean selected, boolean hovered);
+        void render(Renderer renderer, int width, int height, float y, T entry, boolean selected, boolean hovered);
     }
 
     public static class ListEntry<T, C extends T> extends GuiComponent {
         private final ObjectList<T> list;
         public final C value;
+        private int index;
 
         /**
          * @param value  value of the list entry
@@ -175,14 +180,19 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
          * @param width  size create the widget
          * @param height size create the widget
          */
-        public ListEntry(ObjectList<T> list, C value, int x, int y, int width, int height) {
+        public ListEntry(ObjectList<T> list, C value, int x, int y, int width, int height, int index) {
             super(x, y, width, height);
             this.list = list;
             this.value = value;
+            this.index = index;
         }
 
         public void render(Renderer renderer1, int mouseX, int mouseY, float deltaTime) {
-            list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, value, list.selected == this && list.selectable, isHovered());
+            this.list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, this.list.getViewport().yScroll + (list.entryHeight + list.gap) * index, value, list.selected == this && list.selectable, isHovered());
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
         }
 
         @Override

@@ -55,6 +55,7 @@ import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.commons.time.TimeProcessor;
+import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
@@ -256,6 +257,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private final ImBoolean showDebugUtils = new ImBoolean(FabricLoader.getInstance().isDevelopmentEnvironment());
     private Renderer currentRenderer;
     private Renderer renderer;
+    private final Map<UUID, Runnable> afterLoading = new OrderedHashMap<>();
 
     public BubbleBlaster() {
         imGuiGlfw = new ImGuiImplGlfw();
@@ -306,6 +308,22 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public static Instant getBootTime() {
         return BOOT_TIME;
+    }
+
+    public static void whenLoaded(UUID id, Runnable func) {
+        if (!isOnRenderingThread()) {
+            invokeAndWait(() -> whenLoaded(id, func));
+            return;
+        }
+
+        if (instance.isLoaded()) {
+            func.run();
+            return;
+        }
+
+        if (!instance.afterLoading.containsKey(id)) {
+            instance.afterLoading.put(id, func);
+        }
     }
 
     @Override
@@ -1967,9 +1985,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public void finish() {
-        glitchRenderer = new GlitchRenderer(this);
+        this.glitchRenderer = new GlitchRenderer(this);
         showScreen(new TitleScreen());
         this.loaded = true;
+
+        this.afterLoading.values().forEach(Runnable::run);
+        this.afterLoading.clear();
     }
 
     public long serializeSeed(String text) {

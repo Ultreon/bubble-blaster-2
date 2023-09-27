@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
@@ -8,8 +10,12 @@ import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.event.v1.LifecycleEvents;
 import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.*;
+import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.TextureCollection;
+import com.ultreon.bubbles.render.TextureManager;
 import com.ultreon.bubbles.settings.GameSettings;
+import com.ultreon.bubbles.util.FileHandles;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.libs.commons.v0.Messenger;
@@ -25,7 +31,6 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -186,31 +191,32 @@ public final class LoadScreen extends Screen implements Runnable {
         for (ModContainer container : allMods) {
             ModMetadata metadata = container.getMetadata();
             metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> {
-                try {
-                    ModDataManager.setIcon(container, ImageIO.read(path1.toUri().toURL()));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }, () -> {
-                try {
-                    Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
-                    if (resource == null) {
-                        resource = TextureManager.DEFAULT_TEX_RESOURCE;
+                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
+                    try {
+                        return new Texture(new Pixmap(FileHandles.imageBytes(path1.toUri().toURL())));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                    ModDataManager.setIcon(container, resource.readImage());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                }));
+            }, () -> {
+                Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
+                if (resource == null) {
+                    resource = TextureManager.DEFAULT_TEX_RESOURCE;
                 }
+                Resource finalResource = resource;
+                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
+                    try {
+                        return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
             });
         }
-        ModContainer container = FabricLoader.getInstance().getModContainer("java").orElseThrow();
-        try {
-            Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/java.png"));
-            if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
-            ModDataManager.setIcon(container, resource.readImage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        this.addModIcon("java", "textures/mods/java.png");
+        this.addModIcon("bubbles", "icon.png");
+
         LifecycleEvents.SETUP.factory().onSetup(game);
         this.progAlt = null;
 
@@ -269,6 +275,19 @@ public final class LoadScreen extends Screen implements Runnable {
         LoadScreen.done = true;
 
         BubbleBlaster.invoke(this.game::finish);
+    }
+
+    private void addModIcon(String modId, String path) {
+        Resource resource = this.game.getResourceManager().getResource(BubbleBlaster.id(path));
+        if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
+        Resource finalResource = resource;
+        ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> {
+            try {
+                return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 
     private BubbleBlaster game() {

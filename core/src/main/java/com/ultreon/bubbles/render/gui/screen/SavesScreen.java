@@ -111,7 +111,7 @@ public class SavesScreen extends Screen {
 
         this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 10, calcWidth, this.height - 120));
         this.saveList.setSelectable(true);
-        this.saveList.setEntryRenderer(this::renderEntry);
+        this.saveList.setEntryRenderer((renderer, width1, height1, y, save, selected, hovered) -> renderEntry(renderer, width1, height1, save, selected, hovered));
 
         this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/screen/saves/new")).build());
         this.newSaveBtn.setCommand(this::newSave);

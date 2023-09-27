@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "name": "Bubble Blaster",
-  "id": "bubbles_mixins",
+  "name": "Internal Mod",
+  "id": "bubbles_internal",
   "description": "Fixes to external libs, using Mixins ofc!",
   "authors": [
     {

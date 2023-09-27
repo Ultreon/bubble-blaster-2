@@ -846,7 +846,7 @@ public class Renderer {
 
         setColor(Color.rgb(0x00d0d0));
         setLineWidth(insets.top == insets.bottom && insets.bottom == insets.left && insets.left == insets.right ? insets.left : Math.max(Math.max(Math.max(insets.top, insets.bottom), insets.left), insets.right));
-        rect(x, y, width, height);
+        rectLine(x, y, width, height);
     }
 
     @Deprecated

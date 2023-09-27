@@ -2,7 +2,7 @@ package com.ultreon.bubbles.render;
 
 import java.awt.image.Raster;
 
-public abstract class Texture {
+public abstract class BBTexture {
     public void draw(Renderer renderer, int x, int y, int width, int height) {
         draw(renderer, x, y, width, height, 0, 0, getWidth(), getHeight());
     }

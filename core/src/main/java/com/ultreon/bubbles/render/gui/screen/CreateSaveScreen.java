@@ -6,7 +6,6 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.font.Thickness;
 import com.ultreon.bubbles.render.gui.widget.Label;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
@@ -43,7 +42,7 @@ public class CreateSaveScreen extends Screen {
                 .build());
         this.gamemodeList = add(new ObjectList<>(this.gamemodes, 30, 2, this.width / 2 - 150, 60 + 60, 300, 300));
         this.gamemodeList.setSelectable(true);
-        this.gamemodeList.setEntryRenderer(this::renderEntry);
+        this.gamemodeList.setEntryRenderer((renderer, width1, height1, y, gamemode, selected, hovered) -> renderEntry(renderer, width1, height1, gamemode, selected, hovered));
         this.createBtn = add(new OptionsButton.Builder()
                 .bounds(this.width / 2 - 100, 60 + 370, 200, 40)
                 .text(TextObject.translation("bubbles/screen/saves/create/button"))
