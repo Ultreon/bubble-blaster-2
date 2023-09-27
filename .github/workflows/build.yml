@@ -4,7 +4,7 @@
 # against bad commits.
 
 name: build
-on: [pull_request, push]
+on: [push]
 
 jobs:
   build-linux:
@@ -14,54 +14,176 @@ jobs:
         java: [
           17    # Minimum supported
         ]
-        # and run on both Linux and not Windows
-        os: [ubuntu-20.04]
+        os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v2
-      - name: validate gradle wrapper
+      - name: Validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ matrix.java }}
+      - name: Setup JDK ${{ matrix.java }}
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - name: make gradle wrapper executable
+      - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build packedJar
+      - name: Build
+        run: ./gradlew :desktop-merge:jpackage --info
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
-      - name: capture the game's build artifacts
+      - name: Capture the build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Bubble Blaster Build ${{ github.run_number }}
-          path: build/libs/
-      - name: capture pre-loader's build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Preloader Build ${{ github.run_number }}
-          path: preloader/build/libs/
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+          name: Bubble Blaster Linux Build ${{ github.run_number }}
+          path: desktop-merge/build/dist
+  build-linux-other-archs:
+    # The host should always be linux
+    runs-on: ubuntu-22.04
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+
+    # Run steps on a matrix of 4 arch/distro combinations
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu22.04
+#           - arch: armv7
+#             distro: ubuntu22.04
+#           - arch: ppc64le
+#             distro: ubuntu22.04
+#           - arch: s390x
+#             distro: ubuntu22.04
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-      - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
+      - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-      - name: Publish package
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      - uses: uraimo/run-on-arch-action@v2
+        name: Build artifact
+        id: build
         with:
-          arguments: publish
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+
+          # Create an artifacts directory
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+
+          # Mount the artifacts directory as /artifacts in the container
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+
+          # Pass some environment variables to the container
+          env: | # YAML, but pipe character is necessary
+            artifact_name: git-${{ matrix.distro }}_${{ matrix.arch }}
+
+          # The shell to run commands with in the container
+          shell: /bin/sh
+
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+            case "${{ matrix.distro }}" in
+              ubuntu*|jessie|stretch|buster|bullseye)
+                apt-get update -q -y
+                apt-get install -q -y git wget coreutils
+                wget -q https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.8%2B7/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.8_7.tar.gz
+                tar -xf OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.8_7.tar.gz
+                mkdir /usr/lib/jvm && mv jdk-17.0.8+7 /usr/lib/jvm/jdk-17.0.8+7
+                export JAVA_HOME=/usr/lib/jvm/jdk-17.0.8+7
+                export PATH=/usr/lib/jvm/jdk-17.0.8+7/bin
+                java -version
+                ;;
+              fedora*)
+                dnf -y update
+                dnf -y install git which openjdk-17
+                ;;
+              alpine*)
+                apk update
+                apk add git openjdk-17
+                ;;
+            esac
+
+          # Produce a binary artifact and place it in the mounted volume
+          run: |
+            export JAVA_HOME=/usr/lib/jvm/jdk-17.0.8+7
+            export PATH=/usr/lib/jvm/jdk-17.0.8+7/bin
+            ./gradlew :desktop-merge:jpackage --info
+            cp $(which git)/desktop-merge/build/dist "/artifacts/${artifact_name}"
+            echo "Produced artifact at /artifacts/${artifact_name}"
+
+      - name: Show the artifact
+        # Items placed in /artifacts in the container will be in
+        # ${PWD}/artifacts on the host.
+        run: |
+          ls -al "${PWD}/artifacts"
+      - name: Capture the build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Bubble Blaster Linux ${{ matrix.arch }} Build ${{ github.run_number }}
+          path: artifacts/
+  build-macos:
+    strategy:
+      matrix:
+        # Use these Java versions
+        java: [
+          17    # Minimum supported
+        ]
+        os: [macOS-11]
+    runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Build
+        run: ./gradlew :desktop-merge:jpackage --info
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
+      - name: Capture the build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Bubble Blaster MacOS Build ${{ github.run_number }}
+          path: desktop-merge/build/dist
+  build-windows:
+    strategy:
+      matrix:
+        # Use these Java versions
+        java: [
+          17    # Minimum supported
+        ]
+        os: [windows-2022]
+    runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Build
+        run: cmd /c "gradlew.bat jpackage --info"
+        env:
+          GITHUB_BUILD_NUMBER: ${{ github.run_number }}
+      - name: Capture the build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Bubble Blaster Windows Build ${{ github.run_number }}
+          path: desktop-merge/build/dist
