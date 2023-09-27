@@ -42,7 +42,7 @@ public final class GameSettings implements Serializable {
     @SerializedName("max-bubbles")
     private int maxBubbles = 200;
     @SerializedName("lang")
-    private String language = "en_US";
+    private String language = "en";
 
     @SerializedName("gamemode")
     private Identifier gamemode = Gamemodes.MODERN.id();
@@ -65,7 +65,10 @@ public final class GameSettings implements Serializable {
     private GameSettings() {
         LanguageManager.setCurrentLanguage(Locale.forLanguageTag(language));
         List<Language> languages = LanguageManager.INSTANCE.getLanguages();
-        if (languages.stream().noneMatch(language1 -> language1.getLocale().equals(Locale.forLanguageTag(language)))) {
+        if (languages.stream().noneMatch(language1 -> {
+            System.out.println("language1.getLocale().toLanguageTag() = " + language1.getLocale().toLanguageTag());
+            return language1.getLocale().equals(Locale.forLanguageTag(language));
+        })) {
             BubbleBlaster.whenLoaded(UUID.fromString("fa7d8d9a-f707-4e83-8228-7af3af478857"), () -> {
                 BubbleBlaster game = BubbleBlaster.getInstance();
                 game.notifications.notifyOnce(
