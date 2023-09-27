@@ -1,1 +1,1 @@
-include 'desktop', 'core', 'gameprovider'
+include 'desktop', 'core', 'gameprovider', 'desktop-merge', 'minimal'

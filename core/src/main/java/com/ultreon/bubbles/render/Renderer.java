@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.mixins.ScissorStackMixin;
+import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
@@ -32,9 +32,11 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -99,8 +101,8 @@ public class Renderer {
         if (!this.rendering)
             throw new IllegalStateException("Renderer isn't rendering yet");
 
-        if (!ScissorStackMixin.getScissors().isEmpty())
-            throw new IllegalStateException("Scissor stack isn't cleared before renderer completes");
+//        if (!ScissorStackMixin.getScissors().isEmpty())
+//            throw new IllegalStateException("Scissor stack isn't cleared before renderer completes");
 
         if (!matrixStack.isEmpty())
             throw new IllegalStateException("Matrix stack isn't cleared before renderer completes");
@@ -149,16 +151,16 @@ public class Renderer {
         circleLine(ellipse.x, ellipse.y, ellipse.radius);
     }
 
-    public void circle(float x, float y, float radius) {
+    public void circle(float x, float y, float size) {
         if (!rendering) return;
 
-        shapes.filledCircle(x, y, radius);
+        shapes.filledCircle(x, y, size / 2f);
     }
 
-    public void circleLine(float x, float y, float radius) {
+    public void circleLine(float x, float y, float size) {
         if (!rendering) return;
 
-        shapes.circle(x, y, radius, lineWidth);
+        shapes.circle(x, y, size / 2f, lineWidth);
     }
 
     public void fill(Shape2D s) {
@@ -237,16 +239,12 @@ public class Renderer {
     public void line(int x1, int y1, int x2, int y2) {
         if (!rendering) return;
 
-        y1 = game.getHeight() - y1;
-        y2 = game.getHeight() - y2;
         shapes.line(x1, y1, x2, y2);
     }
 
     public void line(float x1, float y1, float x2, float y2) {
         if (!rendering) return;
 
-        y1 = game.getHeight() - y1;
-        y2 = game.getHeight() - y2;
         shapes.line(x1, y1, x2, y2);
     }
 
@@ -584,16 +582,12 @@ public class Renderer {
     public void drawMultiLineText(String str, int x, int y) {
         if (!rendering) return;
 
-        y -= (int) font.getLineHeight();
-
         for (String line : str.split("\n"))
             drawText(line, x, y += (int) font.getLineHeight());
     }
 
     public void drawMultiLineText(BitmapFont font, String str, int x, int y) {
         if (!rendering) return;
-
-        y -= (int) font.getLineHeight();
 
         for (String line : str.split("\n"))
             drawText(font, line, x, y += (int) font.getLineHeight());
@@ -745,12 +739,16 @@ public class Renderer {
     public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
         if (!rendering) return;
 
-        this.pushMatrix();
-        this.translate(x, y);
-        this.pushScissors(x, y, width, height);
+//        this.pushMatrix();
+//        this.translate(x, y);
+//        this.pushScissors(x, y, width, height);
         consumer.accept(this);
-        this.popScissors();
-        this.popMatrix();
+        this.game.notifications.notifyOnce(
+                UUID.fromString("ef14bc6a-9c08-4233-a69a-28b87b01d739"),
+                new Notification("Error! (SubInstance Fail)", "Broken game rendering may occur", "Rendering System", Duration.ofSeconds(10))
+        );
+//        this.popScissors();
+//        this.popMatrix();
     }
 
     public void pushScissorsRaw(int x, int y, int width, int height) {
@@ -798,18 +796,18 @@ public class Renderer {
     public void pushMatrix() {
         if (!rendering) return;
 
-        Matrix4 matrix = this.batch.getTransformMatrix();
-        this.matrixStack.push(matrix);
-        this.batch.setTransformMatrix(matrix.cpy());
+//        Matrix4 matrix = this.batch.getTransformMatrix();
+//        this.matrixStack.push(matrix);
+//        this.batch.setTransformMatrix(matrix.cpy());
     }
 
     public void popMatrix() {
         if (!rendering) return;
 
-        if (matrixStack.isEmpty()) throw new IllegalStateException("Matrix stack is already empty");
-
-        Matrix4 matrix = this.matrixStack.pop();
-        this.batch.setTransformMatrix(matrix);
+//        if (matrixStack.isEmpty()) throw new IllegalStateException("Matrix stack is already empty");
+//
+//        Matrix4 matrix = this.matrixStack.pop();
+//        this.batch.setTransformMatrix(matrix);
     }
 
     public boolean hitClip(int x, int y, int width, int height) {

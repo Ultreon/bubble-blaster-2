@@ -127,4 +127,11 @@ public class GameSave {
     public long getSeed() throws IOException {
         return getInfo().getSeed();
     }
+
+    @Override
+    public String toString() {
+        return "GameSave{" +
+                "path='" + path + '\'' +
+                '}';
+    }
 }

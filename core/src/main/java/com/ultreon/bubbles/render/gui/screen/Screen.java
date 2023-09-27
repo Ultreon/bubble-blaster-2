@@ -3,14 +3,16 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Cursor;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.libs.crash.v0.CrashLog;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
-public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Container {
+public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Container implements CrashFiller {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private GuiComponent focused;
     @IntRange(from = 0)
@@ -124,6 +126,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public void onChildFocusChanged() {
         CopyOnWriteArrayList<GuiComponent> clone = new CopyOnWriteArrayList<>(children);
+        if (clone.isEmpty()) return;
         if (this.focusIndex >= clone.size()) {
             this.focusIndex = 0;
         }
@@ -169,7 +172,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @return the default cursor.
      */
     public Cursor.SystemCursor getDefaultCursor() {
-        return Cursor.SystemCursor.None;
+        return Cursor.SystemCursor.Arrow;
     }
 
     /**
@@ -180,5 +183,10 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      */
     public boolean doesPauseGame() {
         return true;
+    }
+
+    @Override
+    public void fillInCrash(CrashLog crashLog) {
+
     }
 }

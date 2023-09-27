@@ -12,7 +12,9 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/desktop" />
+            <option value="$PROJECT_DIR$/desktop-merge" />
             <option value="$PROJECT_DIR$/gameprovider" />
+            <option value="$PROJECT_DIR$/minimal" />
           </set>
         </option>
       </GradleProjectSettings>

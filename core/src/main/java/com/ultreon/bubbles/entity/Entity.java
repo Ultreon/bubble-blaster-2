@@ -940,4 +940,11 @@ public abstract class Entity extends GameObject implements StateHolder {
     public Identifier getId() {
         return getType().getId();
     }
+
+    @Override
+    public String toString() {
+        return "Entity[" + getId() +
+                "]#" + entityId +
+                "@" + uniqueId;
+    }
 }

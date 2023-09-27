@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.FunctionUtils;
@@ -383,5 +384,9 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
         renderer.setColor(color);
         renderer.rect(x, y, width, height);
+    }
+
+    protected void playMenuEvent() {
+        SoundEvents.MENU_EVENT.play(0.2f);
     }
 }

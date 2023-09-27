@@ -2,6 +2,7 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
@@ -89,7 +90,6 @@ import org.apache.logging.log4j.core.util.WatchManager;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.checkerframework.common.value.qual.IntRange;
-import org.fusesource.jansi.AnsiConsole;
 import org.jdesktop.swingx.util.OS;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -129,7 +129,7 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
  */
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "RedundantSuppression"})
-public final class BubbleBlaster extends ApplicationAdapter {
+public final class BubbleBlaster extends ApplicationAdapter implements CrashFiller {
     public static final int TPS = 40;
     public static final String NAMESPACE = "bubbles";
 
@@ -194,6 +194,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private TextureManager textureManager;
     // Randomizers.
     private final Random random = new Random();
+
     // Misc
     private final BufferedImage background = null;
     private final Object rpcUpdateLock = new Object();
@@ -235,6 +236,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     // Loaded game.
     @Nullable
     private LoadedGame loadedGame;
+    private final ManualCrashOverlay manualCrashOverlay = new ManualCrashOverlay();
     private final ImBoolean debugGuiOpen = new ImBoolean(false);
     private GlitchRenderer glitchRenderer = null;
     private boolean isGlitched = false;
@@ -426,8 +428,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
             }
         }
 
-        // Add ansi color compatibility in console.
-        AnsiConsole.systemInstall();
+        // Set current work directory
         FileUtils.setCwd(References.GAME_DIR);
 
         // Logs directory creation.
@@ -516,9 +517,11 @@ public final class BubbleBlaster extends ApplicationAdapter {
 
             this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
 
-            if (showDebugUtils.get()) {
-                this.renderImGui(renderer);
+            if (this.showDebugUtils.get()) {
+                this.renderImGui(this.renderer);
             }
+
+            this.manualCrashOverlay.render(this.renderer, mouseX, mouseY, deltaTime);
         } catch (OutOfMemoryError error) {
             this.outOfMemory(error);
         }
@@ -864,7 +867,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
     private void onMouseClick(int x, int y, int button, int clicks) {
         var loadedGame = this.loadedGame;
         if (isDevMode()) {
-            if (loadedGame != null && button == 1) {
+            if (loadedGame != null && button == Buttons.LEFT) {
                 if (GameInput.isKeyDown(Keys.F1)) {
                     Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
                 }
@@ -1864,6 +1867,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
      */
     public static void crash(@NotNull ApplicationCrash crash) {
         var crashLog = crash.getCrashLog();
+
         crashed = true;
 
         var overridden = false;
@@ -2040,7 +2044,7 @@ public final class BubbleBlaster extends ApplicationAdapter {
         if (keycode == Keys.F10 && (shouldTriggerDevCommand)) {
             environment.triggerBloodMoon();
             return true;
-        } else if (keycode == KeyEvent.VK_SLASH && !hasScreenOpen()) {
+        } else if (keycode == Keys.SLASH && !hasScreenOpen()) {
             BubbleBlaster.getInstance().showScreen(new CommandScreen());
             return true;
         }
@@ -2102,6 +2106,19 @@ public final class BubbleBlaster extends ApplicationAdapter {
         if (currentScreen != null) return currentScreen.mouseWheel(x, y, amountY);
 
         return false;
+    }
+
+    @Override
+    public void fillInCrash(CrashLog crashLog) {
+        Environment environment = this.environment;
+        if (environment != null) {
+            environment.fillInCrash(crashLog);
+        }
+
+        Screen currentScreen = this.getCurrentScreen();
+        if (currentScreen != null) {
+            currentScreen.fillInCrash(crashLog);
+        }
     }
 
     protected static class BootOptions {

@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.environment;
 
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
@@ -41,6 +41,8 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
+import com.ultreon.libs.crash.v0.CrashCategory;
+import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.registries.v0.Registry;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.ApiStatus;
@@ -55,7 +57,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class Environment {
+public final class Environment implements CrashFiller {
     private static final int RNG_INDEX_SPAWN = 0;
     private static final int RNG_INDEX_SPAWN_BUBBLE = 0;
     private static final Identifier BUBBLE_SPAWN_USAGE = new Identifier("bubble_spawn_usage");
@@ -114,7 +116,7 @@ public final class Environment {
     private int freezeTicks;
     boolean shuttingDown;
     private boolean saving;
-    private GameplayStorage gameplayStorage;
+    private GameplayStorage gameplayStorage = new GameplayStorage();
     /// Constructors.
 
     public Environment(GameSave save, Gamemode gamemode, int seed) {
@@ -650,9 +652,7 @@ public final class Environment {
 
     public void shutdown() {
         this.shuttingDown = true;
-        if (gameEventHandlerThread != null) {
-            this.gameEventHandlerThread.interrupt();
-        }
+
         synchronized (entitiesLock) {
             for (Entity entity : entities) {
                 entity.delete();
@@ -756,19 +756,22 @@ public final class Environment {
     public void dispose() throws InterruptedException {
         this.gamemode.end();
         this.entities.clear();
-        this.gameEventHandlerThread.interrupt();
-        this.gameEventHandlerThread.join();
     }
 
-    @SuppressWarnings("deprecation")
     public void annihilate() {
         this.gamemode.end();
         this.entities.clear();
         this.players.clear();
         this.player = null;
-        this.gameplayEventActive.forEach(gameplayEvent -> {
+    }
 
-        });
-        this.gameEventHandlerThread.stop();
+    @Override
+    public void fillInCrash(CrashLog crashLog) {
+        var category = new CrashCategory("Environment", new RuntimeException());
+        category.add("Players", players);
+        category.add("Entities", entities);
+        category.add("Game Save", gameSave);
+        category.add("Cur. Gameplay Event", currentGameplayEvent);
+        crashLog.addCategory(category);
     }
 }

@@ -3,6 +3,7 @@ package com.ultreon.bubbles.init;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.FontUtils;
+import com.ultreon.bubbles.Ticker;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.registries.v0.DelayedRegister;

@@ -1,9 +1,7 @@
 package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.ultreon.bubbles.mixins.ScissorStackMixin;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -41,6 +39,6 @@ public class ScissorStack {
 	}
 
 	public static boolean isEmpty() {
-		return ScissorStackMixin.getScissors().isEmpty();
+		return true;
 	}
 }

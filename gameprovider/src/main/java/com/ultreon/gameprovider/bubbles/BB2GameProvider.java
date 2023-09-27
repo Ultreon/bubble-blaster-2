@@ -1,9 +1,6 @@
 package com.ultreon.gameprovider.bubbles;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.Version;
-import net.fabricmc.loader.api.metadata.*;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.FormattedException;
 import net.fabricmc.loader.impl.game.GameProvider;
@@ -11,16 +8,14 @@ import net.fabricmc.loader.impl.game.GameProviderHelper;
 import net.fabricmc.loader.impl.game.LibClassifier;
 import net.fabricmc.loader.impl.game.patch.GameTransformer;
 import net.fabricmc.loader.impl.launch.FabricLauncher;
-import net.fabricmc.loader.impl.metadata.AbstractModMetadata;
 import net.fabricmc.loader.impl.metadata.BuiltinModMetadata;
+import net.fabricmc.loader.impl.metadata.ContactInformationImpl;
 import net.fabricmc.loader.impl.util.Arguments;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
 import net.fabricmc.loader.impl.util.SystemProperties;
 import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.fabricmc.loader.impl.util.log.LogHandler;
-import org.apache.logging.log4j.util.PropertiesUtil;
-import org.spongepowered.include.com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +46,8 @@ public class BB2GameProvider implements GameProvider {
     private boolean slf4jAvailable;
     private Path libGdxJar;
     private final Properties versions;
+    private Path coreJar;
+    private Path desktopJar;
 
     public BB2GameProvider() {
         InputStream stream = getClass().getResourceAsStream("/versions.properties");
@@ -92,6 +89,12 @@ public class BB2GameProvider implements GameProvider {
                         .addAuthor("Mario Zechner", Map.of("github", "https://github.com/badlogic", "email", "badlogicgames@gmail.com"))
                         .addAuthor("Nathan Sweet", Map.of("github", "https://github.com/NathanSweet", "email", "nathan.sweet@gmail.com"))
                         .addIcon(200, "assets/libgdx/icon.png")
+                        .build()),
+                new BuiltinMod(gameJars, new BuiltinModMetadata.Builder("bubbles", versions.getProperty("bubbles"))
+                        .addLicense("Apache-2.0")
+                        .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.github,io/", "github", "https://github.com/Ultreon", "sources", "https://github.com/libgdx/libgdx"))
+                        .setContact(new ContactInformationImpl(Map.of("homepage", "https://github.com/Ultreon/bubble-blaster-2/", "issues", "https://github.com/Ultreon/bubble-blaster-2/issues", "discord", "https://discord.gg/")))
+                        .addIcon(200, "assets/bubbles/icon.png")
                         .build())
         );
     }
@@ -139,16 +142,16 @@ public class BB2GameProvider implements GameProvider {
 
             classifier.process(launcher.getClassPath());
 
-            gameJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
-            var coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
+            this.desktopJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
+            this.coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
             this.libGdxJar = classifier.getOrigin(GameLibrary.LIBGDX);
 
             if (commonGameJarDeclared && gameJar == null) {
                 Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
             }
 
-            if (gameJar != null) {
-                gameJars.add(gameJar);
+            if (desktopJar != null) {
+                gameJars.add(desktopJar);
             }
 
             if (coreJar != null) {
@@ -186,8 +189,8 @@ public class BB2GameProvider implements GameProvider {
 
         // expose obfuscated jar locations for mods to more easily remap code from obfuscated to intermediary
         var share = FabricLoaderImpl.INSTANCE.getObjectShare();
-        share.put("fabric-loader:inputGameJar", gameJars.get(0)); // deprecated
-        share.put("fabric-loader:inputGameJars", gameJars);
+        share.put("fabric-loader:inputGameJars", List.of(desktopJar, libGdxJar));
+        share.put("fabric-loader:classPathJars", List.of(desktopJar, libGdxJar));
 
         return true;
     }
@@ -261,7 +264,7 @@ public class BB2GameProvider implements GameProvider {
     }
 
     public Path getGameJar() {
-        return gameJars.get(0);
+        return desktopJar;
     }
 
     @Override

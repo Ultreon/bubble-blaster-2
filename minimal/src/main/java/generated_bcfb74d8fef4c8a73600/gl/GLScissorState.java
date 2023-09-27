@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.gl;
+package generated_bcfb74d8fef4c8a73600.gl;
 
 import com.badlogic.gdx.Gdx;
 import com.google.common.base.Preconditions;

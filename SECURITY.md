@@ -9,4 +9,4 @@
 
 ## Reporting a Vulnerability
 
-Go to the [Discord server](https://discord.gg/dtdc46g6ry) and create a ticket.
+Go to the [Discord server](https://discord.gg/WePT9v2CmQ) and create a ticket.

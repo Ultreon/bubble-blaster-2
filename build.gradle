@@ -1,6 +1,5 @@
 //file:noinspection GroovyUnusedCatchParameter
 
-import com.ultreon.bubbles.gradle.VersionType
 import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
@@ -22,12 +21,15 @@ buildscript {
             url = "https://maven.atlassian.com/3rdparty/"
         }
 
+        maven {
+            url 'https://storage.googleapis.com/r8-releases/raw'
+        }
+
         google()
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
-        classpath "com.google.code.gson:gson:2.8.9"
+        classpath 'com.android.tools.build:gradle:7.2.2'
     }
 }
 
@@ -35,18 +37,14 @@ buildscript {
 //     Plugins     //
 //*****************//
 plugins {
+    id 'maven-publish'
     id 'java'
     id 'java-library'
-    id 'maven-publish'
-    id "org.panteleyev.jpackageplugin" version "1.5.0"
-    id 'com.github.johnrengelman.shadow' version '7.+'
+//    id 'com.github.johnrengelman.shadow' version '7.+'
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
 }
 
-apply plugin: 'java'
-apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'bubbles-gradle'
+//apply plugin: 'maven-publish'
 
 //****************************//
 // Setting up main properties //
@@ -54,17 +52,6 @@ apply plugin: 'bubbles-gradle'
 
 version project_version
 group project_group
-
-archivesBaseName = archives_base_name
-
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-bubbles {
-    versionType(VersionType.DEV)
-}
 
 //**********************//
 //     Repositories     //
@@ -117,51 +104,31 @@ configurations {
  */
 dependencies {
     // Projects
-    shadow(runtimeOnly project(":gameprovider")) { transitive false }
-    shadow(runtimeOnly project(":core")) { transitive false }
-    shadow(runtimeOnly project(":desktop")) { transitive false }
-    implementation(runtimeOnly project(":gameprovider"))
-    implementation(runtimeOnly project(":core"))
-    implementation(runtimeOnly project(":desktop"))
-    implementation(compileOnly project(":gameprovider"))
-    implementation(compileOnly project(":core"))
-    implementation(compileOnly project(":desktop"))
+//    shadow(project(":core")) { transitive false }
+//    shadow(project(":desktop")) { transitive false }
+    implementation(project(":core"))
+    implementation(project(":desktop"))
 }
 
 allprojects {
-    apply plugin: "bubbles-gradle"
     apply plugin: "maven-publish"
-    apply plugin: "java"
-    apply plugin: "java-library"
-    apply plugin: "idea"
-    apply plugin: "groovy"
 
     ext {
-        appName = "Bubble Blaster 2"
-        gdxVersion = '1.11.0'
-        roboVMVersion = '2.3.16'
-        box2DLightsVersion = '1.5'
-        ashleyVersion = '1.7.4'
-        aiVersion = '1.8.2'
-        gdxControllersVersion = '2.2.1'
-        shapedrawerVersion = '2.5.0'
+        app_name = "Bubble Blaster Closed Beta"
+        gdx_version = '1.11.0'
+        robo_vm_version = '2.3.16'
+        box_2d_lights_version = '1.5'
+        ashley_version = '1.7.4'
+        ai_version = '1.8.2'
+        gdx_controllers_version = '2.2.3'
     }
 
     publishing {
         publications {
-            mavenJava(MavenPublication) {
-                from components.java
-            }
+
         }
         repositories {
-            maven {
-                name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/Ultreon/bubble-blaster-2"
-                credentials {
-                    username = getenv("GITHUB_ACTOR")
-                    password = getenv("GITHUB_TOKEN")
-                }
-            }
+
         }
     }
 
@@ -174,16 +141,12 @@ allprojects {
             url 'https://jitpack.io'
         }
         maven {
-            name "Atlassian"
-            url "https://maven.atlassian.com/3rdparty/"
-        }
-        maven {
             name "Maven Central"
             url "https://repo1.maven.org/maven2/"
         }
         maven {
-            name "RuneLite"
-            url "https://repo.runelite.net/"
+            name "FabricMC"
+            url "https://maven.fabricmc.net/"
         }
         flatDir {
             name "Project Libraries"
@@ -193,96 +156,13 @@ allprojects {
             name "Project Libraries"
             dirs "${rootProject.projectDir}/libs"
         }
-        maven {
-            url = "https://maven.fabricmc.net"
-            name = "FabricMC"
-        }
-
-        maven {
-            name "Jabylon"
-            url "https://jabylon.org/maven/"
-        }
     }
 
     dependencies {
-        implementation("net.fabricmc:fabric-loader:$fabric_loader_version")
 
-        // fabric-loader dependencies
-        implementation "org.ow2.asm:asm:${project.asm_version}"
-        implementation "org.ow2.asm:asm-analysis:${project.asm_version}"
-        implementation "org.ow2.asm:asm-commons:${project.asm_version}"
-        implementation "org.ow2.asm:asm-tree:${project.asm_version}"
-        implementation "org.ow2.asm:asm-util:${project.asm_version}"
-
-        implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
-            exclude module: 'launchwrapper'
-            exclude module: 'guava'
-        }
-        implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
-        implementation 'net.fabricmc:tiny-remapper:0.8.2'
-        implementation 'net.fabricmc:dev-launch-injector:0.2.1+build.8'
-        implementation 'net.fabricmc:access-widener:2.1.0'
-
-        implementation 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
-        implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
-        implementation 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
-//        implementation("xerces:xercesImpl:2.12.2")
     }
 
-    publish.dependsOn build
-    publish.finalizedBy(it.retrieveUrls)
-}
-
-// task to add addons.json to all relevant folders
-task replaceResources(type: Copy) {
-    from("src/main/resources/META-INF/addons.json")
-    outputs.upToDateWhen {
-        false
-    }
-
-    filter { line -> line.replaceAll('\\\$\\\$ADDON_VERSION\\\$\\\$', version.toString()) }
-    into new File(processResources.destinationDir, "META-INF")
-}
-
-processResources {
-    exclude 'META-INF/addons.json'
-    finalizedBy replaceResources
-}
-
-jar {
-    dependsOn ":gameprovider:jar"
-
-    //noinspection GroovyAssignabilityCheck
-    manifest {
-        //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'Bubble Blaster 2',
-                'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': project.version,
-                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
-                'Multi-Release': 'true'
-    }
-
-    from {
-        compileJava.outputs
-    }
-    from {
-        processResources.outputs
-    }
-
-    from(configurations.addToJar.collect {
-        zipTree(it)
-    })
-
-    zip64 true
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-processResources {
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-test {
-    useJUnitPlatform()
+//    publish.dependsOn build
 }
 
 tasks.create('prepareRun', {
@@ -300,86 +180,6 @@ tasks.withType(ProcessResources).configureEach {
 
 tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-//task packedJar(type: Jar) {
-//    doFirst {
-//        def collect = configurations.include.files.collect { it.name }
-//        Files.write(file("$buildDir/jar-files.txt").toPath(), String.join("\n", collect).getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE)
-//    }
-//
-//    dependsOn ":gameprovider:jar"
-//    dependsOn ":jar"
-//
-//    //noinspection GroovyAssignabilityCheck
-//    manifest {
-//        //noinspection GroovyAssignabilityCheck
-//        attributes 'Implementation-Title': 'QBubbles',
-//                'Implementation-Vendor': 'Ultreon Team',
-//                'Implementation-Version': "1.0-indev1",
-//                'Main-Class': 'com.ultreon.premain.PreMain',
-//                'Multi-Release': 'true'
-//    }
-//
-//    into('META-INF/jars') {
-//        from configurations.include
-//    }
-//
-//    into('META-INF') {
-//        from file("$buildDir/jar-files.txt")
-//    }
-//
-//    archivesBaseName = "bubbles"
-//
-//    from zipTree(jar.archiveFile.get())
-//    classifier "packed"
-//    zip64 true
-//    duplicatesStrategy DuplicatesStrategy.INCLUDE
-//
-//    doLast {
-//        copy {
-//            from archiveFile
-//            into buildDir
-//            rename ".*", "packed.jar"
-//        }
-//    }
-//}
-
-task packedJar(type: Jar) {
-    dependsOn ":gameprovider:jar"
-    dependsOn ":jar"
-
-    //noinspection GroovyAssignabilityCheck
-    manifest {
-        //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'QBubbles',
-                'Implementation-Vendor': 'Ultreon Team',
-                'Implementation-Version': "1.0-indev1",
-                'Main-Class': 'com.ultreon.premain.PreMain',
-                'Multi-Release': 'true'
-    }
-
-    archivesBaseName = "bubbles"
-
-    from zipTree(jar.archiveFile.get())
-    classifier "packed"
-    zip64 true
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
-
-    from {
-        configurations.include.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    doLast {
-        copy {
-            from archiveFile
-            into buildDir
-            rename ".*", "packed.jar"
-        }
-    }
-}
-
-build {
-//    mustRunAfter ":packedJar"
 }
 
 task createExec {
@@ -406,7 +206,7 @@ task createExec {
         copy {
             from jar.outputs.files.singleFile
             into file("build/exec/")
-            rename ".*", "bubbles.jar"
+            rename ".*", "bubble-blaster.jar"
         }
         mkdir "build/exec/lib/"
         copy {
@@ -420,127 +220,14 @@ artifacts {
 //    packedJar
 }
 
-jar.finalizedBy(retrieveUrls)
-publish.finalizedBy(retrieveUrls)
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-task("copyDependencies", type: Copy) {
-    from(configurations.runtimeClasspath)
-    into("$buildDir/jars")
-}
-
-task("copyJar", type: Copy) {
-    from(tasks.jar)
-    into("$buildDir/jars")
 }
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
 
 println("Current version: " + version)
-println("Project: " + group + ":" + archivesBaseName)
-println("Bulding a Java " + compileJava.targetCompatibility + " project...")
+println("Project: " + group + ":" + name)
 
 mkdir("$buildDir/bubbles")
-
-jpackage {
-    dependsOn("build", "copyDependencies", "copyJar")
-
-    input  = "$projectDir/jars"
-    destination = "$buildDir/dist"
-
-    appName = project.property("app_name").toString()
-    appVersion = project.version.toString()
-    vendor = "Ultreon Team"
-    copyright = "Copyright (c) 2022 Ultreon Team"
-    runtimeImage = System.getProperty("java.home")
-
-//    mainJar = "fabric-loader-${fabric_loader_version}.jar"
-    mainJar = shadowJar.archiveFileName.get()
-    mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient"
-
-    destination = "$buildDir/dist"
-
-    licenseFile = "$projectDir/package/LICENSE.txt"
-
-    javaOptions = [ "-Dfile.encoding=UTF-8" ]
-
-    aboutUrl = "https://github.com/Ultreon/bubble-blaster-2"
-
-    mac {
-        icon = "icons/icon.icns"
-        macPackageIdentifier = "com.ultreon.browser"
-        macPackageName = "ultreon-browser"
-        appVersion = packageVersion.replace(Regex("(\\d+\\.\\d+\\.\\d+).*"), "\$1")
-    }
-
-    linux {
-        icon = "icons/icon.png"
-        linuxPackageName = "ultreon-browser"
-        linuxDebMaintainer = "Ultreon Team"
-        linuxRpmLicenseType = "Ultreon API License v1.1"
-        linuxAppRelease = "2"
-        linuxShortcut = true
-        appVersion = project.version.toString()
-    }
-
-    windows {
-        icon = "icons/icon.ico"
-        winMenu = true
-        winDirChooser = true
-        winConsole = false
-        winPerUserInstall = true
-        winShortcutPrompt = true
-        winShortcut = false
-        winUpgradeUuid = "36cb25da-b6d1-4104-9607-9077b7449668"
-        winMenuGroup = "Ultreon Team"
-        appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
-    }
-}
-
-def ps = System.getProperty("path.separator")
-def files = configurations.runtimeClasspath
-def strm = (files.toList()).stream()
-def rcl = String.join(ps, strm.map {
-    it.path
-}.filter{it != null }.toList())
-//\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
-//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":core").buildDir}/classes/java/main/$ps${project(":core").buildDir}/resources/main/$ps${project(":desktop").buildDir}/classes/java/main/$ps${project(":desktop").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
-def conf = """
-commonProperties
-\tfabric.development=true
-\tlog4j2.formatMsgNoLookups=true
-\tfabric.log.disableAnsi=false
-\tlog4j.configurationFile=$projectDir/log4j.xml
-"""
-
-def launchFile = file("$buildDir/bubbles/launch.cfg")
-Files.writeString(launchFile.toPath(), conf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
-
-def cp = "$rcl"
-
-def cpFile = file("$buildDir.absolutePath/bubbles/classpath.txt")
-Files.writeString(cpFile.toPath(), cp, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
-
-idea{
-    project{
-        settings {
-            withIDEADir { File dir ->
-                println("Callback 1 executed with: " + dir.absolutePath)
-            }
-
-            runConfigurations {
-                "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
-                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
-                    mainClass = 'net.fabricmc.devlaunchinjector.Main'
-                    moduleName = idea.module.name + ".desktop.main"
-                    workingDirectory = "$projectDir/run/"
-                    programParameters = "--gameDir=."
-                }
-            }
-        }
-    }
-}

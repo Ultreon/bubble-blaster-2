@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
@@ -35,8 +36,8 @@ public class OptionsTextEntry extends GuiComponent {
     }
 
     @Override
-    public boolean mouseRelease(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 1) int button) {
-        if (button == 1) {
+    public boolean mouseRelease(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 0) int button) {
+        if (button == Buttons.LEFT) {
             activated = getBounds().contains(x, y);
             return true;
         }
@@ -44,8 +45,8 @@ public class OptionsTextEntry extends GuiComponent {
     }
 
     @Override
-    public boolean mouseClick(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 1) int button, @IntRange(from = 1) int count) {
-        if (button == 1) {
+    public boolean mouseClick(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 0) int button, @IntRange(from = 1) int count) {
+        if (button == Buttons.LEFT) {
             boolean flag = activated = isHovered();
             if (flag) {
                 return true;

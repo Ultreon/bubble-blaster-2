@@ -37,7 +37,7 @@ public final class GameSettings implements Serializable {
     @SerializedName("max-bubbles")
     private int maxBubbles = 200;
     @SerializedName("lang")
-    private String language = "en_US";
+    private String language = new Locale("en").getLanguage();
 
     @SerializedName("gamemode")
     private Identifier gamemode = Gamemodes.MODERN.id();
@@ -58,7 +58,7 @@ public final class GameSettings implements Serializable {
     }
 
     private GameSettings() {
-
+        LanguageManager.setCurrentLanguage(Locale.forLanguageTag(language));
     }
 
     public synchronized static boolean reload() {

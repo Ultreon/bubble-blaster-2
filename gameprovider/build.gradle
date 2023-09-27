@@ -28,12 +28,16 @@ plugins {
 version project_version
 group project_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
-archivesBaseName = archives_base_name
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16' // Need this here so eclipse task generates correctly.
+archivesBaseName = archives_base_name + "-gameprovider"
 
 //GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
 //shell.run(file, arguments);
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 println("Current version: $project_version")
 println("Project: $group:$archivesBaseName")
@@ -52,18 +56,19 @@ configurations {
 }
 
 dependencies {
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
-    implementation "com.google.code.findbugs:jsr305:$jsr_version"
+    compileOnly "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
+
+    compileOnly "it.unimi.dsi:fastutil-core:8.5.9"
+    compileOnly "com.google.code.findbugs:jsr305:$jsr_version"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
 
-    implementation "org.xbib.elasticsearch:joptsimple:6.3.2.1"
-    implementation "org.apache.logging.log4j:log4j:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    compileOnly "org.xbib.elasticsearch:joptsimple:6.3.2.1"
+    compileOnly "org.apache.logging.log4j:log4j:$log4j_version"
+    compileOnly "org.apache.logging.log4j:log4j-core:$log4j_version"
+    compileOnly "org.apache.logging.log4j:log4j-api:$log4j_version"
 
-
-    addToJar("net.fabricmc:fabric-loader:0.14.19") {
+    compileOnly("net.fabricmc:fabric-loader:$fabric_version") {
         exclude group: "org.ow2.asm"
         exclude group: "org.ow2.sat4j"
     }
@@ -72,32 +77,54 @@ dependencies {
 processResources {
     inputs.property "version", version
     inputs.property "bubbles_version", project(":core").version
-    inputs.property "libgdx_version", gdxVersion
+    inputs.property "libgdx_version", gdx_version
 
     filesMatching("fabric.mod.json") {
         expand "version": version
     }
 
+    filesMatching("bubbles.metadata.json") {
+        expand "version": version
+    }
+
     filesMatching("versions.properties") {
-        expand "bubbles_version": project(":core").version, "libgdx_version": gdxVersion
+        expand "bubbles_version": project(":core").version, "libgdx_version": gdx_version
     }
 
     exclude "*.pdn", "*.xcf", "*.ps"
 }
 
+repositories {
+    maven {
+        url = "https://maven.fabricmc.net"
+        name = "FabricMC"
+    }
+}
+
 jar {
     manifest {
-        attributes 'Implementation-Title': 'QBubbles',
+        attributes 'Implementation-Title': 'Bubble Blaster',
                 'Implementation-Vendor': 'Ultreon Team',
-                project_version: "1.0-indev1",
+                project_version: project.version,
                 'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
                 'Multi-Release': 'true'
     }
     from(configurations.addToJar.collect {
-        zipTree(it)
+        zipTree(it).matching {
+            exclude "*.RSA", "*.SF", "*.MF"
+        }
     })
+    exclude "*.RSA", "*.SF", "*.MF"
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }

@@ -1,6 +1,9 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Buttons;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.checkerframework.common.value.qual.IntRange;
@@ -15,7 +18,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (isHovered() && button == 1 && enabled && visible) {
+        if (isHovered() && button == Buttons.LEFT && enabled && visible) {
             this.pressed = true;
             return true;
         }
@@ -24,9 +27,10 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (isHovered() && button == 1 && enabled && visible && pressed) {
+        if (isHovered() && button == Buttons.LEFT && enabled && visible && pressed) {
             this.pressed = false;
-            SoundEvents.MENU_EVENT.play(0.2f);
+            this.playMenuEvent();
+            Debug.notify("Mouse Press", "x = " + x + ", y = " + y + ", button = " + button);
             this.command.run();
             return true;
         }
@@ -35,7 +39,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        if (isHovered() && button == 1 && enabled && visible) {
+        if (isHovered() && button == Buttons.LEFT && enabled && visible) {
             pressed = true;
             return;
         }

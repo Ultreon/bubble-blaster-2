@@ -103,8 +103,8 @@ public final class LoadScreen extends Screen implements Runnable {
 
             renderer.setColor(Color.rgb(0x808080));
             renderer.roundedLine(this.width / 2f - 150, this.height / 2f + 20, this.width / 2f + 150, this.height / 2f + 20);
-            renderer.circle(this.width / 2f - 150, this.height / 2f + 20, 4.5f);
-            renderer.circle(this.width / 2f + 150, this.height / 2f + 20, 4.5f);
+            renderer.circle(this.width / 2f - 150, this.height / 2f + 20, 9f);
+            renderer.circle(this.width / 2f + 150, this.height / 2f + 20, 9f);
 
             renderer.setColor(Color.rgb(0x0040ff));
             int effectWidth = (int) (300d * (double) progress / (double) max);
@@ -124,8 +124,8 @@ public final class LoadScreen extends Screen implements Runnable {
 
                 renderer.setColor(Color.rgb(0x808080));
                 renderer.roundedLine(this.width / 2f - 150, this.height / 2f + 95, this.width / 2f + 150, this.height / 2f + 95);
-                renderer.circle(this.width / 2f - 150, this.height / 2f + 95, 4.5f);
-                renderer.circle(this.width / 2f + 150, this.height / 2f + 95, 4.5f);
+                renderer.circle(this.width / 2f - 150, this.height / 2f + 95, 9f);
+                renderer.circle(this.width / 2f + 150, this.height / 2f + 95, 9f);
 
                 int effectWidthSub = (int) (300d * (double) progressSub / (double) maxSub);
                 if (effectWidthSub >= 1)

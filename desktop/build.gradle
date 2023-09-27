@@ -1,13 +1,7 @@
 //file:noinspection GroovyUnusedCatchParameter
 
-
-import com.ultreon.bubbles.gradle.VersionType
-import org.apache.tools.ant.taskdefs.condition.Os
-
 import java.nio.file.Files
 import java.nio.file.Paths
-
-import static java.lang.System.getenv
 
 buildscript {
     repositories {
@@ -26,8 +20,8 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
-        classpath "com.google.code.gson:gson:2.8.9"
+        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath "com.google.code.gson:gson:2.10.1"
     }
 }
 
@@ -35,16 +29,15 @@ buildscript {
 //     Plugins     //
 //*****************//
 plugins {
-    id 'java'
-    id 'java-library'
-    id 'maven-publish'
-    id "org.panteleyev.jpackageplugin"
+//    id 'java'
+//    id 'java-library'
+//    id 'maven-publish'
+//    id "org.panteleyev.jpackageplugin"
 }
 
 apply plugin: 'java'
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'bubbles-gradle'
+//apply plugin: 'maven-publish'
 
 //****************************//
 // Setting up main properties //
@@ -54,51 +47,22 @@ apply plugin: 'bubbles-gradle'
 version project_version
 group project_group
 
+archivesBaseName = archives_base_name + "-desktop"
+
 java {
     withSourcesJar()
     withJavadocJar()
-}
 
-bubbles {
-    versionType(VersionType.DEV)
-}
-
-//**********************//
-//     Repositories     //
-//**********************//
-repositories {
-    mavenCentral()
-    mavenLocal()
-    google()
-    maven {
-        name "JitPack"
-        url 'https://jitpack.io'
-    }
-    maven {
-        name "Atlassian"
-        url "https://maven.atlassian.com/3rdparty/"
-    }
-    maven {
-        name "Maven Central"
-        url "https://repo1.maven.org/maven2/"
-    }
-    maven {
-        name "RuneLite"
-        url "https://repo.runelite.net/"
-    }
-    flatDir {
-        name "Project Libraries"
-        dirs "${projectDir}/libs"
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-/***************
- * Dependencies
- */
+evaluationDependsOn(":core")
+
 dependencies {
-    // Projects
+    implementation project(":gameprovider")
     implementation project(":core")
-    implementation rootProject.project(":gameprovider")
 
     // Annotations
     implementation "org.checkerframework:checker:3.25.0"
@@ -130,12 +94,6 @@ dependencies {
     implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
     implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
     implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
-
-    // FlatLAF
-    implementation "com.formdev:flatlaf:$flatlaf_version"
-    implementation "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
-    implementation "com.formdev:flatlaf-extras:$flatlaf_version"
-    implementation "com.formdev:flatlaf-swingx:$flatlaf_version"
 
     // Apis
     implementation "commons-io:commons-io:2.11.0"
@@ -175,16 +133,13 @@ dependencies {
     }
 
     // SLF4J
-    implementation "org.slf4j:slf4j-api:[1.7, 1.8)!!"
+    implementation "org.slf4j:slf4j-api:[1.6, 1.7)!!"
 
     // JHLabs
     implementation "com.jhlabs:filters:2.0.235-1"
 
     // SwingLabs
     implementation "org.swinglabs.swingx:swingx-all:1.6.5-1"
-
-    // FuseSource
-    implementation "org.fusesource.jansi:jansi:2.4.0"
 
     // OSHi (For system info in crash reports)
     implementation "com.github.oshi:oshi-core:$oshi_version"
@@ -193,15 +148,39 @@ dependencies {
     implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
 
     // LibGDX
-    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdx_version:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdx_version:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-bullet-platform:$gdx_version:natives-desktop"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdx_controllers_version"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdx_version:natives-desktop"
 
     // GDX Visual Effects
     implementation 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
     implementation 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
+
+    // Apache Log4J
+    implementation "org.apache.logging.log4j:log4j:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
+
+    // JNA
+    implementation "net.java.dev.jna:jna:$jna_version"
+    implementation "net.java.dev.jna:jna-platform:$jna_version"
+
+    // SLF4J
+    api "org.slf4j:slf4j-api:$slf4j_version"
+
+    // Google
+    implementation "com.google.code.gson:gson:2.10.1"
+    implementation 'com.google.guava:guava:32.0.0-jre'
+
+    // Misc
+    implementation 'it.unimi.dsi:fastutil:8.5.12'
+    implementation 'com.raylabz:opensimplex:1.0.3'
+
+    implementation "space.earlygrey:shapedrawer:$shapedrawer_version"
 
     // ImGui
     implementation "io.github.spair:imgui-java-binding:$imgui_version"
@@ -210,31 +189,56 @@ dependencies {
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
 
+    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "com.google.code.findbugs:jsr305:$jsr_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+
+    implementation "org.xbib.elasticsearch:joptsimple:6.3.2.1"
+    implementation "org.apache.logging.log4j:log4j:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+
+    // fabric-loader dependencies
+    implementation "org.ow2.asm:asm:${project.asm_version}"
+    implementation "org.ow2.asm:asm-analysis:${project.asm_version}"
+    implementation "org.ow2.asm:asm-commons:${project.asm_version}"
+    implementation "org.ow2.asm:asm-tree:${project.asm_version}"
+    implementation "org.ow2.asm:asm-util:${project.asm_version}"
+
+    implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+    }
+
+    implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
+    implementation 'net.fabricmc:tiny-remapper:0.8.5'
+    implementation 'net.fabricmc:dev-launch-injector:0.2.1+build.8'
+    implementation 'net.fabricmc:access-widener:2.1.0'
+
+    implementation("net.fabricmc:fabric-loader:$fabric_version")
 }
 
 processResources {
-    inputs.property "version", version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": version
-    }
-
-    from(file("NOTICE.txt")) { into "META-INF/" }
     from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
-
     exclude "*.pdn", "*.xcf", "*.ps"
+
+    inputs.property "version", rootProject.version
+
+    filesMatching("metadata.json") {
+        expand(["version": rootProject.version])
+    }
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
 jar {
-    dependsOn ":gameprovider:jar"
-
     //noinspection GroovyAssignabilityCheck
     manifest {
         //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'Bubble Blaster 2',
+        attributes 'Implementation-Title': 'Bubble Blaster',
                 'Implementation-Vendor': 'Ultreon Team',
                 project_version: project.project_version,
-                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
+                'Main-Class': 'com.ultreon.craft.DesktopLauncher',
                 'Multi-Release': 'true'
     }
 
@@ -247,14 +251,6 @@ jar {
 
     zip64 true
     duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-processResources {
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
-}
-
-test {
-    useJUnitPlatform()
 }
 
 tasks.create('prepareRun', {
@@ -274,51 +270,6 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-build {
-    mustRunAfter ":packedJar"
-}
-
-task createExec {
-    doFirst {
-        if (!file("build").exists()) {
-            mkdir "build"
-        }
-        mkdir "build/exec/"
-        if (file("build/exec/lib/").exists()) {
-            delete fileTree("build/exec/lib/")
-        }
-        copy {
-            from file("bin/start.bat")
-            into file("build/exec/")
-        }
-        copy {
-            from file("bin/start-unix.sh")
-            into file("build/exec/")
-        }
-        copy {
-            from file("bin/start-mac.sh")
-            into file("build/exec/")
-        }
-        copy {
-            from jar.outputs.files.singleFile
-            into file("build/exec/")
-            rename ".*", "bubbles.jar"
-        }
-        mkdir "build/exec/lib/"
-        copy {
-            from fileTree("build/dependencies/")
-            into file("build/exec/lib/")
-        }
-    }
-}
-
-jar.finalizedBy(retrieveUrls)
-publish.finalizedBy(retrieveUrls)
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
 task("copyDependencies", type: Copy) {
     from(configurations.runtimeClasspath)
     into("$buildDir/jars")
@@ -327,4 +278,16 @@ task("copyDependencies", type: Copy) {
 task("copyJar", type: Copy) {
     from(tasks.jar)
     into("$buildDir/jars")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+compileJava {
+    options.encoding = "UTF-8"
 }

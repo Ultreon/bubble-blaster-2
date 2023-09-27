@@ -1,9 +1,0 @@
-{
-  "package": "com.ultreon.bubbles.mixins",
-  "mixins": [
-    "GL20Mixin",
-    "ScissorStackMixin"
-  ],
-  "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_17"
-}

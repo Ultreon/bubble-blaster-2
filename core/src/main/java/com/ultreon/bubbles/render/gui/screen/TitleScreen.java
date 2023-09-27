@@ -3,6 +3,7 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.TitleButton;
@@ -105,5 +106,10 @@ public class TitleScreen extends Screen {
         renderer.drawText(monospaced, "High Score: " + (int)game.getGlobalData().getHighScore(), 20, 56);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
+    }
+
+    @Override
+    public boolean mousePress(int x, int y, int button) {
+        return super.mousePress(x, y, button);
     }
 }

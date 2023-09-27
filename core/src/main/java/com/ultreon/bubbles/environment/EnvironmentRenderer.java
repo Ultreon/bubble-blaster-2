@@ -113,7 +113,6 @@ public class EnvironmentRenderer implements IRenderer {
                 currentGameplayEvent.renderBackground(this.getEnvironment(), renderer);
             } else {
                 renderer.fillGradient(0, 0, game.getWidth(), game.getHeight(), UPPER_COLOR, LOWER_COLOR);
-                BubbleBlaster.getLogger().warn("Background not rendering");
             }
         });
 

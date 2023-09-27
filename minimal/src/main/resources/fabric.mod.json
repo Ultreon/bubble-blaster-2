@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "Bubble Blaster",
+  "id": "bubbles_mixins",
+  "description": "Fixes to external libs, using Mixins ofc!",
+  "authors": [
+    {
+      "name": "Ultreon Team",
+      "contact": {
+        "homepage": "https://ultreon.github.io/",
+        "discord": "https://discord.gg/WePT9v2CmQ",
+        "github": "https://github.com/Ultreon",
+        "youtube": "https://youtube.com/@ultreon"
+      }
+    },
+    {
+      "name": "XyperCode",
+      "contact": {
+        "homepage": "https://xypercode.github.io/",
+        "github": "https://github.com/XyperCode",
+        "youtube": "https://youtube.com/@qboi"
+      }
+    }
+  ],
+  "accessWidener": "bubbles.accesswidener",
+  "depends": {
+    "fabricloader": "*"
+  },
+  "mixins": [
+    {
+      "config": "bubbles.mixins.json",
+      "environment": "*"
+    }
+  ],
+  "license": "Ultreon-API-v1.2",
+  "icon": "assets/bubbles_mixins/icon.png",
+  "version": "${version}",
+  "entrypoints": {
+    "main": [
+      {
+        "value": "generated_bcfb74d8fef4c8a73600.BubblesMinimal"
+      }
+    ]
+  }
+}

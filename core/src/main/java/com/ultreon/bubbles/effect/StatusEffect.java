@@ -52,7 +52,7 @@ public abstract class StatusEffect {
         return stream;
     }
 
-    public Texture getIcon() throws IOException {
+    public Texture getIcon() {
         if (cachedTexture != null) {
             return cachedTexture;
         }

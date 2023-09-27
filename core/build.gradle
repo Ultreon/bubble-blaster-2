@@ -38,7 +38,6 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id "org.panteleyev.jpackageplugin"
 }
 
 apply plugin: 'java'
@@ -53,6 +52,8 @@ apply plugin: 'bubbles-gradle'
 // Project properties.
 version project_version
 group project_group
+
+archivesBaseName = archives_base_name + "-core"
 
 java {
     withSourcesJar()
@@ -86,6 +87,10 @@ repositories {
         name "RuneLite"
         url "https://repo.runelite.net/"
     }
+    maven {
+        name "FabricMC"
+        url "https://maven.fabricmc.net/"
+    }
     flatDir {
         name "Project Libraries"
         dirs "${projectDir}/libs"
@@ -97,122 +102,140 @@ repositories {
  */
 dependencies {
     // Projects
-    implementation project(":gameprovider")
-    implementation "it.unimi.dsi:fastutil:8.5.9"
-    implementation "it.unimi.dsi:fastutil-extra:8.5.4"
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
-    implementation "org.checkerframework:checker:3.25.0"
+    api project(":gameprovider")
+    implementation project(":minimal")
+    api "it.unimi.dsi:fastutil:8.5.9"
+    api "it.unimi.dsi:fastutil-extra:8.5.4"
+    api "it.unimi.dsi:fastutil-core:8.5.9"
+    api "org.checkerframework:checker:3.25.0"
 
-    implementation "com.github.Ultreon:ultreon-data:$ultreon_data_version"
-    implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'org.jetbrains:annotations:23.0.0'
+    api "com.github.Ultreon:ultreon-data:$ultreon_data_version"
+    api 'org.jetbrains:annotations:23.0.0'
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 
     // Misc
-    implementation "org.jetbrains:annotations:23.0.0"
+    api "org.jetbrains:annotations:23.0.0"
 
     // CoreLibs
-    implementation "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-commons-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-crash-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-datetime-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-events-v1:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-functions-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-registries-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-commons-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-crash-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-datetime-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-events-v1:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-functions-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-registries-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
 
     // FlatLAF
-    implementation "com.formdev:flatlaf:$flatlaf_version"
-    implementation "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
-    implementation "com.formdev:flatlaf-extras:$flatlaf_version"
-    implementation "com.formdev:flatlaf-swingx:$flatlaf_version"
+    api "com.formdev:flatlaf:$flatlaf_version"
+    api "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
+    api "com.formdev:flatlaf-extras:$flatlaf_version"
+    api "com.formdev:flatlaf-swingx:$flatlaf_version"
 
     // Apis
-    implementation "commons-io:commons-io:2.11.0"
-    implementation "org.apache.commons:commons-lang3:3.12.0"
-    implementation "org.apache.commons:commons-collections4:4.4"
-    implementation "org.apache.commons:commons-text:1.10.0"
-    implementation "org.apache.commons:commons-math3:3.6.1"
-    implementation "org.apache.ant:ant:1.10.12"
+    api "commons-io:commons-io:2.11.0"
+    api "org.apache.commons:commons-lang3:3.12.0"
+    api "org.apache.commons:commons-collections4:4.4"
+    api "org.apache.commons:commons-text:1.10.0"
+    api "org.apache.commons:commons-math3:3.6.1"
+    api "org.apache.ant:ant:1.10.12"
 
     // Local jars.
-    implementation fileTree(dir: "$projectDir/libs", include: ["*.jar"])
+    api fileTree(dir: "$projectDir/libs", include: ["*.jar"])
 
     // Google
-    implementation "com.google.code.findbugs:jsr305:$jsr_version"
-    implementation "com.google.guava:guava:$guava_version"
-    implementation "com.google.code.gson:gson:$gson_version"
+    api "com.google.code.findbugs:jsr305:$jsr_version"
+    api "com.google.guava:guava:$guava_version"
+    api "com.google.code.gson:gson:$gson_version"
 
     // Apache
-    implementation "org.apache.logging.log4j:log4j:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version") { exclude group: "org.slf4j" }
-    implementation "org.apache.logging.log4j:log4j-jcl:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-jul:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-web:$log4j_version"
-    implementation("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
+    api "org.apache.logging.log4j:log4j:$log4j_version"
+    api "org.apache.logging.log4j:log4j-core:$log4j_version"
+    api "org.apache.logging.log4j:log4j-api:$log4j_version"
+    api("org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version") { exclude group: "org.slf4j" }
+    api "org.apache.logging.log4j:log4j-jcl:$log4j_version"
+    api "org.apache.logging.log4j:log4j-jul:$log4j_version"
+    api "org.apache.logging.log4j:log4j-web:$log4j_version"
+    api("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
         exclude group: 'xml-apis', module: 'xml-apis-ext'
         exclude group: 'xml-apis', module: 'xml-apis'
     }
-    implementation("org.apache.xmlgraphics:batik-dom:$batik_version") {
+    api("org.apache.xmlgraphics:batik-dom:$batik_version") {
         exclude group: 'xml-apis', module: 'xml-apis-ext'
         exclude group: 'xml-apis', module: 'xml-apis'
     }
-    implementation("org.apache.xmlgraphics:batik-swing:$batik_version") {
+    api("org.apache.xmlgraphics:batik-swing:$batik_version") {
         exclude group: 'xml-apis', module: 'xml-apis-ext'
         exclude group: 'xml-apis', module: 'xml-apis'
     }
 
     // SLF4J
-    implementation "org.slf4j:slf4j-api:[1.7, 1.8)!!"
+    api "org.slf4j:slf4j-api:[1.6, 1.7)!!"
 
     // JHLabs
-    implementation "com.jhlabs:filters:2.0.235-1"
+    api "com.jhlabs:filters:2.0.235-1"
 
     // SwingLabs
-    implementation "org.swinglabs.swingx:swingx-all:1.6.5-1"
-
-    // FuseSource
-    implementation "org.fusesource.jansi:jansi:2.4.0"
+    api "org.swinglabs.swingx:swingx-all:1.6.5-1"
 
     // OSHi (For system info in crash reports)
-    implementation "com.github.oshi:oshi-core:$oshi_version"
+    api "com.github.oshi:oshi-core:$oshi_version"
 
     // Discord Presence
-    implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
+    api "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
 
     // LibGDX
-    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-    implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-    implementation "com.badlogicgames.ashley:ashley:$ashleyVersion"
-    implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
-    implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-    implementation "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-    implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
+    api "com.badlogicgames.gdx:gdx:$gdx_version"
+    api "com.badlogicgames.gdx:gdx-box2d:$gdx_version"
+    api "com.badlogicgames.ashley:ashley:$ashley_version"
+    api "com.badlogicgames.gdx:gdx-ai:$ai_version"
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdx_controllers_version"
+    api "com.badlogicgames.gdx:gdx-freetype:$gdx_version"
+    api "com.badlogicgames.gdx:gdx-tools:$gdx_version"
+    api "com.badlogicgames.box2dlights:box2dlights:$box_2d_lights_version"
+    api "space.earlygrey:shapedrawer:$shapedrawer_version"
 
-    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
+    api "com.badlogicgames.gdx:gdx-platform:$gdx_version:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-box2d-platform:$gdx_version:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-bullet-platform:$gdx_version:natives-desktop"
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdx_controllers_version"
+    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdx_version:natives-desktop"
 
     // GDX Visual Effects
-    implementation 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
-    implementation 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
+    api 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
+    api 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
 
     // ImGui
-    implementation "io.github.spair:imgui-java-binding:$imgui_version"
-    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"
-    implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
-    implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
-    implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
+    api "io.github.spair:imgui-java-binding:$imgui_version"
+    api "io.github.spair:imgui-java-lwjgl3:$imgui_version"
+    api "io.github.spair:imgui-java-natives-linux:$imgui_version"
+    api "io.github.spair:imgui-java-natives-macos:$imgui_version"
+    api "io.github.spair:imgui-java-natives-windows:$imgui_version"
+
+    // fabric-loader dependencies
+    implementation "org.ow2.asm:asm:${project.asm_version}"
+    implementation "org.ow2.asm:asm-analysis:${project.asm_version}"
+    implementation "org.ow2.asm:asm-commons:${project.asm_version}"
+    implementation "org.ow2.asm:asm-tree:${project.asm_version}"
+    implementation "org.ow2.asm:asm-util:${project.asm_version}"
+
+    implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+    }
+
+    implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
+    implementation 'net.fabricmc:tiny-remapper:0.8.5'
+    implementation 'net.fabricmc:dev-launch-injector:0.2.1+build.8'
+    implementation 'net.fabricmc:access-widener:2.1.0'
+
+    compileOnly "net.fabricmc:fabric-loader:$fabric_version"
 }
 
 processResources {
@@ -277,7 +300,7 @@ tasks.withType(Jar).configureEach {
 }
 
 build {
-    mustRunAfter ":packedJar"
+//    mustRunAfter ":packedJar"
 }
 
 task createExec {

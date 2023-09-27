@@ -77,11 +77,9 @@ public class LoadedGame {
         autoSaver.start();
 
         this.collisionThread = new Thread(this::collisionThread, "Collision");
-        this.collisionThread.setDaemon(true);
         this.collisionThread.start();
 
         this.ambientAudioThread = new Thread(this::ambientAudioThread, "audio-Thread");
-        this.ambientAudioThread.setDaemon(true);
         this.ambientAudioThread.start();
     }
 
@@ -273,13 +271,12 @@ public class LoadedGame {
     public void renderHUD(@SuppressWarnings({"unused", "RedundantSuppression"}) BubbleBlaster game, Renderer renderer) {
         int i = 0;
         for (String s : activeMessages) {
-            renderer.subInstance(0, 71 + (32 * i), 1000, 32, subInstance -> {
-                subInstance.setColor(Color.argb(0x80000000));
-                subInstance.rect(0, 0, 1000, 32);
+            int y = 71 + (32 * i);
+            renderer.setColor(Color.argb(0x80000000));
+            renderer.rect(0, y, 1000, 32);
 
-                subInstance.setColor(Color.argb(0xffffffff));
-                subInstance.drawText(Fonts.MONOSPACED_14.get(), s, 2, 16);
-            });
+            renderer.setColor(Color.argb(0xffffffff));
+            renderer.drawText(Fonts.MONOSPACED_14.get(), s, 2, y);
             i++;
         }
 
