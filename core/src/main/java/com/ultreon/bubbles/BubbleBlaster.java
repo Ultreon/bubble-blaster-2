@@ -474,6 +474,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public void resize(int width, int height) {
         viewport.update(width, height);
         camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
+
+        var screen = getCurrentScreen();
+        if (screen != null) {
+            screen.resize(width, height);
+        }
     }
 
     @Override

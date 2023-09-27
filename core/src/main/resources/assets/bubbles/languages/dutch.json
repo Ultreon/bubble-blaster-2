@@ -21,32 +21,23 @@
       }
     },
     "status_effect": {
-      "none": {
-        "name": "Nvt."
-      },
-      "luck": {
-        "name": "Geluk"
-      },
       "poison": {
         "name": "Vergiftigd"
-      },
-      "paralyze": {
-        "name": "Versteend"
       },
       "blindness": {
         "name": "Verblind"
       },
       "multi_score": {
-        "name": "Puntenboost"
+        "name": "Meer-score"
       },
-      "swiftness": {
-        "name": "Versnelt"
+      "speed_boost": {
+        "name": "Snelheid-boost"
       },
       "attack_boost": {
-        "name": "Aanvalsboost"
+        "name": "Aanval-boost"
       },
-      "resistance": {
-        "name": "Weerstand"
+      "defense_boost": {
+        "name": "Verdediging-boost"
       }
     },
     "Info": {
