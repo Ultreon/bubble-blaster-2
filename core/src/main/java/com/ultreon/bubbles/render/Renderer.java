@@ -595,18 +595,34 @@ public class Renderer {
             drawText(font, line, x, y += (int) font.getLineHeight());
     }
 
-    public void drawWrappedText(String str, int x, int y, int maxWidth) {
+    public void drawWrappedText(String text, int x, int y, int maxWidth) {
         if (!rendering) return;
 
-        List<String> lines = StringUtils.wrap(str, font, new GlyphLayout(), maxWidth);
+        List<String> lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
         String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
         drawMultiLineText(joined, x, y);
     }
 
-    public void drawWrappedText(BitmapFont font, String str, int x, int y, int maxWidth) {
+    public void drawWrappedText(BitmapFont font, String text, int x, int y, int maxWidth) {
         if (!rendering) return;
 
-        List<String> lines = StringUtils.wrap(str, font, new GlyphLayout(), maxWidth);
+        List<String> lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
+        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        drawMultiLineText(font, joined, x, y);
+    }
+
+    public void drawWrappedText(TextObject text, int x, int y, int maxWidth) {
+        if (!rendering) return;
+
+        List<String> lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
+        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        drawMultiLineText(joined, x, y);
+    }
+
+    public void drawWrappedText(BitmapFont font, TextObject text, int x, int y, int maxWidth) {
+        if (!rendering) return;
+
+        List<String> lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
         String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
         drawMultiLineText(font, joined, x, y);
     }

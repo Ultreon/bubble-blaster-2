@@ -324,8 +324,8 @@ public abstract class Entity extends GameObject implements StateHolder {
             }
 
             if (target != null) {
-                double angleTo = this.getAngleTo(target);
-                setRotation((float) angleTo);
+                float angleTo = this.getAngleToTarget();
+                setRotation(angleTo);
             }
         }
     }
@@ -853,7 +853,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     public float getAngleToTarget() {
-        return this.pos.angleDeg(this.target.pos);
+        return this.getAngleTo(this.target);
     }
 
     /**
@@ -879,8 +879,8 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param target the other entity.
      * @return the angle towards the given entity.
      */
-    public double getAngleTo(Entity target) {
-        return target.pos.angleDeg(this.pos);
+    public float getAngleTo(Entity target) {
+        return (float) Math.toDegrees(Math.atan2(target.pos.y - this.pos.y, target.pos.x - this.pos.x));
     }
 
     /**

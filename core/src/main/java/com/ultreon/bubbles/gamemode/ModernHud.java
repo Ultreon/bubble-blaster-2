@@ -201,11 +201,11 @@ public class ModernHud extends GameHud {
             }
 
             renderer.setColor(0xffffffff);
-            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 5);
+            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 15);
 
             if (appliedEffect.getRemainingTime().toSeconds() <= BubbleBlasterConfig.SECS_BEFORE_RED_EFFECT_TIME.get()) renderer.setColor(Color.rgb(0xff0000));
 
-            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_15.get(), TextObject.literal(time).getText(), x + 50, y + 45);
+            renderer.drawLeftAnchoredText(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40);
 
             y += 60;
         }

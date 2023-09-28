@@ -190,7 +190,7 @@ public class PauseScreen extends Screen {
         renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.canSpawn, BubbleBlaster.getMiddleX() + 72 + 10, 462, Anchor.W);
 
         // Description
-        renderer.drawText(description, (int) BubbleBlaster.getMiddleX() - 470, 502);
+        renderer.drawWrappedText(this.font, this.description, (int) BubbleBlaster.getMiddleX() - 470, 502, 940);
 
         //****************//
         //     Values     //

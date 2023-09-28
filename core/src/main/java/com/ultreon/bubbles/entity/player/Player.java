@@ -340,8 +340,8 @@ public class Player extends LivingEntity implements InputController {
 
         if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
         if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
-        if (this.pos.x > maxX && this.accel.x > 0) this.accel.y = 0;
-        if (this.pos.x < minX && this.accel.x < 0) this.accel.y = 0;
+        if (this.pos.x > maxX && this.accel.x > 0) this.accel.x = 0;
+        if (this.pos.x < minX && this.accel.x < 0) this.accel.x = 0;
 
         if (this.pos.y > maxY && this.velocity.y > 0) this.velocity.y = 0;
         if (this.pos.y < minY && this.velocity.y < 0) this.velocity.y = 0;
