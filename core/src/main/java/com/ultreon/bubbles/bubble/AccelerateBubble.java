@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.bubble;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;

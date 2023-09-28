@@ -5,7 +5,6 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.OptionsButton;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
-import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.libs.text.v0.TextObject;
 
 import java.util.Random;

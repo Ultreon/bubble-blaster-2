@@ -31,27 +31,25 @@ public class ConfigManager extends UtilityClass {
 
         CONFIGS.put(namespace, config);
 
-        ConfigEvents.RELOAD_ALL.listen(() -> {
-            CONFIGS.values().forEach(configToReload -> {
-                try {
-                    configToReload.reload();
-                } catch (ParsingException e) {
-                    String fileName = configToReload.getFile().getName();
-                    BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
-                    BubbleBlaster.getInstance().notifications.notify(new Notification("Config Failed to Load!", "Failed to load configToReload '" + fileName + "'"));
-                    File backupFile = new File(configToReload.getFile().getParentFile(), fileName + ".bak");
-                    if (backupFile.exists()) {
-                        BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
-                    }
-
-                    try {
-                        Files.copy(configToReload.getFile().toPath(), backupFile.toPath());
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+        ConfigEvents.RELOAD_ALL.listen(() -> CONFIGS.values().forEach(configToReload -> {
+            try {
+                configToReload.reload();
+            } catch (ParsingException e) {
+                String fileName = configToReload.getFile().getName();
+                BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
+                BubbleBlaster.getInstance().notifications.notify(new Notification("Config Failed to Load!", "Failed to load configToReload '" + fileName + "'"));
+                File backupFile = new File(configToReload.getFile().getParentFile(), fileName + ".bak");
+                if (backupFile.exists()) {
+                    BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
                 }
-                configToReload.save();
-            });
-        });
+
+                try {
+                    Files.copy(configToReload.getFile().toPath(), backupFile.toPath());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            configToReload.save();
+        }));
     }
 }
