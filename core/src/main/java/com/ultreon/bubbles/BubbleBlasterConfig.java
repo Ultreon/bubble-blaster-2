@@ -63,6 +63,7 @@ public class BubbleBlasterConfig {
     }
 
     public static void onReload() {
-        Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());
+        int fps = MAX_FRAMERATE.get();
+        Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
     }
 }
