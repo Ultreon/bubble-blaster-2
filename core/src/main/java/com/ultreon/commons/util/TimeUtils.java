@@ -1,13 +1,26 @@
 package com.ultreon.commons.util;
 
+import com.ultreon.libs.commons.v0.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-@SuppressWarnings("unused")
-public class TimeUtils {
-    private TimeUtils() {
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
+@SuppressWarnings("unused")
+public class TimeUtils extends UtilityClass {
+    private static final long MSPT = 1000 / TPS;
+
+    private TimeUtils() {
+        super();
+    }
+
+    public static Duration ofTicks(long ticks) {
+        return Duration.ofMillis(ticks * MSPT);
+    }
+
+    public static long toTicks(Duration duration) {
+        return duration.toMillis() / MSPT;
     }
 
     /**

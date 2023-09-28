@@ -40,9 +40,9 @@ public class PauseScreen extends Screen {
     private final TextObject defenseMod = TextObject.translation("bubbleblaster/screen/pause/defense_modifier");
     private final TextObject canSpawn = TextObject.translation("bubbleblaster/screen/pause/can_spawn");
     private final TextObject description = TextObject.translation("bubbleblaster/screen/pause/description");
-    private final TextObject random = TextObject.translation("bubbleblaster/other/random");
-    private final TextObject boolTrue = TextObject.translation("bubbleblaster/other/true");
-    private final TextObject boolFalse = TextObject.translation("bubbleblaster/other/False");
+    private final TextObject random = TextObject.translation("bubbleblaster/misc/random");
+    private final TextObject boolTrue = TextObject.translation("bubbleblaster/misc/true");
+    private final TextObject boolFalse = TextObject.translation("bubbleblaster/misc/False");
 
     private final int registeredBubbles;
     private static int helpIndex = 0;

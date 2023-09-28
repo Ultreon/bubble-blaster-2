@@ -1,26 +1,24 @@
 package com.ultreon.bubbles.common;
 
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
+import com.ultreon.libs.text.v0.Translatable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Difficulty enum, used as api for difficulty information.
+ * iDifficulty enum, used as api for difficulty information.
  *
  * @author XyperCode
  * @since 0.0.0
  */
-public enum Difficulty {
-    BABY(0.0625f),  // Too easy
+public enum Difficulty implements Translatable {
+    BABY(0.002f),  // Too easy
     EASY(0.5f),
     NORMAL(1.0f),
     HARD(4.0f),
     EXPERT(16.0f),
     APOCALYPSE(64.0f),
-    IMPOSSIBLE(4096.0f);
+    ANNIHILATION(4096.0f);
 
     private final float plainModifier;
 
@@ -30,6 +28,11 @@ public enum Difficulty {
 
     public float getPlainModifier() {
         return plainModifier;
+    }
+
+    @Override
+    public String getTranslationPath() {
+        return "bubbleblaster/misc/difficulty/" + name().toLowerCase();
     }
 
     public record Modifier<T>(T key, float value) {

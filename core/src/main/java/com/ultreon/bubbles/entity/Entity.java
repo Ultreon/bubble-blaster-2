@@ -258,6 +258,20 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - pos.y, source.getX() - pos.x)), velocity, delta);
     }
 
+    public void accelerate(float amount) {
+        // Calculate Velocity X and Y.
+        float accelerateX = 0;
+        float accelerateY = 0;
+        if (this.canMove) {
+            accelerateX += MathUtils.cos(this.getRotation() * MathUtils.degRad) * amount;
+            accelerateY += MathUtils.sin(this.getRotation() * MathUtils.degRad) * amount;
+        }
+
+        // Set velocity X and Y.
+        this.setAccelerateX(this.getAccelerateX() + accelerateX);
+        this.setAccelerateY(this.getAccelerateY() + accelerateY);
+    }
+    
     /**
      * @return the x acceleration.
      */

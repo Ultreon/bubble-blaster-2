@@ -2,7 +2,7 @@ package com.ultreon.bubbles.effect;
 
 import com.crashinvaders.vfx.effects.VignettingEffect;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.entity.damage.DamageSourceType;
+import com.ultreon.bubbles.entity.damage.DamageType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.commons.exceptions.InvalidValueException;
@@ -38,7 +38,7 @@ public class PoisonStatusEffect extends StatusEffect {
 
     @Override
     public void execute(Entity entity, StatusEffectInstance appliedEffect) {
-        entity.getEnvironment().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageSourceType.POISON));
+        entity.getEnvironment().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageType.POISON));
         MapType tag = appliedEffect.getTag();
         long nextDamage = tag.getLong("nextDamage");
         tag.putLong("nextDamage", nextDamage + 2000L);

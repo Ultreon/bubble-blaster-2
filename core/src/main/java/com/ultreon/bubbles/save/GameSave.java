@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.save;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.commons.util.FileUtils;
 import com.ultreon.data.DataIo;
@@ -122,6 +123,10 @@ public class GameSave {
 
     public Gamemode getGamemode() throws IOException {
         return getInfo().getGamemode();
+    }
+
+    public Difficulty getDifficulty() throws IOException {
+        return getInfo().getDifficulty();
     }
 
     public long getSeed() throws IOException {

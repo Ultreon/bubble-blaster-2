@@ -3,6 +3,7 @@ package com.ultreon.bubbles.environment;
 import com.badlogic.gdx.math.Vector2;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
@@ -119,17 +120,17 @@ public final class Environment implements CrashFiller {
     public final ReentrantLock saveLock = new ReentrantLock(true);
 
     /// Constructors.
-    public Environment(GameSave save, Gamemode gamemode, int seed) {
-        this(save, gamemode, (long) seed);
+    public Environment(GameSave save, Gamemode gamemode, Difficulty difficulty, int seed) {
+        this(save, gamemode, difficulty, (long) seed);
     }
 
-    public Environment(GameSave save, Gamemode gamemode, long seed) {
+    public Environment(GameSave save, Gamemode gamemode, Difficulty difficulty, long seed) {
         this.gamemode = gamemode;
+        this.difficulty = difficulty;
         PseudoRandom random = new PseudoRandom(seed);
         this.bubbleRandomizer = this.gamemode.createBubbleRandomizer(this, new Rng(random, RNG_INDEX_SPAWN, RNG_INDEX_SPAWN_BUBBLE));
         this.seed = seed;
         this.gameSave = save;
-        this.difficulty = GameSettings.instance().getDifficulty();
 
         this.bloodMoonRng = new Rng(random, 69, 0);
     }
@@ -160,7 +161,7 @@ public final class Environment implements CrashFiller {
     }
 
     public boolean save(GameSave save, Messenger messenger) throws IOException {
-        if (this.saveLock.tryLock()) return false;
+        if (!this.saveLock.tryLock()) return false;
         this.game.notifications.notify(new Notification("Saving", "The game is being saved...", "Auto Save Feature"));
 
         // Gamemode implementation for saving data.
@@ -273,12 +274,19 @@ public final class Environment implements CrashFiller {
     }
 
     public float getLocalDifficulty() {
-        stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(stateDifficultyModifiers.values()), 1f);
-
         Difficulty diff = getDifficulty();
+
+        if (!BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isLocal()) {
+            return diff.getPlainModifier();
+        }
+
+        System.out.println("diff.getPlainModifier() = " + diff.getPlainModifier());
+
+        stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(stateDifficultyModifiers.values()), 1f);
         if (getPlayer() == null) return diff.getPlainModifier() * stateDifficultyModifier;
 
-        return ((getPlayer().getLevel() - 1) * 5 + 1) * diff.getPlainModifier() * stateDifficultyModifier;
+        int i = (getPlayer().getLevel() - 1) * 5 + 1;
+        return i * diff.getPlainModifier() * stateDifficultyModifier;
     }
 
     public float getStateDifficultyModifier() {

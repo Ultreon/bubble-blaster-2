@@ -26,9 +26,11 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Queues;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
 import com.ultreon.bubbles.data.GlobalSaveData;
+import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.debug.ThreadSection;
@@ -131,7 +133,7 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "RedundantSuppression"})
 public final class BubbleBlaster extends ApplicationAdapter implements CrashFiller {
-    public static final int TPS = 40; // Why tf was this set to 40???
+    public static final int TPS = 40;
     public static final String NAMESPACE = "bubbleblaster";
 
     // Logger.
@@ -1233,7 +1235,18 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void createGame(long seed, Gamemode gamemode) {
-        startGame(seed, gamemode, GameSave.fromFile(new File(GameFolders.SAVES_DIR, "save")), true);
+        createGame(seed, gamemode, Difficulty.NORMAL);
+    }
+
+    /**
+     * Create a new saved game.
+     *
+     * @param seed     generator seed.
+     * @param gamemode game mode to use.
+     */
+    @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
+    public void createGame(long seed, Gamemode gamemode, Difficulty difficulty) {
+        startGame(seed, gamemode, difficulty, GameSave.fromFile(new File(GameFolders.SAVES_DIR, "save")), true);
     }
 
     /**
@@ -1253,14 +1266,15 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public void loadGame(GameSave save) throws IOException {
         var seed = save.getSeed();
         var gamemode = save.getGamemode();
-        startGame(seed, gamemode, save, false);
+        var difficulty = save.getDifficulty();
+        startGame(seed, gamemode, difficulty, save, false);
     }
 
     /**
      * Start the game environment.
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
-    public void startGame(long seed, Gamemode gamemode, GameSave save, boolean create) {
+    public void startGame(long seed, Gamemode gamemode, Difficulty difficulty, GameSave save, boolean create) {
         // Start loading.
         var screen = new MessengerScreen();
 
@@ -1278,7 +1292,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 }
             }
 
-            var environment = this.environment = new Environment(save, gamemode, seed);
+            var environment = this.environment = new Environment(save, gamemode, difficulty, seed);
 
             if (create) {
                 screen.setDescription("Preparing creation");
@@ -1312,6 +1326,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             crash(crashLog.createCrash());
             return;
         }
+
+        Debug.notify("Difficulty", "Difficulty is: " + environment.getDifficulty().getTranslationText());
+        Debug.notify("Local Difficulty", "Local Difficulty is: " + environment.getLocalDifficulty());
 
         BubbleBlaster.getInstance().showScreen(null);
     }
@@ -1609,6 +1626,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         if (player != null && GameInput.isKeyDown(Keys.SPACE))
             player.shoot();
+
+        if (player != null) {
+            if (GameInput.isKeyDown(Keys.CONTROL_LEFT)) {
+                player.boost();
+            }
+        }
 
         if (this.ticker.advance() == 40) {
             this.ticker.reset();

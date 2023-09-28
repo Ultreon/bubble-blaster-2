@@ -129,6 +129,8 @@ public class DebugRenderer {
                 left(renderer, "Acceleration", player.accel);
                 left(renderer, "Velocity", player.velocity);
                 left(renderer, "Temp Velocity", player.tempVel);
+                left(renderer, "BoostAccelTimer", player.boostAccelTimer);
+                left(renderer, "BoostRefillTimer", player.boostRefillTimer);
             }
         }
         Screen screen = game.getCurrentScreen();

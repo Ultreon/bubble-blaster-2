@@ -22,17 +22,7 @@ public class AccelerateBubble extends BubbleType {
     @Override
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof Player player) {
-            // Calculate Velocity X and Y.
-            float accelerateX = 0;
-            float accelerateY = 0;
-            if (player.canMove) {
-                accelerateX += MathUtils.cos(player.getRotation() * MathUtils.degRad) * 0.375f;
-                accelerateY += MathUtils.sin(player.getRotation() * MathUtils.degRad) * 0.375f;
-            }
-
-            // Set velocity X and Y.
-            player.setAccelerateX(player.getAccelerateX() + accelerateX);
-            player.setAccelerateY(player.getAccelerateY() + accelerateY);
+            player.boost(true);
         }
     }
 }

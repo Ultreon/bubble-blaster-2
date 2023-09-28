@@ -2,7 +2,6 @@ package com.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
 import com.ultreon.bubbles.BubbleBlasterConfig;
-import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
@@ -24,11 +23,13 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.time.TimeProcessor;
+import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.data.types.MapType;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.geom.Rectangle2D;
+import java.time.Duration;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
@@ -102,6 +103,8 @@ public class Player extends LivingEntity implements InputController {
     private final PlayerItemCollection inventory = new PlayerItemCollection(this);
     private int shootCooldown;
     public final Vector2 tempVel = new Vector2();
+    public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+    public long boostAccelTimer = 0;
 
     /**
      * Player entity.
@@ -226,7 +229,6 @@ public class Player extends LivingEntity implements InputController {
         //***********************//
         // Spawn and load checks //
         //***********************//
-
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
 
         if (loadedGame == null) {
@@ -238,6 +240,17 @@ public class Player extends LivingEntity implements InputController {
         //**************************//
         // Player component ticking //
         //**************************//
+        if (this.boostRefillTimer > 0) {
+            this.boostRefillTimer--;
+        }
+
+        if (this.boostAccelTimer > 0) {
+            this.boostAccelTimer--;
+            this.accelerate(15f);
+        } else if (this.boostAccelTimer == 0 && boostRefillTimer == -1) {
+            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+        }
+
         this.abilityContainer.onEntityTick();
         this.inventory.tick();
 
@@ -720,11 +733,26 @@ public class Player extends LivingEntity implements InputController {
         if (force || this.canShoot()) {
             shootCooldown = TimeProcessor.secondsToTicks(1.0);
 
-            Vector2 bulletPos = this.pos.cpy().setAngleDeg(this.rotation).setLength(RADIUS / 2);
+            Vector2 bulletPos = this.pos.cpy();
             Bullet bullet = new Bullet(this.currentAmmo, bulletPos, rotation, environment);
             bullet.setOwner(this);
             environment.spawn(bullet);
         }
+    }
+
+    public void boost() {
+        boost(false);
+    }
+
+    public void boost(boolean force) {
+        if (force || this.canBoost()) {
+            boostAccelTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_DURATION.get()));
+            if (!force) this.boostRefillTimer = -1;
+        }
+    }
+
+    private boolean canBoost() {
+        return boostRefillTimer <= 0;
     }
 
     public boolean canShoot() {

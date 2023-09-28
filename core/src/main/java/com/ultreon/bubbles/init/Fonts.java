@@ -27,6 +27,7 @@ public class Fonts {
     public static final RegistrySupplier<BitmapFont> MONOSPACED_BOLD_15 = register("monospaced_bold_15", () -> FontUtils.createBitmapFont(BubbleBlaster.id("roboto/roboto_mono_bold"), 15));
     public static final RegistrySupplier<BitmapFont> MONOSPACED_BOLD_20 = register("monospaced_bold_20", () -> FontUtils.createBitmapFont(BubbleBlaster.id("roboto/roboto_mono_bold"), 20));
     public static final RegistrySupplier<BitmapFont> MONOSPACED_BOLD_24 = register("monospaced_bold_24", () -> FontUtils.createBitmapFont(BubbleBlaster.id("roboto/roboto_mono_bold"), 24));
+    public static final RegistrySupplier<BitmapFont> DONGLE_60 = register("dongle_pause", () -> FontUtils.createBitmapFont(BubbleBlaster.id("dongle/dongle_bold"), 60));
     public static final RegistrySupplier<BitmapFont> DONGLE_75 = register("dongle_pause", () -> FontUtils.createBitmapFont(BubbleBlaster.id("dongle/dongle_bold"), 75));
     public static final RegistrySupplier<BitmapFont> DONGLE_140 = register("dongle_title", () -> FontUtils.createBitmapFont(BubbleBlaster.id("dongle/dongle_bold"), 140));
     public static final RegistrySupplier<BitmapFont> CHICLE_14 = register("chicle", () -> FontUtils.createBitmapFont(BubbleBlaster.id("chicle"), 14));

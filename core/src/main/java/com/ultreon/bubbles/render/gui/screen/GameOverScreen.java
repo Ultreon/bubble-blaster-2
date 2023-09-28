@@ -19,7 +19,7 @@ public class GameOverScreen extends Screen {
     private final boolean isHighScore;
     private final long score;
     private long gameOverTime;
-    private final BitmapFont gameOverTitleFont = Fonts.SANS_BOLD_60.get();
+    private final BitmapFont gameOverTitleFont = Fonts.DONGLE_60.get();
     private final BitmapFont gameOverDescriptionFont = Fonts.SANS_BOLD_14.get();
 
     public GameOverScreen(long score) {
@@ -67,8 +67,8 @@ public class GameOverScreen extends Screen {
 
         if (isHighScore) {
             renderer.setColor(0xffffffff);
-            renderer.drawText(gameOverTitleFont, "Congratulations!", width / 2f, 152, Anchor.CENTER);
-            renderer.drawText(gameOverDescriptionFont, "You beat your high-score!", width / 2f, 216, Anchor.CENTER);
+            renderer.drawCenteredText(gameOverTitleFont, "Congratulations!", width / 2f, 152);
+            renderer.drawCenteredText(gameOverDescriptionFont, "You beat your high-score!", width / 2f, 216);
         } else {
             long cycled = (System.currentTimeMillis() - gameOverTime) % 4000;
             int phase = (int) (Math.floorDiv(cycled, 1000));
@@ -78,7 +78,7 @@ public class GameOverScreen extends Screen {
                 case 0 -> Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
             }
             renderer.setColor(Mth.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
-            renderer.drawText(gameOverTitleFont, "Game Over", width / 2f, 152, Anchor.CENTER);
+            renderer.drawCenteredText(gameOverTitleFont, "Game Over", width / 2f, 152);
         }
 
         renderer.setColor(0x7fffffff);

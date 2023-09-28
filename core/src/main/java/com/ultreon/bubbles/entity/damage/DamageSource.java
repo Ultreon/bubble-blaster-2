@@ -1,13 +1,13 @@
 package com.ultreon.bubbles.entity.damage;
 
 public class DamageSource {
-    private final DamageSourceType type;
+    private final DamageType type;
 
-    public DamageSource(DamageSourceType type) {
+    public DamageSource(DamageType type) {
         this.type = type;
     }
 
-    public DamageSourceType getType() {
+    public DamageType getType() {
         return type;
     }
 }

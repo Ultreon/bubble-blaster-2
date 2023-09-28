@@ -37,11 +37,11 @@ public class ConfigManager extends UtilityClass {
                     configToReload.reload();
                 } catch (ParsingException e) {
                     String fileName = configToReload.getFile().getName();
-                    BubbleBlaster.LOGGER.warn("Failed to load configToReload '" + fileName + "'");
+                    BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
                     BubbleBlaster.getInstance().notifications.notify(new Notification("Config Failed to Load!", "Failed to load configToReload '" + fileName + "'"));
                     File backupFile = new File(configToReload.getFile().getParentFile(), fileName + ".bak");
                     if (backupFile.exists()) {
-                        BubbleBlaster.LOGGER.warn("Backup of configToReload '" + fileName + "' already exists!");
+                        BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
                     }
 
                     try {

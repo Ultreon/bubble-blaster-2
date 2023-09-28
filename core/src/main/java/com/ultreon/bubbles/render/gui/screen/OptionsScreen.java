@@ -84,9 +84,9 @@ public class OptionsScreen extends Screen {
         saveButton.setY((int) BubbleBlaster.getMiddleY() + 151);
         saveButton.setWidth(321);
 
-        cancelButton.setText(Language.translate("bubbleblaster/other/cancel"));
+        cancelButton.setText(Language.translate("bubbleblaster/misc/cancel"));
         languageButton.setText(Language.translate("bubbleblaster/screen/options/language"));
-        saveButton.setText(Language.translate("bubbleblaster/other/save"));
+        saveButton.setText(Language.translate("bubbleblaster/misc/save"));
 
         super.render(game, renderer, mouseX, mouseY, deltaTime);
     }

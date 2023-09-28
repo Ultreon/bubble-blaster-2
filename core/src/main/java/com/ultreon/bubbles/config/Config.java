@@ -51,6 +51,10 @@ public class Config {
     public synchronized void reload() {
         unwatch();
         PARSER.parse(file, this.config, ParsingMode.REPLACE, FileNotFoundAction.CREATE_EMPTY);
+        this.entries.forEach((s, configEntry) -> {
+            if (configEntry.isSet()) return;
+            configEntry.set0(configEntry.getDefaultValue());
+        });
         ConfigEvents.CONFIG_RELOADED.factory().onConfigReloaded(this);
         watch();
     }
@@ -103,6 +107,11 @@ public class Config {
             if (n == null) {
                 config.set(path, defaultValue);
             }
+        }
+
+        @Override
+        public T get() {
+            return config.getEnum(path, getDefaultValue().getDeclaringClass());
         }
     }
 
@@ -272,6 +281,10 @@ public class Config {
 
         public T get() {
             return this.config.get(this.path);
+        }
+
+        public boolean isSet() {
+            return this.config.contains(this.path);
         }
 
         public void set(T value) {

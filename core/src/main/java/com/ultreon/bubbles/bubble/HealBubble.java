@@ -2,6 +2,8 @@ package com.ultreon.bubbles.bubble;
 
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.damage.DamageType;
+import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import org.apache.commons.lang3.Range;
 
@@ -16,6 +18,7 @@ public class HealBubble extends BubbleType {
         setAttack(0.0f);
         setScore(1);
         setHardness(1.0d);
+        setInvincible(true);
     }
 
     @Override
@@ -23,7 +26,9 @@ public class HealBubble extends BubbleType {
         super.onCollision(source, target);
 
         if (target instanceof Player player) {
-            player.restoreDamage(4.0f * (source.getEnvironment().getLocalDifficulty() / 20.0f + (1.8f / 20.0f)));
+            float healAmount = 4.0f * (source.getEnvironment().getLocalDifficulty() / 20.0f + (1.8f / 20.0f));
+            player.restoreDamage(healAmount);
+            source.damage(healAmount / 1.1d, new EntityDamageSource(player, DamageType.COLLISION));
         }
     }
 }

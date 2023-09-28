@@ -37,8 +37,7 @@ public class StartOptionsScreen extends Screen {
     }
 
     private void start() {
-        int value = seed;
-        BubbleBlaster.getInstance().createGame(value, GameSettings.instance().getGamemode());
+        this.game.showScreen(new DifficultyScreen(this, seed));
     }
 
     @Override

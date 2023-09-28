@@ -1,6 +1,6 @@
 {
   "bubbleblaster": {
-    "other": {
+    "misc": {
       "prev": "Prev",
       "next": "Next",
       "true": "Yes",
@@ -11,7 +11,16 @@
       "install": "Install",
       "buy": "Buy",
       "random": "Random",
-      "save": "Save"
+      "save": "Save",
+      "difficulty": {
+        "baby": "Baby Mode",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "expert": "Expert",
+        "apocalypse": "Apocalypse",
+        "annihilation": "Annihilation"
+      }
     },
     "gamemode": {
       "names": {

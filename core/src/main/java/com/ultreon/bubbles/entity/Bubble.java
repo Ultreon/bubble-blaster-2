@@ -225,7 +225,14 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public float getSpeed() {
-        return (float) (super.getSpeed() * (this.environment.getPlayer().getLevel() / 2d + 1) * getEnvironment().getGlobalBubbleSpeedModifier());
+        return (float) (super.getSpeed() * getLevelSpeedModifier() * getEnvironment().getGlobalBubbleSpeedModifier());
+    }
+
+    private double getLevelSpeedModifier() {
+        if (BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isSpeed())
+            return this.environment.getPlayer().getLevel() / 2d + 1;
+
+        return 1d;
     }
 
     /**
