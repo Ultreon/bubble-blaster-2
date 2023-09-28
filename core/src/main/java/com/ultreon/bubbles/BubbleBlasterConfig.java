@@ -1,8 +1,10 @@
 package com.ultreon.bubbles;
 
+import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
+import com.ultreon.bubbles.event.v1.ConfigEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -14,6 +16,7 @@ public class BubbleBlasterConfig {
     // Generic
     public static final Config.BooleanEntry ENABLE_ANNOYING_EASTER_EGGS;
     public static final Config.IntEntry AUTO_SAVE_RATE;
+    public static final Config.IntEntry MAX_FRAMERATE;
 
     // Gameplay
     public static final Config.IntEntry LEVEL_THRESHOLD;
@@ -28,13 +31,13 @@ public class BubbleBlasterConfig {
     public static final Config.IntEntry SECS_BEFORE_RED_EFFECT_TIME;
     public static final Config.FloatEntry BUBBLE_LINE_THICKNESS;
 
-    private static final Config SPEC;
-
+    private static final Config CONFIG;
 
     static {
         Config.Builder builder = new Config.Builder(FILE);
         ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that can be annoying in some way.").value(false);
         AUTO_SAVE_RATE = builder.entry("generic.autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
+        MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, 120);
         LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 100_000, 8_800);
         BASE_BUBBLE_SPEED = builder.entry("gameplay.baseBubbleSpeed").comment("Speed of bubbles at level 1. (Will still increase after each level)").withinRange(0.1, 50.0, 2.0);
         BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240000, 120000);
@@ -45,11 +48,21 @@ public class BubbleBlasterConfig {
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
         BUBBLE_LINE_THICKNESS = builder.entry("graphical.bubbleLineThickness").comment("The thickness of a singular circle of a bubble.").withinRange(1f, 2.5f, 2f);
 
-        SPEC = builder.build();
+        CONFIG = builder.build();
+
+        ConfigEvents.CONFIG_RELOADED.listen(reloaded -> {
+            if (reloaded == CONFIG) {
+                BubbleBlasterConfig.onReload();
+            }
+        });
     }
 
     @ApiStatus.Internal
     public static void register() {
-        ConfigManager.registerConfig(BubbleBlaster.NAMESPACE, SPEC);
+        ConfigManager.registerConfig(BubbleBlaster.NAMESPACE, CONFIG);
+    }
+
+    public static void onReload() {
+        Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());
     }
 }
