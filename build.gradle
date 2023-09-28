@@ -220,6 +220,14 @@ artifacts {
 //    packedJar
 }
 
+dependencies {
+    runtimeOnly project(":core")
+    runtimeOnly project(":desktop")
+    runtimeOnly project(":desktop-merge")
+    runtimeOnly project(":gameprovider")
+    runtimeOnly project(":minimal")
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
@@ -231,3 +239,47 @@ println("Current version: " + version)
 println("Project: " + group + ":" + name)
 
 mkdir("$buildDir/bubbles")
+
+def ps = System.getProperty("path.separator")
+def files = configurations.runtimeClasspath
+def strm = (files.toList()).stream()
+def rcl = String.join(ps, strm.map {
+    it.path
+}.filter{it != null }.toList())
+//\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
+//\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":core").buildDir}/classes/java/main/$ps${project(":core").buildDir}/resources/main/$ps${project(":desktop").buildDir}/classes/java/main/$ps${project(":desktop").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
+def conf = """
+commonProperties
+\tfabric.development=true
+\tlog4j2.formatMsgNoLookups=true
+\tfabric.log.disableAnsi=false
+\tlog4j.configurationFile=$projectDir/log4j.xml
+"""
+
+def launchFile = file("$buildDir/bubbles/launch.cfg")
+Files.writeString(launchFile.toPath(), conf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+
+def cp = "$rcl"
+
+def cpFile = file("$buildDir.absolutePath/bubbles/classpath.txt")
+Files.writeString(cpFile.toPath(), cp, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+
+idea{
+    project{
+        settings {
+            withIDEADir { File dir ->
+                println("Callback 1 executed with: " + dir.absolutePath)
+            }
+
+            runConfigurations {
+                "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
+                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
+                    mainClass = 'net.fabricmc.devlaunchinjector.Main'
+                    moduleName = idea.module.name + ".desktop.main"
+                    workingDirectory = "$projectDir/run/"
+                    programParameters = "--gameDir=."
+                }
+            }
+        }
+    }
+}
