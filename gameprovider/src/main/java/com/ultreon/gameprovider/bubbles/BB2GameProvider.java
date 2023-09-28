@@ -100,8 +100,8 @@ public class BB2GameProvider implements GameProvider {
     @Override
     public Path getLaunchDirectory() {
         if (OS.isWindows()) return Path.of(System.getenv("APPDATA"), "BubbleBlaster");
-        if (OS.isMacintosh()) return Path.of(System.getenv("user.home"), "Library/Application Support/BubbleBlaster");
-        if (OS.isLinux()) return Path.of(System.getenv("user.home"), ".config/BubbleBlaster");
+        if (OS.isMacintosh()) return Path.of(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
+        if (OS.isLinux()) return Path.of(System.getProperty("user.home"), ".config/BubbleBlaster");
         throw new FormattedException("Unsupported Platform", "Platform unsupported: " + System.getProperty("os.name"));
     }
 
