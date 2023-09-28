@@ -29,7 +29,7 @@ public class Notification {
     public Notification(String title, String summary, String subText, Duration duration) {
         this.title = title;
         this.summary = summary;
-        this.subText = subText != null ? subText.toUpperCase(Locale.ROOT) : "";
+        this.subText = subText == null || subText.isBlank() ? "Game Notification" : subText.toUpperCase(Locale.ROOT);
         this.duration = duration.toMillis();
     }
 

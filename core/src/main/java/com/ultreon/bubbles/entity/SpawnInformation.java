@@ -3,14 +3,14 @@ package com.ultreon.bubbles.entity;
 import com.ultreon.bubbles.command.Command;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.data.types.MapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnInformation {
     private SpawnReason reason;
-    private @Nullable Vec2f pos;
+    private @Nullable Vector2 pos;
     private @Nullable MapType tag;
     @Nullable
     private Command command;
@@ -20,7 +20,7 @@ public class SpawnInformation {
         LOAD, NATURAL, COMMAND
     }
 
-    private SpawnInformation(SpawnReason reason, @Nullable MapType tag, @Nullable Vec2f pos, @Nullable Command command, Environment environment) {
+    private SpawnInformation(SpawnReason reason, @Nullable MapType tag, @Nullable Vector2 pos, @Nullable Command command, Environment environment) {
         this.pos = pos;
         this.tag = tag;
         this.reason = reason;
@@ -32,11 +32,11 @@ public class SpawnInformation {
         return new SpawnInformation(SpawnReason.LOAD, tag, null, null, BubbleBlaster.getInstance().environment);
     }
 
-    public static SpawnInformation fromNaturalSpawn(Vec2f pos) {
+    public static SpawnInformation fromNaturalSpawn(Vector2 pos) {
         return new SpawnInformation(SpawnReason.NATURAL, null, pos, null, BubbleBlaster.getInstance().environment);
     }
 
-    public static SpawnInformation fromNaturalSpawn(Vec2f pos, Environment environment) {
+    public static SpawnInformation fromNaturalSpawn(Vector2 pos, Environment environment) {
         return new SpawnInformation(SpawnReason.NATURAL, null, pos, null, environment);
     }
 
@@ -82,11 +82,11 @@ public class SpawnInformation {
     }
 
     @Nullable
-    public Vec2f getPos() {
+    public Vector2 getPos() {
         return pos;
     }
 
-    public void setPos(@Nullable Vec2f pos) {
+    public void setPos(@Nullable Vector2 pos) {
         if (this.pos != null) {
             this.pos = pos;
         } else {

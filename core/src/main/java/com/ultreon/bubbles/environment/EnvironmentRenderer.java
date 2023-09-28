@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Circle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.renderer.IRenderer;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.render.Color;
@@ -52,30 +53,18 @@ public class EnvironmentRenderer implements IRenderer {
         float i = 0f;
         var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
+        float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
+
         // Loop colors.
         for (Color color : colors) {
-            // Set stroke width.
-            if (i == 0) {
-                if (colors.size() > 1) {
-                    renderer.setLineWidth(1.4f);
-                } else {
-                    renderer.setLineWidth(1.2f);
-                }
-            } else if (i == colors.size() - 1) {
-                renderer.setLineWidth(1.2f);
-            } else {
-                renderer.setLineWidth(1.4f);
-            }
-
-            // Set color.
+            renderer.setLineWidth(thickness);
             renderer.setColor(color);
 
-            // Draw circle.
+            // Draw singular circle in the circle list.
             Circle circle = getCircle(x, y, radius, i);
             renderer.circleLine(circle.x, circle.y, circle.radius);
 
-            // Add 2 to circle-depth (pixels).
-            i += 1.2f;
+            i += thickness;
         }
     }
 
@@ -90,7 +79,7 @@ public class EnvironmentRenderer implements IRenderer {
      * @return the ellipse.
      */
     protected static Circle getCircle(float x, float y, float r, float i) {
-        return new Circle(x + i, y + i, r - i * 2f);
+        return new Circle(x, y, r - i * 2f);
     }
 
     @Nullable

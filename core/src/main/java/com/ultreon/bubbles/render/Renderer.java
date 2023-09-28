@@ -20,10 +20,11 @@ import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.libs.commons.v0.vector.Vec4i;
 import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.ApiStatus;
+import space.earlygrey.shapedrawer.DefaultSideEstimator;
 import space.earlygrey.shapedrawer.JoinType;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -79,6 +80,7 @@ public class Renderer {
         this.batch = shapes.getBatch();
         this.shapes = shapes;
         this.camera = camera;
+        this.shapes.setSideEstimator(new DefaultSideEstimator(50, 360, 2f));
     }
 
     @ApiStatus.Internal
@@ -638,25 +640,25 @@ public class Renderer {
     public void drawLeftAnchoredText(String text, float x, float y) {
         if (!rendering) return;
 
-        GraphicsUtils.drawLeftAnchoredString(this, text, new Vec2f(x, y), 0, this.font);
+        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), 0, this.font);
     }
 
     public void drawLeftAnchoredText(BitmapFont font, String text, float x, float y) {
         if (!rendering) return;
 
-        GraphicsUtils.drawLeftAnchoredString(this, text, new Vec2f(x, y), 0, font);
+        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), 0, font);
     }
 
     public void drawRightAnchoredText(String text, float x, float y) {
         if (!rendering) return;
 
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vec2f(x, y), 0, this.font);
+        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, this.font);
     }
 
     public void drawRightAnchoredText(BitmapFont font, String text, float x, float y) {
         if (!rendering) return;
 
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vec2f(x, y), 0, font);
+        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, font);
     }
 
     public void clear() {

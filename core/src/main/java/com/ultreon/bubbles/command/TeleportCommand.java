@@ -6,11 +6,11 @@ public class TeleportCommand implements CommandExecutor {
     @Override
     public boolean execute(Player player, String[] args) {
         if (args.length == 2) {
-            double x, y;
+            float x, y;
 
             try {
-                x = Double.parseDouble(args[0]);
-                y = Double.parseDouble(args[1]);
+                x = Float.parseFloat(args[0]);
+                y = Float.parseFloat(args[1]);
             } catch (NumberFormatException exception) {
                 try {
                     x = Long.parseLong(args[0]);

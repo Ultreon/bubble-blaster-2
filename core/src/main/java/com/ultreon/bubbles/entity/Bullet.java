@@ -2,6 +2,7 @@ package com.ultreon.bubbles.entity;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
@@ -23,20 +24,20 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @FieldsAreNonnullByDefault
 @ParametersAreNonnullByDefault
 public class Bullet extends Entity {
-    private final Player owner;
+    @Nullable
+    private Player owner = null;
     private AmmoType ammoType;
     private int popsRemaining = 4;
 
     public Bullet(Environment environment) {
-        this(null, AmmoTypes.BASIC, 0, 0, 0, environment);
+        this(AmmoTypes.BASIC, new Vector2(), 0, environment);
     }
 
-    public Bullet(@UnknownNullability Player owner, @NotNull AmmoType type, float x, float y, float rotation, Environment environment) {
+    public Bullet(@NotNull AmmoType type, Vector2 pos, float rotation, Environment environment) {
         super(Entities.BULLET, environment);
-        this.owner = owner;
 
-        this.x = x;
-        this.y = y;
+        this.pos.set(pos);
+        this.pos.set(pos);
         this.setRotation(rotation);
 
         this.ammoType = type;
@@ -49,6 +50,14 @@ public class Bullet extends Entity {
 
         markAsAttackable(Entities.BUBBLE);
         markAsAttackable(Entities.GIANT_BUBBLE);
+    }
+
+    public @Nullable Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(@Nullable Player owner) {
+        this.owner = owner;
     }
 
     private void setSpeed(float speed) {
@@ -112,7 +121,7 @@ public class Bullet extends Entity {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 1, 1);
+        return new Rectangle(this.pos.x, this.pos.y, 1, 1);
     }
 
     @Override

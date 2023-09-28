@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.common.References;
+import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
@@ -33,25 +33,19 @@ public final class GameSettings implements Serializable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
             .create();
     private static GameSettings instance;
-    public static Keybind keybindForward = new Keybind(Input.Keys.UP);
+    public Keybind keybindForward = new Keybind(Input.Keys.UP);
 
-    public static Keybind keybindBackward = new Keybind(Input.Keys.DOWN);
+    public Keybind keybindBackward = new Keybind(Input.Keys.DOWN);
 
-    public static Keybind keybindRotateLeft = new Keybind(Input.Keys.LEFT);
-    public static Keybind keybindRotateRight = new Keybind(Input.Keys.RIGHT);
-    @SerializedName("max-bubbles")
-    private int maxBubbles = 200;
-    @SerializedName("lang")
+    public Keybind keybindRotateLeft = new Keybind(Input.Keys.LEFT);
+    public Keybind keybindRotateRight = new Keybind(Input.Keys.RIGHT);
+    public int maxBubbles = 200;
     private String language = "en";
 
-    @SerializedName("gamemode")
-    private Identifier gamemode = Gamemodes.MODERN.id();
-    @SerializedName("graphics")
-    private GraphicsSettings graphicsSettings = new GraphicsSettings();
-    @SerializedName("difficulty")
-    private Difficulty difficulty = Difficulty.NORMAL;
-    @SerializedName("debug")
-    private DebugOptions debugOptions = new DebugOptions();
+    public Identifier gamemode = Gamemodes.MODERN.id();
+    public GraphicsSettings graphicsSettings = new GraphicsSettings();
+    public Difficulty difficulty = Difficulty.NORMAL;
+    public DebugOptions debugOptions = new DebugOptions();
 
 
     static {
@@ -59,7 +53,7 @@ public final class GameSettings implements Serializable {
             BubbleBlaster.getLogger().error("Failed to load settings.");
         }
 
-        BubbleBlaster.getWatcher().watchFile(References.SETTINGS_FILE, file -> reload());
+        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE, file -> reload());
     }
 
     private GameSettings() {
@@ -83,20 +77,21 @@ public final class GameSettings implements Serializable {
         Gson gson = new Gson();
 
         instance = new GameSettings();
-        if (!References.SETTINGS_FILE.exists()) {
+        if (!GameFolders.SETTINGS_FILE.exists()) {
             return save();
         }
 
         try {
-            String json = Files.readString(References.SETTINGS_FILE.toPath());
+            String json = Files.readString(GameFolders.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.MODERN.id();
+                GameSettings.save();
             }
             GameSettings.instance = instance;
             LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error("Failed to load settings from " + References.SETTINGS_FILE.toPath() + ":", e);
+            BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.toPath() + ":", e);
             return save();
         }
 
@@ -104,7 +99,7 @@ public final class GameSettings implements Serializable {
     }
 
     public synchronized static boolean save() {
-        File settingsFile = References.SETTINGS_FILE;
+        File settingsFile = GameFolders.SETTINGS_FILE;
 
         String json = GSON.toJson(instance);
         try {
@@ -118,15 +113,6 @@ public final class GameSettings implements Serializable {
 
     public static GameSettings instance() {
         return instance;
-    }
-
-    public int getMaxBubbles() {
-        return maxBubbles;
-    }
-
-    public void setMaxBubbles(int value) {
-        this.maxBubbles = value;
-        save();
     }
 
     public String getLanguage() {
@@ -144,8 +130,6 @@ public final class GameSettings implements Serializable {
         Locale newLocale = Locale.forLanguageTag(language);
         LanguageManager.setCurrentLanguage(newLocale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, newLocale);
-
-        save();
     }
 
     public void setLanguage(Locale locale) {
@@ -154,7 +138,6 @@ public final class GameSettings implements Serializable {
         this.language = locale.toLanguageTag();
         LanguageManager.setCurrentLanguage(locale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, locale);
-        save();
     }
 
     public GraphicsSettings getGraphicsSettings() {

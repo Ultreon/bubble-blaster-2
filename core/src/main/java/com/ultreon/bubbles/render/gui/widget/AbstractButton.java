@@ -1,10 +1,7 @@
 package com.ultreon.bubbles.render.gui.widget;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.debug.Debug;
-import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.checkerframework.common.value.qual.IntRange;
 
@@ -30,7 +27,6 @@ public abstract class AbstractButton extends GuiComponent {
         if (isHovered() && button == Buttons.LEFT && enabled && visible && pressed) {
             this.pressed = false;
             this.playMenuEvent();
-            Debug.notify("Mouse Press", "x = " + x + ", y = " + y + ", button = " + button);
             this.command.run();
             return true;
         }

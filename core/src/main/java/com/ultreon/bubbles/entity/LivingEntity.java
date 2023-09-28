@@ -110,10 +110,6 @@ public abstract class LivingEntity extends Entity {
         health = data.getFloat("health");
     }
 
-    public String toSimpleString() {
-        return id() + "@(" + Math.round(getX()) + "," + Math.round(getY()) + ")";
-    }
-
     public boolean isInvincible() {
         return invincible;
     }

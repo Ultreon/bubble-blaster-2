@@ -33,7 +33,7 @@ public class StartOptionsScreen extends Screen {
                 }
             }
         });
-        add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(TextObject.translation("bubbles/screen/start_options/start")).command(this::start).build());
+        add(new OptionsButton.Builder().bounds(width / 2 - 150, height / 2 + 5, 300, 30).text(TextObject.translation("bubbleblaster/screen/start_options/start")).command(this::start).build());
     }
 
     private void start() {

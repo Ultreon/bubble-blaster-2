@@ -24,9 +24,9 @@ public class PoisonStatusEffect extends StatusEffect {
         if (timeActive < 100) {
             effect.setIntensity(timeActive / 100f);
         }
-        long remainingTime = appliedEffect.getRemainingTime();
+        long remainingTime = appliedEffect.getRemainingTime().toMillis();
         if (remainingTime < 1500) {
-            effect.setIntensity(remainingTime / 1500f);
+            effect.setIntensity((1500f - remainingTime) / 1500f);
         }
         builder.set(EFFECT_ID, effect);
     }

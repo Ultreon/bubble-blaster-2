@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
@@ -60,8 +61,7 @@ public class Player extends LivingEntity implements InputController {
             15, 0,
             -10, 10
     };
-    /*
-     */
+    private static final float RADIUS = 20;
 
     private final Circle shipShape;
     private final Polygon arrowShape;
@@ -82,14 +82,14 @@ public class Player extends LivingEntity implements InputController {
     private float rotationSpeed = 120f;
 
     // Delta velocity.
-    private float velocityDelta;
+    private float deceleration = 0f;
 
     // Motion (XInput).
     private float joyStickX;
     private float joyStickY;
 
     // Normal values/
-    private double score = 0.0f;
+    private double score = 0.0;
     private int level = 1;
 
     // Modifiers.
@@ -114,8 +114,7 @@ public class Player extends LivingEntity implements InputController {
         this.shipShape = new Circle(-20, -20, 40);
         this.arrowShape = new Polygon(ARROW_VERTICES);
 
-        this.velocityX = 0;
-        this.velocityY = 0;
+        this.velocity.setZero();
 
         this.attributes.setBase(Attribute.DEFENSE, 1f);
         this.attributes.setBase(Attribute.ATTACK, 0.75f);
@@ -154,8 +153,8 @@ public class Player extends LivingEntity implements InputController {
         super.prepareSpawn(information);
         BubbleBlaster game = this.environment.game();
         Rectangle gameBounds = game.getGameBounds();
-        this.x = Mth.clamp(x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
-        this.y = Mth.clamp(y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
+        this.pos.x = Mth.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
+        this.pos.y = Mth.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
         this.make();
     }
 
@@ -171,34 +170,32 @@ public class Player extends LivingEntity implements InputController {
 
     @Override
     public Circle getShape() {
-        return new Circle(x - 40 * scale / 2, y - 40 * scale / 2, 40 * scale);
+        return new Circle(this.pos.x - RADIUS * 2 * this.scale / 2, this.pos.y - RADIUS * 2 * this.scale / 2, RADIUS * 2 * this.scale);
     }
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x - 20, y - 20, 40, 40);
+        return new Rectangle(this.pos.x - RADIUS, this.pos.y - RADIUS, RADIUS * 2, RADIUS * 2);
     }
 
-    private Circle transformShip(Circle shipShape) {
-        Circle circle = new Circle(shipShape);
-        shipShape.x = x;
-        shipShape.y = y;
+    private Circle transformShip(Circle ship) {
+        ship.setPosition(this.pos);
 
-        return circle;
+        return ship;
     }
 
-    private Polygon transformArrow(Polygon shipShape) {
-        shipShape.setPosition(this.x, this.y);
-        shipShape.setRotation(this.rotation);
+    private Polygon transformArrow(Polygon arrow) {
+        arrow.setPosition(this.pos.x, this.pos.y);
+        arrow.setRotation(this.rotation);
 
-        return shipShape;
+        return arrow;
     }
 
     /**
      * @return the shape create the ship.
      */
     public Circle getShipShape() {
-        return this.transformShip(shipShape);
+        return this.transformShip(this.shipShape);
     }
 
     /**
@@ -213,7 +210,7 @@ public class Player extends LivingEntity implements InputController {
      */
     @SuppressWarnings("unused")
     public Vector2 getCenter() {
-        return new Vector2(this.x, this.y);
+        return this.pos.cpy();
     }
 
     /**
@@ -250,15 +247,15 @@ public class Player extends LivingEntity implements InputController {
         float rotate = 0.0f;
 
         // Check each direction, to create velocity
-        if (this.forward) motion += getSpeed() * 10;
-        if (this.backward) motion -= getSpeed() * 10;
+        if (this.forward) motion += getSpeed();
+        if (this.backward) motion -= getSpeed();
         if (this.left) rotate -= this.rotationSpeed;
         if (this.right) rotate += this.rotationSpeed;
         if (this.joyStickY != 0) motion = (float) (this.joyStickY * this.attributes.getBase(Attribute.SPEED));
         if (this.joyStickX != 0) rotate = this.joyStickX * this.rotationSpeed;
 
         // Update X, and Y.
-        if (isMobile()) {
+        if (this.canMove) {
             this.rotation += rotate / TPS;
         }
 
@@ -267,38 +264,37 @@ public class Player extends LivingEntity implements InputController {
         float tempVelX = MathUtils.cos(angelRadians) * motion;
         float tempVelY = MathUtils.sin(angelRadians) * motion;
 
-        if (isMobile()) {
-            this.accelerateX += tempVelX / TPS;
-            this.accelerateY += tempVelY / TPS;
+        if (this.canMove) {
+            this.accel.add(tempVelX / TPS, tempVelY / TPS);
         }
 
         // Velocity on X-axis.
-        if (this.velocityX > 0) {
-            if (this.velocityX + this.velocityDelta < 0) {
-                this.velocityX = 0;
+        if (this.velocity.x > 0) {
+            if (this.velocity.x + this.deceleration < 0) {
+                this.velocity.x = 0;
             } else {
-                this.velocityX += this.velocityDelta;
+                this.velocity.x += this.deceleration;
             }
-        } else if (this.velocityX < 0) {
-            if (this.velocityX + this.velocityDelta > 0) {
-                this.velocityX = 0;
+        } else if (this.velocity.x < 0) {
+            if (this.velocity.x + this.deceleration > 0) {
+                this.velocity.x = 0;
             } else {
-                this.velocityX -= this.velocityDelta;
+                this.velocity.x -= this.deceleration;
             }
         }
 
         // Velocity on Y-axis.
-        if (this.velocityY > 0) {
-            if (this.velocityY + velocityDelta < 0) {
-                this.velocityY = 0;
+        if (this.velocity.y > 0) {
+            if (this.velocity.y + this.deceleration < 0) {
+                this.velocity.y = 0;
             } else {
-                this.velocityY += this.velocityDelta;
+                this.velocity.y += this.deceleration;
             }
-        } else if (this.velocityX < 0) {
-            if (this.velocityY + this.velocityDelta > 0) {
-                this.velocityY = 0;
+        } else if (this.velocity.y < 0) {
+            if (this.velocity.y + this.deceleration > 0) {
+                this.velocity.y = 0;
             } else {
-                this.velocityY -= this.velocityDelta;
+                this.velocity.y -= this.deceleration;
             }
         }
 
@@ -306,7 +302,7 @@ public class Player extends LivingEntity implements InputController {
         Rectangle2D gameBounds = loadedGame.getGamemode().getGameBounds();
 
         // Leveling up.
-        if (score / Constants.LEVEL_THRESHOLD > level) {
+        if (this.score / BubbleBlasterConfig.LEVEL_THRESHOLD.get() > this.level) {
             levelUp();
             environment.onLevelUp(this, level);
         }
@@ -320,37 +316,36 @@ public class Player extends LivingEntity implements InputController {
             invincible = false;
         }
 
-        for (StatusEffectInstance appliedEffect : this.activeEffects) {
+        for (StatusEffectInstance appliedEffect : this.statusEffects) {
             appliedEffect.tick(this);
         }
 
-        this.activeEffects.removeIf((effectInstance -> effectInstance.getRemainingTime() < 0d));
+        this.statusEffects.removeIf((effect -> effect.getRemainingTime().isNegative()));
 
-        this.accelerateX = this.getAccelerateX() / ((0.05f / (1 * (float) TPS / 20)) + 1);
-        this.accelerateY = this.getAccelerateY() / ((0.05f / (1 * (float) TPS / 20)) + 1);
+        this.accel.scl(1f / (0.48f * (float) TPS * 20 + 1));
 
-        this.prevX = this.getX();
-        this.prevY = this.getY();
-        this.x += this.isMobile() ? this.getAccelerateX() + this.getVelocityX() / TPS : 0;
-        this.y += this.isMobile() ? this.getAccelerateY() + this.getVelocityY() / TPS : 0;
+        this.prevPos.set(this.pos);
+
+        if (this.canMove)
+            this.pos.add(this.accel.x + this.velocity.x / TPS, this.accel.y + this.velocity.y / TPS);
 
         double minX = gameBounds.getMinX() + this.size() / 2;
         double minY = gameBounds.getMinY() + this.size() / 2;
         double maxX = gameBounds.getMaxX() - this.size() / 2;
         double maxY = gameBounds.getMaxY() - this.size() / 2;
 
-        if (x > maxX && getVelocityX() > 0) setVelocityX(0);
-        if (x < minX && getVelocityX() < 0) setVelocityX(0);
-        if (x > maxX && getAccelerateX() > 0) setAccelerateX(0);
-        if (x < minX && getAccelerateX() < 0) setAccelerateX(0);
+        if (this.pos.x > maxX && this.velocity.x > 0 || this.pos.x < minX && this.velocity.x < 0)
+            this.velocity.x = 0;
+        if (this.pos.x > maxX && this.accel.x > 0 || this.pos.x < minX && this.accel.x < 0)
+            this.accel.x = 0;
 
-        if (y > maxY && getVelocityY() > 0) setVelocityY(0);
-        if (y < minY && getVelocityY() < 0) setVelocityY(0);
-        if (y > maxY && getAccelerateY() > 0) setAccelerateY(0);
-        if (y < minY && getAccelerateY() < 0) setAccelerateY(0);
+        if (this.pos.y > maxY && this.velocity.y > 0 || this.pos.y < minY && this.velocity.y < 0)
+            this.velocity.y = 0;
+        if (this.pos.y > maxY && this.accel.y > 0 || this.pos.y < minY && this.accel.y < 0)
+            this.accel.y = 0;
 
-        this.x = (float) Mth.clamp(this.x, minX, maxX);
-        this.y = (float) Mth.clamp(this.y, minY, maxY);
+        this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
+        this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
     }
 
     @Override
@@ -415,11 +410,11 @@ public class Player extends LivingEntity implements InputController {
     @Override
     public void render(Renderer renderer) {
         // Don't render if the player isn't spawned.
-        if (isNotSpawned()) return;
+        if (this.isNotSpawned()) return;
 
         // Fill the ship with the correct color.
-        renderer.setColor(Color.RED);
-        renderer.circleLine(this.x, this.y, 40);
+        renderer.setColor(Color.rgb(0xdc143c));
+        renderer.circle(this.pos.x, this.pos.y, RADIUS * 2);
 
         // Fill the arrow with the correct color.
         renderer.setColor(Color.WHITE);
@@ -460,7 +455,7 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Insta-kills the player.
+     * Kills the player in an instant.
      */
     public void die() {
         if (getEnvironment().isAlive()) {
@@ -661,12 +656,12 @@ public class Player extends LivingEntity implements InputController {
         this.right = bool;
     }
 
-    public float getVelocityDelta() {
-        return velocityDelta;
+    public float getDeceleration() {
+        return deceleration;
     }
 
-    public void setVelocityDelta(float velocityDelta) {
-        this.velocityDelta = velocityDelta;
+    public void setDeceleration(float deceleration) {
+        this.deceleration = deceleration;
     }
 
     public long getAbilityEnergy() {
@@ -700,7 +695,7 @@ public class Player extends LivingEntity implements InputController {
 
     @Override
     public double size() {
-        return 40 * scale;
+        return 40 * this.scale;
     }
 
     /**
@@ -709,9 +704,22 @@ public class Player extends LivingEntity implements InputController {
      * @see #setCurrentAmmo(AmmoType)
      */
     public void shoot() {
-        if (canShoot()) {
+        shoot(false);
+    }
+
+    /**
+     * Shoot a bullet from the {@linkplain #getCurrentAmmo() current ammo}.
+     *
+     * @see #setCurrentAmmo(AmmoType)
+     */
+    public void shoot(boolean force) {
+        if (force || this.canShoot()) {
             shootCooldown = TimeProcessor.secondsToTicks(1.0);
-            environment.spawn(new Bullet(this, currentAmmo, x, y, rotation, environment));
+
+            Vector2 bulletPos = this.pos.cpy().setAngleDeg(this.rotation).setLength(RADIUS / 2);
+            Bullet bullet = new Bullet(this.currentAmmo, bulletPos, rotation, environment);
+            bullet.setOwner(this);
+            environment.spawn(bullet);
         }
     }
 

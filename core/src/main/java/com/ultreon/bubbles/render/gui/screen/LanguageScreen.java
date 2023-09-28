@@ -45,12 +45,13 @@ public final class LanguageScreen extends Screen {
         this.languageList.addSelectHandler(entry -> {
             GameSettings instance = GameSettings.instance();
             instance.setLanguage(entry.value.getLocale());
+            GameSettings.save();
         });
 
-        this.okButton = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/other/ok")).build());
+        this.okButton = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/other/ok")).build());
         this.okButton.setCommand(this::apply);
 
-        this.cancelButton = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbles/other/cancel")).build());
+        this.cancelButton = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/other/cancel")).build());
         this.cancelButton.setCommand(this::cancel);
     }
 
@@ -76,6 +77,7 @@ public final class LanguageScreen extends Screen {
 
     private void cancel() {
         GameSettings.instance().setLanguage(oldLanguage);
+        GameSettings.save();
         game.showScreen(backScreen);
     }
 

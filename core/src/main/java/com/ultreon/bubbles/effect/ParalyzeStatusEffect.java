@@ -17,14 +17,14 @@ public class ParalyzeStatusEffect extends StatusEffect {
     @Override
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         if (entity instanceof Player) {
-            entity.setMobile(false);
+            entity.canMove = false;
         }
     }
 
     @Override
     public void onStop(Entity entity) {
         if (entity instanceof Player) {
-            entity.setMobile(true);
+            entity.canMove = true;
         }
     }
 

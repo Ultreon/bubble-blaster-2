@@ -47,7 +47,7 @@ public class GameOverScreen extends Screen {
 
         add(new IngameButton.Builder()
                 .bounds((int) (BubbleBlaster.getMiddleX() - 128), 340, 256, 48)
-                .text(TextObject.translation("bubbles/screen/game_over/back_to_title")).command(this::goToTitle).build());
+                .text(TextObject.translation("bubbleblaster/screen/game_over/back_to_title")).command(this::goToTitle).build());
     }
 
     private void goToTitle() {

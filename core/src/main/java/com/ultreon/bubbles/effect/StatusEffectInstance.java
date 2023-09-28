@@ -14,6 +14,7 @@ import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.time.Duration;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -41,12 +42,16 @@ public class StatusEffectInstance implements TagHolder {
             var type = Registries.EFFECTS.getValue(id);
             this.type = type == null ? StatusEffects.NONE : type;
         }
-        this.setRemainingTime(document.getLong("duration"));
+        this.setRemainingTime(Duration.ofMillis(document.getLong("duration")));
         this.baseDuration = document.getLong("baseDuration");
         this.strength = document.getInt("strength");
     }
 
-    public StatusEffectInstance(StatusEffect type, long duration, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
+    public StatusEffectInstance(StatusEffect type, int seconds, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
+        this(type, Duration.ofSeconds(seconds), strength);
+    }
+
+    public StatusEffectInstance(StatusEffect type, Duration duration, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
         //noinspection ConstantConditions
         if (strength < 1) {
             throw new InvalidValueException("Cannot create effect instance with strength < 1");
@@ -65,7 +70,7 @@ public class StatusEffectInstance implements TagHolder {
         MapType tag = new MapType();
         tag.put("Tag", this.tag);
         tag.putLong("baseDuration", getBaseDuration());
-        tag.putLong("duration", getRemainingTime());
+        tag.putLong("duration", getRemainingTime().toMillis());
         tag.putInt("strength", getStrength());
 
         Identifier key = Registries.EFFECTS.getKey(getType());
@@ -95,10 +100,10 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public void tick(Entity entity) {
-        System.out.println("getRemainingTime() = " + getRemainingTime());
-        if (this.getRemainingTime() <= 0d) {
+        if (this.getRemainingTime().isZero() || this.getRemainingTime().isNegative()) {
             this.active = false;
             this.stop(entity);
+            entity.removeEffect(this);
         } else {
             this.type.tick(entity, this);
         }
@@ -167,20 +172,20 @@ public class StatusEffectInstance implements TagHolder {
         this.endTime = endTime;
     }
 
-    public long getRemainingTime() {
-        return (this.endTime - System.currentTimeMillis()) / 1000;
+    public Duration getRemainingTime() {
+        return Duration.ofMillis(this.endTime - System.currentTimeMillis());
     }
 
-    public void setRemainingTime(long time) {
-        this.endTime = System.currentTimeMillis() + time * 1000;
+    public void setRemainingTime(Duration time) {
+        this.endTime = System.currentTimeMillis() + time.toMillis();
     }
 
-    public void addTime(long time) {
-        this.setRemainingTime(this.getRemainingTime() + time);
+    public void prolong(Duration time) {
+        this.setRemainingTime(this.getRemainingTime().plus(time));
     }
 
-    public void removeTime(long time) {
-        this.setRemainingTime(this.getRemainingTime() - time);
+    public void elapse(Duration time) {
+        this.setRemainingTime(this.getRemainingTime().minus(time));
     }
 
     public boolean isActive() {

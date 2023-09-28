@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.bubble;
 
-import com.jhlabs.image.HSBAdjustFilter;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
@@ -27,9 +26,9 @@ public class UltraBubble extends BubbleType {
     public ArrayList<Object> getFilters(Bubble bubble) {
         ArrayList<Object> filters = new ArrayList<>();
 
-        HSBAdjustFilter filter = new HSBAdjustFilter();
-        filter.setHFactor((float) (System.currentTimeMillis() / 3) % 1);
-        filters.add(filter);
+//        HSBAdjustFilter filter = new HSBAdjustFilter();
+//        filter.setHFactor((float) (System.currentTimeMillis() / 3) % 1);
+//        filters.add(filter);
 
         return filters;
     }

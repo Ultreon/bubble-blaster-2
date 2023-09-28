@@ -25,7 +25,7 @@ public class AccelerateBubble extends BubbleType {
             // Calculate Velocity X and Y.
             float accelerateX = 0;
             float accelerateY = 0;
-            if (player.isMobile()) {
+            if (player.canMove) {
                 accelerateX += MathUtils.cos(player.getRotation() * MathUtils.degRad) * 0.375f;
                 accelerateY += MathUtils.sin(player.getRotation() * MathUtils.degRad) * 0.375f;
             }

@@ -1,47 +1,56 @@
 package com.ultreon.bubbles;
 
+import com.ultreon.bubbles.common.StateListener;
+import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.libs.commons.v0.DummyMessenger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
 
-class AutoSaver extends Thread implements Runnable {
+class AutoSaver implements StateListener {
     private static final Marker MARKER = MarkerFactory.getMarker("AutoSaver");
     private final LoadedGame loadedGame;
+    private ScheduledFuture<?> future;
+    private boolean enabled;
 
     public AutoSaver(LoadedGame loadedGame) {
-        super("Auto-Saver");
         this.loadedGame = loadedGame;
     }
 
-    @Override
-    public void run() {
-        long nextSave = System.currentTimeMillis();
-        while (!loadedGame.getEnvironment().isGameOver()) {
-            if (nextSave - System.currentTimeMillis() < 0) {
-                BubbleBlaster.getLogger().info("Auto Saving...");
-                onAutoSave();
-                nextSave = System.currentTimeMillis() + 30000;
-            }
-            try {
-                //noinspection BusyWait
-                sleep(30000);
-            } catch (InterruptedException e) {
-                BubbleBlaster.getLogger().warn("Could not sleep thread.");
-            }
+    private void run() {
+        if (!loadedGame.getEnvironment().isGameOver()) {
+            onAutoSave();
         }
-        BubbleBlaster.getLogger().debug("Stopping AutoSaveThread...");
-    }
-
-    void autoSaveThread(LoadedGame loadedGame) {
     }
 
     private void onAutoSave() {
+        Environment environment = this.loadedGame.getEnvironment();
+        if (environment == null) {
+            this.end();
+            return;
+        }
         try {
-            loadedGame.getEnvironment().save(loadedGame.getGameSave(), new DummyMessenger());
+            this.loadedGame.getEnvironment().save(this.loadedGame.getGameSave(), new DummyMessenger());
         } catch (IOException e) {
             BubbleBlaster.getLogger().warn(MARKER, "Auto-saving failed:", e);
         }
+    }
+
+    @Override
+    public void begin() {
+        this.enabled = true;
+        this.future = this.loadedGame.schedulerService.scheduleAtFixedRate(this::run, Constants.AUTO_SAVE_RATE, Constants.AUTO_SAVE_RATE, Constants.AUTO_SAVE_RATE_UNIT);
+    }
+
+    @Override
+    public void end() {
+        this.future.cancel(false);
+        this.enabled = false;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

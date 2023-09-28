@@ -23,7 +23,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath group: 'commons-io', name: 'commons-io', version: "$commons_io_version"
         classpath "com.google.code.gson:gson:2.10.1"
     }
 }
@@ -112,7 +112,6 @@ dependencies {
 
     // Misc
     implementation 'it.unimi.dsi:fastutil:8.5.12'
-    implementation 'com.raylabz:opensimplex:1.0.3'
 
     implementation "space.earlygrey:shapedrawer:$shapedrawer_version"
 
@@ -123,7 +122,7 @@ dependencies {
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
 
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
     implementation "com.google.code.findbugs:jsr305:$jsr_version"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"

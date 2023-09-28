@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.data;
 
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.data.types.MapType;
 
 public class DataManager {
@@ -12,10 +12,10 @@ public class DataManager {
         return nbt;
     }
 
-    private MapType storePosition(Vec2f pos) {
+    private MapType storePosition(Vector2 pos) {
         MapType nbt = new MapType();
-        nbt.putFloat("x", pos.getX());
-        nbt.putFloat("y", pos.getY());
+        nbt.putFloat("x", pos.x);
+        nbt.putFloat("y", pos.y);
         return nbt;
     }
 }

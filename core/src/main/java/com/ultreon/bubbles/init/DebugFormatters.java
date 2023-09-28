@@ -278,9 +278,9 @@ public final class DebugFormatters {
         }
     });
     
-    public static final Formatter<Vec2f> VEC2F = FormatterRegistry.register(new Formatter<>(Vec2f.class, new Identifier("vector/2_float")) {
+    public static final Formatter<Vector2> Vector2 = FormatterRegistry.register(new Formatter<>(Vector2.class, new Identifier("vector/2_float")) {
         @Override
-        public void format(Vec2f obj, IFormatterContext context) {
+        public void format(Vector2 obj, IFormatterContext context) {
             context.parameter("x", roundTo(obj.x, 5));
             context.separator();
             context.parameter("y", roundTo(obj.y, 5));

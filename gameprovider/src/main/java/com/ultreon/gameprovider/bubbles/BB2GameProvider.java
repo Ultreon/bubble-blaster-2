@@ -28,8 +28,6 @@ import java.util.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class BB2GameProvider implements GameProvider {
     private static final String[] ALLOWED_EARLY_CLASS_PREFIXES = { "org.apache.logging.log4j.", "com.ultreon.gameprovider.bubbles.", "com.ultreon.premain." };
-    private Class<?> clazz;
-    private String[] args;
 
     private final GameTransformer transformer = new GameTransformer();
     private EnvType envType;
@@ -39,15 +37,10 @@ public class BB2GameProvider implements GameProvider {
     private final List<Path> miscGameLibraries = new ArrayList<>();
     private Collection<Path> validParentClassPath = new ArrayList<>();
     private String entrypoint;
-    private Path preloaderJar;
-    private Path premainJar;
-    private Path devJar;
     private boolean log4jAvailable;
     private boolean slf4jAvailable;
     private Path libGdxJar;
     private final Properties versions;
-    private Path coreJar;
-    private Path desktopJar;
 
     public BB2GameProvider() {
         InputStream stream = getClass().getResourceAsStream("/versions.properties");
@@ -62,7 +55,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public String getGameId() {
-        return "bubbles";
+        return "bubbleblaster";
     }
 
     @Override
@@ -72,12 +65,12 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public String getRawGameVersion() {
-        return versions.getProperty("bubbles");
+        return versions.getProperty("bubbleblaster");
     }
 
     @Override
     public String getNormalizedGameVersion() {
-        return versions.getProperty("bubbles");
+        return versions.getProperty("bubbleblaster");
     }
 
     @Override
@@ -90,7 +83,7 @@ public class BB2GameProvider implements GameProvider {
                         .addAuthor("Nathan Sweet", Map.of("github", "https://github.com/NathanSweet", "email", "nathan.sweet@gmail.com"))
                         .addIcon(200, "assets/libgdx/icon.png")
                         .build()),
-                new BuiltinMod(gameJars, new BuiltinModMetadata.Builder("bubbles", versions.getProperty("bubbles"))
+                new BuiltinMod(gameJars, new BuiltinModMetadata.Builder("bubbleblaster", versions.getProperty("bubbleblaster"))
                         .addLicense("Apache-2.0")
                         .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.github,io/", "github", "https://github.com/Ultreon", "sources", "https://github.com/libgdx/libgdx"))
                         .setContact(new ContactInformationImpl(Map.of("homepage", "https://github.com/Ultreon/bubble-blaster-2/", "issues", "https://github.com/Ultreon/bubble-blaster-2/issues", "discord", "https://discord.gg/")))
@@ -131,7 +124,7 @@ public class BB2GameProvider implements GameProvider {
         arguments.parse(args);
 
         try {
-            var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, envType, this);
+            var classifier = new LibClassifier<>(GameLibrary.class, envType, this);
             var gameLib = GameLibrary.BB_DESKTOP;
             var gameJar = GameProviderHelper.getCommonGameJar();
             var commonGameJarDeclared = gameJar != null;
@@ -142,16 +135,16 @@ public class BB2GameProvider implements GameProvider {
 
             classifier.process(launcher.getClassPath());
 
-            this.desktopJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
-            this.coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
+            gameJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
+            var coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
             this.libGdxJar = classifier.getOrigin(GameLibrary.LIBGDX);
 
             if (commonGameJarDeclared && gameJar == null) {
                 Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
             }
 
-            if (desktopJar != null) {
-                gameJars.add(desktopJar);
+            if (gameJar != null) {
+                gameJars.add(gameJar);
             }
 
             if (coreJar != null) {
@@ -189,8 +182,8 @@ public class BB2GameProvider implements GameProvider {
 
         // expose obfuscated jar locations for mods to more easily remap code from obfuscated to intermediary
         var share = FabricLoaderImpl.INSTANCE.getObjectShare();
-        share.put("fabric-loader:inputGameJars", List.of(desktopJar, libGdxJar));
-        share.put("fabric-loader:classPathJars", List.of(desktopJar, libGdxJar));
+        share.put("fabric-loader:inputGameJar", gameJars.get(0)); // deprecated
+        share.put("fabric-loader:inputGameJars", gameJars);
 
         return true;
     }
@@ -264,7 +257,7 @@ public class BB2GameProvider implements GameProvider {
     }
 
     public Path getGameJar() {
-        return desktopJar;
+        return gameJars.get(0);
     }
 
     @Override

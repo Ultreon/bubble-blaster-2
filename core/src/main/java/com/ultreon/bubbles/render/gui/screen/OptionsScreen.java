@@ -21,17 +21,18 @@ public class OptionsScreen extends Screen {
 
         this.back = back;
 
-        this.maxBubblesOption = new OptionsNumberInput(0, 0, 321, 48, GameSettings.instance().getMaxBubbles(), 400, 2000);
+        this.maxBubblesOption = new OptionsNumberInput(0, 0, 321, 48, GameSettings.instance().maxBubbles, 400, 2000);
         this.languageButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::showLanguages).build();
         this.cancelButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::back).build();
         this.saveButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::save).build();
     }
 
     private void save() {
-        int maxBubbles = maxBubblesOption.getValue();
+        int option = maxBubblesOption.getValue();
 
         GameSettings settings = GameSettings.instance();
-        settings.setMaxBubbles(maxBubbles);
+        settings.maxBubbles = option;
+        GameSettings.save();
     }
 
     private void showLanguages() {
@@ -83,9 +84,9 @@ public class OptionsScreen extends Screen {
         saveButton.setY((int) BubbleBlaster.getMiddleY() + 151);
         saveButton.setWidth(321);
 
-        cancelButton.setText(Language.translate("bubbles/other/cancel"));
-        languageButton.setText(Language.translate("bubbles/screen/options/language"));
-        saveButton.setText(Language.translate("bubbles/other/save"));
+        cancelButton.setText(Language.translate("bubbleblaster/other/cancel"));
+        languageButton.setText(Language.translate("bubbleblaster/screen/options/language"));
+        saveButton.setText(Language.translate("bubbleblaster/other/save"));
 
         super.render(game, renderer, mouseX, mouseY, deltaTime);
     }

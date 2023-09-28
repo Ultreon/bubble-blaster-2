@@ -2,11 +2,14 @@ package com.ultreon.bubbles.entity;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.Rng;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
@@ -14,12 +17,10 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Bubbles;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -71,9 +72,6 @@ public class Bubble extends AbstractBubbleEntity {
     public Bubble(Environment environment) {
         super(entityType, environment);
 
-        // Add player as collidable.
-        this.markAsCollidable(Entities.PLAYER);
-
         // FIXME: Use a more stable alternative that allows save loading. This is just a workaround.
         if (!BubbleSpawnContext.exists()) return;
 
@@ -97,20 +95,20 @@ public class Bubble extends AbstractBubbleEntity {
         this.attributes.setBase(Attribute.ATTACK, properties.getAttack());
         this.attributes.setBase(Attribute.DEFENSE, properties.getDefense());
         this.attributes.setBase(Attribute.SCORE, properties.getScoreMultiplier());
-        this.attributes.setBase(Attribute.SPEED, properties.getSpeed());
+        this.attributes.setBase(Attribute.SPEED, properties.getSpeed() * BubbleBlasterConfig.BASE_BUBBLE_SPEED.get());
         this.bounceAmount = bubbleType.getBounceAmount();
 
         // Set velocity
-        this.velocityX = 0;
+        this.velocity.y = 0;
 
         // Set attributes.
         this.attributes.setBase(Attribute.DEFENSE, 0.5f);
 
         this.rotation = 180;
 
-        //
-        markAsAttackable(Entities.PLAYER);
-        markAsCollidable(Entities.BULLET);
+        this.markAsAttackable(Entities.PLAYER);
+        this.markAsCollidable(Entities.BULLET);
+        this.markAsCollidable(Entities.PLAYER);
 
         xRng = environment.getBubbleRandomizer().getXRng();
         yRng = environment.getBubbleRandomizer().getYRng();
@@ -137,9 +135,9 @@ public class Bubble extends AbstractBubbleEntity {
     public void onCollision(Entity other, double deltaTime) {
         this.bubbleType.onCollision(this, other);
 
-//        if (other instanceof Player player && bounceAmount > 0) {
-            other.bounceOff(this, bounceAmount / 10f, -0.01f);
-//        }
+        if (this.bounceAmount > 0) {
+            other.bounceOff(this, this.bounceAmount / 10f, -0.01f);
+        }
     }
 
     /**
@@ -159,7 +157,7 @@ public class Bubble extends AbstractBubbleEntity {
      * <p><b>Warning: </b><i>Unsafe method! Use {@link Environment#spawn(EntityType, SpawnInformation.SpawnReason, long, int)} instead.</i></p>
      *
      * @see Environment#spawn(EntityType, SpawnInformation.SpawnReason, long, int)
-     * @see Environment#spawn(Entity, Vec2f)
+     * @see Environment#spawn(Entity, Vector2)
      */
     @Override
     protected void make() {
@@ -182,7 +180,7 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public Rectangle getBounds() {
         Circle circle = getShape();
-        Rectangle rectangle = new Rectangle(this.x - circle.radius / 2, this.y - circle.radius / 2, circle.radius, circle.radius);
+        Rectangle rectangle = new Rectangle(this.pos.x - circle.radius / 2, this.pos.y - circle.radius / 2, circle.radius, circle.radius);
         rectangle.width += 4;
         rectangle.height += 4;
         return rectangle;
@@ -202,25 +200,19 @@ public class Bubble extends AbstractBubbleEntity {
     public void tick(Environment environment) {
         // Check player and current scene.
         Player player = this.environment.getPlayer();
-        boolean gameLoaded = this.environment.game().isInGame();
 
-        if (player == null || !gameLoaded) {
-            return;
-        }
+        this.prevPos.set(pos);
 
-        this.prevX = x;
-        this.prevY = y;
-
-        if (isBeingDestroyed) {
-            destroyFrame++;
-            if (destroyFrame >= 10) {
+        if (this.isBeingDestroyed) {
+            this.destroyFrame++;
+            if (this.destroyFrame >= 10) {
                 delete();
             }
         }
 
         super.tick(environment);
 
-        if (this.x + this.radius < 0) {
+        if (this.pos.x + this.radius < 0) {
             delete();
         }
     }
@@ -246,7 +238,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        EnvironmentRenderer.drawBubble(renderer, (float) (x - radius / 2.0), (float) (y - radius / 2.0), radius, destroyFrame, bubbleType.getColors());
+        EnvironmentRenderer.drawBubble(renderer, this.pos.x, this.pos.y, radius, destroyFrame, bubbleType.getColors());
     }
 
     public boolean isBeingDestroyed() {
@@ -259,13 +251,14 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public Circle getShape() {
         int rad = radius;
-        return new Circle(this.x - (float) rad / 2, this.y - (float) rad / 2, rad);
+        return new Circle(this.pos.x - (float) rad / 2, this.pos.y - (float) rad / 2, rad);
     }
 
     @Override
     public boolean isVisible() {
         Rectangle bounds = BubbleBlaster.getInstance().getBounds();
-        return x + radius >= 0 && y + radius >= 0 && x - radius <= bounds.width && y - radius <= bounds.height;
+        return this.pos.x + radius >= 0 && this.pos.y + radius >= 0 &&
+                this.pos.x - radius <= bounds.width && this.pos.y - radius <= bounds.height;
     }
 
     ///////////////////////////////////////////////////////////////////////////

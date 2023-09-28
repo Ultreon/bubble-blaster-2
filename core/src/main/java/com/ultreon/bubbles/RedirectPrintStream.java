@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.chars.CharLists;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedirectPrintStream extends PrintStream {
-    public RedirectPrintStream(Level level, Logger logger, Marker marker) {
-        super(new WriterOutputStream(new RedirectWriter(level, logger, marker), StandardCharsets.UTF_8), true, StandardCharsets.UTF_8);
+    public RedirectPrintStream(Level level, Logger logger) {
+        super(new WriterOutputStream(new RedirectWriter(level, logger), StandardCharsets.UTF_8), true, StandardCharsets.UTF_8);
     }
 
     private static class RedirectWriter extends Writer {
@@ -27,14 +26,12 @@ public class RedirectPrintStream extends PrintStream {
         private String cache = null;
         private final Level level;
         private final Logger logger;
-        private final Marker marker;
         private boolean carriageReturn;
         private final Object lock = new Object();
 
-        public RedirectWriter(Level level, Logger logger, Marker marker) {
+        public RedirectWriter(Level level, Logger logger) {
             this.level = level;
             this.logger = logger;
-            this.marker = marker;
         }
 
         @Override
@@ -76,7 +73,7 @@ public class RedirectPrintStream extends PrintStream {
         public void flush() throws IOException {
             synchronized (lock) {
                 for (var line : lines) {
-                    logger.log(level, marker, line);
+                    logger.log(level, line);
                 }
                 lines.clear();
             }

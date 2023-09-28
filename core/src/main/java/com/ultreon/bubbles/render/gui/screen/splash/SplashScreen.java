@@ -12,7 +12,7 @@ import com.ultreon.bubbles.render.gui.screen.LoadScreen;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 
 public class SplashScreen extends Screen {
     private static final float DURATION = 6000f;
@@ -43,7 +43,7 @@ public class SplashScreen extends Screen {
 //            throw new RuntimeException(e);
 //        }
 
-        logoTexture = new Texture("assets/bubbles/logo.png");
+        logoTexture = new Texture("assets/bubbleblaster/logo.png");
 
         BubbleBlaster.getInstance().startLoading();
         Utils.hideCursor();
@@ -64,7 +64,7 @@ public class SplashScreen extends Screen {
 
         final long timeDiff = System.currentTimeMillis() - this.startTime;
         float zoom = (float) interpolate(FROM_ZOOM, TO_ZOOM, Mth.clamp(timeDiff / DURATION, 0f, 1f));
-        Vec2f thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);
+        Vector2 thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);
         this.zoom = zoom;
 
         float drawWidth = thumbnail.x;

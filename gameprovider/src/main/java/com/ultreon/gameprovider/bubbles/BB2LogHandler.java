@@ -14,7 +14,7 @@ public class BB2LogHandler implements LogHandler {
 
     @Override
     public void log(long time, LogLevel level, LogCategory category, String msg, Throwable exc, boolean fromReplay, boolean wasSuppressed) {
-        Marker marker = this.markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
+        Marker marker = markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
         LOGGER.log(getLevel(level), marker, msg, exc);
     }
 
@@ -24,20 +24,13 @@ public class BB2LogHandler implements LogHandler {
     }
 
     private static Level getLevel(LogLevel level) {
-        switch (level) {
-            case INFO:
-                return Level.INFO;
-            case WARN:
-                return Level.WARN;
-            case DEBUG:
-                return Level.DEBUG;
-            case ERROR:
-                return Level.ERROR;
-            case TRACE:
-                return Level.TRACE;
-            default:
-                throw new IllegalArgumentException();
-        }
+        return switch (level) {
+            case INFO -> Level.INFO;
+            case WARN -> Level.WARN;
+            case DEBUG -> Level.DEBUG;
+            case ERROR -> Level.ERROR;
+            case TRACE -> Level.TRACE;
+        };
     }
 
     @Override

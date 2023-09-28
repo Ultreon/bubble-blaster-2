@@ -5,6 +5,7 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -55,20 +56,23 @@ public class Notifications implements Renderable {
         this.lock.unlock();
     }
 
-    public void notifyPlayer(Notification notification) {
-        this.lock.lock();
+    public void notify(Notification notification) {
+        if (!BubbleBlaster.isOnRenderingThread()) {
+            BubbleBlaster.invoke(() -> this.notify(notification));
+            return;
+        }
+
         this.notifications.addLast(notification);
-        this.lock.lock();
     }
 
     public void notifyOnce(UUID uuid, Notification message) {
         if (!this.usedNotifications.contains(uuid)) {
             this.usedNotifications.add(uuid);
-            this.notifyPlayer(message);
+            this.notify(message);
         }
     }
 
-    public void unavailable() {
-        this.notifyPlayer(new Notification("Not Available!", "This feature isn't available yes.", "feature locker"));
+    public void unavailable(String feature) {
+        this.notify(new Notification("Unavailable Feature", "'%s' isn't available yet.".formatted(feature), "Feature Locker", Duration.ofSeconds(5)));
     }
 }

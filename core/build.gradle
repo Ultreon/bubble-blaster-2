@@ -104,20 +104,21 @@ dependencies {
     // Projects
     api project(":gameprovider")
     implementation project(":minimal")
-    api "it.unimi.dsi:fastutil:8.5.9"
-    api "it.unimi.dsi:fastutil-extra:8.5.4"
-    api "it.unimi.dsi:fastutil-core:8.5.9"
-    api "org.checkerframework:checker:3.25.0"
+    api "it.unimi.dsi:fastutil:$fastutil_version"
+    api "it.unimi.dsi:fastutil-extra:$fastutil_extras_version"
+    api "it.unimi.dsi:fastutil-core:$fastutil_version"
+    api "org.checkerframework:checker:$checker_framework_version"
 
     api "com.github.Ultreon:ultreon-data:$ultreon_data_version"
-    api 'org.jetbrains:annotations:23.0.0'
+    api "org.jetbrains:annotations:$jetbrains_annotations_version"
 
     // Test dependencies
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
 
     // Misc
-    api "org.jetbrains:annotations:23.0.0"
+    api "org.jetbrains:annotations:$jetbrains_annotations_version"
+    api "com.electronwill.night-config:toml_android:$nightconfig_version"
 
     // CoreLibs
     api "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
@@ -131,19 +132,15 @@ dependencies {
     api "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
     api "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
 
-    // FlatLAF
-    api "com.formdev:flatlaf:$flatlaf_version"
-    api "com.formdev:flatlaf-intellij-themes:$flatlaf_version"
-    api "com.formdev:flatlaf-extras:$flatlaf_version"
-    api "com.formdev:flatlaf-swingx:$flatlaf_version"
-
     // Apis
-    api "commons-io:commons-io:2.11.0"
-    api "org.apache.commons:commons-lang3:3.12.0"
-    api "org.apache.commons:commons-collections4:4.4"
-    api "org.apache.commons:commons-text:1.10.0"
-    api "org.apache.commons:commons-math3:3.6.1"
-    api "org.apache.ant:ant:1.10.12"
+    api "commons-io:commons-io:$commons_io_version"
+    api "commons-net:commons-net:$commons_net_version"
+    api "org.apache.commons:commons-lang3:$commons_lang_version"
+    api "org.apache.commons:commons-lang3:$commons_lang_version"
+    api "org.apache.commons:commons-collections4:$commons_collections_version"
+    api "org.apache.commons:commons-text:$commons_text_version"
+    api "org.apache.commons:commons-math3:$commons_math_version"
+    api "org.apache.ant:ant:$ant_version"
 
     // Local jars.
     api fileTree(dir: "$projectDir/libs", include: ["*.jar"])
@@ -175,13 +172,7 @@ dependencies {
     }
 
     // SLF4J
-    api "org.slf4j:slf4j-api:[1.6, 1.7)!!"
-
-    // JHLabs
-    api "com.jhlabs:filters:2.0.235-1"
-
-    // SwingLabs
-    api "org.swinglabs.swingx:swingx-all:1.6.5-1"
+    api "org.slf4j:slf4j-api:$slf4j_version"
 
     // OSHi (For system info in crash reports)
     api "com.github.oshi:oshi-core:$oshi_version"

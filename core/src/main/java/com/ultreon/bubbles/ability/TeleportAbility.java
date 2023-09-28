@@ -1,5 +1,7 @@
 package com.ultreon.bubbles.ability;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.ability.triggers.AbilityKeyTrigger;
 import com.ultreon.bubbles.ability.triggers.types.AbilityKeyTriggerType;
 import com.ultreon.bubbles.entity.Entity;
@@ -11,7 +13,6 @@ import com.ultreon.bubbles.init.Abilities;
 import com.ultreon.bubbles.util.helpers.Mth;
 
 import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
 import java.util.Objects;
 
 /**
@@ -61,14 +62,14 @@ public class TeleportAbility extends Ability<TeleportAbility> {
             deltaTime = Mth.clamp(deltaTime, 0, 2500);  // 0 to 2.5 seconds.
 
             // Motion.
-            double deltaMotion = Math.pow((double) deltaTime / 100, 2);
+            float deltaMotion = (float) deltaTime / 100 * ((float) deltaTime / 100);
 
             // Calculate position difference from the player's rotation and position.
-            double angelRadians = Math.toRadians(player.getRotation());
-            double tempVelX = Math.cos(angelRadians) * deltaMotion;
-            double tempVelY = Math.sin(angelRadians) * deltaMotion;
+            float angelRadians = player.getRotation() * MathUtils.degRad;
+            float tempVelX = MathUtils.cos(angelRadians) * deltaMotion;
+            float tempVelY = MathUtils.sin(angelRadians) * deltaMotion;
 
-            Point2D pos = new Point2D.Double(player.getX() + tempVelX, player.getY() + tempVelY);
+            Vector2 pos = new Vector2(player.getX() + tempVelX, player.getY() + tempVelY);
 
             // Teleport to that position.
             player.teleport(pos);

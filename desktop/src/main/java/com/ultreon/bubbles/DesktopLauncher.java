@@ -1,6 +1,5 @@
 package com.ultreon.bubbles;
 
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.ultreon.libs.crash.v0.CrashLog;
@@ -20,7 +19,7 @@ public class DesktopLauncher {
         config.setInitialVisible(false);
         config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         config.setTitle("Bubble Blaster 2");
-        config.setWindowIcon("assets/bubbles/icon.png");
+        config.setWindowIcon("assets/bubbleblaster/icon.png");
 
         Arguments arguments = new Arguments();
         arguments.parse(argv);

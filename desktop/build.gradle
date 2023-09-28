@@ -20,7 +20,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath group: 'commons-io', name: 'commons-io', version: "$commons_io_version"
         classpath "com.google.code.gson:gson:2.10.1"
     }
 }
@@ -65,23 +65,24 @@ dependencies {
     implementation project(":core")
 
     // Annotations
-    implementation "org.checkerframework:checker:3.25.0"
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation "org.checkerframework:checker:$checker_framework_version"
+    implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
 
     // Test dependencies
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
 
     // FastUtil
-    implementation "it.unimi.dsi:fastutil:8.5.9"
-    implementation "it.unimi.dsi:fastutil-extra:8.5.4"
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "it.unimi.dsi:fastutil:$fastutil_version"
+    implementation "it.unimi.dsi:fastutil-extra:$fastutil_extras_version"
+    implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
 
     // UBO
     implementation "com.github.Ultreon:ultreon-data:$ultreon_data_version"
 
     // Misc
-    implementation "org.jetbrains:annotations:23.0.0"
+    implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
+    implementation "com.electronwill.night-config:toml_android:$nightconfig_version"
 
     // CoreLibs
     implementation "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
@@ -96,12 +97,12 @@ dependencies {
     implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
 
     // Apis
-    implementation "commons-io:commons-io:2.11.0"
-    implementation "org.apache.commons:commons-lang3:3.12.0"
-    implementation "org.apache.commons:commons-collections4:4.4"
-    implementation "org.apache.commons:commons-text:1.10.0"
-    implementation "org.apache.commons:commons-math3:3.6.1"
-    implementation "org.apache.ant:ant:1.10.12"
+    implementation "commons-io:commons-io:$commons_io_version"
+    implementation "org.apache.commons:commons-lang3:$commons_lang_version"
+    implementation "org.apache.commons:commons-collections4:$commons_collections_version"
+    implementation "org.apache.commons:commons-text:$commons_text_version"
+    implementation "org.apache.commons:commons-math3:$commons_math_version"
+    implementation "org.apache.ant:ant:$ant_version"
 
     // Local jars.
     implementation fileTree(dir: "$projectDir/libs", include: ["*.jar"])
@@ -133,13 +134,7 @@ dependencies {
     }
 
     // SLF4J
-    implementation "org.slf4j:slf4j-api:[1.6, 1.7)!!"
-
-    // JHLabs
-    implementation "com.jhlabs:filters:2.0.235-1"
-
-    // SwingLabs
-    implementation "org.swinglabs.swingx:swingx-all:1.6.5-1"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
 
     // OSHi (For system info in crash reports)
     implementation "com.github.oshi:oshi-core:$oshi_version"
@@ -178,7 +173,6 @@ dependencies {
 
     // Misc
     implementation 'it.unimi.dsi:fastutil:8.5.12'
-    implementation 'com.raylabz:opensimplex:1.0.3'
 
     implementation "space.earlygrey:shapedrawer:$shapedrawer_version"
 
@@ -189,7 +183,7 @@ dependencies {
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
 
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
     implementation "com.google.code.findbugs:jsr305:$jsr_version"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"

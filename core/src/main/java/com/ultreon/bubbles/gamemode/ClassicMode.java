@@ -7,7 +7,7 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.ExceptionUtils;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.data.types.MapType;
@@ -142,8 +142,8 @@ public class ClassicMode extends Gamemode {
     }
 
     @Override
-    public @NotNull Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
-        return new Vec2f(
+    public @NotNull Vector2 getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry) {
+        return new Vector2(
                 (int) getGameBounds().getMaxX() + entity.getBounds().width,
                 (int) entity.getYRng().getNumber(getGameBounds().getMinY() - entity.getBounds().height, getGameBounds().getMaxY() + entity.getBounds().height, usageId.toString().toCharArray(), spawnIndex, retry)
         );

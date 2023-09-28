@@ -3,6 +3,7 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.command.CommandConstructor;
@@ -10,7 +11,6 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.GraphicsUtils;
-import com.ultreon.libs.commons.v0.vector.Vec2i;
 
 import java.util.*;
 
@@ -60,7 +60,7 @@ public class CommandScreen extends Screen {
     public boolean keyPress(int keyCode) {
         if (super.keyPress(keyCode)) return true;
 
-        if (keyCode == Input.Keys.BACKSPACE && !currentText.isEmpty()) {
+        if (keyCode == Input.Keys.BACKSPACE && !currentText.isEmpty() && cursorIndex > 0) {
             currentText = currentText.substring(0, currentText.length() - 1);
             cursorIndex--;
             return true;
@@ -173,7 +173,7 @@ public class CommandScreen extends Screen {
         renderer.rect(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
 
         renderer.setColor(Color.argb(0xffffffff));
-        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vec2i(2, height - 28), 28, font);
+        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vector2(2f, height - 28f), 28, font);
 
         float cursorX;
         renderer.setColor(Color.argb(0xff0090c0));

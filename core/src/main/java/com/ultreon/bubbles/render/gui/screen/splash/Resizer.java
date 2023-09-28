@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen.splash;
 
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 
 public class Resizer {
     private final float ratio;
@@ -27,7 +27,7 @@ public class Resizer {
         this.sourceHeight = srcHeight;
     }
 
-    public Vec2f thumbnail(float maxWidth, float maxHeight) {
+    public Vector2 thumbnail(float maxWidth, float maxHeight) {
         float aspectRatio;
         float width;
         float height;
@@ -57,7 +57,7 @@ public class Resizer {
             }
         }
 
-        return new Vec2f(width, height);
+        return new Vector2(width, height);
     }
 
     /**

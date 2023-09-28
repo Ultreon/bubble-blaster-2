@@ -22,7 +22,7 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.data.types.MapType;
@@ -284,7 +284,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     }
 
     @NotNull
-    public abstract Vec2f getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry);
+    public abstract Vector2 getSpawnLocation(Entity entity, Identifier usageId, long spawnIndex, int retry);
 
     public boolean doesSpawn(Entity entity) {
         return true;
@@ -358,7 +358,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
     }
 
     protected void initializeClassic(Environment environment, Messenger messenger) {
-        int maxBubbles = GameSettings.instance().getMaxBubbles();
+        int maxBubbles = GameSettings.instance().maxBubbles;
 
         try {
             // Spawn bubbles
@@ -371,7 +371,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
             for (int i = 0; i < maxBubbles; i++) {
                 int retry = 0;
 
-                Vec2f pos = new Vec2f(xRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1), yRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1));
+                Vector2 pos = new Vector2(xRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1), yRng.getNumber(0, BubbleBlaster.getInstance().getWidth(), -i - 1));
                 BubbleSpawnContext.inContext(spawnIndex, retry, () -> environment.spawn(Entities.BUBBLE.create(environment), pos));
 
                 spawnIndex--;
@@ -382,7 +382,7 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
             // Spawn player
             messenger.send("Spawning player...");
             game.loadPlayEnvironment();
-            environment.spawn(game.player, new Vec2f(game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f));
+            environment.spawn(game.player, new Vector2(game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f));
         } catch (Exception e) {
             CrashLog crashLog = new CrashLog("Could not initialize classic game type.", e);
 

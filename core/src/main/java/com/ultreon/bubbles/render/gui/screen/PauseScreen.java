@@ -25,24 +25,24 @@ public class PauseScreen extends Screen {
     private IngameButton prevButton;
     private IngameButton nextButton;
 
-    private final TextObject minRadius = TextObject.translation("bubbles/screen/pause/min_radius");
-    private final TextObject maxRadius = TextObject.translation("bubbles/screen/pause/max_radius");
-    private final TextObject minSpeed = TextObject.translation("bubbles/screen/pause/min_speed");
-    private final TextObject maxSpeed = TextObject.translation("bubbles/screen/pause/max_speed");
-    private final TextObject defChance = TextObject.translation("bubbles/screen/pause/default_chance");
-    private final TextObject curChance = TextObject.translation("bubbles/screen/pause/current_chance");
-    private final TextObject defPriority = TextObject.translation("bubbles/screen/pause/default_priority");
-    private final TextObject curPriority = TextObject.translation("bubbles/screen/pause/current_priority");
-    private final TextObject defTotPriority = TextObject.translation("bubbles/screen/pause/default_total_priority");
-    private final TextObject curTotPriority = TextObject.translation("bubbles/screen/pause/current_total_priority");
-    private final TextObject scoreMod = TextObject.translation("bubbles/screen/pause/score_modifier");
-    private final TextObject attackMod = TextObject.translation("bubbles/screen/pause/attack_modifier");
-    private final TextObject defenseMod = TextObject.translation("bubbles/screen/pause/defense_modifier");
-    private final TextObject canSpawn = TextObject.translation("bubbles/screen/pause/can_spawn");
-    private final TextObject description = TextObject.translation("bubbles/screen/pause/description");
-    private final TextObject random = TextObject.translation("bubbles/other/random");
-    private final TextObject boolTrue = TextObject.translation("bubbles/other/true");
-    private final TextObject boolFalse = TextObject.translation("bubbles/other/False");
+    private final TextObject minRadius = TextObject.translation("bubbleblaster/screen/pause/min_radius");
+    private final TextObject maxRadius = TextObject.translation("bubbleblaster/screen/pause/max_radius");
+    private final TextObject minSpeed = TextObject.translation("bubbleblaster/screen/pause/min_speed");
+    private final TextObject maxSpeed = TextObject.translation("bubbleblaster/screen/pause/max_speed");
+    private final TextObject defChance = TextObject.translation("bubbleblaster/screen/pause/default_chance");
+    private final TextObject curChance = TextObject.translation("bubbleblaster/screen/pause/current_chance");
+    private final TextObject defPriority = TextObject.translation("bubbleblaster/screen/pause/default_priority");
+    private final TextObject curPriority = TextObject.translation("bubbleblaster/screen/pause/current_priority");
+    private final TextObject defTotPriority = TextObject.translation("bubbleblaster/screen/pause/default_total_priority");
+    private final TextObject curTotPriority = TextObject.translation("bubbleblaster/screen/pause/current_total_priority");
+    private final TextObject scoreMod = TextObject.translation("bubbleblaster/screen/pause/score_modifier");
+    private final TextObject attackMod = TextObject.translation("bubbleblaster/screen/pause/attack_modifier");
+    private final TextObject defenseMod = TextObject.translation("bubbleblaster/screen/pause/defense_modifier");
+    private final TextObject canSpawn = TextObject.translation("bubbleblaster/screen/pause/can_spawn");
+    private final TextObject description = TextObject.translation("bubbleblaster/screen/pause/description");
+    private final TextObject random = TextObject.translation("bubbleblaster/other/random");
+    private final TextObject boolTrue = TextObject.translation("bubbleblaster/other/true");
+    private final TextObject boolFalse = TextObject.translation("bubbleblaster/other/False");
 
     private final int differentBubbles;
     private static int helpIndex = 0;
@@ -145,15 +145,15 @@ public class PauseScreen extends Screen {
         ////////////////////////
         renderer.setColor(Color.argb(0x80ffffff));
         renderer.setFont(Fonts.DONGLE_75.get());
-        renderer.drawCenteredText(Language.translate("bubbles/screen/pause/text"), 75, (float)width / 2);
+        renderer.drawCenteredText(Language.translate("bubbleblaster/screen/pause/text"), 75, (float)width / 2);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //     Exit button     //
         /////////////////////////
-        exitButton.setText(Language.translate("bubbles/screen/pause/exit"));
+        exitButton.setText(Language.translate("bubbleblaster/screen/pause/exit"));
         renderer.subInstance(exitButton.getBounds(), subRender -> exitButton.render(subRender, mouseX, mouseY, deltaTime));
 
-        forfeitButton.setText(Language.translate("bubbles/screen/pause/forfeit"));
+        forfeitButton.setText(Language.translate("bubbleblaster/screen/pause/forfeit"));
         renderer.subInstance(forfeitButton.getBounds(), subRender -> forfeitButton.render(subRender, mouseX, mouseY, deltaTime));
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +161,8 @@ public class PauseScreen extends Screen {
         /////////////////////////////////////////
 
         // Navigation buttons.
-        nextButton.setText(Language.translate("bubbles/other/next"));
-        prevButton.setText(Language.translate("bubbles/other/prev"));
+        nextButton.setText(Language.translate("bubbleblaster/other/next"));
+        prevButton.setText(Language.translate("bubbleblaster/other/prev"));
 
         if (helpIndex > 0) renderer.subInstance(prevButton.getBounds(), subRender -> prevButton.render(subRender, mouseX, mouseY, deltaTime));
         if (helpIndex < differentBubbles - 1) renderer.subInstance(nextButton.getBounds(), subRender -> nextButton.render(subRender, mouseX, mouseY, deltaTime));

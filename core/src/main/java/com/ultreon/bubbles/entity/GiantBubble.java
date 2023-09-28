@@ -7,7 +7,7 @@ import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.init.Entities;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Bubble Entity.
@@ -32,7 +32,7 @@ public class GiantBubble extends Bubble {
      * @param environment the environment to spawn in.
      */
     @Override
-    public void onSpawn(Vec2f pos, Environment environment) {
+    public void onSpawn(Vector2 pos, Environment environment) {
 
         // Get random properties
         BubbleRandomizer randomizer = this.environment.getBubbleRandomizer();

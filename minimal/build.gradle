@@ -75,7 +75,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdx_version:natives-desktop"
 
     implementation "com.google.guava:guava:$guava_version"
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
     
     // Fabric
     implementation "org.ow2.asm:asm:${project.asm_version}"
@@ -91,7 +91,7 @@ dependencies {
 
     implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
 
-    implementation "it.unimi.dsi:fastutil-core:8.5.9"
+    implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
     implementation "com.google.code.findbugs:jsr305:$jsr_version"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"

@@ -3,9 +3,11 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.command.*;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
+import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.event.v1.LifecycleEvents;
 import com.ultreon.bubbles.mod.ModDataManager;
@@ -150,6 +152,7 @@ public final class LoadScreen extends Screen implements Runnable {
         LOGGER.info("Loading started");
 
         GameSettings.nopInit();
+        BubbleBlasterConfig.register();
 
         this.progMain = new ProgressMessenger(msgMain, 11);
 
@@ -215,7 +218,7 @@ public final class LoadScreen extends Screen implements Runnable {
         }
 
         this.addModIcon("java", "textures/mods/java.png");
-        this.addModIcon("bubbles", "icon.png");
+        this.addModIcon("bubbleblaster", "icon.png");
 
         LifecycleEvents.SETUP.factory().onSetup(game);
         this.progAlt = null;
@@ -235,7 +238,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
         // Loading object holders
         this.progMain.sendNext("Loading the fonts...");
-        BubbleBlaster.runLater(() -> {
+        BubbleBlaster.invokeAndWait(() -> {
             game().loadFonts();
             GameEvents.LOAD_FONTS.factory().onLoadFonts(game::loadFont);
         });
@@ -271,6 +274,8 @@ public final class LoadScreen extends Screen implements Runnable {
         // Registry dump.
         this.progMain.sendNext("Registry Dump.");
         Registry.dump();
+
+        ConfigEvents.RELOAD_ALL.factory().onReloadAll();
 
         LoadScreen.done = true;
 

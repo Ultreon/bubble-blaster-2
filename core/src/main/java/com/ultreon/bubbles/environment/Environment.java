@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.environment;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.Constants;
 import com.ultreon.bubbles.CrashFiller;
@@ -26,6 +27,7 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gameplay.GameplayStorage;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
+import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
@@ -39,7 +41,6 @@ import com.ultreon.data.types.StringType;
 import com.ultreon.libs.commons.v0.DummyMessenger;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.crash.v0.CrashCategory;
 import com.ultreon.libs.crash.v0.CrashLog;
@@ -56,6 +57,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public final class Environment implements CrashFiller {
     private static final int RNG_INDEX_SPAWN = 0;
@@ -66,7 +68,6 @@ public final class Environment implements CrashFiller {
     private final Gamemode gamemode;
     private final long seed;
     private GameplayEvent currentGameplayEvent;
-    private Thread gameEventHandlerThread;
 
     // Flags.
     private volatile boolean gameOver = false;
@@ -107,18 +108,18 @@ public final class Environment implements CrashFiller {
     private Player player;
 
     // Locks
-    private final Object gameOverLock = new Object();
-    private final Object entitiesLock = new Object();
+    private final ReentrantLock gameOverLock = new ReentrantLock();
+    private final ReentrantLock entitiesLock = new ReentrantLock();
 
     // Game
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private String name = "UNKNOWN WORLD";
     private int freezeTicks;
     boolean shuttingDown;
-    private boolean saving;
     private GameplayStorage gameplayStorage = new GameplayStorage();
-    /// Constructors.
+    public final ReentrantLock saveLock = new ReentrantLock(true);
 
+    /// Constructors.
     public Environment(GameSave save, Gamemode gamemode, int seed) {
         this(save, gamemode, (long) seed);
     }
@@ -159,16 +160,23 @@ public final class Environment implements CrashFiller {
         }
     }
 
-    public void save(GameSave save, Messenger messenger) throws IOException {
-        this.saving = true;
+    public boolean save(GameSave save, Messenger messenger) throws IOException {
+        if (this.saveLock.tryLock()) return false;
+        this.game.notifications.notify(new Notification("Saving", "The game is being saved...", "Auto Save Feature"));
+
+        // Gamemode implementation for saving data.
         this.gamemode.onSave(this, save, messenger);
 
+        // Save environment data.
         dumpRegistries(save, messenger);
         dumpPlayers(save, messenger);
         save.dump("environment", saveEnvironment(), true);
         save.dump("info", saveInfo(), true);
         save.dump("gameplay", this.gameplayStorage.save());
-        this.saving = false;
+
+        this.saveLock.unlock();
+        this.game.notifications.notify(new Notification("Saved", "The game has been saved!", "Auto Save Feature"));
+        return true;
     }
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
@@ -250,17 +258,19 @@ public final class Environment implements CrashFiller {
         return bubbleRandomizer;
     }
 
-    public void triggerGameOver() {
-        synchronized (gameOverLock) {
-            if (this.isAlive()) {
-                this.setResultScore(Math.round(Objects.requireNonNull(getPlayer()).getScore()));
-            }
+    @CanIgnoreReturnValue
+    public boolean triggerGameOver() {
+        if (!gameOverLock.tryLock()) return false;
 
-            this.gameOver = true;
-            this.gamemode.onGameOver();
-            this.game.showScreen(new GameOverScreen(this.getResultScore()));
-            this.save();
+        if (this.isAlive()) {
+            this.setResultScore(Math.round(Objects.requireNonNull(getPlayer()).getScore()));
         }
+
+        this.gameOver = true;
+        this.gamemode.onGameOver();
+        this.game.showScreen(new GameOverScreen(this.getResultScore()));
+        this.save();
+        return true;
     }
 
     public float getLocalDifficulty() {
@@ -285,7 +295,7 @@ public final class Environment implements CrashFiller {
     }
 
     public float getGlobalBubbleSpeedModifier() {
-        return globalBubbleFreeze ? 0 : globalBubbleSpeedModifier * Constants.BUBBLE_SPEED_MODIFIER;
+        return globalBubbleFreeze ? 0 : globalBubbleSpeedModifier;
     }
 
     public void setGlobalBubbleFreeze(boolean b) {
@@ -514,7 +524,7 @@ public final class Environment implements CrashFiller {
     public void spawn(EntityType<?> entityType, SpawnInformation.SpawnReason reason, long spawnIndex, int retry) {
         BubbleBlaster.runOnMainThread(() -> {
             Entity entity = entityType.create(this);
-            @NotNull Vec2f pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
+            @NotNull Vector2 pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
             spawn(entity, pos);
         });
     }
@@ -525,23 +535,23 @@ public final class Environment implements CrashFiller {
      * @param entity entity to spawn.
      * @param pos    spawn location.
      */
-    public void spawn(Entity entity, Vec2f pos) {
+    public void spawn(Entity entity, Vector2 pos) {
         BubbleBlaster.runOnMainThread(() -> {
             entity.prepareSpawn(SpawnInformation.fromNaturalSpawn(pos));
             entity.onSpawn(pos, this);
-            synchronized (entitiesLock) {
-                this.entities.add(entity);
-            }
+            this.entitiesLock.lock();
+            this.entities.add(entity);
+            this.entitiesLock.unlock();
         });
     }
 
     public void spawn(Entity entity) {
-        Vec2f pos = entity.getPos();
+        Vector2 pos = entity.getPos();
         entity.prepareSpawn(SpawnInformation.fromNaturalSpawn(pos));
         entity.onSpawn(pos, this);
-        synchronized (entitiesLock) {
-            this.entities.add(entity);
-        }
+        this.entitiesLock.lock();
+        this.entities.add(entity);
+        this.entitiesLock.unlock();
     }
 
     /**
@@ -571,18 +581,19 @@ public final class Environment implements CrashFiller {
         }
 
         if (this.initialized) {
-            synchronized (this.entitiesLock) {
+            entities: {
+                if (!this.entitiesLock.tryLock()) break entities;
+
                 // Tick entities
                 this.entities.removeIf(Entity::willBeDeleted);
                 for (Entity entity : this.entities) {
-                    if (entity.isNotSpawned()) continue;
                     entity.tick(this);
                 }
 
-                // Tick entity spawning
-                tickSpawning();
+                this.entitiesLock.unlock();
             }
 
+            tickSpawning();
             tickBloodMoon();
 
             // Tick gameplay events
@@ -612,7 +623,7 @@ public final class Environment implements CrashFiller {
     }
 
     private void tickSpawning() {
-        if (entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().getMaxBubbles()) {
+        if (entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().maxBubbles) {
             EntityType<? extends Bubble> entityType = Bubble.getRandomType(this, bubbleRandomizer.getVariantRng());
 
             Bubble bubble = BubbleSpawnContext.inContext(ticks, 0, () -> entityType.create(this));
@@ -717,7 +728,7 @@ public final class Environment implements CrashFiller {
     }
 
     @Nullable
-    public Entity getNearestEntity(Vec2f pos) {
+    public Entity getNearestEntity(Vector2 pos) {
         double distance = Double.MAX_VALUE;
         Entity nearest = null;
         for (Entity entity : entities) {
@@ -730,7 +741,7 @@ public final class Environment implements CrashFiller {
         return nearest;
     }
 
-    public Entity getNearestEntity(Vec2f pos, EntityType<?> targetType) {
+    public Entity getNearestEntity(Vector2 pos, EntityType<?> targetType) {
         double distance = Double.MAX_VALUE;
         Entity nearest = null;
         for (Entity entity : entities) {
@@ -750,10 +761,10 @@ public final class Environment implements CrashFiller {
     }
 
     public boolean isSaving() {
-        return this.saving;
+        return this.saveLock.isLocked();
     }
 
-    public void dispose() throws InterruptedException {
+    public void dispose() {
         this.gamemode.end();
         this.entities.clear();
     }

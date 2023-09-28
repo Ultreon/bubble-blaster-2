@@ -52,32 +52,32 @@ public class TitleScreen extends Screen {
 
         startButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 220, 400, 60)
-                .text(TextObject.translation("bubbles/screen/title/start"))
+                .text(TextObject.translation("bubbleblaster/screen/title/start"))
                 .command(this::startGame)
                 .build());
         savesButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 300, 400, 60)
-                .text(TextObject.translation("bubbles/screen/title/saves"))
+                .text(TextObject.translation("bubbleblaster/screen/title/saves"))
                 .command(this::openSavesSelection)
                 .build());
         modsButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 380, 190, 60)
-                .text(TextObject.translation("bubbles/screen/title/mods"))
+                .text(TextObject.translation("bubbleblaster/screen/title/mods"))
                 .command(this::openModList)
                 .build());
         optionsButton = add(new TitleButton.Builder()
                 .bounds(width / 2 + 10, 380, 190, 60)
-                .text(TextObject.translation("bubbles/screen/title/options"))
+                .text(TextObject.translation("bubbleblaster/screen/title/options"))
                 .command(this::openOptions)
                 .build());
         languageButton = add(new TitleButton.Builder()
                 .bounds(width / 2 - 200, 460, 190, 60)
-                .text(TextObject.translation("bubbles/screen/title/language"))
+                .text(TextObject.translation("bubbleblaster/screen/title/language"))
                 .command(this::openLanguageSettings)
                 .build());
         quitButton = add(new TitleButton.Builder()
                 .bounds(width / 2 + 10, 460, 190, 60)
-                .text(TextObject.translation("bubbles/screen/title/quit"))
+                .text(TextObject.translation("bubbleblaster/screen/title/quit"))
                 .command(game::shutdown)
                 .build());
     }

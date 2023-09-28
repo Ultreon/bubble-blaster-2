@@ -211,7 +211,7 @@ public class ClassicModeHud extends GameHud {
     private void drawLevelText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Level
         renderer.setColor(titleColor);
-        renderer.drawText(infoFont, Language.translate("bubbles/Info/Level"), 140, 20, Anchor.CENTER);
+        renderer.drawText(infoFont, Language.translate("bubbleblaster/Info/Level"), 140, 20, Anchor.CENTER);
         renderer.setColor(valueColor);
         renderer.drawText(font, String.valueOf(player.getLevel()), 140, 50, Anchor.CENTER);
     }
@@ -228,7 +228,7 @@ public class ClassicModeHud extends GameHud {
     private void drawScoreText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
         // Score
         renderer.setColor(titleColor);
-        renderer.drawText(infoFont, Language.translate("bubbles/Info/Score"), 70, 20, Anchor.CENTER);
+        renderer.drawText(infoFont, Language.translate("bubbleblaster/Info/Score"), 70, 20, Anchor.CENTER);
         renderer.setColor(valueColor);
         renderer.drawText(font, String.valueOf((int) player.getScore()), 70, 50, Anchor.CENTER);
     }

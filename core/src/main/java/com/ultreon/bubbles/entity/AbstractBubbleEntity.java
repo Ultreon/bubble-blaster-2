@@ -1,9 +1,12 @@
 package com.ultreon.bubbles.entity;
 
+import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.libs.commons.v0.vector.Vec2f;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.data.types.MapType;
+
+import java.util.UUID;
 
 /**
  * ItemType Entity base class
@@ -19,7 +22,7 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
     }
 
     @Override
-    public void onSpawn(Vec2f pos, Environment environment) {
+    public void onSpawn(Vector2 pos, Environment environment) {
         this.health = getMaxHealth();
     }
 
@@ -32,11 +35,13 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
     }
 
     @Override
+    public void tick(Environment environment) {
+        super.tick(environment);
+    }
+
+    @Override
     public void load(MapType data) {
         super.load(data);
     }
 
-    public String toSimpleString() {
-        return id() + "@(" + Math.round(getX()) + "," + Math.round(getY()) + ")";
-    }
 }

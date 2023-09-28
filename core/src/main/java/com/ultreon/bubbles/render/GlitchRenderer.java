@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.init.Fonts;
 
 import java.security.SecureRandom;
@@ -39,6 +40,8 @@ public class GlitchRenderer {
     }
 
     public void render(Renderer renderer) {
+        if (!BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) return;
+
         SecureRandom rand = new SecureRandom();
         this.addChar(randomChar(), rand.nextInt(matrixW), rand.nextInt(matrixH), new Random().nextInt(0xffffff));
 

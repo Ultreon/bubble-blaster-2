@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.save;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.common.References;
+import com.ultreon.bubbles.common.GameFolders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +39,7 @@ public class SaveLoader {
      * Save loader constructor.
      */
     private SaveLoader() {
-        savesDir = References.SAVES_DIR;
+        savesDir = GameFolders.SAVES_DIR;
     }
 
     /**

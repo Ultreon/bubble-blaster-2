@@ -28,13 +28,13 @@ public class CreateSaveScreen extends Screen {
 
     @Override
     public void init() {
-        Label label = add(new Label(TextObject.translation("bubbles/saves/create/title"), this.width / 2 - 150, 0, 300, 50));
+        Label label = add(new Label(TextObject.translation("bubbleblaster/saves/create/title"), this.width / 2 - 150, 0, 300, 50));
         label.setFontSize(36);
 
-        Label label1 = add(new Label(TextObject.translation("bubbles/saves/create/seed"), this.width / 2 - 150, 50, 300, 30));
+        Label label1 = add(new Label(TextObject.translation("bubbleblaster/saves/create/seed"), this.width / 2 - 150, 50, 300, 30));
         label1.setFontSize(20);
 
-        Label label2 = add(new Label(TextObject.translation("bubbles/saves/create/gamemode"), this.width / 2 - 150, 95, 300, 25));
+        Label label2 = add(new Label(TextObject.translation("bubbleblaster/saves/create/gamemode"), this.width / 2 - 150, 95, 300, 25));
         label2.setFontSize(20);
 
         this.seedEntry = add(new OptionsTextEntry.Builder()
@@ -45,7 +45,7 @@ public class CreateSaveScreen extends Screen {
         this.gamemodeList.setEntryRenderer((renderer, width1, height1, y, gamemode, selected, hovered) -> renderEntry(renderer, width1, height1, gamemode, selected, hovered));
         this.createBtn = add(new OptionsButton.Builder()
                 .bounds(this.width / 2 - 100, 60 + 370, 200, 40)
-                .text(TextObject.translation("bubbles/screen/saves/create/button"))
+                .text(TextObject.translation("bubbleblaster/screen/saves/create/button"))
                 .command(this::create)
                 .build());
     }
@@ -86,9 +86,9 @@ public class CreateSaveScreen extends Screen {
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 
-//        font.draw(renderer, TextObject.translation("bubbles/saves/create/title"), 36, width / 2f, height / 2f - 30, Thickness.BOLD, Anchor.S);
-//        font.draw(renderer, TextObject.translation("bubbles/saves/create/seed"), 36, width / 2f - 20, height / 2f + 15, Thickness.BOLD, Anchor.E);
-//        font.draw(renderer, TextObject.translation("bubbles/saves/create/gamemode"), 36, width / 2f - 20, height / 2f + 55, Thickness.BOLD, Anchor.E);
+//        font.draw(renderer, TextObject.translation("bubbleblaster/saves/create/title"), 36, width / 2f, height / 2f - 30, Thickness.BOLD, Anchor.S);
+//        font.draw(renderer, TextObject.translation("bubbleblaster/saves/create/seed"), 36, width / 2f - 20, height / 2f + 15, Thickness.BOLD, Anchor.E);
+//        font.draw(renderer, TextObject.translation("bubbleblaster/saves/create/gamemode"), 36, width / 2f - 20, height / 2f + 55, Thickness.BOLD, Anchor.E);
     }
 
     public OptionsTextEntry getSeedEntry() {

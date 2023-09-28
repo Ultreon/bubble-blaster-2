@@ -21,20 +21,21 @@ import com.ultreon.commons.util.CollisionUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class LoadedGame {
-    private static final BubbleBlaster game = BubbleBlaster.getInstance();
+    private static final BubbleBlaster GAME = BubbleBlaster.getInstance();
 
     // Types
     private final Gamemode gamemode;
 
     private final Environment environment;
+    public ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
 
     // Threads.
-    private Thread autoSaveThread;
     private Thread collisionThread;
     private Thread ambientAudioThread;
-    private Thread gameEventHandlerThread;
 
     // Files / folders.
     private final File saveDir;
@@ -74,19 +75,19 @@ public class LoadedGame {
 
         this.environment.getGamemode().start();
 
-        autoSaver.start();
+        this.autoSaver.begin();
 
         this.collisionThread = new Thread(this::collisionThread, "Collision");
         this.collisionThread.start();
 
-        this.ambientAudioThread = new Thread(this::ambientAudioThread, "audio-Thread");
+        this.ambientAudioThread = new Thread(this::backgroundMusicThread, "audio-Thread");
         this.ambientAudioThread.start();
     }
 
     public void quit() {
-        game.showScreen(new MessengerScreen("Exiting game environment."));
+        GAME.showScreen(new MessengerScreen("Exiting game environment."));
 
-        game.environment = null;
+        GAME.environment = null;
 
         // Unbind events.
         gamemode.end();
@@ -96,12 +97,10 @@ public class LoadedGame {
             ambientAudio.stop();
         }
 
-        if (autoSaveThread != null) autoSaveThread.interrupt();
-        if (collisionThread != null) collisionThread.interrupt();
-        if (ambientAudioThread != null) ambientAudioThread.interrupt();
-        if (gameEventHandlerThread != null) gameEventHandlerThread.interrupt();
+        if (this.ambientAudioThread != null) this.ambientAudioThread.interrupt();
 
-        environment.shutdown();
+        this.environment.shutdown();
+        this.schedulerService.shutdownNow();
 
         // Hide cursor.
         Utils.showCursor();
@@ -112,7 +111,8 @@ public class LoadedGame {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Thread methods     //
     ////////////////////////////
-    private void ambientAudioThread() {
+    private void backgroundMusicThread() {
+        GAME.notifications.unavailable("Background Music");
 //        while (this.running) {
 //            if (this.ambientAudio == null) {
 //                if (!this.environment.isBloodMoonActive() && this.nextAudio < System.currentTimeMillis()) {
@@ -154,7 +154,7 @@ public class LoadedGame {
         double ns = 1000000000 / amountOfUpdates;
         double delta;
 
-        while (this.running && game.isRunning()) {
+        while (this.running && GAME.isRunning()) {
             // Calculate tick delta-time.
             long now = System.nanoTime();
             delta = (now - lastTime) / ns;
@@ -166,46 +166,59 @@ public class LoadedGame {
 
             if (environment.isInitialized()) {
                 if (!BubbleBlaster.isPaused()) {
-                    for (int a = 0; a < loopingEntities.size(); a++)
-                        for (int b = a + 1; b < loopingEntities.size(); b++) {
-                            Entity entityA = loopingEntities.get(a);
-                            Entity entityB = loopingEntities.get(b);
-
-                            if (!entityA.isCollidableWith(entityB) && !entityB.isCollidableWith(entityA)) {
-                                continue;
-                            }
-
-                            try {
-                                // Check intersection.
-                                if (CollisionUtil.isColliding(entityA, entityB)) {
-                                    if (entityA.isCollidableWith(entityB)) {
-                                        // Handling collision by posting collision event, and let the intersected entities attack each other.
-                                        EntityEvents.COLLISION.factory().onCollision(delta, entityA, entityB);
-                                        entityA.onCollision(entityB, delta);
-                                    }
-
-                                    if (entityB.isCollidableWith(entityA)) {
-                                        EntityEvents.COLLISION.factory().onCollision(delta, entityB, entityA);
-                                        entityB.onCollision(entityA, delta);
-                                    }
-
-                                    if (entityA instanceof LivingEntity && entityB.doesAttack(entityA) && entityA.canBeAttackedBy(entityB)) {
-                                        ((LivingEntity) entityA).damage(entityB.getAttributes().getBase(Attribute.ATTACK) * delta / entityA.getAttributes().getBase(Attribute.DEFENSE), new EntityDamageSource(entityB, DamageSourceType.COLLISION));
-                                    }
-
-                                    if (entityB instanceof LivingEntity && entityA.doesAttack(entityB) && entityB.canBeAttackedBy(entityA)) {
-                                        ((LivingEntity) entityB).damage(entityA.getAttributes().getBase(Attribute.ATTACK) * delta / entityB.getAttributes().getBase(Attribute.DEFENSE), new EntityDamageSource(entityA, DamageSourceType.COLLISION));
-                                    }
-                                }
-                            } catch (ArrayIndexOutOfBoundsException exception) {
-                                BubbleBlaster.getLogger().info("Array index was out create bounds! Check check double check!");
-                            }
-                        }
+                    this.checkWorldCollision(loopingEntities, delta);
                 }
             }
         }
 
         BubbleBlaster.getLogger().info("Collision thread will die now.");
+    }
+
+    private void checkWorldCollision(List<Entity> loopingEntities, double delta) {
+        for (int a = 0; a < loopingEntities.size(); a++) {
+            for (int b = a + 1; b < loopingEntities.size(); b++) {
+                try {
+                    Entity entityA = loopingEntities.get(a);
+                    Entity entityB = loopingEntities.get(b);
+
+                    this.checkCollision(entityA, entityB, delta);
+                } catch (RuntimeException e) {
+                    BubbleBlaster.getLogger().warn("An exception occurred when checking collision:", e);
+                }
+            }
+        }
+    }
+
+    private void checkCollision(Entity entityA, Entity entityB, double delta) {
+        if (!entityA.isCollidableWith(entityB) && !entityB.isCollidableWith(entityA)) {
+            return;
+        }
+
+        // Check intersection.
+        if (CollisionUtil.isColliding(entityA, entityB)) {
+            collideEntities(delta, entityA, entityB);
+        }
+    }
+
+    private static void collideEntities(double delta, Entity entityA, Entity entityB) {
+        if (entityA.isCollidableWith(entityB)) {
+            // Handling collision by posting collision event, and let the intersected entities attack each other.
+            EntityEvents.COLLISION.factory().onCollision(delta, entityA, entityB);
+            entityA.onCollision(entityB, delta);
+        }
+
+        if (entityB.isCollidableWith(entityA)) {
+            EntityEvents.COLLISION.factory().onCollision(delta, entityB, entityA);
+            entityB.onCollision(entityA, delta);
+        }
+
+        if (entityA instanceof LivingEntity && entityB.doesAttack(entityA) && entityA.canBeAttackedBy(entityB)) {
+            ((LivingEntity) entityA).damage(entityB.getAttributes().getBase(Attribute.ATTACK) * delta / entityA.getAttributes().getBase(Attribute.DEFENSE), new EntityDamageSource(entityB, DamageSourceType.COLLISION));
+        }
+
+        if (entityB instanceof LivingEntity && entityA.doesAttack(entityB) && entityB.canBeAttackedBy(entityA)) {
+            ((LivingEntity) entityB).damage(entityA.getAttributes().getBase(Attribute.ATTACK) * delta / entityB.getAttributes().getBase(Attribute.DEFENSE), new EntityDamageSource(entityA, DamageSourceType.COLLISION));
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

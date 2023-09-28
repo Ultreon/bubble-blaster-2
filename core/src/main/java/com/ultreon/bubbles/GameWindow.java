@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.event.v1.WindowEvents;
-import com.ultreon.bubbles.input.GameInput;
 import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -111,7 +110,7 @@ public class GameWindow {
     }
 
     public void setFullscreen(boolean enable) {
-        if (!Constants.ALLOW_FULLSCREEN) {
+        if (!Flags.ALLOW_FULLSCREEN) {
             this.setVisible(true);
             this.requestFocus();
             return;

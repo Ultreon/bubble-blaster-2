@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.Fonts;
@@ -200,10 +201,11 @@ public class ModernHud extends GameHud {
             }
 
             renderer.setColor(0xffffffff);
-            renderer.drawRightAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 5);
+            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 5);
 
-            if (appliedEffect.getRemainingTime() < 2L) renderer.setColor(0xffff0000);
-            renderer.drawRightAnchoredText(Fonts.SANS_BOLD_15.get(), TextObject.literal(time).getText(), x + 50, y + 45);
+            if (appliedEffect.getRemainingTime().toSeconds() <= BubbleBlasterConfig.SECS_BEFORE_RED_EFFECT_TIME.get()) renderer.setColor(Color.rgb(0xff0000));
+
+            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_15.get(), TextObject.literal(time).getText(), x + 50, y + 45);
 
             y += 60;
         }

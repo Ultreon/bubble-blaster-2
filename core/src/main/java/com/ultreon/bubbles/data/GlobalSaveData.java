@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.data;
 
-import com.ultreon.bubbles.common.References;
+import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.data.types.MapType;
 
 import java.io.File;
@@ -12,7 +12,7 @@ public final class GlobalSaveData extends GameData {
     private double highScore = 0.0;
     private long highScoreTime = 0L;
 
-    public static final File FILE = new File(References.GAME_DIR, "global.ubo");
+    public static final File FILE = new File(GameFolders.DATA_DIR, "global.ubo");
 
     public static GlobalSaveData instance() {
         return instance;

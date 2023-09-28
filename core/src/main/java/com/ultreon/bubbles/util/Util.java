@@ -3,7 +3,7 @@ package com.ultreon.bubbles.util;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.annotations.Beta;
-import com.ultreon.bubbles.common.References;
+import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.gui.screen.ScreenManager;
 import com.ultreon.bubbles.save.GameSave;
@@ -48,7 +48,7 @@ public class Util {
     @Beta
     public static ArrayList<GameSave> getSaves() {
         ArrayList<GameSave> saves = new ArrayList<>();
-        File savesDir = References.SAVES_DIR;
+        File savesDir = GameFolders.SAVES_DIR;
 
         File[] files = savesDir.listFiles(new DirectoryFileFilter());
         if (files == null) files = new File[]{};

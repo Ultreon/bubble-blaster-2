@@ -1,0 +1,149 @@
+{
+  "bubbleblaster": {
+    "other": {
+      "prev": "Prev",
+      "next": "Next",
+      "true": "Yes",
+      "false": "No",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "download": "Download",
+      "install": "Install",
+      "buy": "Buy",
+      "random": "Random",
+      "save": "Save"
+    },
+    "gamemode": {
+      "names": {
+        "classic": "Classic Mode",
+        "modern": "Modern Mode",
+        "impossible": "Impossible Mode"
+      }
+    },
+    "status_effect": {
+      "poison": {
+        "name": "Poisoned"
+      },
+      "blindness": {
+        "name": "Blinded"
+      },
+      "multi_score": {
+        "name": "Multi Score"
+      },
+      "speed_boost": {
+        "name": "Speed Boost"
+      },
+      "attack_boost": {
+        "name": "Attack Boost"
+      },
+      "defense_boost": {
+        "name": "Defense Boost"
+      }
+    },
+    "Info": {
+      "Score": "Score",
+      "Level": "Level",
+      "Health": "Health"
+    },
+    "screen": {
+      "title": {
+        "start": "Start Game",
+        "mods": "Mods",
+        "saves": "Saves",
+        "options": "Options",
+        "language": "Language",
+        "quit": "Quit Game"
+      },
+      "options": {
+        "Language": "Language"
+      },
+      "saves": {
+        "create": {
+          "title": "Create a New Save",
+          "seed": "Seed:",
+          "gamemode": "Gamemode:",
+          "button": "Create"
+        },
+        "new": "New",
+        "duplicate": "Duplicate",
+        "edit": "Edit",
+        "rename": "Rename",
+        "reset": "Reset",
+        "open": "Open",
+        "delete": "Delete"
+      },
+      "game_over": {
+        "back_to_title": "Go to title"
+      },
+      "pause": {
+        "text": "Pause",
+        "exit": "Exit and Quit Game",
+        "forfeit": "Save and Go To Title",
+        "min_radius": "Min. Radius:",
+        "max_radius": "Max. Radius:",
+        "min_speed": "Min. Speed:",
+        "max_speed": "Max. Speed:",
+        "default_chance": "Default Chance:",
+        "current_chance": "Current Chance:",
+        "default_priority": "Default Priority:",
+        "current_priority": "Current Priority:",
+        "default_total_priority": "Def. Total Priority:",
+        "current_total_priority": "Cur. Total Priority:",
+        "score_modifier": "Score Modifier:",
+        "attack_modifier": "Attack Modifier:",
+        "defense_modifier": "Defense Modifier:",
+        "can_spawn": "Can currently spawn:",
+        "description": "Description:"
+      },
+      "start_options": {
+        "start": "Start!"
+      }
+    },
+    "bubble": {
+      "name": {
+        "normal": "Normal Bubble",
+        "damage": "Damage Bubble",
+        "level_up": "Level-up Bubble",
+        "double": "Double Value Bubble",
+        "triple": "Triple Value Bubble",
+        "double_state": "Double-score Effect Bubble",
+        "triple_state": "Triple-score Effect Bubble",
+        "blindness": "Blindness Bubble",
+        "poison": "Poisonous Bubble",
+        "bouncy": "Bouncy Bubble",
+        "heal": "Heal Bubble",
+        "hyper": "Hyper Bubble",
+        "attack": "Attack Boost Bubble",
+        "defense": "Defense Boost Bubble",
+        "accelerate": "Acceleration Bubble",
+        "speed_boost": "Speedboost Bubble",
+        "bubble_freeze": "Bubble Freezer",
+        "paralyze": "Paralyze Bubble",
+        "hardened": "Hardened Bubble",
+        "ultra": "Ultra Bubble"
+      },
+      "description": {
+        "normal": "The ordinary normal bubble, only has 1 score modifier, is very common, and has no attack.",
+        "damage": "This bubble attacks, it has a static attack modifier of 1, watch out!",
+        "level_up": "This bubble only appears if your can go a level higher. \nFor some math: S = score, L = level: L < S ÷ 10'000 + 1",
+        "double": "This bubble has more value in score, you will get double the score than the Normal Bubble.",
+        "triple": "This bubble has even more value in score than the Double Value Bubble, you will get triple the score than the Normal Bubble.",
+        "double_state": "This bubble gives you for an period of time double the score of bubbles.",
+        "triple_state": "This bubble gives you for an period of time triple the score of bubbles.",
+        "blindness": "This bubble is annoying, when touching, it will darken the screen like if you were blind. Will be temporary, how larger the bubble how darker the screen will be.",
+        "poison": "This bubble will ‘poison’ the player, meaning it will hard to see what bubble is which, and over time the player will take damage. Btw, the statusEffect is temporary.",
+        "bouncy": "Work In Progress (WIP), the bounce bubble would bounce the player from it. There're currently problems with it.",
+        "heal": "This bubble will restore health, so simple is it.",
+        "hyper": "Work In Progress (WIP), this bubble has currently no special notes.",
+        "attack": "Gives you an ‘attack’ boost, when touched you can destroy bubbles faster for an period of time.",
+        "defense": "Gives you an ‘defense’ boost, when touched your damage that you take will be reduced for an perod of time.",
+        "accelerate": "This bubble will boost the player's speed as long it's inside or touching the bubble.",
+        "speed_boost": "This bubble will increase the speed of the player for an period of time. Btw, the statusEffect is temporary.",
+        "bubble_freeze": "This bubble will freeze all bubbles for an period of time.",
+        "paralyze": "This bubble will paralyze the player for an period of time.",
+        "hardened": "A bubble that's harder to destroy than others.",
+        "ultra": "The most overpowered bubble there is, will have all positive effects (not yet mod support), and gives 10x more score than the normal bubble."
+      }
+    }
+  }
+}
