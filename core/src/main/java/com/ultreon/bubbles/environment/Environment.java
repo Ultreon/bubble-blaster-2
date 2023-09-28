@@ -280,8 +280,6 @@ public final class Environment implements CrashFiller {
             return diff.getPlainModifier();
         }
 
-        System.out.println("diff.getPlainModifier() = " + diff.getPlainModifier());
-
         stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(stateDifficultyModifiers.values()), 1f);
         if (getPlayer() == null) return diff.getPlainModifier() * stateDifficultyModifier;
 
