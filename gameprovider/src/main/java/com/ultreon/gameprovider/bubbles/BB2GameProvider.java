@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -99,10 +100,20 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public Path getLaunchDirectory() {
-        if (OS.isWindows()) return Path.of(System.getenv("APPDATA"), "BubbleBlaster");
-        if (OS.isMacintosh()) return Path.of(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
-        if (OS.isLinux()) return Path.of(System.getProperty("user.home"), ".config/BubbleBlaster");
-        throw new FormattedException("Unsupported Platform", "Platform unsupported: " + System.getProperty("os.name"));
+        Path path;
+
+        if (OS.isWindows()) path = Path.of(System.getenv("APPDATA"), "BubbleBlaster");
+        else if (OS.isMacintosh()) path = Path.of(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
+        else if (OS.isLinux()) path = Path.of(System.getProperty("user.home"), ".config/BubbleBlaster");
+        else throw new FormattedException("Unsupported Platform", "Platform unsupported: " + System.getProperty("os.name"));
+
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return path;
     }
 
     @Override

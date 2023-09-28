@@ -59,6 +59,7 @@ import com.ultreon.bubbles.render.gui.screen.*;
 import com.ultreon.bubbles.render.gui.screen.splash.SplashScreen;
 import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.bubbles.save.GameSave;
+import com.ultreon.gameprovider.bubbles.OS;
 import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Mth;
@@ -86,6 +87,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.impl.FormattedException;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.fabricmc.loader.impl.util.Arguments;
 import org.apache.logging.log4j.Level;
@@ -99,7 +101,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.system.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -107,8 +108,10 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -478,10 +481,29 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 crash(new Exception("Game resource root not found!"));
                 return;
             }
-            var resourcePath = Path.of(resource.toURI()).getParent();
-            LOGGER.debug("Valid game path: " + resourcePath);
 
-            resourceManager.importPackage(resourcePath);
+            String protocol = resource.getProtocol();
+            String host = resource.getHost();
+            String file = resource.getFile();
+
+            Path filePath;
+
+            switch (protocol) {
+                case "jar" -> {
+                    JarURLConnection jarURLConnection = (JarURLConnection) resource.openConnection();
+                    URL fileUrl = jarURLConnection.getJarFileURL();
+                    if (!fileUrl.getProtocol().equals("file")) {
+                        throw new Error("Jar file isn't local.");
+                    }
+                    filePath = Path.of(fileUrl.toURI());
+                }
+                case "file" -> filePath = Path.of(resource.toURI()).getParent();
+                default -> throw new Error("Illegal protocol: " + resource.getProtocol());
+            }
+
+            LOGGER.debug("Valid game path: " + filePath);
+
+            resourceManager.importPackage(filePath);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -742,7 +764,14 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         BubbleBlaster.classLoader = getClassLoader();
 
         String property = System.getProperty("user.home");
-        dataDir = new File(getAppData(), "BubbleBlaster/");
+
+        Path path;
+        if (OS.isWindows()) path = Path.of(System.getenv("APPDATA"), "BubbleBlaster");
+        else if (OS.isMacintosh()) path = Path.of(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
+        else if (OS.isLinux()) path = Path.of(System.getProperty("user.home"), ".config/BubbleBlaster");
+        else throw new FormattedException("Unsupported Platform", "Platform unsupported: " + System.getProperty("os.name"));
+
+        dataDir = path.toFile();
 
         FileUtils.setCwd(dataDir);
 
@@ -762,11 +791,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private static String getAppData() {
-        return switch (Platform.get()) {
-            case WINDOWS -> System.getenv("APPDATA");
-            case LINUX -> "~/.config/";
-            case MACOSX -> "~/Library/Application Support/";
-        };
+        return null;
     }
 
     /////////////////////////
@@ -1896,7 +1921,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         }
 
         if (!overridden) {
-            crashLog.defaultSave();
+            File file = new File(dataDir,"game-crashes");
+            if (!file.exists()) {
+                try {
+                    Files.createDirectories(file.toPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            crashLog.writeToFile(new File(file, crashLog.getDefaultFileName()));
             LOGGER.error(crashLog.toString());
         }
 
