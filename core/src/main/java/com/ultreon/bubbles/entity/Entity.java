@@ -88,6 +88,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Nullable
     protected AiTask currentAiTask;
     private final List<AiTask> aiTasks = new ArrayList<>();
+    private boolean ghost = false;
 
     /**
      * The entity constructor.
@@ -729,6 +730,14 @@ public abstract class Entity extends GameObject implements StateHolder {
         return willBeDeleted;
     }
 
+    public boolean isGhost() {
+        return ghost;
+    }
+
+    public void setGhost(boolean ghost) {
+        this.ghost = ghost;
+    }
+
     /**
      * Get whether the entity is visible.
      * @return true if visible, false if invisible.
@@ -811,7 +820,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if it would attack when near, false if it doesn't.
      */
     public boolean doesAttack(Entity other) {
-        return canAttack.contains(other.type);
+        return this.canAttack.contains(other.type);
     }
 
     /**
@@ -820,7 +829,8 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if this entity can be attacked by it, false if invulnerable to it.
      */
     public boolean canBeAttackedBy(Entity other) {
-        return !invulnerableTo.contains(other.type);
+        if (this.ghost) return false;
+        return !this.invulnerableTo.contains(other.type);
     }
 
     /**

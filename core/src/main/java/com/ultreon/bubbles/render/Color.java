@@ -25,6 +25,7 @@ public class Color {
     public static final Color MAGENTA = Color.rgb(0xff00ff);
     public static final Color ROSE = Color.rgb(0xff0080);
     public static final Color TRANSPARENT = Color.rgba(0x00000000);
+    public static final Color CRIMSON = Color.rgb(0xdc143c);
     private final java.awt.Color awtColor;
 
     private Color(long red, long green, long blue, long alpha) {
@@ -110,7 +111,7 @@ public class Color {
                     hex.charAt(4), hex.charAt(4)}), 16);
             return Color.rgba(rgb);
         } else {
-            if (hex.length() >= 1) {
+            if (!hex.isEmpty()) {
                 if (hex.charAt(0) != '#') {
                     throw new InvalidValueException("First character create color code isn't '#'.");
                 } else if (hex.length() != 3 && hex.length() != 4 && hex.length() != 6 && hex.length() != 8) {

@@ -62,19 +62,7 @@ public class Bubbles {
             .build());
     public static final DamageBubble DAMAGE = register("damage", new DamageBubble());
 
-    public static final BubbleType POISON = register("poison", BubbleType.builder()
-            .priority(1_313_131L)
-            .radius(Range.between(34, 83))
-            .speed(Range.between(8.0d, 14.0d))
-            .defense(0.225f)
-            .attack(0.0f)
-            .score(0.375f)
-            .hardness(1.0d)
-            .colors("#7fff00,#9faf1f,#bf7f3f,#df3f5f,#ff007f")
-            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.POISON, source.getRadius() / 8, 4)))
-            .addAiTask(0, new AiAttack())
-            .addAiTask(1, new AiTarget(Entities.PLAYER))
-            .build());
+    public static final BubbleType POISON = register("poison", new PoisonBubble());
 
     public static final HealBubble HEAL = register("heal", new HealBubble());
     public static final UltraBubble ULTRA = register("ultra", new UltraBubble());

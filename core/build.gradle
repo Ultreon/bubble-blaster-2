@@ -328,6 +328,14 @@ task createExec {
     }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 jar.finalizedBy(retrieveUrls)
 publish.finalizedBy(retrieveUrls)
 

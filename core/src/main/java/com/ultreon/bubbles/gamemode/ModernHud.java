@@ -15,6 +15,7 @@ import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.text.v0.MutableText;
 import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +42,7 @@ public class ModernHud extends GameHud {
     private final GlyphLayout levelUpLayout = new GlyphLayout();
     private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_14.get();
     private final BitmapFont playerDetailsNameFont = Fonts.SANS_BOLD_20.get();
-    private final BitmapFont playerDetailsInfoFont = Fonts.SANS_REGULAR_12.get();
+    private final BitmapFont playerDetailsInfoFont = Fonts.SANS_REGULAR_14.get();
     private Instant gameOverTime;
 
     /**
@@ -101,8 +102,9 @@ public class ModernHud extends GameHud {
         String name = player.getName();
         renderer.setColor(0xffffffff);
         renderer.drawText(playerDetailsNameFont, name, x + 5, y + 5, Anchor.NW);
-        renderer.drawRightAnchoredText(playerDetailsInfoFont, TextObject.literal("Score: ").append((int) player.getScore()).getText(), x + 5, y + 45);
-        renderer.drawRightAnchoredText(playerDetailsInfoFont, TextObject.literal("Level: ").append(player.getLevel()).getText(), x + 5, y + 60);
+        renderer.drawText(playerDetailsInfoFont, TextObject.literal("Score: ").append((int) player.getScore()).append("    Level: ").append(player.getLevel()), x + 5, y + 20);
+
+        MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append((int) Math.floor(player.getMaxHealth()));
 
         renderer.setColor(0x50ffffff);
         double maxHealth = player.getMaxHealth();
@@ -112,12 +114,20 @@ public class ModernHud extends GameHud {
 
             double ratio = health / maxHealth;
             if (ratio >= 0.5) {
-                renderer.setColor(0xff00ff00);
+                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
+                renderer.setColor(Color.GREEN);
             } else if (ratio >= 0.2) {
-                renderer.setColor(0xffffd000);
+                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
+                renderer.setColor(Color.GOLD);
             } else {
-                renderer.setColor(0xffff0000);
+                renderer.setColor(Color.CRIMSON);
+                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
             }
+            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75);
+        } else {
+            renderer.setColor(Color.CRIMSON);
+            renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
+            renderer.setColor(0xffff0000);
             renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75);
         }
     }

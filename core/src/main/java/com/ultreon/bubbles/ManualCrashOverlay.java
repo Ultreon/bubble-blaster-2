@@ -33,7 +33,7 @@ public class ManualCrashOverlay implements Renderable {
 
             renderer.setColor(Color.rgb(0x404040));
             renderer.rect(0, 0, width, height);
-            renderer.setColor(Color.rgb(0xdc143c));
+            renderer.setColor(Color.CRIMSON);
             renderer.rect(0, 0, (int) width, 10);
             renderer.rect(0, (int) (height - 10), (int) width, 10);
 

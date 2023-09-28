@@ -63,6 +63,7 @@ import com.ultreon.gameprovider.bubbles.OS;
 import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Mth;
+import com.ultreon.libs.commons.v0.Pixel;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.libs.commons.v0.util.FileUtils;
@@ -482,24 +483,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 return;
             }
 
-            String protocol = resource.getProtocol();
-            String host = resource.getHost();
-            String file = resource.getFile();
-
-            Path filePath;
-
-            switch (protocol) {
-                case "jar" -> {
-                    JarURLConnection jarURLConnection = (JarURLConnection) resource.openConnection();
-                    URL fileUrl = jarURLConnection.getJarFileURL();
-                    if (!fileUrl.getProtocol().equals("file")) {
-                        throw new Error("Jar file isn't local.");
-                    }
-                    filePath = Path.of(fileUrl.toURI());
-                }
-                case "file" -> filePath = Path.of(resource.toURI()).getParent();
-                default -> throw new Error("Illegal protocol: " + resource.getProtocol());
-            }
+            Path filePath = getGamePath(resource);
 
             LOGGER.debug("Valid game path: " + filePath);
 
@@ -535,6 +519,28 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         getGameWindow().requestFocus();
     }
 
+    private static Path getGamePath(URL resource) throws IOException, URISyntaxException {
+        String protocol = resource.getProtocol();
+        String host = resource.getHost();
+        String file = resource.getFile();
+
+        Path filePath;
+
+        switch (protocol) {
+            case "jar" -> {
+                JarURLConnection jarURLConnection = (JarURLConnection) resource.openConnection();
+                URL fileUrl = jarURLConnection.getJarFileURL();
+                if (!fileUrl.getProtocol().equals("file")) {
+                    throw new Error("Jar file isn't local.");
+                }
+                filePath = Path.of(fileUrl.toURI());
+            }
+            case "file" -> filePath = Path.of(resource.toURI()).getParent();
+            default -> throw new Error("Illegal protocol: " + resource.getProtocol());
+        }
+        return filePath;
+    }
+
     @Override
     public void pause() {
         if (isInGame() && !(getCurrentScreen() instanceof PauseScreen)) {
@@ -551,8 +557,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
-        camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
+        this.viewport.update(width, height);
+        this.camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
+
+        if (this.glitchRenderer != null) {
+            this.glitchRenderer.resize(width, height);
+        }
 
         var screen = getCurrentScreen();
         if (screen != null) {
@@ -592,39 +602,37 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
             int size = RENDER_CALLS.size();
             for (int counter = 0; counter < size; counter++) {
-                RENDER_CALLS.removeFirst().accept(renderer);
+                RENDER_CALLS.removeFirst().accept(this.renderer);
             }
 
-            if (isGlitched) {
-                glitchRenderer.render(renderer);
-            } else {
-                var filters = BubbleBlaster.instance.getCurrentFilters();
+            var filters = BubbleBlaster.instance.getCurrentFilters();
 
-                profiler.section("renderGame", () -> this.renderGame(renderer, mouseX, mouseY, gameFrameTime));
+            profiler.section("renderGame", () -> this.renderGame(this.renderer, mouseX, mouseY, this.gameFrameTime));
 
-                if (isDebugMode() || this.debugGuiOpen.get()) {
-                    this.debugRenderer.render(this.renderer);
-                }
-
-                this.fps = Gdx.graphics.getFramesPerSecond();
+            if (isDebugMode() || this.debugGuiOpen.get()) {
+                this.debugRenderer.render(this.renderer);
             }
 
+            this.fps = Gdx.graphics.getFramesPerSecond();
             this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
 
-            this.renderer.setColor(Color.TRANSPARENT);
-            this.renderer.fill(this.getBounds());
+            this.renderer.setPixel(new Pixel(0, 0, com.ultreon.libs.commons.v0.Color.rgb(0x01000000)));
 
             if (this.showDebugUtils.get()) {
                 this.renderImGui(this.renderer);
             }
 
-            this.manualCrashOverlay.render(this.renderer, mouseX, mouseY, deltaTime);
+            if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
+                this.glitchRenderer.render(this.renderer);
+            } else {
+                this.manualCrashOverlay.render(this.renderer, mouseX, mouseY, deltaTime);
+            }
         } catch (OutOfMemoryError error) {
             this.outOfMemory(error);
         }
 
-        currentRenderer = null;
-        renderer.end();
+        this.currentRenderer = null;
+        this.renderer.end();
     }
 
     private void markTickingDead() {
@@ -933,13 +941,15 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             } else if (keyCode == Keys.F4 && BubbleBlaster.isDevEnv()) {
                 Objects.requireNonNull(environment.getPlayer()).levelUp();
             } else if (keyCode == Keys.F5 && BubbleBlaster.isDevEnv()) {
-                Objects.requireNonNull(environment.getPlayer()).addScore(1000);
+                Objects.requireNonNull(environment.getPlayer()).awardScore(1000);
             } else if (keyCode == Keys.F6 && BubbleBlaster.isDevEnv()) {
                 var player = loadedGame.getGamemode().getPlayer();
 
                 if (player != null) {
                     Objects.requireNonNull(player).setHealth(player.getMaxHealth());
                 }
+            } else if (keyCode == Keys.F7 && BubbleBlaster.isDevEnv()) {
+                this.isGlitched = true;
             }
         }
     }
@@ -1630,7 +1640,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             this.playerController.tick();
         }
 
-        if (this.isGlitched) {
+        if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
             this.glitchRenderer.tick();
             return;
         }

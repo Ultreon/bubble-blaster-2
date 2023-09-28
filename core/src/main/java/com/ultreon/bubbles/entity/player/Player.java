@@ -1,19 +1,18 @@
 package com.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.Constants;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
@@ -397,25 +396,23 @@ public class Player extends LivingEntity implements InputController {
 
         // Modifiers
         if (other instanceof Bubble bubble) {
-            AttributeContainer attributeMap = bubble.getAttributes();
-            double scoreMultiplier = attributeMap.get(Attribute.SCORE);
-            double attack = attributeMap.get(Attribute.ATTACK);  // Maybe used.
-            double defense = attributeMap.get(Attribute.DEFENSE);  // Maybe used.
+            var attributeMap = bubble.getAttributes();
+            var bubbleScore = attributeMap.get(Attribute.SCORE);
+            var defense = attributeMap.get(Attribute.DEFENSE);
+            var scoreModifier = getAttributes().get(Attribute.SCORE_MODIFIER);
 
             // Attributes
-            float radius = bubble.getRadius();
-            float speed = bubble.getSpeed();
+            var props = bubble.getRadius() * (bubble.getSpeed() + 1);
+            var attrs = props * defense * bubbleScore * bubbleScore * scoreModifier;
 
             // Calculate score value.
-            double visibleValue = radius * speed;
-            double nonVisibleValue = attack * defense;
-            double scoreValue = ((visibleValue * (nonVisibleValue + 1)) * scoreMultiplier * scoreMultiplier) * getAttributes().get(Attribute.SCORE_MODIFIER) * deltaTime / Constants.BUBBLE_SCORE_REDUCTION_SELF;
+            var score = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
 
             // Add score.
-            addScore(scoreValue);
+            this.awardScore(score);
         } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
-            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
-            addScore(score);
+            var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            this.awardScore(score);
         }
     }
 
@@ -430,7 +427,7 @@ public class Player extends LivingEntity implements InputController {
         if (this.isNotSpawned()) return;
 
         // Fill the ship with the correct color.
-        renderer.setColor(Color.rgb(0xdc143c));
+        renderer.setColor(Color.CRIMSON);
         renderer.circle(this.pos.x, this.pos.y, RADIUS * 2);
 
         // Fill the arrow with the correct color.
@@ -551,7 +548,7 @@ public class Player extends LivingEntity implements InputController {
      *
      * @param value amount of score to increment.
      */
-    public void addScore(double value) {
+    public void awardScore(double value) {
         score += value;
     }
 

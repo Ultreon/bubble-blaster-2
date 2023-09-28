@@ -14,8 +14,8 @@ public class DesktopLauncher {
         config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8);
         config.setResizable(false);
         config.useVsync(true);
-        config.setForegroundFPS(120);
-        config.setIdleFPS(10);
+        config.setForegroundFPS(60);
+        config.setIdleFPS(5);
         config.setInitialVisible(false);
         config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         config.setTitle("Bubble Blaster 2");

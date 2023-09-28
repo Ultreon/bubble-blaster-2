@@ -19,7 +19,7 @@ public class ScoreCommand implements TabExecutor {
                         player.sendMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
-                    player.addScore(value);
+                    player.awardScore(value);
                     return true;
                 case "set":
                     try {

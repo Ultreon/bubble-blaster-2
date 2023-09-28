@@ -277,6 +277,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.radius = radius;
     }
 
+    @Override
     public int getRadius() {
         return radius;
     }
@@ -326,6 +327,10 @@ public class Bubble extends AbstractBubbleEntity {
         if (isBeingDestroyed) return;
         super.damage(value / attributes.getBase(Attribute.DEFENSE), source);
         if (invincible) return;
+        pop();
+    }
+
+    public void pop() {
         if (isValid() && isVisible()) {
             BubbleBlaster.getInstance().playSound(BubbleBlaster.id("sfx/bubble/pop"), 0.3f);
         }

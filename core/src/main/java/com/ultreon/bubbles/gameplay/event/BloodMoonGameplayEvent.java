@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("unused")
 public class BloodMoonGameplayEvent extends GameplayEvent {
     private static final UUID NOISE_EFFECT_ID = UUID.fromString("7d6dfafe-bbe6-4795-bc09-8c778af55115");
-    private static final int UPPER_COLOR = 0xff3000;
-    private static final int LOWER_COLOR = 0xdc143c;
+    private static final Color UPPER_COLOR = Color.rgb(0xff3000);
+    private static final Color LOWER_COLOR = Color.CRIMSON;
     private final Date date = new Date(31, 10, 0);
     private final Time timeLo = new Time(3, 0, 0);
     private final Time timeHi = new Time(3, 59, 59);
@@ -115,7 +115,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     @Override
     public void renderBackground(Environment environment, Renderer renderer) {
         BubbleBlaster instance = BubbleBlaster.getInstance();
-        renderer.fillGradient(instance.getBounds(), Color.rgb(UPPER_COLOR), Color.rgb(LOWER_COLOR));
+        renderer.fillGradient(instance.getBounds(), UPPER_COLOR, LOWER_COLOR);
     }
 
     public final boolean wouldActive(DateTime dateTime) {

@@ -190,9 +190,8 @@ public class LoadedGame {
     }
 
     private void checkCollision(Entity entityA, Entity entityB, double delta) {
-        if (!entityA.isCollidableWith(entityB) && !entityB.isCollidableWith(entityA)) {
-            return;
-        }
+        if (!entityA.isCollidableWith(entityB) && !entityB.isCollidableWith(entityA)) return;
+        if (entityA.willBeDeleted() || entityB.willBeDeleted()) return;
 
         // Check intersection.
         if (CollisionUtil.isColliding(entityA, entityB)) {

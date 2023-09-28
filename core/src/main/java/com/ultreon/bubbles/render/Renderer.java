@@ -21,6 +21,7 @@ import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.badlogic.gdx.math.Vector2;
+import com.ultreon.libs.commons.v0.Pixel;
 import com.ultreon.libs.commons.v0.vector.Vec4i;
 import com.ultreon.libs.text.v0.TextObject;
 import org.jetbrains.annotations.ApiStatus;
@@ -1199,6 +1200,10 @@ public class Renderer {
 
     public void roundedLine(float x1, float y1, float x2, float y2) {
         shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), lineWidth, JoinType.SMOOTH, false);
+    }
+
+    public void setPixel(Pixel pixel) {
+        shapes.filledRectangle(pixel.getX(), pixel.getY(), 1, 1, Color.rgba(pixel.getColor().getRed(), pixel.getColor().getGreen(), pixel.getColor().getBlue(), pixel.getColor().getAlpha()).toGdx());
     }
 
     public enum State {

@@ -39,6 +39,8 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
         super.tick(environment);
     }
 
+    public abstract int getRadius();
+
     @Override
     public void load(MapType data) {
         super.load(data);
