@@ -73,13 +73,16 @@ public class IngameButton extends AbstractButton {
         Color textColor;
 
         if (isPressed()) {
-            renderer.drawEffectBox(1, 1, width - 2, height - 2, new Insets(1, 1, 1, 1));
+            renderer.setLineWidth(1);
+            renderer.drawEffectBox(x + 1, y + 1, width - 2, height - 2);
             textColor = Color.WHITE;
         } else if (isHovered()) {
-            renderer.drawEffectBox(0, 0, width, height, new Insets(2, 2, 2, 2));
+            renderer.setLineWidth(2);
+            renderer.drawEffectBox(x, y, width, height);
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.drawEffectBox(0, 0, width, height, new Insets(1, 1, 1, 1));
+            renderer.setLineWidth(1);
+            renderer.drawEffectBox(x, y, width, height);
             textColor = Color.rgb(0x80ffffff);
         }
 

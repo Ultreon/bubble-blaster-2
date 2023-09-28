@@ -76,13 +76,13 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     @SuppressWarnings("DuplicatedCode")
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
-        fill(renderer, 0, 0, width, height, 0x20ffffff);
+        fill(renderer, x, y, width, height, 0x20ffffff);
         if (isPressed()) {
-            renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(1, 1, 1, 1));
+            renderer.drawEffectBox(x + 2, y + 2, width - 4, height - 4, new Insets(1, 1, 1, 1));
 
             textColor = Color.WHITE;
         } else if (isHovered()) {
-            renderer.drawEffectBox(2, 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
+            renderer.drawEffectBox(x + 2, y + 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
 
             textColor = Color.rgb(0xffffff);
         } else {
@@ -93,10 +93,8 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     }
 
     static void drawText(Renderer renderer, Color textColor, Vec2i pos, Vec2i size, TextObject text, BitmapFont font) {
-//        renderer.subInstance(4, 4, size.x - 8, size.y - 8, subRender -> {
-            renderer.setColor(textColor);
-            renderer.setFont(font);
-            renderer.drawCenteredText(text.getText(), pos.x + (int) ((size.x - 8) / 2f), pos.y + (size.y - 8) / 2f);
-//        });
+        renderer.setColor(textColor);
+        renderer.setFont(font);
+        renderer.drawCenteredText(text.getText(), pos.x + (int) ((size.x - 8) / 2f), pos.y + (size.y - 8) / 2f);
     }
 }

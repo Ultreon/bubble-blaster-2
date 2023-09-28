@@ -40,7 +40,7 @@ public class TimeUtils {
     }
 
     private static String pad(int value) {
-        if (value < 10) return value > -10 ? "-0" + Math.abs(value) : "0" + value;
+        if (value < 10) return value > -10 && value < 0 ? "-0" + Math.abs(value) : "0" + value;
 
         return String.valueOf(value);
     }

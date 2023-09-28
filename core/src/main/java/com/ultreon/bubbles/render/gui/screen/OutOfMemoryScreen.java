@@ -8,7 +8,7 @@ import com.ultreon.libs.translations.v0.Language;
 
 public class OutOfMemoryScreen extends Screen {
     public OutOfMemoryScreen() {
-        super(null);
+        super(TextObject.EMPTY);
 
         if (this.game.isInGame() || this.game.environment != null) {
             this.game.crash(new Error(getClass().getSimpleName() + " name violation, should only be used when outside of the game."));

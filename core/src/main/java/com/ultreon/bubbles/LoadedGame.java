@@ -312,7 +312,7 @@ public class LoadedGame {
     }
 
     public void start() {
-        BubbleBlaster.runOnMainThread(this::run);
+        BubbleBlaster.invokeTick(this::run);
     }
 
     public Gamemode getGamemode() {

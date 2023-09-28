@@ -64,8 +64,8 @@ public abstract class Entity extends GameObject implements StateHolder {
     public boolean canMove = true;
 
     protected final Vector2 prevPos = new Vector2();
-    protected final Vector2 velocity = new Vector2();
-    protected final Vector2 accel = new Vector2();
+    public final Vector2 velocity = new Vector2();
+    public final Vector2 accel = new Vector2();
 
     protected boolean valid;
     private boolean spawned;
@@ -298,7 +298,7 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         this.statusEffects.removeIf(effect -> effect.getRemainingTime().isNegative());
 
-        this.accel.scl(1f / (0.48f / (float) TPS * 20 + 1));
+        this.accel.scl(0.98f * (float) TPS * 20 + 1);
 
         // Calculate Velocity X and Y.
         float angelRadians = this.getRotation() * MathUtils.degRad;

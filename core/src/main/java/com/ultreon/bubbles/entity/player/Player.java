@@ -2,6 +2,7 @@ package com.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
 import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
@@ -62,6 +63,7 @@ public class Player extends LivingEntity implements InputController {
             -10, 10
     };
     private static final float RADIUS = 20;
+    private static final float DRAG = 0.98f;
 
     private final Circle shipShape;
     private final Polygon arrowShape;
@@ -82,7 +84,7 @@ public class Player extends LivingEntity implements InputController {
     private float rotationSpeed = 120f;
 
     // Delta velocity.
-    private float deceleration = 0f;
+    private float velocityDelta = 0f;
 
     // Motion (XInput).
     private float joyStickX;
@@ -99,6 +101,7 @@ public class Player extends LivingEntity implements InputController {
     private final AbilityContainer abilityContainer = new AbilityContainer(this);
     private final PlayerItemCollection inventory = new PlayerItemCollection(this);
     private int shootCooldown;
+    public final Vector2 tempVel = new Vector2();
 
     /**
      * Player entity.
@@ -119,7 +122,7 @@ public class Player extends LivingEntity implements InputController {
         this.attributes.setBase(Attribute.DEFENSE, 1f);
         this.attributes.setBase(Attribute.ATTACK, 0.75f);
         this.attributes.setBase(Attribute.MAX_HEALTH, 30f);
-        this.attributes.setBase(Attribute.SPEED, 16f);
+        this.attributes.setBase(Attribute.SPEED, 4f);
         this.attributes.setBase(Attribute.SCORE_MODIFIER, 1f);
 
         this.health = 30f;
@@ -235,14 +238,12 @@ public class Player extends LivingEntity implements InputController {
         //**************************//
         // Player component ticking //
         //**************************//
-
         this.abilityContainer.onEntityTick();
         this.inventory.tick();
 
         //****************//
         // Player motion. //
         //****************//
-
         float motion = 0.0f;
         float rotate = 0.0f;
 
@@ -263,38 +264,39 @@ public class Player extends LivingEntity implements InputController {
         float angelRadians = this.rotation * MathUtils.degRad;
         float tempVelX = MathUtils.cos(angelRadians) * motion;
         float tempVelY = MathUtils.sin(angelRadians) * motion;
+        this.tempVel.set(tempVelX, tempVelY);
 
         if (this.canMove) {
-            this.accel.add(tempVelX / TPS, tempVelY / TPS);
+            this.accel.add(this.tempVel);
         }
 
         // Velocity on X-axis.
         if (this.velocity.x > 0) {
-            if (this.velocity.x + this.deceleration < 0) {
+            if (this.velocity.x + this.velocityDelta < 0) {
                 this.velocity.x = 0;
             } else {
-                this.velocity.x += this.deceleration;
+                this.velocity.x += this.velocityDelta;
             }
         } else if (this.velocity.x < 0) {
-            if (this.velocity.x + this.deceleration > 0) {
+            if (this.velocity.x + this.velocityDelta > 0) {
                 this.velocity.x = 0;
             } else {
-                this.velocity.x -= this.deceleration;
+                this.velocity.x -= this.velocityDelta;
             }
         }
 
         // Velocity on Y-axis.
         if (this.velocity.y > 0) {
-            if (this.velocity.y + this.deceleration < 0) {
+            if (this.velocity.y + this.velocityDelta < 0) {
                 this.velocity.y = 0;
             } else {
-                this.velocity.y += this.deceleration;
+                this.velocity.y += this.velocityDelta;
             }
         } else if (this.velocity.y < 0) {
-            if (this.velocity.y + this.deceleration > 0) {
+            if (this.velocity.y + this.velocityDelta > 0) {
                 this.velocity.y = 0;
             } else {
-                this.velocity.y -= this.deceleration;
+                this.velocity.y -= this.velocityDelta;
             }
         }
 
@@ -322,27 +324,29 @@ public class Player extends LivingEntity implements InputController {
 
         this.statusEffects.removeIf((effect -> effect.getRemainingTime().isNegative()));
 
-        this.accel.scl(1f / (0.48f * (float) TPS * 20 + 1));
+        this.accel.x *= DRAG / TPS * 40;
+        this.accel.y *= DRAG / TPS * 40;
 
         this.prevPos.set(this.pos);
 
-        if (this.canMove)
-            this.pos.add(this.accel.x + this.velocity.x / TPS, this.accel.y + this.velocity.y / TPS);
+        if (this.canMove) {
+            this.pos.add((this.accel.x + this.velocity.x) / TPS, (this.accel.y + this.velocity.y) / TPS);
+        }
 
         double minX = gameBounds.getMinX() + this.size() / 2;
         double minY = gameBounds.getMinY() + this.size() / 2;
         double maxX = gameBounds.getMaxX() - this.size() / 2;
         double maxY = gameBounds.getMaxY() - this.size() / 2;
 
-        if (this.pos.x > maxX && this.velocity.x > 0 || this.pos.x < minX && this.velocity.x < 0)
-            this.velocity.x = 0;
-        if (this.pos.x > maxX && this.accel.x > 0 || this.pos.x < minX && this.accel.x < 0)
-            this.accel.x = 0;
+        if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
+        if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
+        if (this.pos.x > maxX && this.accel.x > 0) this.accel.y = 0;
+        if (this.pos.x < minX && this.accel.x < 0) this.accel.y = 0;
 
-        if (this.pos.y > maxY && this.velocity.y > 0 || this.pos.y < minY && this.velocity.y < 0)
-            this.velocity.y = 0;
-        if (this.pos.y > maxY && this.accel.y > 0 || this.pos.y < minY && this.accel.y < 0)
-            this.accel.y = 0;
+        if (this.pos.y > maxY && this.velocity.y > 0) this.velocity.y = 0;
+        if (this.pos.y < minY && this.velocity.y < 0) this.velocity.y = 0;
+        if (this.pos.y > maxY && this.accel.y > 0) this.accel.y = 0;
+        if (this.pos.y < minY && this.accel.y < 0) this.accel.y = 0;
 
         this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
         this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
@@ -656,12 +660,12 @@ public class Player extends LivingEntity implements InputController {
         this.right = bool;
     }
 
-    public float getDeceleration() {
-        return deceleration;
+    public float getVelocityDelta() {
+        return velocityDelta;
     }
 
-    public void setDeceleration(float deceleration) {
-        this.deceleration = deceleration;
+    public void setVelocityDelta(float velocityDelta) {
+        this.velocityDelta = velocityDelta;
     }
 
     public long getAbilityEnergy() {

@@ -7,6 +7,7 @@ import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.text.v0.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,13 +20,24 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     private int focusIndex = 0;
     private Screen backScreen;
 
+    private final TextObject title;
 
     public Screen() {
+        this(TextObject.EMPTY);
+    }
+
+    public Screen(TextObject title) {
         super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        this.title = title;
     }
 
     public Screen(Screen backScreen) {
+        this(TextObject.EMPTY, backScreen);
+    }
+
+    public Screen(TextObject title, Screen backScreen) {
         super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        this.title = title;
         this.backScreen = backScreen;
     }
 
@@ -70,13 +82,6 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public void forceClose() {
 
-    }
-
-    public void mouseExit() {
-        if (this.hoveredInteractable != null) {
-            this.hoveredInteractable.mouseExit();
-            this.hoveredInteractable = null;
-        }
     }
 
     @Override

@@ -625,10 +625,16 @@ public class Renderer {
             drawText(font, line, x += (int) font.getLineHeight(), y);
     }
 
-    public void drawCenteredText(String text, int x, float y) {
+    public void drawCenteredText(String text, float x, float y) {
         if (!rendering) return;
 
         GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), this.font);
+    }
+
+    public void drawCenteredText(TextObject text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawCenteredString(this, text.getText(), new Vector2(x, y), this.font);
     }
 
     public void drawCenteredText(BitmapFont font, String text, float x, float y) {
@@ -643,6 +649,12 @@ public class Renderer {
         GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), 0, this.font);
     }
 
+    public void drawLeftAnchoredText(TextObject text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawLeftAnchoredString(this, text.getText(), new Vector2(x, y), 0, this.font);
+    }
+
     public void drawLeftAnchoredText(BitmapFont font, String text, float x, float y) {
         if (!rendering) return;
 
@@ -653,6 +665,12 @@ public class Renderer {
         if (!rendering) return;
 
         GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, this.font);
+    }
+
+    public void drawRightAnchoredText(TextObject text, float x, float y) {
+        if (!rendering) return;
+
+        GraphicsUtils.drawRightAnchoredString(this, text.getText(), new Vector2(x, y), 0, this.font);
     }
 
     public void drawRightAnchoredText(BitmapFont font, String text, float x, float y) {

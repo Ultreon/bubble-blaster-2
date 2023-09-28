@@ -8,6 +8,7 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.text.Translations;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -20,7 +21,6 @@ import com.ultreon.libs.translations.v0.Language;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {
-    private IngameButton exitButton;
     private IngameButton forfeitButton;
     private IngameButton prevButton;
     private IngameButton nextButton;
@@ -44,7 +44,7 @@ public class PauseScreen extends Screen {
     private final TextObject boolTrue = TextObject.translation("bubbleblaster/other/true");
     private final TextObject boolFalse = TextObject.translation("bubbleblaster/other/False");
 
-    private final int differentBubbles;
+    private final int registeredBubbles;
     private static int helpIndex = 0;
     private BubbleType bubble;
 
@@ -57,32 +57,35 @@ public class PauseScreen extends Screen {
         });
     }
 
+    private final TextObject title;
+
     public PauseScreen() {
         super();
 
-        exitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 200, 256, 48).text("Exit and Quit Game").command(this.game::shutdown).build();
-        forfeitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text("Save and Go To Title").command(this.game::saveAndQuit).build();
-        prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text("Prev").command(this::previousPage).build();
-        nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text("Next").command(this::nextPage).build();
+        this.title = TextObject.translation("bubbleblaster/screen/pause/text");
 
-        differentBubbles = Registries.BUBBLES.values().size();
+        this.forfeitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster/screen/pause/forfeit")).command(this.game::saveAndQuit).build();
+        this.prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
+        this.nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
+
+        this.registeredBubbles = Registries.BUBBLES.values().size();
         tickPage();
     }
 
     private void previousPage() {
-        helpIndex = Mth.clamp(helpIndex - 1, 0, differentBubbles - 1);
+        helpIndex = Mth.clamp(helpIndex - 1, 0, registeredBubbles - 1);
         tickPage();
     }
 
     private void nextPage() {
-        helpIndex = Mth.clamp(helpIndex + 1, 0, differentBubbles - 1);
+        helpIndex = Mth.clamp(helpIndex + 1, 0, registeredBubbles - 1);
         tickPage();
     }
 
     private void tickPage() {
         bubble = new ArrayList<>(Registries.BUBBLES.values()).get(helpIndex);
 
-        if (helpIndex >= differentBubbles - 1 && nextButton.isValid()) {
+        if (helpIndex >= registeredBubbles - 1 && nextButton.isValid()) {
             nextButton.enabled = false;
             nextButton.visible = false;
         } else if (!nextButton.isValid()) {
@@ -107,7 +110,6 @@ public class PauseScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        this.exitButton = add(this.exitButton);
         this.forfeitButton = add(this.forfeitButton);
         this.prevButton = add(this.prevButton);
         this.nextButton = add(this.nextButton);
@@ -134,46 +136,26 @@ public class PauseScreen extends Screen {
             return;
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //     Darkened background     //
-        /////////////////////////////////
+        // Darkened background
         renderer.setColor(Color.argb(0xc0000000));
         renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //     Pause text     //
-        ////////////////////////
+        // Pause text
         renderer.setColor(Color.argb(0x80ffffff));
         renderer.setFont(Fonts.DONGLE_75.get());
-        renderer.drawCenteredText(Language.translate("bubbleblaster/screen/pause/text"), 75, (float)width / 2);
+        renderer.drawCenteredText(this.title, this.width / 2f, 120f);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //     Exit button     //
-        /////////////////////////
-        exitButton.setText(Language.translate("bubbleblaster/screen/pause/exit"));
-        renderer.subInstance(exitButton.getBounds(), subRender -> exitButton.render(subRender, mouseX, mouseY, deltaTime));
+        // Render widgets.
+        this.prevButton.visible = PauseScreen.helpIndex > 0;
+        this.nextButton.visible = PauseScreen.helpIndex < this.registeredBubbles - 1;
 
-        forfeitButton.setText(Language.translate("bubbleblaster/screen/pause/forfeit"));
-        renderer.subInstance(forfeitButton.getBounds(), subRender -> forfeitButton.render(subRender, mouseX, mouseY, deltaTime));
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //     Navigation Buttons & border     //
-        /////////////////////////////////////////
-
-        // Navigation buttons.
-        nextButton.setText(Language.translate("bubbleblaster/other/next"));
-        prevButton.setText(Language.translate("bubbleblaster/other/prev"));
-
-        if (helpIndex > 0) renderer.subInstance(prevButton.getBounds(), subRender -> prevButton.render(subRender, mouseX, mouseY, deltaTime));
-        if (helpIndex < differentBubbles - 1) renderer.subInstance(nextButton.getBounds(), subRender -> nextButton.render(subRender, mouseX, mouseY, deltaTime));
+        renderChildren(renderer, mouseX, mouseY, deltaTime);
 
         // Border
         renderer.setColor(Color.argb(0x80ffffff));
         renderer.rectLine((int) (BubbleBlaster.getMiddleX() - 480), 300, 960, 300);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //     Bubble     //
-        ////////////////////
+        // Bubble
 
         // Bubble name.
         renderer.setColor(Color.argb(0xc0ffffff));
@@ -182,37 +164,37 @@ public class PauseScreen extends Screen {
         // Bubble icon.
         EnvironmentRenderer.drawBubble(renderer, (int) (BubbleBlaster.getMiddleX() - 470), 350, 122, bubble.getColors());
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //********************//
         //     Info Names     //
-        ////////////////////////
+        //********************//
 
         // Set color & font.
         renderer.setColor(Color.argb(0xc0ffffff));
 
         // Left data.
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), minRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), maxRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 382, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), minSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 402, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), maxSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 422, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), defChance, (BubbleBlaster.getMiddleX() - 326) + 10, 442, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), curChance, (BubbleBlaster.getMiddleX() - 326) + 10, 462, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.minRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 362, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.maxRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 382, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.minSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 402, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.maxSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 422, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defChance, (BubbleBlaster.getMiddleX() - 326) + 10, 442, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curChance, (BubbleBlaster.getMiddleX() - 326) + 10, 462, Anchor.W);
 
         // Right data.
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), defTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 322, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), curTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 342, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), defPriority, BubbleBlaster.getMiddleX() + 72 + 10, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), curPriority, BubbleBlaster.getMiddleX() + 72 + 10, 382, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), scoreMod, BubbleBlaster.getMiddleX() + 72 + 10, 402, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), attackMod, BubbleBlaster.getMiddleX() + 72 + 10, 422, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), defenseMod, BubbleBlaster.getMiddleX() + 72 + 10, 442, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), canSpawn, BubbleBlaster.getMiddleX() + 72 + 10, 462, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 322, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 342, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defPriority, BubbleBlaster.getMiddleX() + 72 + 10, 362, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curPriority, BubbleBlaster.getMiddleX() + 72 + 10, 382, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.scoreMod, BubbleBlaster.getMiddleX() + 72 + 10, 402, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.attackMod, BubbleBlaster.getMiddleX() + 72 + 10, 422, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defenseMod, BubbleBlaster.getMiddleX() + 72 + 10, 442, Anchor.W);
+        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.canSpawn, BubbleBlaster.getMiddleX() + 72 + 10, 462, Anchor.W);
 
         // Description
         renderer.drawText(description, (int) BubbleBlaster.getMiddleX() - 470, 502);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //****************//
         //     Values     //
-        ////////////////////
+        //****************//
 
         // Set color & font.
         renderer.setColor(Color.argb(0x80ffffff));
@@ -230,21 +212,21 @@ public class PauseScreen extends Screen {
         renderer.drawText(Fonts.SANS_ITALIC_16.get(), compress(BubbleSystem.getPriority(bubble)), BubbleBlaster.getMiddleX() + 72 + 200, 382, Anchor.W);
 
         // Right data
-        if (bubble.isScoreRandom()) {
+        if (bubble.isScoreRandom())
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 402);
-        } else {
+        else
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getScore(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 402, Anchor.W);
-        }
-        if (bubble.isAttackRandom()) {
+
+        if (bubble.isAttackRandom())
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 422);
-        } else {
+        else
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getAttack(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 422, Anchor.W);
-        }
-        if (bubble.isDefenseRandom()) {
+
+        if (bubble.isDefenseRandom())
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 442);
-        } else {
+        else
             renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getDefense(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 442, Anchor.W);
-        }
+
         renderer.drawText(Fonts.SANS_ITALIC_16.get(), bubble.canSpawn(loadedGame.getEnvironment()) ? boolTrue : boolFalse, BubbleBlaster.getMiddleX() + 72 + 200, 462, Anchor.W);
 
         // Description
@@ -283,10 +265,5 @@ public class PauseScreen extends Screen {
             return Mth.round(totalPriority / 1_000_000_000_000_000_000_000_000_000d, 1) + "C";
         }
         return Double.toString(totalPriority);
-    }
-
-    @Override
-    public boolean doesPauseGame() {
-        return true;
     }
 }

@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.Map;
 
 public class ManualCrashOverlay implements Renderable {
-    private static final String BSOD = "\n:(\nBubble Blaster ran into a player and needed to crash.";
+    private static final String BSOD = "\n:(\nBubble Blaster ran into a problem and needs to restart.\nStop code: MANUALLY_INITIATED_CRASH\nFile: " + ManualCrashOverlay.class.getSimpleName() + ".class";
     private boolean crashing = false;
     private Instant timer;
 

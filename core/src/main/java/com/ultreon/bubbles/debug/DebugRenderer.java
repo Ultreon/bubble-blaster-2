@@ -126,6 +126,9 @@ public class DebugRenderer {
                 left(renderer, "Speed", player.getSpeed());
                 left(renderer, "Rotation", player.getRotation());
                 left(renderer, "Rot Speed", player.getRotationSpeed());
+                left(renderer, "Acceleration", player.accel);
+                left(renderer, "Velocity", player.velocity);
+                left(renderer, "Temp Velocity", player.tempVel);
             }
         }
         Screen screen = game.getCurrentScreen();

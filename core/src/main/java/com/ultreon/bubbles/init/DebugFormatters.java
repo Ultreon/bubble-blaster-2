@@ -418,6 +418,7 @@ public final class DebugFormatters {
      * @return the rounded value.
      */
     public static double roundTo(double val, int places) {
+        if (Double.isInfinite(val) || Double.isNaN(val)) return val;
         return BigDecimal.valueOf(val).setScale(places, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -429,6 +430,7 @@ public final class DebugFormatters {
      * @return the rounded value.
      */
     public static float roundTo(float val, int places) {
+        if (Float.isInfinite(val) || Float.isNaN(val)) return val;
         return BigDecimal.valueOf(val).setScale(places, RoundingMode.HALF_UP).floatValue();
     }
 }

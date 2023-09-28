@@ -3,7 +3,6 @@ package com.ultreon.bubbles.environment;
 import com.badlogic.gdx.math.Vector2;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.Constants;
 import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
@@ -486,8 +485,8 @@ public final class Environment implements CrashFiller {
      * @param entityData the data create the entity to spawn.
      */
     public void spawnEntityFromState(MapType entityData) {
-        if (!BubbleBlaster.getInstance().isOnTickingThread()) {
-            BubbleBlaster.runLater(() -> loadAndSpawnEntity(entityData));
+        if (!BubbleBlaster.isOnTickingThread()) {
+            BubbleBlaster.invokeTick(() -> loadAndSpawnEntity(entityData));
             return;
         }
         loadAndSpawnEntity(entityData);
@@ -522,7 +521,7 @@ public final class Environment implements CrashFiller {
      * @param entityType type create entity to spawn.
      */
     public void spawn(EntityType<?> entityType, SpawnInformation.SpawnReason reason, long spawnIndex, int retry) {
-        BubbleBlaster.runOnMainThread(() -> {
+        BubbleBlaster.invokeTick(() -> {
             Entity entity = entityType.create(this);
             @NotNull Vector2 pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
             spawn(entity, pos);
@@ -536,7 +535,7 @@ public final class Environment implements CrashFiller {
      * @param pos    spawn location.
      */
     public void spawn(Entity entity, Vector2 pos) {
-        BubbleBlaster.runOnMainThread(() -> {
+        BubbleBlaster.invokeTick(() -> {
             entity.prepareSpawn(SpawnInformation.fromNaturalSpawn(pos));
             entity.onSpawn(pos, this);
             this.entitiesLock.lock();
