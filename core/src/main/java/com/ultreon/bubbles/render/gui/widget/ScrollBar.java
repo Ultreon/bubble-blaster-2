@@ -30,8 +30,8 @@ public class ScrollBar extends GuiComponent {
         setWidth(SIZE);
 
         Rectangle thumbBounds = getThumbBounds();
-        renderer.fill(this.x, this.y, this.width, this.height, Color.argb(0x40000000));
-        renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.argb(0xff555555));
+        renderer.fill(this.x, this.y, this.width, this.height, Color.BLACK.withAlpha(0x40));
+        renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.WHITE.withAlpha(0x60));
     }
 
     private Rectangle getThumbBounds() {

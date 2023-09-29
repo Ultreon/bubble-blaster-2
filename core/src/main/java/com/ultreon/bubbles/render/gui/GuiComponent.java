@@ -28,6 +28,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected final GlyphLayout layout = new GlyphLayout();
 
     public final BitmapFont font = Fonts.DEFAULT.get();
+    public final BitmapFont fpsFont = Fonts.SANS_ITALIC_20.get();
     public final BitmapFont monospaced = FunctionUtils.tryCall(Fonts.MONOSPACED_14);
 
     protected volatile int x;
@@ -70,14 +71,14 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         GuiComponent that = (GuiComponent) o;
-        return hash == that.hash;
+        return this.hash == that.hash;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hash);
+        return Objects.hash(this.hash);
     }
 
     /**
@@ -136,8 +137,8 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param y the y position where the mouse moved to.
      */
     public void mouseMove(int x, int y) {
-        lastMouseX = x;
-        lastMouseY = y;
+        this.lastMouseX = x;
+        this.lastMouseY = y;
     }
 
     /**
@@ -158,7 +159,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Called when the mouse exits the widget.
      */
     public void mouseExit() {
-        hovered = false;
+        this.hovered = false;
     }
 
     /**
@@ -168,7 +169,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param y y position where it entered.
      */
     public void mouseEnter(int x, int y) {
-        hovered = true;
+        this.hovered = true;
     }
 
     public boolean mouseWheel(int x, int y, float rotation) {
@@ -209,7 +210,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public void setX(int x) {
@@ -217,7 +218,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
     public void setY(int y) {
@@ -225,7 +226,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     public void setWidth(int width) {
@@ -236,49 +237,49 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     public void setHeight(int height) {
-        if (width < 0) {
+        if (this.width < 0) {
             throw new IllegalArgumentException("Height should be positive.");
         }
         this.height = height;
     }
 
     public Vec2i getPos() {
-        return new Vec2i(x, y);
+        return new Vec2i(this.x, this.y);
     }
 
     public void setPos(int x, int y) {
-        setX(x);
-        setY(y);
+        this.setX(x);
+        this.setY(y);
     }
 
     public void setPos(Vec2i pos) {
-        setPos(pos.x, pos.y);
+        this.setPos(pos.x, pos.y);
     }
 
     public Vec2i getSize() {
-        return new Vec2i(width, height);
+        return new Vec2i(this.width, this.height);
     }
 
     public void setSize(Vec2i size) {
-        setSize(size.x, size.y);
+        this.setSize(size.x, size.y);
     }
 
     public void setSize(int width, int height) {
-        setWidth(width);
-        setHeight(height);
+        this.setWidth(width);
+        this.setHeight(height);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle(this.x, this.y, this.width, this.height);
     }
 
     public void setBounds(int x, int y, int width, int height) {
-        setPos(x, y);
-        setSize(width, height);
+        this.setPos(x, y);
+        this.setSize(width, height);
     }
 
     public void setBounds(Rectangle bounds) {
@@ -289,7 +290,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public Color getBackgroundColor() {
-        return backgroundColor;
+        return this.backgroundColor;
     }
 
     public void setBackgroundColor(Color backgroundColor) {
@@ -328,7 +329,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @return true if the x and y position given is withing the bounds of the widget
      */
     public boolean isWithinBounds(int x, int y) {
-        return x >= this.getX() && y >= this.getY() && x <= this.getX() + getWidth() && y <= this.getY() + getHeight();
+        return x >= this.getX() && y >= this.getY() && x <= this.getX() + this.getWidth() && y <= this.getY() + this.getHeight();
     }
 
     /**
@@ -338,7 +339,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @return true if the x and y position given is withing the bounds of the widget
      */
     public boolean isWithinBounds(Vec2i pos) {
-        return pos.getX() >= this.getX() && pos.getY() >= this.getY() && pos.getX() <= this.getX() + getWidth() && pos.getY() <= this.getY() + getHeight();
+        return pos.getX() >= this.getX() && pos.getY() >= this.getY() && pos.getX() <= this.getX() + this.getWidth() && pos.getY() <= this.getY() + this.getHeight();
     }
 
     public void renderComponent(Renderer renderer) {
@@ -351,29 +352,29 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
 
     @Override
     public void make() {
-        valid = true;
+        this.valid = true;
     }
 
     @Override
     public void destroy() {
-        valid = false;
+        this.valid = false;
     }
 
     @Override
     public boolean isValid() {
-        return valid;
+        return this.valid;
     }
 
     public boolean isHovered() {
-        return hovered;
+        return this.hovered;
     }
 
     protected final int getLastMouseX() {
-        return lastMouseX;
+        return this.lastMouseX;
     }
 
     protected final int getLastMouseY() {
-        return lastMouseY;
+        return this.lastMouseY;
     }
 
 

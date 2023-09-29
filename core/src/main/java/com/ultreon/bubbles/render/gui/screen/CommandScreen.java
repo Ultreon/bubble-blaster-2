@@ -3,14 +3,12 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.command.CommandConstructor;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.GraphicsUtils;
 
 import java.util.*;
 
@@ -32,8 +30,8 @@ public class CommandScreen extends Screen {
 
     @Override
     public boolean onClose(Screen to) {
-        currentText = "/";
-        cursorIndex = 1;
+        this.currentText = "/";
+        this.cursorIndex = 1;
 
         return super.onClose(to);
     }
@@ -43,45 +41,45 @@ public class CommandScreen extends Screen {
         if (super.charType(character)) return true;
 
         if ((int) character >= 0x20) {
-            currentText += character;
+            this.currentText += character;
             this.revalidate();
-            cursorIndex++;
+            this.cursorIndex++;
             return true;
         }
         return false;
     }
 
     private void revalidate() {
-        layout.setText(font, currentText);
-        beginLayout.setText(font, currentText.substring(0, cursorIndex));
+        this.layout.setText(this.font, this.currentText);
+        this.beginLayout.setText(this.font, this.currentText.substring(0, this.cursorIndex));
     }
 
     @Override
     public boolean keyPress(int keyCode) {
         if (super.keyPress(keyCode)) return true;
 
-        if (keyCode == Input.Keys.BACKSPACE && !currentText.isEmpty() && cursorIndex > 0) {
-            currentText = currentText.substring(0, currentText.length() - 1);
-            cursorIndex--;
+        if (keyCode == Input.Keys.BACKSPACE && !this.currentText.isEmpty() && this.cursorIndex > 0) {
+            this.currentText = this.currentText.substring(0, this.currentText.length() - 1);
+            this.cursorIndex--;
             return true;
         }
-        if (keyCode == Input.Keys.LEFT && cursorIndex > 0) {
-            cursorIndex--;
+        if (keyCode == Input.Keys.LEFT && this.cursorIndex > 0) {
+            this.cursorIndex--;
             return true;
         }
-        if (keyCode == Input.Keys.RIGHT && cursorIndex < currentText.length() - 1) {
-            cursorIndex++;
+        if (keyCode == Input.Keys.RIGHT && this.cursorIndex < this.currentText.length() - 1) {
+            this.cursorIndex++;
             return true;
         }
         if (keyCode == Input.Keys.ENTER) {
             LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
             if (loadedGame != null) {
-                if (!currentText.isEmpty()) {
-                    if (currentText.charAt(0) != '/') {
-                        BubbleBlaster.getLogger().debug("Not a command: " + currentText);
+                if (!this.currentText.isEmpty()) {
+                    if (this.currentText.charAt(0) != '/') {
+                        BubbleBlaster.getLogger().debug("Not a command: " + this.currentText);
                         Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).sendMessage("Not a command, start with a ‘/’ for a command.");
                     } else {
-                        List<String> parsed = Arrays.asList(translateCommandline(currentText.substring(1)));
+                        List<String> parsed = Arrays.asList(CommandScreen.translateCommandline(this.currentText.substring(1)));
                         if (!parsed.isEmpty()) {
                             String[] args = parsed.subList(1, parsed.size()).toArray(new String[]{});
 
@@ -167,35 +165,29 @@ public class CommandScreen extends Screen {
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.argb(0x40000000));
-        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), height);
+        renderer.fill(0, 0, this.width, this.height, Color.BLACK.withAlpha(0x40));
+        renderer.fill(0, this.height - 32, BubbleBlaster.getInstance().getWidth(), 32, Color.BLACK.withAlpha(0x80));
 
-        renderer.setColor(Color.argb(0x80000000));
-        renderer.fill(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
-
-        renderer.setColor(Color.argb(0xffffffff));
-        GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vector2(2f, height - 28f), 28, font);
+        renderer.drawText(this.font, this.currentText, 2, this.height - 28, Color.WHITE);
 
         float cursorX;
-        renderer.setColor(Color.argb(0xff0090c0));
-        if (cursorIndex >= currentText.length()) {
-            if (!currentText.isEmpty()) {
-                cursorX = beginLayout.width + 2;
+        if (this.cursorIndex >= this.currentText.length()) {
+            if (!this.currentText.isEmpty()) {
+                cursorX = this.beginLayout.width + 2;
             } else {
                 cursorX = 0;
             }
 
-            renderer.line(cursorX, height - 30, cursorX, height - 2);
-            renderer.line(cursorX + 1, height - 30, cursorX + 1, height - 2);
+            renderer.fillEffect(cursorX, this.height - 30, 2, 28);
         } else {
-            if (!currentText.isEmpty()) {
-                cursorX = beginLayout.width;
+            if (!this.currentText.isEmpty()) {
+                cursorX = this.beginLayout.width;
             } else {
                 cursorX = 0;
             }
 
-            int width = font.getData().getGlyph(currentText.charAt(cursorIndex)).width;
-            renderer.line(cursorX, height - 2, cursorX + width, height - 2);
-            renderer.line(cursorX, height - 1, cursorX + width, height - 1);
+            int width = this.font.getData().getGlyph(this.currentText.charAt(this.cursorIndex)).width;
+            renderer.fillEffect(cursorX, this.height - 2, width, 2);
         }
     }
 }

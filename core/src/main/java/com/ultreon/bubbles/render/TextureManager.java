@@ -51,13 +51,13 @@ public final class TextureManager {
     }
 
     public Texture getTexture(Identifier entry) {
-        textureMap.get(entry);
-        return textureMap.get(entry);
+        this.textureMap.get(entry);
+        return this.textureMap.get(entry);
     }
 
     public Texture getOrLoadTexture(Identifier entry) {
-        if (textureMap.containsKey(entry)) {
-            return textureMap.get(entry);
+        if (this.textureMap.containsKey(entry)) {
+            return this.textureMap.get(entry);
         }
 
         return loadTexture(entry, new TextureSource() {
@@ -73,7 +73,7 @@ public final class TextureManager {
 
     public Texture loadTexture(Identifier entry, TextureSource source) {
         var texture = source.create();
-        textureMap.put(entry, texture);
+        this.textureMap.put(entry, texture);
         return texture;
     }
 }

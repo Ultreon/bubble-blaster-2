@@ -2,6 +2,7 @@ package com.ultreon.bubbles.notification;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
 
@@ -40,16 +41,12 @@ public class Notifications implements Renderable {
             float motionRatio = notification.getMotion();
             float motion = (NOTIFICATION_WIDTH + NOTIFICATION_OFFSET) * motionRatio;
 
-            renderer.setColor(0xff101010);
-            renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
-            renderer.setColor(0xff505050);
-            renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10);
-            renderer.setColor(0xffd0d0d0);
-            renderer.drawText(Fonts.SANS_BOLD_20.get(), title, x + motion + 10, y + 13);
-            renderer.setColor(0xffb0b0b0);
-            renderer.drawText(Fonts.SANS_REGULAR_15.get(), summary, x + motion + 10, y + 40);
-            renderer.setColor(0xff707070);
-            renderer.drawText(Fonts.SANS_BOLD_ITALIC_10.get(), subText == null ? "" : subText, x + motion + 10, y + 60);
+            renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT, Color.rgb(0x101010));
+            renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10, Color.rgb(0x505050));
+
+            renderer.drawText(Fonts.SANS_BOLD_20.get(), title, x + motion + 10, y + 13, Color.rgb(0xd0d0d0));
+            renderer.drawText(Fonts.SANS_REGULAR_15.get(), summary, x + motion + 10, y + 40, Color.rgb(0xb0b0b0));
+            renderer.drawText(Fonts.SANS_BOLD_ITALIC_10.get(), subText == null ? "" : subText, x + motion + 10, y + 60, Color.rgb(0x707070));
 
             y += NOTIFICATION_HEIGHT + NOTIFICATION_GAP;
         }

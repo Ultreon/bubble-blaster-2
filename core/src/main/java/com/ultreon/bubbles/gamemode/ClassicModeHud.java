@@ -12,7 +12,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.util.TimeUtils;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.translations.v0.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,16 +67,16 @@ public class ClassicModeHud extends GameHud {
 
         if (player == null) return;
 
-        if (!gameOver) {
-            preDrawTopBar(renderer, game);
-            drawPlayerDetails(renderer, game, player);
-            drawFpsCounter(renderer, game);
-            postDrawTopBar(renderer, game);
+        if (!this.gameOver) {
+            this.preDrawTopBar(renderer, game);
+            this.drawPlayerDetails(renderer, game, player);
+            this.drawFpsCounter(renderer, game);
+            this.postDrawTopBar(renderer, game);
         }
 
-        drawMessages(renderer, game);
+        this.drawMessages(renderer, game);
 
-        drawLevelUpMessage(renderer, gamemode);
+        this.drawLevelUpMessage(renderer, gamemode);
     }
 
     public void drawMessages(Renderer renderer, BubbleBlaster game) {
@@ -88,15 +87,14 @@ public class ClassicModeHud extends GameHud {
     }
 
     public void preDrawTopBar(Renderer renderer, BubbleBlaster game) {
-        drawTopBar(renderer, game);
-        drawHealthLineBackground(renderer, game);
-        drawTopShade(renderer, game);
+        this.drawTopBar(renderer, game);
+        this.drawHealthLineBackground(renderer, game);
+        this.drawTopShade(renderer, game);
     }
 
     public void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
-        renderer.setColor(Color.argb(0x7f00a5dc));
-        renderer.drawText(((Integer) game.getFps()).toString(), game.getWidth() - 10, 10, Anchor.NE);
+        renderer.drawText(this.font, String.valueOf(game.getFps()), game.getWidth() - 10, 10, Color.argb(0x8000a5dc));
     }
 
     /**
@@ -108,21 +106,21 @@ public class ClassicModeHud extends GameHud {
     public void drawLevelUpMessage(Renderer renderer, Gamemode gamemode) {
         renderer.setColor(LEVEL_UP_COLOR);
 
-        if (showLevelUp && System.currentTimeMillis() > hideLevelUpTime) {
-            showLevelUp = false;
+        if (this.showLevelUp && System.currentTimeMillis() > this.hideLevelUpTime) {
+            this.showLevelUp = false;
             return;
         }
 
         // Level up message
-        if (showLevelUp) {
-            String text = "Level " + level;
-            if (!text.equals(levelUpText)) {
-                levelUpText = text;
-                levelUpLayout.setText(levelUpFont, text);
+        if (this.showLevelUp) {
+            String text = "Level " + this.level;
+            if (!text.equals(this.levelUpText)) {
+                this.levelUpText = text;
+                this.levelUpLayout.setText(this.levelUpFont, text);
             }
 
-            float textWidth = levelUpLayout.width;
-            float textHeight = levelUpLayout.height;
+            float textWidth = this.levelUpLayout.width;
+            float textHeight = this.levelUpLayout.height;
 
             float width = textWidth + 16;
             float height = textHeight + 16;
@@ -137,7 +135,7 @@ public class ClassicModeHud extends GameHud {
 
             renderer.setColor(LEVEL_UP_COLOR);
 
-            renderer.drawCenteredText(levelUpFont, text, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2));
+            renderer.drawCenteredText(this.levelUpFont, text, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2));
         }
     }
 
@@ -154,13 +152,13 @@ public class ClassicModeHud extends GameHud {
         Color valueColor = Color.rgb(255, 255, 255);
 
         // As long the player isn't game over.
-        if (!gameOver) {
+        if (!this.gameOver) {
             // As long the player exists.
             // Draw player components.
-            drawStatusEffects(renderer, player);
-            drawScoreText(renderer, player, titleColor, valueColor);
-            drawLevelText(renderer, player, titleColor, valueColor);
-            drawHealthLineForeground(renderer, game, player);
+            this.drawStatusEffects(renderer, player);
+            this.drawScoreText(renderer, player, titleColor, valueColor);
+            this.drawLevelText(renderer, player, titleColor, valueColor);
+            this.drawHealthLineForeground(renderer, game, player);
         }
     }
 
@@ -195,8 +193,7 @@ public class ClassicModeHud extends GameHud {
 
         // Render health bar.
         renderer.setLineWidth(HEALTH_LINE_WIDTH);
-        renderer.setColor(Color.rgb(redValue, greenValue, 0));
-        renderer.line(0, 69, (int) (game.getWidth() * playerDamage / playerMaxDamage), 69);
+        renderer.fill(0, 68, (int) (game.getWidth() * playerDamage / playerMaxDamage), 2, Color.rgb(redValue, greenValue, 0x20));
     }
 
     /**
@@ -209,11 +206,8 @@ public class ClassicModeHud extends GameHud {
      * @see #drawPlayerDetails(Renderer, BubbleBlaster, Player)
      */
     public void drawLevelText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
-        // Level
-        renderer.setColor(titleColor);
-        renderer.drawText(infoFont, Language.translate("bubbleblaster/Info/Level"), 140, 20, Anchor.CENTER);
-        renderer.setColor(valueColor);
-        renderer.drawText(font, String.valueOf(player.getLevel()), 140, 50, Anchor.CENTER);
+        renderer.drawCenteredText(this.infoFont, Language.translate("bubbleblaster/Info/Level"), 140, 20, titleColor);
+        renderer.drawCenteredText(this.font, String.valueOf(player.getLevel()), 140, 50, valueColor);
     }
 
     /**
@@ -226,11 +220,8 @@ public class ClassicModeHud extends GameHud {
      * @see #drawPlayerDetails(Renderer, BubbleBlaster, Player)
      */
     public void drawScoreText(Renderer renderer, Player player, Color titleColor, Color valueColor) {
-        // Score
-        renderer.setColor(titleColor);
-        renderer.drawText(infoFont, Language.translate("bubbleblaster/Info/Score"), 70, 20, Anchor.CENTER);
-        renderer.setColor(valueColor);
-        renderer.drawText(font, String.valueOf((int) player.getScore()), 70, 50, Anchor.CENTER);
+        renderer.drawText(this.infoFont, Language.translate("bubbleblaster/Info/Score"), 70, 20, titleColor);
+        renderer.drawText(this.font, String.valueOf((int) player.getScore()), 70, 50, valueColor);
     }
 
     /**
@@ -242,7 +233,7 @@ public class ClassicModeHud extends GameHud {
     public void drawStatusEffects(@NotNull Renderer renderer, @NotNull Player player) {
         try {
             // EffectInstance image.
-            renderer.blit(BubbleBlaster.id("ui/effect_banner"));
+            renderer.setTexture(BubbleBlaster.id("ui/effect_banner"));
 
             int i = 0;
             for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
@@ -255,12 +246,11 @@ public class ClassicModeHud extends GameHud {
                     render.blit(0, 0, 192, 38);
 
                     // EffectInstance icon.
-                    render.blit(appliedEffect.getType().getIconId());
+                    render.setTexture(appliedEffect.getType().getIconId());
                     render.blit(5, 3, 32, 32);
-                    render.setColor(Color.rgba(255, 255, 255, 192));
 
                     // Time. 0:00:00
-                    renderer.drawLeftAnchoredText(font, time, 56, 19.5f);
+                    renderer.drawLeftAnchoredText(this.font, time, 56, 19.5f, Color.WHITE.withAlpha(0xC0));
                 });
                 // Next
                 i++;
@@ -309,10 +299,8 @@ public class ClassicModeHud extends GameHud {
      * @see #drawHealthLineForeground(Renderer, BubbleBlaster, Player)
      */
     public void drawHealthLineBackground(Renderer renderer, BubbleBlaster game) {
-        // Health line.
         renderer.setLineWidth(HEALTH_LINE_WIDTH);
-        renderer.setColor(HEALTH_LINE_BG_COLOR);
-        renderer.line(0, 69, game.getWidth(), 69);
+        renderer.fill(0, 68, game.getWidth(), 2, HEALTH_LINE_BG_COLOR);
     }
 
     /**
@@ -320,10 +308,10 @@ public class ClassicModeHud extends GameHud {
      * Yes, as the title says: it sets the game over flag in the HUD.
      */
     public void setGameOver() {
-        gameOver = true;
+        this.gameOver = true;
 
         // Values
-        gameOverTime = System.currentTimeMillis();
+        this.gameOverTime = System.currentTimeMillis();
     }
 
     @Override
@@ -334,6 +322,6 @@ public class ClassicModeHud extends GameHud {
     }
 
     public long getGameOverTime() {
-        return gameOverTime;
+        return this.gameOverTime;
     }
 }

@@ -72,5 +72,4 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     public HashMap<Integer, Boolean> getCurrentlyPressed() {
         return new HashMap<>();
     }
-
 }

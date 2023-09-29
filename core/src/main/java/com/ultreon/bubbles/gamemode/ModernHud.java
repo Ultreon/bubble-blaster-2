@@ -3,8 +3,8 @@ package com.ultreon.bubbles.gamemode;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.Fonts;
@@ -13,7 +13,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.commons.util.TimeUtils;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v0.MutableText;
 import com.ultreon.libs.text.v0.TextObject;
@@ -69,7 +68,7 @@ public class ModernHud extends GameHud {
 
         if (player == null) return;
 
-        if (!gameOver) {
+        if (!this.gameOver) {
             game.profiler.section("Draw Badge", () -> drawBadge(renderer, player));
             game.profiler.section("Draw Status Effects", () -> drawStatusEffects(renderer, player));
         }
@@ -80,8 +79,8 @@ public class ModernHud extends GameHud {
     }
 
     private void drawBadge(Renderer renderer, Player player) {
-        game.profiler.section("Draw Background", () -> drawBadgeBackground(renderer));
-        game.profiler.section("Draw Player Details", () -> drawPlayerDetails(renderer, player));
+        this.game.profiler.section("Draw Background", () -> drawBadgeBackground(renderer));
+        this.game.profiler.section("Draw Player Details", () -> drawPlayerDetails(renderer, player));
     }
 
     private void drawBadgeBackground(Renderer renderer) {
@@ -101,34 +100,33 @@ public class ModernHud extends GameHud {
 
         String name = player.getName();
         renderer.setColor(0xffffffff);
-        renderer.drawText(playerDetailsNameFont, name, x + 5, y + 5, Anchor.NW);
-        renderer.drawText(playerDetailsInfoFont, TextObject.literal("Score: ").append((int) player.getScore()).append("    Level: ").append(player.getLevel()), x + 5, y + 20);
+        renderer.drawText(this.playerDetailsNameFont, name, x + 5, y + 5, Color.WHITE);
+        renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Score: ").append((int) player.getScore()).append("    Level: ").append(player.getLevel()), x + 5, y + 20, Color.WHITE.withAlpha(0xa0));
 
         MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append((int) Math.floor(player.getMaxHealth()));
 
-        renderer.setColor(0x50ffffff);
+        renderer.setColor(0xffffff);
         double maxHealth = player.getMaxHealth();
         double health = Mth.clamp(player.getHealth(), 0, maxHealth);
         if (maxHealth != 0) {
             renderer.line(x + 5, y + 75, x + 295, y + 75);
 
             double ratio = health / maxHealth;
+            Color color;
             if (ratio >= 0.5) {
-                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
-                renderer.setColor(Color.GREEN);
+                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.WHITE.withAlpha(0x50));
+                color = Color.GREEN;
             } else if (ratio >= 0.2) {
-                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
-                renderer.setColor(Color.GOLD);
+                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.WHITE.withAlpha(0x50));
+                color = Color.GOLD;
             } else {
-                renderer.setColor(Color.CRIMSON);
-                renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
+                color = Color.CRIMSON;
+                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, color);
             }
             renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75);
         } else {
-            renderer.setColor(Color.CRIMSON);
-            renderer.drawText(playerDetailsInfoFont, hpText, x + 5, y + 60);
-            renderer.setColor(0xffff0000);
-            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75);
+            renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.CRIMSON);
+            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, Color.CRIMSON);
         }
     }
 
@@ -148,21 +146,21 @@ public class ModernHud extends GameHud {
     private void drawLevelUpMessage(Renderer renderer, Gamemode gamemode) {
         renderer.setColor(LEVEL_UP_COLOR);
 
-        if (showLevelUp && System.currentTimeMillis() > hideLevelUpTime) {
-            showLevelUp = false;
+        if (this.showLevelUp && System.currentTimeMillis() > this.hideLevelUpTime) {
+            this.showLevelUp = false;
             return;
         }
 
         // Level up message
-        if (showLevelUp) {
-            String text = "Level " + level;
+        if (this.showLevelUp) {
+            String text = "Level " + this.level;
             if (!text.equals(this.levelUpText)) {
-                levelUpText = text;
-                levelUpLayout.setText(levelUpFont, text);
+                this.levelUpText = text;
+                this.levelUpLayout.setText(this.levelUpFont, text);
             }
 
-            float textWidth = levelUpLayout.width;
-            float textHeight = levelUpLayout.height;
+            float textWidth = this.levelUpLayout.width;
+            float textHeight = this.levelUpLayout.height;
 
             float width = textWidth + 16;
             float height = textHeight + 16;
@@ -178,7 +176,7 @@ public class ModernHud extends GameHud {
 
             renderer.setColor(LEVEL_UP_COLOR);
 
-            renderer.drawCenteredText(levelUpFont, text, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2));
+            renderer.drawCenteredText(this.levelUpFont, text, (float) (gameBounds.getX() + gameBounds.getWidth() / 2), (float) (gameBounds.getY() + gameBounds.getHeight() / 2));
         }
     }
 
@@ -189,7 +187,7 @@ public class ModernHud extends GameHud {
      * @param player   the player, to get the information about the status effects from.
      */
     private void drawStatusEffects(@NotNull Renderer renderer, @NotNull Player player) {
-        int x = game.getWidth() - 320;
+        int x = this.game.getWidth() - 320;
         int y = 20;
 
         for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
@@ -210,12 +208,11 @@ public class ModernHud extends GameHud {
                 renderer.fill(x + 5, y + 5, 40, 40);
             }
 
-            renderer.setColor(0xffffffff);
-            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 15);
+            renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 15, Color.WHITE);
 
             if (appliedEffect.getRemainingTime().toSeconds() <= BubbleBlasterConfig.SECS_BEFORE_RED_EFFECT_TIME.get()) renderer.setColor(Color.rgb(0xff0000));
 
-            renderer.drawLeftAnchoredText(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40);
+            renderer.drawLeftAnchoredText(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40, renderer.getColor());
 
             y += 60;
         }
@@ -226,9 +223,9 @@ public class ModernHud extends GameHud {
      * Yes, as the title says: it sets the game over flag in the HUD.
      */
     public void setGameOver() {
-        gameOver = true;
+        this.gameOver = true;
         // Values
-        gameOverTime = Instant.now();
+        this.gameOverTime = Instant.now();
     }
 
     @Override
@@ -239,6 +236,6 @@ public class ModernHud extends GameHud {
     }
 
     public Instant getGameOverTime() {
-        return gameOverTime;
+        return this.gameOverTime;
     }
 }
