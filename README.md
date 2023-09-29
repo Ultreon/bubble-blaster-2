@@ -8,4 +8,6 @@ Coming soon!
 Coming soon!
 
 # Making mods
-Coming soon!
+### I don't recommend making mods as of now. A lot of refactors are going to happen still!
+If you want to make mods you can check out the [example mod](https://github.com/Ultreon/bubble-blaster-examplemod) for now.
+There isn't any documentation or a wiki available as of now.
