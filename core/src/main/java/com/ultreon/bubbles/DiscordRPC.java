@@ -41,17 +41,21 @@ public class DiscordRPC {
     private void run() {
         if (!this.download()) return;
 
-        while (running) {
-            // Set parameters for the Core
-            try (var params = new CreateParams()) {
-                params.setClientID(933147296311427144L);
-                params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
+        try {
+            while (running) {
+                // Set parameters for the Core
+                try (var params = new CreateParams()) {
+                    params.setClientID(933147296311427144L);
+                    params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
 
-                // Create the Core
-                try (var core = new Core(params)) {
-                    if (this.callbackLoop(core)) break;
+                    // Create the Core
+                    try (var core = new Core(params)) {
+                        if (this.callbackLoop(core)) break;
+                    }
                 }
             }
+        } catch (GameSDKException e) {
+            LOGGER.warn("An error occurred in the Discord RPC thread.", e);
         }
     }
 
