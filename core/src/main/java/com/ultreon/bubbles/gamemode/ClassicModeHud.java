@@ -41,6 +41,7 @@ public class ClassicModeHud extends GameHud {
     private final GlyphLayout levelUpLayout = new GlyphLayout();
     private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_40.get();
     private final BitmapFont infoFont = Fonts.SANS_BOLD_14.get();
+    private final BitmapFont fpsFont = Fonts.SANS_ITALIC_20.get();
     private long gameOverTime;
 
     /**
@@ -94,7 +95,7 @@ public class ClassicModeHud extends GameHud {
 
     public void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
-        renderer.drawText(this.font, String.valueOf(game.getFps()), game.getWidth() - 10, 10, Color.argb(0x8000a5dc));
+        renderer.drawText(this.fpsFont, String.valueOf(game.getFps()), game.getWidth() - 10, 10, Color.argb(0x8000a5dc));
     }
 
     /**

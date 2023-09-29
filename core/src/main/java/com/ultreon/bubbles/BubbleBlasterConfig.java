@@ -5,7 +5,6 @@ import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
-import com.ultreon.bubbles.render.TextureCollection;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -32,7 +31,7 @@ public class BubbleBlasterConfig {
     // Graphical
     public static final Config.IntEntry SECS_BEFORE_RED_EFFECT_TIME;
     public static final Config.FloatEntry BUBBLE_LINE_THICKNESS;
-    public static final Config.IntEntry DEFAULT_EFFECT_SPEEED;
+    public static final Config.FloatEntry DEFAULT_EFFECT_SPEED;
 
     // Debug
     public static final Config.BooleanEntry DEBUG_DISABLE_SCISSORS;
@@ -61,7 +60,7 @@ public class BubbleBlasterConfig {
         // Graphical
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
         BUBBLE_LINE_THICKNESS = builder.entry("graphical.bubbleLineThickness").comment("The thickness of a singular circle of a bubble.").withinRange(1f, 2.5f, 2f);
-        DEFAULT_EFFECT_SPEEED = builder.entry("graphical.defaultEffectSpeed").comment("How long it takes for one cycle of the scrolling gradient effect by default.").withinRange(0, 30, 10);
+        DEFAULT_EFFECT_SPEED = builder.entry("graphical.defaultEffectSpeed").comment("How long it takes for one cycle of the scrolling gradient effect by default.").withinRange(0f, 30f, 10f);
 
         // Debug
         DEBUG_DISABLE_SCISSORS = builder.entry("debug.disableScissors").comment("Disables ScissorStack.pushScissors() and ScissorStack.popScissors()").value(false);

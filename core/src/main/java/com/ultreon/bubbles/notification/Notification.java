@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.notification;
 
-import com.ultreon.libs.commons.v0.Mth;
+import org.checkerframework.common.reflection.qual.NewInstance;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -8,71 +9,59 @@ import java.util.Locale;
 public class Notification {
     private static final int MAX_FADE_IN = 500;
     private static final int MAX_FADE_OUT = 500;
-    private final String title;
-    private final String summary;
-    private String subText;
-    private final long createTime = System.currentTimeMillis();
+    private String title;
+    private String summary;
+    private final String subText;
     private final long duration;
+    private long createTime = System.currentTimeMillis();
+    private boolean sticky;
 
-    public Notification(String title, String summary) {
-        this(title, summary, (String)null);
+    private Notification(Builder builder) {
+        this.title = builder.title;
+        this.summary = builder.summary;
+        this.subText = (builder.subText == null || builder.subText.isBlank() ? "Game Notification" : builder.subText).toUpperCase(Locale.ROOT);
+        this.duration = builder.duration.toMillis();
     }
 
-    public Notification(String title, String summary, String subText) {
-        this(title, summary, subText, Duration.ofSeconds(3));
-    }
-
-    public Notification(String title, String summary, Duration duration) {
-        this(title, summary, null, duration);
-    }
-
-    public Notification(String title, String summary, String subText, Duration duration) {
-        this.title = title;
-        this.summary = summary;
-        this.subText = subText == null || subText.isBlank() ? "Game Notification" : subText.toUpperCase(Locale.ROOT);
-        this.duration = duration.toMillis();
+    public static Builder builder(String title, String summary) {
+        return new Builder(title, summary);
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public String getSummary() {
-        return summary;
+        return this.summary;
     }
 
     public String getSubText() {
-        return subText;
+        return this.subText;
     }
 
-    Notification enableDebug() {
-        this.subText = "DEBUG".toUpperCase(Locale.ROOT);
-        return this;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public int getFadeIn() {
-        return (int) Math.max(getLifetime(), MAX_FADE_IN);
-    }
-
-    public int getFadeOut() {
-        return (int) Mth.clamp(getLifetime() - MAX_FADE_IN - (duration - MAX_FADE_OUT), 0, MAX_FADE_OUT);
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public float getMotion() {
-        if (getLifetime() < 0)
+        if (this.getLifetime() < 0)
             return 1f;
-        else if (getLifetime() < MAX_FADE_IN)
-            return 1f - (float) getLifetime() / MAX_FADE_IN;
-        else if (getLifetime() < MAX_FADE_IN + duration)
+        else if (this.getLifetime() < MAX_FADE_IN)
+            return 1f - (float) this.getLifetime() / MAX_FADE_IN;
+        else if (this.getLifetime() < MAX_FADE_IN + this.duration || this.sticky)
             return 0f;
-        else if (getLifetime() < MAX_FADE_IN + duration + MAX_FADE_OUT)
-            return ((float) (getLifetime() - MAX_FADE_IN - duration) / MAX_FADE_OUT);
+        else if (this.getLifetime() < MAX_FADE_IN + this.duration + MAX_FADE_OUT)
+            return ((float) (this.getLifetime() - MAX_FADE_IN - this.duration) / MAX_FADE_OUT);
         else
             return 1f;
     }
 
     private long getCreateTime() {
-        return createTime;
+        return this.createTime;
     }
 
     private long getLifetime() {
@@ -80,6 +69,46 @@ public class Notification {
     }
 
     public boolean isDead() {
-        return getLifetime() > MAX_FADE_IN + duration + MAX_FADE_OUT;
+        if (this.sticky) return false;
+        return this.getLifetime() > MAX_FADE_IN + this.duration + MAX_FADE_OUT;
+    }
+
+    public void set(String title, String summary) {
+        this.createTime = System.currentTimeMillis();
+        this.title = title;
+        this.summary = summary;
+        this.sticky = false;
+    }
+
+    public static class Builder {
+        private final String title;
+        private final String summary;
+        private String subText = null;
+        private Duration duration = Duration.ofSeconds(3);
+        private boolean sticky = false;
+
+        private Builder(String title, String summary) {
+            this.title = title;
+            this.summary = summary;
+        }
+
+        public @This Builder subText(String subText) {
+            this.subText = subText;
+            return this;
+        }
+
+        public @This Builder duration(Duration duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public @This Builder sticky() {
+            this.sticky = true;
+            return this;
+        }
+
+        public @NewInstance Notification build() {
+            return new Notification(this);
+        }
     }
 }

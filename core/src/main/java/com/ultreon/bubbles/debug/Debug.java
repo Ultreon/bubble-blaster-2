@@ -12,11 +12,13 @@ public class Debug {
     private static final Logger logger = LoggerFactory.getLogger("Debugger");
 
     public static void notify(String name, String detail) {
-        BubbleBlaster.getInstance().notifications.notify(new Notification(name, detail, "debug"));
+        BubbleBlaster game = BubbleBlaster.getInstance();
+        game.notifications.notify(Notification.builder(name, detail).subText("Debug").build());
     }
 
     public static void notifyOnce(UUID uuid, String name, String detail) {
-        BubbleBlaster.getInstance().notifications.notifyOnce(uuid, new Notification(name, detail, "debug"));
+        BubbleBlaster game = BubbleBlaster.getInstance();
+        game.notifications.notifyOnce(uuid, Notification.builder(name, detail).subText("debug").build());
     }
 
     public static void log(String name, String message) {

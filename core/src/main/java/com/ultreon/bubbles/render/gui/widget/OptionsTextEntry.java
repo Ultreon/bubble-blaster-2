@@ -38,7 +38,7 @@ public class OptionsTextEntry extends GuiComponent {
     @Override
     public boolean mouseRelease(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 0) int button) {
         if (button == Buttons.LEFT) {
-            activated = getBounds().contains(x, y);
+            this.activated = this.getBounds().contains(x, y);
             return true;
         }
         return false;
@@ -47,7 +47,7 @@ public class OptionsTextEntry extends GuiComponent {
     @Override
     public boolean mouseClick(@IntRange(from = 0) int x, @IntRange(from = 0) int y, @IntRange(from = 0) int button, @IntRange(from = 1) int count) {
         if (button == Buttons.LEFT) {
-            boolean flag = activated = isHovered();
+            boolean flag = this.activated = this.isHovered();
             if (flag) {
                 return true;
             }
@@ -58,46 +58,46 @@ public class OptionsTextEntry extends GuiComponent {
 
     @Override
     public boolean keyPress(int keyCode) {
-        if (!activated) return false;
+        if (!this.activated) return false;
 
         if (keyCode == Input.Keys.BACKSPACE) {
-            if (text.isEmpty()) return false;
+            if (this.text.isEmpty()) return false;
 
-            String leftText = text.substring(0, cursorIndex - 1);
-            String rightText = text.substring(cursorIndex);
+            String leftText = this.text.substring(0, this.cursorIndex - 1);
+            String rightText = this.text.substring(this.cursorIndex);
 
             String text = leftText + rightText;
-            if (responder.test(text)) {
+            if (this.responder.test(text)) {
                 this.text = text;
-                layout.setText(font, text.substring(0, cursorIndex));
-                cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
+                this.layout.setText(this.font, text.substring(0, this.cursorIndex));
+                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
 
         if (keyCode == Input.Keys.ESCAPE) {
-            if (text.isEmpty()) return false;
-            if (cursorIndex >= text.length() - 1) return false;
+            if (this.text.isEmpty()) return false;
+            if (this.cursorIndex >= this.text.length() - 1) return false;
 
-            String leftText = text.substring(0, cursorIndex);
-            String rightText = text.substring(cursorIndex + 1);
+            String leftText = this.text.substring(0, this.cursorIndex);
+            String rightText = this.text.substring(this.cursorIndex + 1);
 
             String text = leftText + rightText;
-            if (responder.test(text)) {
+            if (this.responder.test(text)) {
                 this.text = text;
-                layout.setText(font, text.substring(0, cursorIndex));
-                cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
+                this.layout.setText(this.font, text.substring(0, this.cursorIndex));
+                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
-            cursorIndex = Mth.clamp(cursorIndex - 1, 0, this.text.length());
+            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
-            cursorIndex = Mth.clamp(cursorIndex + 1, 0, this.text.length());
+            this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
             return true;
         }
         return false;
@@ -106,14 +106,14 @@ public class OptionsTextEntry extends GuiComponent {
     @Override
     public boolean charType(char character) {
         if ((short) character >= 32) {
-            String leftText = this.text.substring(0, cursorIndex);
-            String rightText = this.text.substring(cursorIndex);
+            String leftText = this.text.substring(0, this.cursorIndex);
+            String rightText = this.text.substring(this.cursorIndex);
 
             String text = leftText + character + rightText;
-            if (responder.test(text)) {
+            if (this.responder.test(text)) {
                 this.text = text;
-                layout.setText(font, text.substring(0, cursorIndex));
-                cursorIndex++;
+                this.layout.setText(this.font, text.substring(0, this.cursorIndex));
+                this.cursorIndex++;
             }
 
             return true;
@@ -124,53 +124,33 @@ public class OptionsTextEntry extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        if (activated) {
-            fill(renderer, 0, 0, width, height, 0xff808080);
-
-//            Paint old = renderer.getPaint();
-//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0x00c0ff).toAwt(), 0f, getHeight(), Color.rgb(0x00ffc0).toAwt());
-//            renderer.paint(p);
-//            renderer.fill(new Rectangle(0, height, width, 4));
-//            renderer.paint(old);
+        Rectangle bounds = this.getBounds();
+        if (this.activated) {
+            renderer.fill(bounds, Color.WHITE.withAlpha(0x60));
+            renderer.fillEffect(0, this.height - 4, this.width, 4);
         } else {
-            fill(renderer, 0, 0, width, height, 0xff404040);
+            renderer.fill(bounds, Color.WHITE.withAlpha(0x40));
         }
 
-        renderer.setColor(Color.rgb(0xffffffff));
-        renderer.drawText(text, 0, 0);
+        renderer.drawText(this.font, this.text, 0, 0, Color.WHITE.withAlpha(0xC0));
 
-        int cursorX;
-        renderer.setColor(Color.rgb(0xff00c0c0));
-        if (cursorIndex >= text.length()) {
-            if (!text.isEmpty()) {
-                cursorX = (int) (layout.width + 2);
-            } else {
-                cursorX = 0;
-            }
+        int cursorX = this.text.isEmpty() ? 0 : (int) this.layout.width;
 
-            renderer.line(cursorX, 2, cursorX, getHeight() - 2);
-            renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
+        if (this.cursorIndex >= this.text.length()) {
+            renderer.fillEffect(cursorX + 2, this.y + 2, 2, this.height - 4);
         } else {
-            if (!text.isEmpty()) {
-                cursorX = (int) layout.width;
-            } else {
-                cursorX = 0;
-            }
-
-            int width = font.getData().getGlyph(text.charAt(cursorIndex)).width;
-
-            renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
-            renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
+            int width = this.font.getData().getGlyph(this.text.charAt(this.cursorIndex)).width;
+            renderer.fillEffect(cursorX, this.height - 2, width, 2);
         }
     }
 
-    public void setText(@Nullable String text) {
-        this.text = text == null ? "{null}" : text;
+    public void setText(@NotNull String text) {
+        this.text = text;
     }
 
     @NotNull
     public String getText() {
-        return text;
+        return this.text;
     }
 
     public void setResponder(@NotNull Consumer<@NotNull String> responder) {
@@ -194,10 +174,10 @@ public class OptionsTextEntry extends GuiComponent {
         }
 
         public OptionsTextEntry build() {
-            if (bounds == null) throw new IllegalArgumentException("Missing bounds for creating OptionsTextEntry.");
+            if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating OptionsTextEntry.");
 
-            OptionsTextEntry obj = new OptionsTextEntry((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
-            obj.setText(text);
+            OptionsTextEntry obj = new OptionsTextEntry((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            obj.setText(this.text == null ? "" : this.text);
 
             return obj;
         }

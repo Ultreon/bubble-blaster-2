@@ -401,6 +401,14 @@ public class Renderer {
         this.shapes.rectangle(x, y, width, height, this.lineWidth);
     }
 
+    public void box(Rectangle bounds, Color color) {
+        this.box(bounds, color, new Insets(1));
+    }
+
+    public void box(Rectangle bounds, Color color, Insets insets) {
+        this.box(bounds.x, bounds.y, bounds.width, bounds.height, color, insets);
+    }
+
     public void box(int x, int y, int width, int height, Color color) {
         if (!this.rendering) return;
 
@@ -1252,19 +1260,31 @@ public class Renderer {
         return false;
     }
 
-    public void drawEffectBox(int x, int y, int width, int height) {
+    public void drawEffectBox(Rectangle bounds) {
         if (!this.rendering) return;
 
-        this.drawEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
+        this.drawEffectBox(bounds.x, bounds.y, bounds.width, bounds.height, new Insets(2));
     }
 
-    public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
+    public void drawEffectBox(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        this.drawEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
+        this.drawEffectBox(x, y, width, height, new Insets(2));
     }
 
-    public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+    public void drawEffectBox(float x, float y, float width, float height, Insets insets) {
+        if (!this.rendering) return;
+
+        this.drawEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
+    }
+
+    public void drawEffectBox(Rectangle bounds, Insets insets) {
+        if (!this.rendering) return;
+
+        this.drawEffectBox(bounds.x, bounds.y, bounds.width, bounds.height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
+    }
+
+    public void drawEffectBox(float x, float y, float width, float height, Insets insets, float speed) {
         if (!this.rendering) return;
 
         Border border = new Border(insets);
@@ -1277,11 +1297,11 @@ public class Renderer {
     public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
         if (!this.rendering) return;
 
-        this.drawEffectBox(x, y, width, height, strokeWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
+        this.drawEffectBox(x, y, width, height, strokeWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
     }
 
     @Deprecated(forRemoval = true)
-    public void drawEffectBox(int x, int y, int width, int height, float borderWidth, int speed) {
+    public void drawEffectBox(int x, int y, int width, int height, float borderWidth, float speed) {
         if (!this.rendering) return;
 
         Border border = new Border(new Insets((int) borderWidth));
@@ -1290,25 +1310,25 @@ public class Renderer {
         border.drawBorder(this, x, y, width, height);
     }
 
-    public void drawRoundEffectBox(int x, int y, int width, int height) {
+    public void drawRoundEffectBox(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        this.drawRoundEffectBox(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
+        this.drawRoundEffectBox(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
     }
 
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius) {
+    public void drawRoundEffectBox(float x, float y, float width, float height, float radius) {
         if (!this.rendering) return;
 
         this.drawRoundEffectBox(x, y, width, height, radius, 2);
     }
 
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth) {
+    public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int borderWidth) {
         if (!this.rendering) return;
 
-        this.drawRoundEffectBox(x, y, width, height, radius, borderWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
+        this.drawRoundEffectBox(x, y, width, height, radius, borderWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
     }
 
-    public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth, int speed) {
+    public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int borderWidth, float speed) {
         if (!this.rendering) return;
 
         Border border = new Border(new Insets(borderWidth));
@@ -1317,19 +1337,31 @@ public class Renderer {
         border.drawBorder(this, x, y, width, height);
     }
 
+    public void drawErrorEffectBox(Rectangle bounds) {
+        this.drawErrorEffectBox((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
+    }
+
     public void drawErrorEffectBox(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.drawErrorEffectBox(x, y, width, height, new Insets(2, 2, 2, 2));
+        this.drawErrorEffectBox(x, y, width, height, new Insets(2));
+    }
+
+    public void drawErrorEffectBox(Rectangle bounds, Insets insets) {
+        this.drawErrorEffectBox((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height, insets);
     }
 
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
         if (!this.rendering) return;
 
-        this.drawErrorEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
+        this.drawErrorEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
     }
 
-    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
+    public void drawErrorEffectBox(Rectangle bounds, Insets insets, float speed) {
+        this.drawErrorEffectBox((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height, insets, speed);
+    }
+
+    public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, float speed) {
         if (!this.rendering) return;
 
         Border border = new Border(insets);
@@ -1338,34 +1370,38 @@ public class Renderer {
         border.drawBorder(this, x, y, width, height);
     }
 
-    public void fillErrorEffect(int x, int y, int width, int height) {
+    public void fillErrorEffect(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault(), ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
+        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault(), ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
     }
 
-    public void fillErrorEffect(int x, int y, int width, int height, int speed) {
+    public void fillErrorEffect(float x, float y, float width, float height, float speed) {
         if (!this.rendering) return;
 
         this.fillScrollingGradient(x, y, width, height, speed, ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
     }
 
-    public void fillEffect(float x, int y, int width, int height) {
+    public void fillEffect(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault(), ANIM_COLOR_1, ANIM_COLOR_2);
+        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault(), ANIM_COLOR_1, ANIM_COLOR_2);
     }
 
-    public void fillEffect(int x, int y, int width, int height, int speed) {
+    public void drawEffectBox(Rectangle bounds, Insets insets, float speed) {
+        this.drawEffectBox((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height, insets, speed);
+    }
+
+    public void fillEffect(float x, float y, float width, float height, float speed) {
         if (!this.rendering) return;
 
         this.fillScrollingGradient(x, y, width, height, speed, ANIM_COLOR_1, ANIM_COLOR_2);
     }
 
-    private void fillScrollingGradient(float x, int y, int width, int height, int speed, Color color1, Color color2) {
+    private void fillScrollingGradient(float x, float y, float width, float height, float speed, Color color1, Color color2) {
         float gameWidth = this.getWidth();
         float gameHeight = this.getHeight();
-        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
+        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
 
         if (this.pushScissor(new Rectangle(x, y, width, height)) == null) return;
         this.fillGradient(-shiftX, 0, gameWidth, gameHeight, color1, color2, Axis2D.HORIZONTAL);

@@ -11,7 +11,7 @@ public class Border {
     private boolean borderOpaque;
     protected Color color = Color.WHITE;
     protected RenderType renderType = RenderType.COLOR;
-    protected int effectSpeed = BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get();
+    protected float effectSpeed = BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.get();
 
     public Border(Insets insets) {
         this.borderInsets = insets;
@@ -29,12 +29,12 @@ public class Border {
         this.borderInsets = new Insets(top, left, bottom, right);
     }
 
-    public void drawBorder(Renderer renderer, int x, int y, int width, int height) {
-        Insets insets = getBorderInsets();
+    public void drawBorder(Renderer renderer, float x, float y, float width, float height) {
+        Insets insets = this.getBorderInsets();
 
         // Draw rectangles around the component, but do not draw
         // in the component area itself.
-        switch (renderType) {
+        switch (this.renderType) {
             case COLOR -> {
                 renderer.setColor(this.color);
                 renderer.fill(x + insets.left, y, width - insets.left - insets.right, insets.top);
@@ -43,22 +43,22 @@ public class Border {
                 renderer.fill(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom);
             }
             case EFFECT -> {
-                renderer.fillEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, effectSpeed);
-                renderer.fillEffect(x, y, insets.left, height, effectSpeed);
-                renderer.fillEffect(x + width - insets.right, y, insets.right, height, effectSpeed);
-                renderer.fillEffect(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom, effectSpeed);
+                renderer.fillEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, this.effectSpeed);
+                renderer.fillEffect(x, y, insets.left, height, this.effectSpeed);
+                renderer.fillEffect(x + width - insets.right, y, insets.right, height, this.effectSpeed);
+                renderer.fillEffect(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom, this.effectSpeed);
             }
             case ERROR_EFFECT -> {
-                renderer.fillErrorEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, effectSpeed);
-                renderer.fillErrorEffect(x, y, insets.left, height, effectSpeed);
-                renderer.fillErrorEffect(x + width - insets.right, y, insets.right, height, effectSpeed);
-                renderer.fillErrorEffect(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom, effectSpeed);
+                renderer.fillErrorEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, this.effectSpeed);
+                renderer.fillErrorEffect(x, y, insets.left, height, this.effectSpeed);
+                renderer.fillErrorEffect(x + width - insets.right, y, insets.right, height, this.effectSpeed);
+                renderer.fillErrorEffect(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom, this.effectSpeed);
             }
         }
     }
 
     public boolean isBorderOpaque() {
-        return borderOpaque;
+        return this.borderOpaque;
     }
 
     public void setBorderOpaque(boolean borderOpaque) {
@@ -66,7 +66,7 @@ public class Border {
     }
 
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     public void setColor(Color color) {
@@ -74,55 +74,55 @@ public class Border {
     }
 
     public RenderType getRenderType() {
-        return renderType;
+        return this.renderType;
     }
 
     public void setRenderType(RenderType renderType) {
         this.renderType = renderType;
     }
 
-    public void setEffectSpeed(int effectSpeed) {
+    public void setEffectSpeed(float effectSpeed) {
         this.effectSpeed = effectSpeed;
     }
 
-    public int getEffectSpeed() {
-        return effectSpeed;
+    public float getEffectSpeed() {
+        return this.effectSpeed;
     }
 
     public Insets getBorderInsets() {
-        return borderInsets;
+        return this.borderInsets;
     }
 
     public void setBorderTop(int topWidth) {
-        borderInsets.top = topWidth;
+        this.borderInsets.top = topWidth;
     }
 
     public void setBorderLeft(int leftWidth) {
-        borderInsets.left = leftWidth;
+        this.borderInsets.left = leftWidth;
     }
 
     public void setBorderBottom(int bottomWidth) {
-        borderInsets.bottom = bottomWidth;
+        this.borderInsets.bottom = bottomWidth;
     }
 
     public void setBorderRight(int rightWidth) {
-        borderInsets.right = rightWidth;
+        this.borderInsets.right = rightWidth;
     }
 
     public int getBorderTop() {
-        return borderInsets.top;
+        return this.borderInsets.top;
     }
 
     public int getBorderLeft() {
-        return borderInsets.left;
+        return this.borderInsets.left;
     }
 
     public int getBorderBottom() {
-        return borderInsets.bottom;
+        return this.borderInsets.bottom;
     }
 
     public int getBorderRight() {
-        return borderInsets.right;
+        return this.borderInsets.right;
     }
 
     public enum RenderType {

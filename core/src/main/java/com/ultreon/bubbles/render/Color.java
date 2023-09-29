@@ -6,11 +6,27 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.regex.Pattern;
 
 public class Color {
-    public static final Color BLACK = Color.rgb(0x000000);
-    public static final Color DARK_GRAY = Color.rgb(0x404040);
-    public static final Color GRAY = Color.rgb(0x808080);
-    public static final Color LIGHT_GRAY = Color.rgb(0xc0c0c0);
-    public static final Color WHITE = Color.rgb(0xffffff);
+    public static final Color BLACK = Color.grayscale(0x00);
+    public static final Color GRAY_0 = Color.BLACK;
+    public static final Color GRAY_1 = Color.grayscale(0x10);
+    public static final Color GRAY_2 = Color.grayscale(0x20);
+    public static final Color GRAY_3 = Color.grayscale(0x30);
+    public static final Color DARK_GRAY = Color.grayscale(0x40);
+    public static final Color GRAY_4 = Color.DARK_GRAY;
+    public static final Color GRAY_5 = Color.grayscale(0x50);
+    public static final Color GRAY_6 = Color.grayscale(0x60);
+    public static final Color GRAY_7 = Color.grayscale(0x70);
+    public static final Color GRAY = Color.grayscale(0x80);
+    public static final Color GRAY_8 = Color.GRAY;
+    public static final Color GRAY_9 = Color.grayscale(0x90);
+    public static final Color GRAY_A = Color.grayscale(0xa0);
+    public static final Color GRAY_B = Color.grayscale(0xb0);
+    public static final Color LIGHT_GRAY = Color.grayscale(0xc0);
+    public static final Color GRAY_C = Color.LIGHT_GRAY;
+    public static final Color GRAY_D = Color.grayscale(0xd0);
+    public static final Color GRAY_E = Color.grayscale(0xe0);
+    public static final Color GRAY_F = Color.grayscale(0xf0);
+    public static final Color WHITE = Color.grayscale(0xff);
     public static final Color RED = Color.rgb(0xff0000);
     public static final Color ORANGE = Color.rgb(0xff8000);
     public static final Color GOLD = Color.rgb(0xffb000);
@@ -88,6 +104,14 @@ public class Color {
     public static Color abgr(int color) {
         long abgr = ((long) color) % 0x100000000L;
         return new Color(abgr & 0x000000ffL, (abgr & 0x0000ff00L) >> 8, (abgr & 0x00ff0000L) >> 16, (abgr & 0xff000000L) >> 24);
+    }
+
+    public static Color grayscale(int brightness) {
+        return new Color(brightness, brightness, brightness, 0xff);
+    }
+
+    public static Color grayscale(int brightness, int alpha) {
+        return new Color(brightness, brightness, brightness, alpha);
     }
 
     public static Color hex(String hex) {

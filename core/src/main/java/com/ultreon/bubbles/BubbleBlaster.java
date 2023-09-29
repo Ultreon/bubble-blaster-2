@@ -590,10 +590,20 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             if (this.isLoaded()) {
                 if (Instant.now().isAfter(this.getLastTickTime().plusSeconds(60)) && !this.isTickThreadDead) {
                     this.markTickingDead();
-                    this.notifications.notify(new Notification("Game Ticking", "Game ticking hasn't happened in 60 secs!", "Watchdog", Duration.ofSeconds(5)));
+                    this.notifications.notify(
+                            Notification.builder("Game Ticking", "Game ticking hasn't happened in 60 secs!")
+                                    .subText("Watchdog")
+                                    .duration(Duration.ofSeconds(5))
+                                    .build()
+                    );
                 } else if (this.isTickThreadDead) {
                     this.isTickThreadDead = false;
-                    this.notifications.notify(new Notification("Game Ticking", "Game ticking came back!", "Watchdog", Duration.ofSeconds(5)));
+                    this.notifications.notify(
+                            Notification.builder("Game Ticking", "Game ticking came back!")
+                                    .subText("Watchdog")
+                                    .duration(Duration.ofSeconds(5))
+                                    .build()
+                    );
                 }
             }
 
@@ -2073,7 +2083,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             return true;
         } else if (keycode == Keys.F2) {
             Screenshot screenshot = Screenshot.take();
-            this.notifications.notify(new Notification("Screenshot saved!", screenshot.fileHandle().name(), "SCREENSHOT MANAGER"));
+            this.notifications.notify(
+                    Notification.builder("Screenshot saved!", screenshot.fileHandle().name())
+                            .subText("Screenshot Manager")
+                            .build());
             return true;
         } else if (environment != null) {
             if (this.keyPressEnv(environment, keycode)) return true;

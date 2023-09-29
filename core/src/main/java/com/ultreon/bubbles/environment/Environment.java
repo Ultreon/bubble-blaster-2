@@ -137,7 +137,7 @@ public final class Environment implements CrashFiller {
 
     public void initSave(Messenger messenger) {
         this.gamemode.initEnv(this, messenger);
-        this.player = game.player;
+        this.player = this.game.player;
         this.initialized = true;
     }
 
@@ -145,7 +145,7 @@ public final class Environment implements CrashFiller {
         this.gamemode.onLoad(this, save, messenger);
         this.name = save.getInfo().getName();
 
-        loadEnvironment(save.load("environment", true));
+        this.loadEnvironment(save.load("environment", true));
 
         this.gameplayStorage = new GameplayStorage(save.load("gameplay"));
 
@@ -154,7 +154,7 @@ public final class Environment implements CrashFiller {
 
     public void save() {
         try {
-            save(gameSave, new DummyMessenger());
+            this.save(this.gameSave, new DummyMessenger());
         } catch (IOException e) {
             BubbleBlaster.getLogger().error("Error occurred when saving the game: ", e);
         }
@@ -162,27 +162,31 @@ public final class Environment implements CrashFiller {
 
     public boolean save(GameSave save, Messenger messenger) throws IOException {
         if (!this.saveLock.tryLock()) return false;
-        this.game.notifications.notify(new Notification("Saving", "The game is being saved...", "Auto Save Feature"));
+        Notification notification = Notification.builder("Saving", "The game is being saved...")
+                .subText("Auto Save Feature")
+                .sticky()
+                .build();
+        this.game.notifications.notify(notification);
 
         // Gamemode implementation for saving data.
         this.gamemode.onSave(this, save, messenger);
 
         // Save environment data.
-        dumpRegistries(save, messenger);
-        dumpPlayers(save, messenger);
-        save.dump("environment", saveEnvironment(), true);
-        save.dump("info", saveInfo(), true);
+        this.dumpRegistries(save, messenger);
+        this.dumpPlayers(save, messenger);
+        save.dump("environment", this.saveEnvironment(), true);
+        save.dump("info", this.saveInfo(), true);
         save.dump("gameplay", this.gameplayStorage.save());
 
         this.saveLock.unlock();
-        this.game.notifications.notify(new Notification("Saved", "The game has been saved!", "Auto Save Feature"));
+        notification.set("Saved", "The game has been saved!");
         return true;
     }
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
         messenger.send("Saving players...");
         for (Player p : this.players) {
-            dumpPlayer(save, p);
+            this.dumpPlayer(save, p);
         }
     }
 
@@ -196,14 +200,14 @@ public final class Environment implements CrashFiller {
         MapType data = save.load("Players/" + uuid, true);
         Player player = new Player(this);
         player.load(data);
-        players.add(player);
-        entities.add(player);
+        this.players.add(player);
+        this.entities.add(player);
     }
 
     private void dumpRegistries(GameSave save, Messenger messenger) throws IOException {
         messenger.send("Dumping registries.");
         for (Registry<?> registry : Registry.getRegistries()) {
-            dumpRegistryData(save, registry);
+            this.dumpRegistryData(save, registry);
         }
     }
 
@@ -234,13 +238,13 @@ public final class Environment implements CrashFiller {
     private MapType saveEnvironment() {
         MapType tag = new MapType();
         ListType<MapType> entitiesTag = new ListType<>();
-        for (Entity entity : entities) {
+        for (Entity entity : this.entities) {
             entitiesTag.add(entity.save());
         }
         tag.put("Entities", entitiesTag);
-        tag.put("Player", player.save());
-        tag.putUUID("playerUuid", player.getUniqueId());
-        tag.putBoolean("gameOver", isGameOver());
+        tag.put("Player", this.player.save());
+        tag.putUUID("playerUuid", this.player.getUniqueId());
+        tag.putBoolean("gameOver", this.isGameOver());
         return tag;
     }
 
@@ -255,15 +259,15 @@ public final class Environment implements CrashFiller {
     }
 
     public BubbleRandomizer getBubbleRandomizer() {
-        return bubbleRandomizer;
+        return this.bubbleRandomizer;
     }
 
     @CanIgnoreReturnValue
     public boolean triggerGameOver() {
-        if (!gameOverLock.tryLock()) return false;
+        if (!this.gameOverLock.tryLock()) return false;
 
         if (this.isAlive()) {
-            this.setResultScore(Math.round(Objects.requireNonNull(getPlayer()).getScore()));
+            this.setResultScore(Math.round(Objects.requireNonNull(this.getPlayer()).getScore()));
         }
 
         this.gameOver = true;
@@ -274,21 +278,21 @@ public final class Environment implements CrashFiller {
     }
 
     public float getLocalDifficulty() {
-        Difficulty diff = getDifficulty();
+        Difficulty diff = this.getDifficulty();
 
         if (!BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isLocal()) {
             return diff.getPlainModifier();
         }
 
-        stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(stateDifficultyModifiers.values()), 1f);
-        if (getPlayer() == null) return diff.getPlainModifier() * stateDifficultyModifier;
+        this.stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(this.stateDifficultyModifiers.values()), 1f);
+        if (this.getPlayer() == null) return diff.getPlainModifier() * this.stateDifficultyModifier;
 
-        int i = (getPlayer().getLevel() - 1) * 5 + 1;
-        return i * diff.getPlainModifier() * stateDifficultyModifier;
+        int i = (this.getPlayer().getLevel() - 1) * 5 + 1;
+        return i * diff.getPlainModifier() * this.stateDifficultyModifier;
     }
 
     public float getStateDifficultyModifier() {
-        return stateDifficultyModifier;
+        return this.stateDifficultyModifier;
     }
 
     public void setDifficulty(Difficulty difficulty) {
@@ -300,7 +304,7 @@ public final class Environment implements CrashFiller {
     }
 
     public float getGlobalBubbleSpeedModifier() {
-        return globalBubbleFreeze ? 0 : globalBubbleSpeedModifier;
+        return this.globalBubbleFreeze ? 0 : this.globalBubbleSpeedModifier;
     }
 
     public void setGlobalBubbleFreeze(boolean b) {
@@ -312,7 +316,7 @@ public final class Environment implements CrashFiller {
     }
 
     public boolean isGameplayEventActive(GameplayEvent gameplayEvent) {
-        return gameplayEventActive.contains(gameplayEvent);
+        return this.gameplayEventActive.contains(gameplayEvent);
     }
 
     private GameplayContext createGameplayContext() {
@@ -321,12 +325,12 @@ public final class Environment implements CrashFiller {
 
     @Deprecated
     public void addGameStateActive(GameplayEvent gameplayEvent) {
-        gameplayEventActive.add(gameplayEvent);
+        this.gameplayEventActive.add(gameplayEvent);
     }
 
     @Deprecated
     public void removeGameStateActive(GameplayEvent gameplayEvent) {
-        gameplayEventActive.remove(gameplayEvent);
+        this.gameplayEventActive.remove(gameplayEvent);
     }
 
     public boolean isBloodMoonActive() {
@@ -334,7 +338,7 @@ public final class Environment implements CrashFiller {
     }
 
     public GameplayStorage getGameplayStorage() {
-        return gameplayStorage;
+        return this.gameplayStorage;
     }
 
     public void tickBloodMoon() {
@@ -343,48 +347,48 @@ public final class Environment implements CrashFiller {
             return;
         }
 
-        if (!bloodMoonTriggered) {
-            if (nextBloodMoonCheck == 0) {
-                nextBloodMoonCheck = System.currentTimeMillis() + 10000;
+        if (!this.bloodMoonTriggered) {
+            if (this.nextBloodMoonCheck == 0) {
+                this.nextBloodMoonCheck = System.currentTimeMillis() + 10000;
             }
 
-            if (nextBloodMoonCheck < System.currentTimeMillis()) {
-                if (bloodMoonRng.getNumber(0, 720, getTicks()) == 0) {
-                    triggerBloodMoon();
+            if (this.nextBloodMoonCheck < System.currentTimeMillis()) {
+                if (this.bloodMoonRng.getNumber(0, 720, this.getTicks()) == 0) {
+                    this.triggerBloodMoon();
                 } else {
-                    nextBloodMoonCheck = System.currentTimeMillis() + 10000;
+                    this.nextBloodMoonCheck = System.currentTimeMillis() + 10000;
                 }
             }
         } else {
-            if (bloodMoonValueAnimator != null) {
-                setGlobalBubbleSpeedModifier((float) bloodMoonValueAnimator.animate());
-                if (bloodMoonValueAnimator.isEnded()) {
+            if (this.bloodMoonValueAnimator != null) {
+                this.setGlobalBubbleSpeedModifier((float) this.bloodMoonValueAnimator.animate());
+                if (this.bloodMoonValueAnimator.isEnded()) {
                     GameplayEvents.BLOOD_MOON_EVENT.activate();
                     this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT);
-                    gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
+                    this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
 
                     if (loadedGame.getAmbientAudio() != null) {
                         loadedGame.getAmbientAudio().stop();
                     }
-                    bloodMoonValueAnimator = null;
-                    bloodMoonValueAnimator1 = new ValueAnimator(8d, 1d, 1000d);
+                    this.bloodMoonValueAnimator = null;
+                    this.bloodMoonValueAnimator1 = new ValueAnimator(8d, 1d, 1000d);
                 }
-            } else if (bloodMoonValueAnimator1 != null) {
-                setGlobalBubbleSpeedModifier((float) bloodMoonValueAnimator1.animate());
-                if (bloodMoonValueAnimator1.isEnded()) {
-                    bloodMoonValueAnimator1 = null;
+            } else if (this.bloodMoonValueAnimator1 != null) {
+                this.setGlobalBubbleSpeedModifier((float) this.bloodMoonValueAnimator1.animate());
+                if (this.bloodMoonValueAnimator1.isEnded()) {
+                    this.bloodMoonValueAnimator1 = null;
                 }
             } else {
-                setGlobalBubbleSpeedModifier(1);
+                this.setGlobalBubbleSpeedModifier(1);
             }
         }
     }
 
     public void triggerBloodMoon() {
-        if (!bloodMoonTriggered) {
+        if (!this.bloodMoonTriggered) {
             BubbleBlaster.getLogger().info("Triggered blood moon.");
-            bloodMoonTriggered = true;
-            bloodMoonValueAnimator = new ValueAnimator(1d, 8d, 10000d);
+            this.bloodMoonTriggered = true;
+            this.bloodMoonValueAnimator = new ValueAnimator(1d, 8d, 10000d);
         } else {
             BubbleBlaster.getLogger().info("Blood moon already triggered!");
         }
@@ -399,18 +403,18 @@ public final class Environment implements CrashFiller {
         }
 
         if (this.isBloodMoonActive()) {
-            gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
-            bloodMoonTriggered = false;
+            this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
+            this.bloodMoonTriggered = false;
             GameplayEvents.BLOOD_MOON_EVENT.deactivate();
             loadedGame.getAmbientAudio().stop();
-            currentGameplayEvent = null;
+            this.currentGameplayEvent = null;
         }
 
         BubbleBlaster.getInstance().getRenderSettings().resetAntialiasing();
     }
 
     public long getResultScore() {
-        return resultScore;
+        return this.resultScore;
     }
 
     public void setResultScore(long resultScore) {
@@ -419,7 +423,7 @@ public final class Environment implements CrashFiller {
 
     @IntRange(from = 0)
     public long getTicks() {
-        return ticks;
+        return this.ticks;
     }
 
     /**
@@ -431,18 +435,18 @@ public final class Environment implements CrashFiller {
      */
     @NotNull
     public BubbleType getRandomBubble(long spawnIndex) {
-        var bubbleType = gamemode.getRandomBubble(spawnIndex);
+        var bubbleType = this.gamemode.getRandomBubble(spawnIndex);
         if (bubbleType != null) {
             return bubbleType;
         }
 
-        bubbleType = BubbleSystem.random(bubbleRandomizer.getVariantRng(), spawnIndex, 0, this);
+        bubbleType = BubbleSystem.random(this.bubbleRandomizer.getVariantRng(), spawnIndex, 0, this);
 
         int retries = 0;
         while (bubbleType == null) {
-            bubbleType = BubbleSystem.random(bubbleRandomizer.getVariantRng(), spawnIndex, retries + 1, this);
+            bubbleType = BubbleSystem.random(this.bubbleRandomizer.getVariantRng(), spawnIndex, retries + 1, this);
             if (++retries == 5) {
-                return gamemode.getDefaultBubble();
+                return this.gamemode.getDefaultBubble();
             }
         }
 
@@ -451,7 +455,7 @@ public final class Environment implements CrashFiller {
         if (canSpawn) {
             return bubbleType;
         }
-        return gamemode.getDefaultBubble();
+        return this.gamemode.getDefaultBubble();
     }
 
     public void attack(Entity target, double damage, EntityDamageSource damageSource) {
@@ -461,19 +465,19 @@ public final class Environment implements CrashFiller {
     }
 
     public Difficulty getDifficulty() {
-        return difficulty;
+        return this.difficulty;
     }
 
     public void setStateDifficultyModifier(GameplayEvent gameplayEvent, float modifier) {
-        stateDifficultyModifiers.put(gameplayEvent, modifier);
+        this.stateDifficultyModifiers.put(gameplayEvent, modifier);
     }
 
     public void removeStateDifficultyModifier(GameplayEvent gameplayEvent) {
-        stateDifficultyModifiers.remove(gameplayEvent);
+        this.stateDifficultyModifiers.remove(gameplayEvent);
     }
 
     public Object getStateDifficultyModifier(GameplayEvent gameplayEvent) {
-        return stateDifficultyModifiers.get(gameplayEvent);
+        return this.stateDifficultyModifiers.get(gameplayEvent);
     }
 
     /**
@@ -482,7 +486,7 @@ public final class Environment implements CrashFiller {
      * @return all the entities.
      */
     public List<Entity> getEntities() {
-        return Collections.unmodifiableList(entities);
+        return Collections.unmodifiableList(this.entities);
     }
 
     /**
@@ -492,10 +496,10 @@ public final class Environment implements CrashFiller {
      */
     public void spawnEntityFromState(MapType entityData) {
         if (!BubbleBlaster.isOnTickingThread()) {
-            BubbleBlaster.invokeTick(() -> loadAndSpawnEntity(entityData));
+            BubbleBlaster.invokeTick(() -> this.loadAndSpawnEntity(entityData));
             return;
         }
-        loadAndSpawnEntity(entityData);
+        this.loadAndSpawnEntity(entityData);
     }
 
     private void loadAndSpawnEntity(MapType tag) {
@@ -529,8 +533,8 @@ public final class Environment implements CrashFiller {
     public void spawn(EntityType<?> entityType, SpawnInformation.SpawnReason reason, long spawnIndex, int retry) {
         BubbleBlaster.invokeTick(() -> {
             Entity entity = entityType.create(this);
-            @NotNull Vector2 pos = gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
-            spawn(entity, pos);
+            @NotNull Vector2 pos = this.gamemode.getSpawnLocation(entity, new Identifier(reason.name()), spawnIndex, retry);
+            this.spawn(entity, pos);
         });
     }
 
@@ -563,7 +567,7 @@ public final class Environment implements CrashFiller {
      * @return the game type bound to this environment.
      */
     public Gamemode getGamemode() {
-        return gamemode;
+        return this.gamemode;
     }
 
     /**
@@ -572,7 +576,7 @@ public final class Environment implements CrashFiller {
      * @return true if initialized.
      */
     public boolean isInitialized() {
-        return initialized;
+        return this.initialized;
     }
 
     /**
@@ -598,8 +602,8 @@ public final class Environment implements CrashFiller {
                 this.entitiesLock.unlock();
             }
 
-            tickSpawning();
-            tickBloodMoon();
+            this.tickSpawning();
+            this.tickBloodMoon();
 
             // Tick gameplay events
             gamePlayEvent: {
@@ -628,38 +632,38 @@ public final class Environment implements CrashFiller {
     }
 
     private void tickSpawning() {
-        if (entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().maxBubbles) {
-            EntityType<? extends Bubble> entityType = Bubble.getRandomType(this, bubbleRandomizer.getVariantRng());
+        if (this.entities.stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().maxBubbles) {
+            EntityType<? extends Bubble> entityType = Bubble.getRandomType(this, this.bubbleRandomizer.getVariantRng());
 
-            Bubble bubble = BubbleSpawnContext.inContext(ticks, 0, () -> entityType.create(this));
+            Bubble bubble = BubbleSpawnContext.inContext(this.ticks, 0, () -> entityType.create(this));
             if (bubble.getBubbleType().canSpawn(this)) {
-                spawn(bubble, gamemode.getSpawnLocation(bubble, BUBBLE_SPAWN_USAGE, ticks, 0));
+                this.spawn(bubble, this.gamemode.getSpawnLocation(bubble, BUBBLE_SPAWN_USAGE, this.ticks, 0));
             }
         }
     }
 
     public void gameOver(Player player) {
-        synchronized (entitiesLock) {
-            entities.remove(player);
+        synchronized (this.entitiesLock) {
+            this.entities.remove(player);
         }
     }
 
     public void joinPlayer(Player player) {
-        synchronized (entitiesLock) {
-            entities.add(player);
+        synchronized (this.entitiesLock) {
+            this.entities.add(player);
         }
     }
 
     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T> bubbleEntityClass) {
-        synchronized (entitiesLock) {
-            return entities.stream()
+        synchronized (this.entitiesLock) {
+            return this.entities.stream()
                     .filter(entity -> bubbleEntityClass.isAssignableFrom(entity.getClass()))
                     .map(bubbleEntityClass::cast).toList();
         }
     }
 
     public GameplayEvent getCurrentGameEvent() {
-        return currentGameplayEvent;
+        return this.currentGameplayEvent;
     }
 
     public void start() {
@@ -669,8 +673,8 @@ public final class Environment implements CrashFiller {
     public void shutdown() {
         this.shuttingDown = true;
 
-        synchronized (entitiesLock) {
-            for (Entity entity : entities) {
+        synchronized (this.entitiesLock) {
+            for (Entity entity : this.entities) {
                 entity.delete();
             }
         }
@@ -682,32 +686,32 @@ public final class Environment implements CrashFiller {
     }
 
     public long getSeed() {
-        return seed;
+        return this.seed;
     }
 
     public boolean isGameOver() {
-        return gameOver;
+        return this.gameOver;
     }
 
     public boolean isAlive() {
-        return !gameOver;
+        return !this.gameOver;
     }
 
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     public BubbleBlaster game() {
-        return game;
+        return this.game;
     }
 
     @SuppressWarnings("unused")
     public long getEntityId(Entity entity) {
-        return ticks;
+        return this.ticks;
     }
 
     public GameSave getGameSave() {
-        return gameSave;
+        return this.gameSave;
     }
 
     public void prepareCreation(GameSave save) throws IOException {
@@ -716,7 +720,7 @@ public final class Environment implements CrashFiller {
 
     @Nullable
     public Entity getEntityAt(Vec2i pos) {
-        for (Entity entity : entities) {
+        for (Entity entity : this.entities) {
             if (entity.getShape().contains(new Vector2(pos.x, pos.y))) {
                 return entity;
             }
@@ -736,7 +740,7 @@ public final class Environment implements CrashFiller {
     public Entity getNearestEntity(Vector2 pos) {
         double distance = Double.MAX_VALUE;
         Entity nearest = null;
-        for (Entity entity : entities) {
+        for (Entity entity : this.entities) {
             double cur = entity.distanceTo(pos);
             if (cur < distance) {
                 distance = cur;
@@ -749,7 +753,7 @@ public final class Environment implements CrashFiller {
     public Entity getNearestEntity(Vector2 pos, EntityType<?> targetType) {
         double distance = Double.MAX_VALUE;
         Entity nearest = null;
-        for (Entity entity : entities) {
+        for (Entity entity : this.entities) {
             if (!entity.getType().equals(targetType)) continue;
             double cur = entity.distanceTo(pos);
             if (cur < distance) {
@@ -784,10 +788,10 @@ public final class Environment implements CrashFiller {
     @Override
     public void fillInCrash(CrashLog crashLog) {
         var category = new CrashCategory("Environment", new RuntimeException());
-        category.add("Players", players);
-        category.add("Entities", entities);
-        category.add("Game Save", gameSave);
-        category.add("Cur. Gameplay Event", currentGameplayEvent);
+        category.add("Players", this.players);
+        category.add("Entities", this.entities);
+        category.add("Game Save", this.gameSave);
+        category.add("Cur. Gameplay Event", this.currentGameplayEvent);
         crashLog.addCategory(category);
     }
 }

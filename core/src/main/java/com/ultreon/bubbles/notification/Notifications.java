@@ -70,6 +70,10 @@ public class Notifications implements Renderable {
     }
 
     public void unavailable(String feature) {
-        this.notify(new Notification("Unavailable Feature", "'%s' isn't available yet.".formatted(feature), "Feature Locker", Duration.ofSeconds(5)));
+        this.notify(Notification.builder("Unavailable Feature", "'%s' isn't available yet.".formatted(feature))
+                .subText("Feature Locker")
+                .duration(Duration.ofSeconds(5))
+                .build()
+        );
     }
 }

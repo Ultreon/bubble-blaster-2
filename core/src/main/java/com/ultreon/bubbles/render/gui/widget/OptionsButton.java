@@ -22,7 +22,7 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     }
 
     public TextObject getText() {
-        return text;
+        return this.text;
     }
 
     public static class Builder {
@@ -35,10 +35,10 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
         }
 
         public OptionsButton build() {
-            OptionsButton button = new OptionsButton((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
+            OptionsButton button = new OptionsButton((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
-            button.setText(text);
-            button.setCommand(command);
+            button.setText(this.text);
+            button.setCommand(this.command);
             return button;
         }
 
@@ -76,20 +76,20 @@ public class OptionsButton extends AbstractButton implements GuiStateListener {
     @SuppressWarnings("DuplicatedCode")
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
-        fill(renderer, x, y, width, height, 0x20ffffff);
-        if (isPressed()) {
-            renderer.drawEffectBox(x + 2, y + 2, width - 4, height - 4, new Insets(1, 1, 1, 1));
+        renderer.fill(this.x, this.y, this.width, this.height, Color.WHITE.withAlpha(0x20));
+        if (this.isPressed()) {
+            renderer.drawEffectBox(this.x + 2, this.y + 2, this.width - 4, this.height - 4, new Insets(1, 1, 1, 1));
 
             textColor = Color.WHITE;
-        } else if (isHovered()) {
-            renderer.drawEffectBox(x + 2, y + 2, width - 4, height - 4, new Insets(2, 2, 2, 2));
+        } else if (this.isHovered()) {
+            renderer.drawEffectBox(this.x + 2, this.y + 2, this.width - 4, this.height - 4, new Insets(2, 2, 2, 2));
 
             textColor = Color.rgb(0xffffff);
         } else {
             textColor = Color.LIGHT_GRAY;
         }
 
-        drawText(renderer, textColor, getPos(), getSize(), text, font);
+        OptionsButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
     }
 
     static void drawText(Renderer renderer, Color color, Vec2i pos, Vec2i size, TextObject text, BitmapFont font) {

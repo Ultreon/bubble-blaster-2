@@ -14,8 +14,8 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.commons.exceptions.InvalidValueException;
-import com.ultreon.commons.lang.Pair;
 import com.ultreon.commons.util.ColorUtils;
+import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.text.v0.Translatable;
 import org.apache.commons.lang3.Range;
 import org.jetbrains.annotations.NotNull;
@@ -55,14 +55,14 @@ public abstract class BubbleType implements Serializable, Translatable {
     }
 
     public Iterable<AiTask> getAiTasks() {
-        return Collections.unmodifiableList(aiTasks);
+        return Collections.unmodifiableList(this.aiTasks);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Effect     //
     ////////////////////
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return effect.get(source, target);
+        return this.effect.get(source, target);
     }
 
     protected final void setEffect(BubbleEffectCallback effect) {
@@ -73,19 +73,19 @@ public abstract class BubbleType implements Serializable, Translatable {
     //     Attributes     //
     ////////////////////////
     public int getMinRadius() {
-        return radius.getMaximum();
+        return this.radius.getMaximum();
     }
 
     public int getMaxRadius() {
-        return radius.getMaximum();
+        return this.radius.getMaximum();
     }
 
     public double getMinSpeed() {
-        return speed.getMaximum();
+        return this.speed.getMaximum();
     }
 
     public double getMaxSpeed() {
-        return speed.getMaximum();
+        return this.speed.getMaximum();
     }
 
     protected final void setMinRadius(int radius) {
@@ -120,26 +120,26 @@ public abstract class BubbleType implements Serializable, Translatable {
     }
 
     public float getDefense(Environment environment, Rng rng) {
-        return getDefense();
+        return this.getDefense();
     }
 
     public float getAttack(Environment environment, Rng rng) {
-        return getAttack();
+        return this.getAttack();
     }
 
     public float getScore(Environment environment, Rng rng) {
-        return getScore();
+        return this.getScore();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Other     //
     ///////////////////
     public boolean isBad() {
-        return getAttack() > 0;
+        return this.getAttack() > 0;
     }
 
     public double getModifiedPriority(double localDifficulty) {
-        return getPriority();
+        return this.getPriority();
     }
 
     public boolean canSpawn(@NotNull Environment environment) {
@@ -160,43 +160,43 @@ public abstract class BubbleType implements Serializable, Translatable {
 
     }
     public double getPriority() {
-        return priority;
+        return this.priority;
     }
 
     public Range<Integer> getRadius() {
-        return radius;
+        return this.radius;
     }
 
     public Range<Double> getSpeed() {
-        return speed;
+        return this.speed;
     }
 
     public float getBounceAmount() {
-        return bounceAmount;
+        return this.bounceAmount;
     }
 
     public float getScore() {
-        return score;
+        return this.score;
     }
 
     public float getDefense() {
-        return defense;
+        return this.defense;
     }
 
     public float getAttack() {
-        return attack;
+        return this.attack;
     }
 
     public double getHardness() {
-        return hardness;
+        return this.hardness;
     }
 
     public List<Color> getColors() {
-        return colors;
+        return this.colors;
     }
 
     public boolean isInvincible() {
-        return invincible;
+        return this.invincible;
     }
 
     protected final void setPriority(double priority) {
@@ -236,7 +236,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     }
 
     protected int getRarity() {
-        return rarity;
+        return this.rarity;
     }
 
     protected final void setColors(Color... colors) {
@@ -254,17 +254,17 @@ public abstract class BubbleType implements Serializable, Translatable {
     @Override
     public String toString() {
         return "Bubble{" +
-                "colors=" + colors +
-                ", priority=" + priority +
-                ", radius=" + radius +
-                ", speed=" + speed +
-                ", bounceAmount=" + bounceAmount +
-                ", effect=" + effect +
-                ", score=" + score +
-                ", defense=" + defense +
-                ", attack=" + attack +
-                ", hardness=" + hardness +
-                ", rarity=" + rarity +
+                "colors=" + this.colors +
+                ", priority=" + this.priority +
+                ", radius=" + this.radius +
+                ", speed=" + this.speed +
+                ", bounceAmount=" + this.bounceAmount +
+                ", effect=" + this.effect +
+                ", score=" + this.score +
+                ", defense=" + this.defense +
+                ", attack=" + this.attack +
+                ", hardness=" + this.hardness +
+                ", rarity=" + this.rarity +
                 '}';
     }
 
@@ -296,35 +296,35 @@ public abstract class BubbleType implements Serializable, Translatable {
             BubbleType bubbleType = new BubbleType() {
                 @Override
                 public double getModifiedPriority(double localDifficulty) {
-                    if (difficulty == -1) return getPriority();
-                    return getPriority() * (localDifficulty / 100.0f * difficulty);
+                    if (Builder.this.difficulty == -1) return this.getPriority();
+                    return this.getPriority() * (localDifficulty / 100.0f * Builder.this.difficulty);
                 }
             };
-            if (priority == null) {
+            if (this.priority == null) {
                 throw new IllegalArgumentException("Priority must be specified");
             }
-            if (colors == null) {
+            if (this.colors == null) {
                 throw new IllegalArgumentException("Colors must be specified");
             }
 
-            bubbleType.setPriority(priority);
-            bubbleType.setRarity(rarity);
-            bubbleType.setScore(score);
-            bubbleType.setAttack(attack);
-            bubbleType.setDefense(defense);
-            bubbleType.setRadius(radius);
-            bubbleType.setSpeed(speed);
-            bubbleType.setHardness(hardness);
-            bubbleType.setEffect(bubbleEffect);
-            bubbleType.setInvincible(invulnerable);
+            bubbleType.setPriority(this.priority);
+            bubbleType.setRarity(this.rarity);
+            bubbleType.setScore(this.score);
+            bubbleType.setAttack(this.attack);
+            bubbleType.setDefense(this.defense);
+            bubbleType.setRadius(this.radius);
+            bubbleType.setSpeed(this.speed);
+            bubbleType.setHardness(this.hardness);
+            bubbleType.setEffect(this.bubbleEffect);
+            bubbleType.setInvincible(this.invulnerable);
 
-            if (doesBounce) {
-                bubbleType.setBounceAmount(bounceAmount);
+            if (this.doesBounce) {
+                bubbleType.setBounceAmount(this.bounceAmount);
             }
 
-            bubbleType.colors = List.of(colors);
+            bubbleType.colors = List.of(this.colors);
 
-            for (Pair<Integer, AiTask> aiTask : aiTasks) {
+            for (Pair<Integer, AiTask> aiTask : this.aiTasks) {
                 bubbleType.addAiTask(aiTask.getFirst(), aiTask.getSecond());
             }
 
@@ -432,7 +432,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof LivingEntity livingEntity && livingEntity.isInvincible()) return;
 
-        StatusEffectInstance appliedEffect = getEffect(source, target);
+        StatusEffectInstance appliedEffect = this.getEffect(source, target);
         if (appliedEffect == null) {
             return;
         }

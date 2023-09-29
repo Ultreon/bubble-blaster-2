@@ -30,40 +30,40 @@ public class OptionsNumberInput extends OptionsTextEntry {
         this.upButton = new ArrowButton(0, 0, 0, 0);
         this.downButton = new ArrowButton(0, 0, 0, 0);
 
-        upButton.setCommand(this::add);
-        downButton.setCommand(this::subtract);
+        this.upButton.setCommand(this::add);
+        this.downButton.setCommand(this::subtract);
 
-        text = Integer.toString(value);
+        this.text = Integer.toString(value);
 
-        cursorIndex = Integer.toString(value).length();
+        this.cursorIndex = Integer.toString(value).length();
     }
 
     private void add() {
-        value = Mth.clamp(value + 1, min, max);
-        text = Integer.toString(value);
+        this.value = Mth.clamp(this.value + 1, this.min, this.max);
+        this.text = Integer.toString(this.value);
     }
 
     private void subtract() {
-        value = Mth.clamp(value - 1, min, max);
-        text = Integer.toString(value);
+        this.value = Mth.clamp(this.value - 1, this.min, this.max);
+        this.text = Integer.toString(this.value);
     }
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (upButton.mousePress(x, y, button)) return true;
-        if (downButton.mousePress(x, y, button)) return true;
+        if (this.upButton.mousePress(x, y, button)) return true;
+        if (this.downButton.mousePress(x, y, button)) return true;
         super.mousePress(x, y, button);
-        if (!activated) {
+        if (!this.activated) {
             try {
-                value = Mth.clamp(Integer.parseInt(text), min, max);
-                if (!text.equals(Integer.toString(value)))
-                    cursorIndex = Integer.toString(value).length();
-                text = Integer.toString(value);
+                this.value = Mth.clamp(Integer.parseInt(this.text), this.min, this.max);
+                if (!this.text.equals(Integer.toString(this.value)))
+                    this.cursorIndex = Integer.toString(this.value).length();
+                this.text = Integer.toString(this.value);
                 return true;
             } catch (NumberFormatException e) {
-                value = Mth.clamp(0, min, max);
-                text = Integer.toString(value);
-                cursorIndex = text.length();
+                this.value = Mth.clamp(0, this.min, this.max);
+                this.text = Integer.toString(this.value);
+                this.cursorIndex = this.text.length();
                 return true;
             }
         }
@@ -75,29 +75,29 @@ public class OptionsNumberInput extends OptionsTextEntry {
         if (super.keyPress(keyCode)) return true;
 
         if (keyCode == Input.Keys.BACKSPACE) {
-            if (cursorIndex == 0) return false;
-            String leftText = text.substring(0, cursorIndex - 1);
-            String rightText = text.substring(cursorIndex);
+            if (this.cursorIndex == 0) return false;
+            String leftText = this.text.substring(0, this.cursorIndex - 1);
+            String rightText = this.text.substring(this.cursorIndex);
 
-            text = leftText + rightText;
-            layout.setText(font, text.substring(0, cursorIndex));
+            this.text = leftText + rightText;
+            this.layout.setText(this.font, this.text.substring(0, this.cursorIndex));
 
-            cursorIndex--;
-            cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
+            this.cursorIndex--;
+            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
-            cursorIndex--;
+            this.cursorIndex--;
 
-            cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
+            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
-            cursorIndex++;
+            this.cursorIndex++;
 
-            cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
+            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
@@ -108,15 +108,15 @@ public class OptionsNumberInput extends OptionsTextEntry {
     public boolean charType(char character) {
         if ("0123456789".contains(Character.toString(character))) {
 //                text += c;
-            String leftText = text.substring(0, cursorIndex);
-            String rightText = text.substring(cursorIndex);
+            String leftText = this.text.substring(0, this.cursorIndex);
+            String rightText = this.text.substring(this.cursorIndex);
 
-            text = leftText + character + rightText;
-            layout.setText(font, text.substring(0, cursorIndex));
+            this.text = leftText + character + rightText;
+            this.layout.setText(this.font, this.text.substring(0, this.cursorIndex));
 
-            cursorIndex++;
+            this.cursorIndex++;
 
-            cursorIndex = Mth.clamp(cursorIndex, 0, text.length());
+            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
         return false;
@@ -126,107 +126,95 @@ public class OptionsNumberInput extends OptionsTextEntry {
     public void make() {
         super.make();
 
-        upButton.make();
-        downButton.make();
+        this.upButton.make();
+        this.downButton.make();
     }
 
     @Override
     public void destroy() {
         super.destroy();
 
-        upButton.destroy();
-        downButton.destroy();
+        this.upButton.destroy();
+        this.downButton.destroy();
     }
 
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
-        if (upButton.mouseClick(x, y, button, count)) return true;
-        if (downButton.mouseClick(x, y, button, count)) return true;
+        if (this.upButton.mouseClick(x, y, button, count)) return true;
+        if (this.downButton.mouseClick(x, y, button, count)) return true;
         return super.mouseClick(x, y, button, count);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (upButton.mouseRelease(x, y, button)) return true;
-        if (downButton.mouseRelease(x, y, button)) return true;
+        if (this.upButton.mouseRelease(x, y, button)) return true;
+        if (this.downButton.mouseRelease(x, y, button)) return true;
         return super.mouseRelease(x, y, button);
     }
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        upButton.setY(0);
-        upButton.setX((int) (getBounds().width - 24));
-        upButton.setHeight((int) (getBounds().height / 2));
-        upButton.setWidth(24);
-        upButton.setText("+");
+        this.upButton.setY(0);
+        this.upButton.setX((int) (this.getBounds().width - 24));
+        this.upButton.setHeight((int) (this.getBounds().height / 2));
+        this.upButton.setWidth(24);
+        this.upButton.setText("+");
 
-        downButton.setY((int) (getBounds().height / 2));
-        downButton.setX((int) (getBounds().width - 24));
-        downButton.setHeight((int) (getBounds().height / 2));
-        downButton.setWidth(24);
-        downButton.setText("-");
+        this.downButton.setY((int) (this.getBounds().height / 2));
+        this.downButton.setX((int) (this.getBounds().width - 24));
+        this.downButton.setHeight((int) (this.getBounds().height / 2));
+        this.downButton.setWidth(24);
+        this.downButton.setText("-");
 
-        if (activated) {
+        if (this.activated) {
             renderer.setColor(Color.rgb(0x808080));
-            fill(renderer, 0, 0, width, height, 0xff808080);
+            renderer.fill(0, 0, this.width, this.height, Color.grayscale(0x80));
 
-            renderer.drawEffectBox(0, 0, width, height, new Insets(0, 0, 2, 0));
+            renderer.drawEffectBox(0, 0, this.width, this.height, new Insets(0, 0, 2, 0));
         } else {
-            fill(renderer, 0, 0, width, height, 0xff505050);
+            renderer.fill(0, 0, this.width, this.height, Color.grayscale(0x50));
         }
 
-        renderer.setColor(Color.rgb(0xffffffff));
-        renderer.drawLeftAnchoredText(font, text, 2, getHeight() / 2f);
+        renderer.drawLeftAnchoredText(this.font, this.text, 2, this.getHeight() / 2f, Color.WHITE);
 
-        float cursorX;
+        float cursorX = this.text.isEmpty() ? 0 : this.layout.width;
+
         renderer.setColor(Color.rgb(0xff00c0c0));
-        if (cursorIndex >= text.length()) {
-            if (!text.isEmpty()) {
-                cursorX = layout.width + 2;
-            } else {
-                cursorX = 0;
-            }
+        if (this.cursorIndex >= this.text.length()) {
+            if (!this.text.isEmpty()) cursorX = this.layout.width + 2;
+            else cursorX = 0;
 
-            renderer.line(cursorX, 2, cursorX, getHeight() - 2);
-            renderer.line(cursorX + 1, 2, cursorX + 1, getHeight() - 2);
+            renderer.fillEffect(cursorX + 2, this.x + 2, this.y + 2, this.height - 4);
         } else {
-            if (!text.isEmpty()) {
-                cursorX = layout.width;
-            } else {
-                cursorX = 0;
-            }
-
-            int width = font.getData().getGlyph(text.charAt(cursorIndex)).width;
-
-            renderer.line(cursorX, getHeight() - 2, cursorX + width, getHeight() - 2);
-            renderer.line(cursorX, getHeight() - 1, cursorX + width, getHeight() - 1);
+            int width = this.font.getData().getGlyph(this.text.charAt(this.cursorIndex)).width;
+            renderer.fillEffect(cursorX, this.height - 2, width, 2);
         }
     }
 
     public int getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(int value) {
-        this.value = Mth.clamp(value, min, max);
+        this.value = Mth.clamp(value, this.min, this.max);
     }
 
     public int getMin() {
-        return min;
+        return this.min;
     }
 
     public void setMin(int min) {
         this.min = min;
-        value = Mth.clamp(value, min, max);
+        this.value = Mth.clamp(this.value, min, this.max);
     }
 
     public int getMax() {
-        return max;
+        return this.max;
     }
 
     public void setMax(int max) {
         this.max = max;
-        value = Mth.clamp(value, min, max);
+        this.value = Mth.clamp(this.value, this.min, max);
     }
 
     static class ArrowButton extends OptionsButton {
@@ -240,38 +228,33 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
         @Override
         public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+            Rectangle bounds = this.getBounds();
+            boolean pressed = this.isPressed();
+            boolean hovered = this.isHovered();
+
             Color textColor;
-
-            Rectangle bounds = getBounds();
-
-            if (isPressed() && isHovered()) {
-                renderer.fillGradient(0, y, 0, getHeight(), Color.rgb(0x0080ff), Color.rgb(0x00ff80));
+            if (pressed) {
+                renderer.fill(bounds, Color.WHITE.withAlpha(0x40));
+                renderer.drawEffectBox(bounds, new Insets(2));
 
                 textColor = Color.WHITE;
-            } else if (isHovered()) {
-                renderer.setColor(Color.rgb(0x808080));
-                renderer.fill(bounds);
+            } else if (hovered) {
+                renderer.fill(bounds, Color.WHITE.withAlpha(0x40));
+                renderer.drawEffectBox(bounds, new Insets(2));
 
-                // Border
-//                GradientPaint p = new GradientPaint(0, y, Color.rgb(0x0080ff).toAwt(), 0f, y + getHeight(), Color.rgb(0x00ff80).toAwt());
-//                Border border = new Border(2, 2, 2, 2);
-//                border.setPaint(p);
-//                border.paintBorder(renderer, bounds.x, bounds.y, bounds.width, bounds.height);
-
-                textColor = Color.rgb(0xffffff);
+                textColor = Color.WHITE;
             } else {
-                renderer.setColor(Color.rgb(0x808080));
-                renderer.fill(bounds);
+                renderer.fill(bounds, Color.WHITE.withAlpha(0x40));
 
-                textColor = Color.rgb(0x808080);
+                textColor = Color.WHITE.withAlpha(0x80);
             }
 
-            drawText(renderer, textColor, getPos(), getSize(), text, font);
+            OptionsButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
         }
 
         @Override
         public boolean mousePress(int x, int y, int button) {
-            pressedTime = System.currentTimeMillis();
+            this.pressedTime = System.currentTimeMillis();
 
             return super.mousePress(x, y, button);
         }
@@ -279,10 +262,10 @@ public class OptionsNumberInput extends OptionsTextEntry {
         @Override
         public void tick() {
             super.tick();
-            if (isPressed()) {
-                if (pressedTime + 1000 < System.currentTimeMillis()) {
-                    if (previousCommand < System.currentTimeMillis()) {
-                        previousCommand = System.currentTimeMillis() + 25;
+            if (this.isPressed()) {
+                if (this.pressedTime + 1000 < System.currentTimeMillis()) {
+                    if (this.previousCommand < System.currentTimeMillis()) {
+                        this.previousCommand = System.currentTimeMillis() + 25;
                         this.click();
                     }
                 }

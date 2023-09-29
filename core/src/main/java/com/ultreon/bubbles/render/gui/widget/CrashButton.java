@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.libs.text.v0.TextObject;
@@ -20,23 +21,23 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     }
 
     public TextObject getText() {
-        return text;
+        return this.text;
     }
 
     public static class Builder {
         private Rectangle _bounds = new Rectangle(10, 10, 96, 48);
-        private TextObject _text = TextObject.EMPTY;
-        private Runnable _command = () -> {
+        private TextObject text = TextObject.EMPTY;
+        private Runnable command = () -> {
         };
 
         public Builder() {
         }
 
         public CrashButton build() {
-            CrashButton button = new CrashButton((int) _bounds.x, (int) _bounds.y, (int) _bounds.width, (int) _bounds.height);
+            CrashButton button = new CrashButton((int) this._bounds.x, (int) this._bounds.y, (int) this._bounds.width, (int) this._bounds.height);
 
-            button.setText(_text);
-            button.setCommand(_command);
+            button.setText(this.text);
+            button.setCommand(this.command);
             return button;
         }
 
@@ -51,17 +52,17 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         }
 
         public Builder text(String text) {
-            this._text = TextObject.literal(text);
+            this.text = TextObject.literal(text);
             return this;
         }
 
         public Builder text(TextObject text) {
-            this._text = text;
+            this.text = text;
             return this;
         }
 
         public Builder command(Runnable command) {
-            this._command = command;
+            this.command = command;
             return this;
         }
     }
@@ -74,43 +75,27 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
 
-        if (isPressed()) {
-//            Paint old = renderer.getPaint();
-//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
-//            renderer.paint(p);
-//            renderer.rect(0, 0, width, height);
-//            renderer.paint(old);
+        if (this.isPressed()) {
+            renderer.drawErrorEffectBox(this.getBounds(), new Insets(2));
 
             textColor = Color.WHITE;
-        } else if (isHovered()) {
+        } else if (this.isHovered()) {
             renderer.setLineWidth(4.0f);
-
-//            Paint old = renderer.getPaint();
-//            GradientPaint p = new GradientPaint(0, 0, Color.rgb(0xff0000).toAwt(), width, height, Color.rgb(0xff4000).toAwt());
-//            renderer.paint(p);
-//            Border border = new OuterBorder(2, 2, 2, 2);
-//            border.setPaint(p);
-//            border.paintBorder(renderer, 1, 1, width - 2, height - 2);
-//
-//            renderer.paint(old);
+            renderer.drawErrorEffectBox(this.x + 1, this.y + 1, this.width - 2, this.height - 2, new Insets(2));
 
             textColor = Color.rgb(0xffffff);
         } else {
             renderer.setLineWidth(1.0f);
-
-            renderer.setColor(Color.rgb(0xffffff));
-//            Border border = new Border(1, 1, 1, 1);
-//            border.setPaint(Color.rgb(0xffffff).toAwt());
-//            border.paintBorder(renderer, 0, 0, width, height);
+            renderer.box(this.getBounds(), Color.WHITE, new Insets(1));
 
             textColor = Color.rgb(0xffffff);
         }
 
-        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getPos(), getSize(), text, font);
+        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
     }
 
     public Runnable getCommand() {
-        return command;
+        return this.command;
     }
 
     public void setCommand(Runnable command) {

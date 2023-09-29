@@ -3,7 +3,6 @@ package com.ultreon.bubbles.settings;
 import com.badlogic.gdx.Input;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.GameFolders;
@@ -11,10 +10,8 @@ import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.Keybind;
-import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.translations.v0.Language;
 import com.ultreon.libs.translations.v0.LanguageManager;
 
 import java.io.File;
@@ -23,10 +20,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.time.Duration;
-import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 @SuppressWarnings("FieldMayBeFinal")
 public final class GameSettings implements Serializable {
@@ -49,28 +43,15 @@ public final class GameSettings implements Serializable {
 
 
     static {
-        if (!reload()) {
+        if (!GameSettings.reload()) {
             BubbleBlaster.getLogger().error("Failed to load settings.");
         }
 
-        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE, file -> reload());
+        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE, file -> GameSettings.reload());
     }
 
     private GameSettings() {
-        LanguageManager.setCurrentLanguage(Locale.forLanguageTag(language));
-        List<Language> languages = LanguageManager.INSTANCE.getLanguages();
-        if (languages.stream().noneMatch(language1 -> {
-            System.out.println("language1.getLocale().toLanguageTag() = " + language1.getLocale().toLanguageTag());
-            return language1.getLocale().equals(Locale.forLanguageTag(language));
-        })) {
-            BubbleBlaster.whenLoaded(UUID.fromString("fa7d8d9a-f707-4e83-8228-7af3af478857"), () -> {
-                BubbleBlaster game = BubbleBlaster.getInstance();
-                game.notifications.notifyOnce(
-                    UUID.fromString("f904e6ae-9dc1-4534-8bf8-c87fc58d6182"),
-                    new Notification("Error!", "Language not found: " + language, "Language Manager", Duration.ofSeconds(10))
-                );
-            });
-        }
+        LanguageManager.setCurrentLanguage(Locale.forLanguageTag(this.language));
     }
 
     public synchronized static boolean reload() {
@@ -78,7 +59,7 @@ public final class GameSettings implements Serializable {
 
         instance = new GameSettings();
         if (!GameFolders.SETTINGS_FILE.exists()) {
-            return save();
+            return GameSettings.save();
         }
 
         try {
@@ -92,10 +73,10 @@ public final class GameSettings implements Serializable {
             LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
         } catch (Exception e) {
             BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.toPath() + ":", e);
-            return save();
+            return GameSettings.save();
         }
 
-        return save();
+        return GameSettings.save();
     }
 
     public synchronized static boolean save() {
@@ -116,11 +97,11 @@ public final class GameSettings implements Serializable {
     }
 
     public String getLanguage() {
-        return language;
+        return this.language;
     }
 
     public Locale getLanguageLocale() {
-        return new Locale(getLanguage());
+        return new Locale(this.getLanguage());
     }
 
     public void setLanguage(String language) {
@@ -141,15 +122,15 @@ public final class GameSettings implements Serializable {
     }
 
     public GraphicsSettings getGraphicsSettings() {
-        return graphicsSettings;
+        return this.graphicsSettings;
     }
 
     public Gamemode getGamemode() {
-        return Registries.GAMEMODES.getValue(gamemode);
+        return Registries.GAMEMODES.getValue(this.gamemode);
     }
 
     public Difficulty getDifficulty() {
-        return difficulty;
+        return this.difficulty;
     }
 
     public void setDifficulty(Difficulty difficulty) {
@@ -157,7 +138,7 @@ public final class GameSettings implements Serializable {
     }
 
     public DebugOptions getDebugOptions() {
-        return debugOptions;
+        return this.debugOptions;
     }
 
     public static void nopInit() {

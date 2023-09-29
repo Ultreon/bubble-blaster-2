@@ -37,7 +37,7 @@ public class Config {
         this.entries.forEach((s, configEntry) -> configEntry.set0(configEntry.getDefaultValue()));
         this.watcher = this::fileModified;
 
-        watch();
+        this.watch();
     }
 
     private void watch() {
@@ -49,51 +49,60 @@ public class Config {
     }
 
     public synchronized void reload() {
-        unwatch();
-        PARSER.parse(file, this.config, ParsingMode.REPLACE, FileNotFoundAction.CREATE_EMPTY);
+        this.unwatch();
+        PARSER.parse(this.file, this.config, ParsingMode.REPLACE, FileNotFoundAction.CREATE_EMPTY);
         this.entries.forEach((s, configEntry) -> {
             if (configEntry.isSet()) return;
             configEntry.set0(configEntry.getDefaultValue());
         });
 
         ConfigEvents.CONFIG_RELOADED.factory().onConfigReloaded(this);
-        watch();
+        this.watch();
     }
 
     public synchronized void save() {
-        unwatch();
+        this.unwatch();
         if (ConfigEvents.CONFIG_SAVING.factory().onConfigSaving(this).isCanceled()) return;
+
+        BubbleBlaster game = BubbleBlaster.getInstance();
 
         try {
             WRITER.write(this.config, this.file, WritingMode.REPLACE);
 
             if (WRITER.writeToString(this.config).isBlank()) {
-                BubbleBlaster.getInstance().notifications.notify(new Notification("Config Failed to Save!", "Failed to save config '" + file.getName() + "'"));
+                game.notifications.notify(
+                        Notification.builder("Config Failed to Save!", "Failed to save config '" + this.file.getName() + "'")
+                                .subText("Config Manager")
+                                .build()
+                );
             }
         } catch (Exception e) {
-            BubbleBlaster.getInstance().notifications.notify(new Notification("Config Failed to Save!", "Failed to save config '" + file.getName() + "'"));
+            game.notifications.notify(
+                    Notification.builder("Config Failed to Save!", "Failed to save config '" + this.file.getName() + "'")
+                            .subText("Config Manager")
+                            .build());
         }
 
         ConfigEvents.CONFIG_SAVED.factory().onConfigSaved(this);
-        watch();
+        this.watch();
     }
 
     public CommentedConfig getConfig() {
-        return config;
+        return this.config;
     }
 
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     public Set<Entry<String, ConfigEntry<?>>> entrySet() {
-        return entries.entrySet();
+        return this.entries.entrySet();
     }
 
     private void fileModified(File f) {
-        if (f.equals(file)) {
+        if (f.equals(this.file)) {
             try {
-                reload();
+                this.reload();
             } catch (ParsingException ignored) {
 
             }
@@ -112,7 +121,7 @@ public class Config {
 
         @Override
         public T get() {
-            return config.getEnum(path, getDefaultValue().getDeclaringClass());
+            return this.config.getEnum(this.path, this.getDefaultValue().getDeclaringClass());
         }
     }
 
@@ -305,11 +314,11 @@ public class Config {
         }
 
         public T getDefaultValue() {
-            return defaultValue;
+            return this.defaultValue;
         }
 
         public T getOrDefault() {
-            return defaultValue;
+            return this.defaultValue;
         }
     }
 
@@ -347,71 +356,71 @@ public class Config {
             }
 
             public ByteEntry withinRange(byte min, byte max, byte def) {
-                ByteEntry entry = new ByteEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                ByteEntry entry = new ByteEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public ShortEntry withinRange(short min, short max, short def) {
-                ShortEntry entry = new ShortEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                ShortEntry entry = new ShortEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public IntEntry withinRange(int min, int max, int def) {
-                IntEntry entry = new IntEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                IntEntry entry = new IntEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public LongEntry withinRange(long min, long max, long def) {
-                LongEntry longEntry = new LongEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, longEntry);
+                LongEntry longEntry = new LongEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, longEntry);
                 return longEntry;
             }
 
             public FloatEntry withinRange(float min, float max, float def) {
-                FloatEntry entry = new FloatEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                FloatEntry entry = new FloatEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public DoubleEntry withinRange(double min, double max, double def) {
-                DoubleEntry entry = new DoubleEntry(builder.config, path, min, max, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                DoubleEntry entry = new DoubleEntry(this.builder.config, this.path, min, max, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public CharEntry value(char def) {
-                CharEntry entry = new CharEntry(builder.config, path, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                CharEntry entry = new CharEntry(this.builder.config, this.path, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public BooleanEntry value(boolean def) {
-                BooleanEntry entry = new BooleanEntry(builder.config, path, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                BooleanEntry entry = new BooleanEntry(this.builder.config, this.path, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public StringEntry value(String def) {
-                StringEntry entry = new StringEntry(builder.config, path, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                StringEntry entry = new StringEntry(this.builder.config, this.path, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
 
             public <T extends Enum<T>> EnumEntry<T> value(T def) {
-                EnumEntry<T> entry = new EnumEntry<>(builder.config, path, def);
-                builder.entries.put(path, entry);
-                entry.setComment(comment);
+                EnumEntry<T> entry = new EnumEntry<>(this.builder.config, this.path, def);
+                this.builder.entries.put(this.path, entry);
+                entry.setComment(this.comment);
                 return entry;
             }
         }

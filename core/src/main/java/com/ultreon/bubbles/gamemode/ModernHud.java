@@ -22,6 +22,8 @@ import java.awt.geom.Rectangle2D;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.ultreon.bubbles.BubbleBlasterConfig.*;
+
 /**
  * The classic hud, the hud that's almost identical to older versions and editions create the game.
  * For example the Python versions. The only thing changed is how the status effects are shown.
@@ -69,18 +71,18 @@ public class ModernHud extends GameHud {
         if (player == null) return;
 
         if (!this.gameOver) {
-            game.profiler.section("Draw Badge", () -> drawBadge(renderer, player));
-            game.profiler.section("Draw Status Effects", () -> drawStatusEffects(renderer, player));
+            game.profiler.section("Draw Badge", () -> this.drawBadge(renderer, player));
+            game.profiler.section("Draw Status Effects", () -> this.drawStatusEffects(renderer, player));
         }
 
-        game.profiler.section("Draw Messages", () -> drawMessages(renderer, game));
+        game.profiler.section("Draw Messages", () -> this.drawMessages(renderer, game));
 
-        game.profiler.section("Draw Level Up Message", () -> drawLevelUpMessage(renderer, gamemode));
+        game.profiler.section("Draw Level Up Message", () -> this.drawLevelUpMessage(renderer, gamemode));
     }
 
     private void drawBadge(Renderer renderer, Player player) {
-        this.game.profiler.section("Draw Background", () -> drawBadgeBackground(renderer));
-        this.game.profiler.section("Draw Player Details", () -> drawPlayerDetails(renderer, player));
+        this.game.profiler.section("Draw Background", () -> this.drawBadgeBackground(renderer));
+        this.game.profiler.section("Draw Player Details", () -> this.drawPlayerDetails(renderer, player));
     }
 
     private void drawBadgeBackground(Renderer renderer) {
@@ -103,27 +105,22 @@ public class ModernHud extends GameHud {
         renderer.drawText(this.playerDetailsNameFont, name, x + 5, y + 5, Color.WHITE);
         renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Score: ").append((int) player.getScore()).append("    Level: ").append(player.getLevel()), x + 5, y + 20, Color.WHITE.withAlpha(0xa0));
 
-        MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append((int) Math.floor(player.getMaxHealth()));
+        renderer.line(x + 5, y + 75, x + 295, y + 75, Color.WHITE.withAlpha(0x40));
 
-        renderer.setColor(0xffffff);
+        MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append(" / ").append((int) Math.floor(player.getMaxHealth()));
+
         double maxHealth = player.getMaxHealth();
         double health = Mth.clamp(player.getHealth(), 0, maxHealth);
         if (maxHealth != 0) {
-            renderer.line(x + 5, y + 75, x + 295, y + 75);
-
             double ratio = health / maxHealth;
+
             Color color;
-            if (ratio >= 0.5) {
-                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.WHITE.withAlpha(0x50));
-                color = Color.GREEN;
-            } else if (ratio >= 0.2) {
-                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.WHITE.withAlpha(0x50));
-                color = Color.GOLD;
-            } else {
-                color = Color.CRIMSON;
-                renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, color);
-            }
-            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75);
+            if (ratio >= 0.5) color = Color.GREEN;
+            else if (ratio >= 0.2) color = Color.GOLD;
+            else color = Color.CRIMSON;
+
+            renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, ratio >= 0.2 ? Color.WHITE.withAlpha(0x50) : color);
+            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, color);
         } else {
             renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.CRIMSON);
             renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, Color.CRIMSON);
@@ -202,7 +199,12 @@ public class ModernHud extends GameHud {
             try {
                 renderer.blit(appliedEffect.getType().getIcon(), x + 5, y + 5, 40, 40);
             } catch (Exception e) {
-                this.game.notifications.notifyOnce(UUID.fromString("ca1d5b52-1877-40fe-8c17-077dc637d9e2"), new Notification("Broken Texture!", "The texture for a status effect is broken", "Rendering System"));
+                this.game.notifications.notifyOnce(
+                        UUID.fromString("ca1d5b52-1877-40fe-8c17-077dc637d9e2"),
+                        Notification.builder("Broken Texture!", "The texture for a status effect is broken")
+                                .subText("Rendering System")
+                                .build()
+                );
 
                 renderer.setColor(0x80ffffff);
                 renderer.fill(x + 5, y + 5, 40, 40);
@@ -210,9 +212,9 @@ public class ModernHud extends GameHud {
 
             renderer.drawLeftAnchoredText(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + "/status_effect/" + id.path() + "/name").getText(), x + 70, y + 15, Color.WHITE);
 
-            if (appliedEffect.getRemainingTime().toSeconds() <= BubbleBlasterConfig.SECS_BEFORE_RED_EFFECT_TIME.get()) renderer.setColor(Color.rgb(0xff0000));
-
-            renderer.drawLeftAnchoredText(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40, renderer.getColor());
+            var color = Color.WHITE.withAlpha(0x80);
+            if (appliedEffect.getRemainingTime().toSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
+            renderer.drawLeftAnchoredText(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40, color);
 
             y += 60;
         }
