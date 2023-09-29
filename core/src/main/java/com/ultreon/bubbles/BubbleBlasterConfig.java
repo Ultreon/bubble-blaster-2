@@ -30,6 +30,7 @@ public class BubbleBlasterConfig {
     // Graphical
     public static final Config.IntEntry SECS_BEFORE_RED_EFFECT_TIME;
     public static final Config.FloatEntry BUBBLE_LINE_THICKNESS;
+    public static final Config.IntEntry DEFAULT_EFFECT_SPEEED;
 
     private static final Config CONFIG;
 
@@ -47,6 +48,7 @@ public class BubbleBlasterConfig {
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
         BUBBLE_LINE_THICKNESS = builder.entry("graphical.bubbleLineThickness").comment("The thickness of a singular circle of a bubble.").withinRange(1f, 2.5f, 2f);
+        DEFAULT_EFFECT_SPEEED = builder.entry("graphical.defaultEffectSpeed").comment("How long it takes for one cycle of the scrolling gradient effect by default.").withinRange(0, 30, 10);
 
         CONFIG = builder.build();
 

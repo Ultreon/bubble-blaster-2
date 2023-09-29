@@ -9,7 +9,7 @@ import java.util.Deque;
 import java.util.function.Consumer;
 
 public class MatrixStack {
-    private final Deque<Matrix4> stack;
+    final Deque<Matrix4> stack;
     public Consumer<Matrix4> onPush = matrix -> {};
     public Consumer<Matrix4> onPop = matrix -> {};
     public Consumer<Matrix4> onEdit = matrix -> {};
@@ -27,9 +27,10 @@ public class MatrixStack {
         this.onEdit.accept(this.stack.getLast());
     }
 
-    public void pop() {
-        this.stack.removeLast();
+    public Matrix4 pop() {
+        Matrix4 matrix4 = this.stack.removeLast();
         this.onEdit.accept(this.stack.getLast());
+        return matrix4;
     }
 
     public void translate(float x, float y) {

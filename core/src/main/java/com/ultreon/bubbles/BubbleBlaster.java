@@ -10,9 +10,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
@@ -102,6 +100,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GL30;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -267,6 +266,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private final Map<UUID, Runnable> afterLoading = new OrderedHashMap<>();
     private long lastTickMs;
     private boolean isTickThreadDead;
+    private CpuSpriteBatch batch;
 
     public BubbleBlaster() {
         imGuiGlfw = new ImGuiImplGlfw();
@@ -377,6 +377,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public void create() {
         if (this.renderingThread == null) renderingThread = Thread.currentThread();
 
+        HdpiUtils.setMode(HdpiMode.Pixels);
+
         // Pre-init ImGui
         GLFWErrorCallback.createPrint(System.err).set();
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
@@ -400,7 +402,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         HdpiUtils.setMode(HdpiMode.Pixels);
 
         // Create CPU sprite batch
-        var batch = new CpuSpriteBatch();
+        this.batch = new CpuSpriteBatch();
 
         // Create a pixmap with a single white pixel
         var singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -418,7 +420,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.camera.setToOrtho(true, this.getWidth(), this.getHeight()); // Set up the camera's projection matrix
         this.viewport = new ScreenViewport(camera);
 
-        this.renderer = new Renderer(shapes, camera);
+        this.renderer = new Renderer(shapes, batch, camera);
 
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
@@ -557,6 +559,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void resize(int width, int height) {
+        this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000);
         this.viewport.update(width, height);
         this.camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
 
@@ -572,67 +575,71 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void render() {
-        if (Gdx.graphics.getFrameId() == 2) {
-            this.firstRender();
-        }
-
-        tasks.forEach(Runnable::run);
-        tasks.clear();
-
-        camera.update();
-        renderer.begin();
-        currentRenderer = renderer;
-
-        if (this.isLoaded()) {
-            if (Instant.now().isAfter(this.getLastTickTime().plusSeconds(60)) && !this.isTickThreadDead) {
-                this.markTickingDead();
-                this.notifications.notify(new Notification("Game Ticking", "Game ticking hasn't happened in 60 secs!", "Watchdog", Duration.ofSeconds(5)));
-            } else if (this.isTickThreadDead) {
-                this.isTickThreadDead = false;
-                this.notifications.notify(new Notification("Game Ticking", "Game ticking came back!", "Watchdog", Duration.ofSeconds(5)));
-            }
-        }
-
         try {
-            GridPoint2 mousePos = GameInput.getPos();
-            int mouseX = mousePos.x;
-            int mouseY = mousePos.y;
-
-            float deltaTime = Gdx.graphics.getDeltaTime();
-
-            int size = RENDER_CALLS.size();
-            for (int counter = 0; counter < size; counter++) {
-                RENDER_CALLS.removeFirst().accept(this.renderer);
+            if (Gdx.graphics.getFrameId() == 2) {
+                this.firstRender();
             }
 
-            var filters = BubbleBlaster.instance.getCurrentFilters();
+            tasks.forEach(Runnable::run);
+            tasks.clear();
 
-            profiler.section("renderGame", () -> this.renderGame(this.renderer, mouseX, mouseY, this.gameFrameTime));
+            camera.update();
+            renderer.begin();
+            currentRenderer = renderer;
 
-            if (isDebugMode() || this.debugGuiOpen.get()) {
-                this.debugRenderer.render(this.renderer);
+            if (this.isLoaded()) {
+                if (Instant.now().isAfter(this.getLastTickTime().plusSeconds(60)) && !this.isTickThreadDead) {
+                    this.markTickingDead();
+                    this.notifications.notify(new Notification("Game Ticking", "Game ticking hasn't happened in 60 secs!", "Watchdog", Duration.ofSeconds(5)));
+                } else if (this.isTickThreadDead) {
+                    this.isTickThreadDead = false;
+                    this.notifications.notify(new Notification("Game Ticking", "Game ticking came back!", "Watchdog", Duration.ofSeconds(5)));
+                }
             }
 
-            this.fps = Gdx.graphics.getFramesPerSecond();
-            this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
+            try {
+                GridPoint2 mousePos = GameInput.getPos();
+                int mouseX = mousePos.x;
+                int mouseY = mousePos.y;
 
-            this.renderer.setPixel(new Pixel(0, 0, com.ultreon.libs.commons.v0.Color.rgb(0x01000000)));
+                float deltaTime = Gdx.graphics.getDeltaTime();
 
-            if (this.showDebugUtils.get()) {
-                this.renderImGui(this.renderer);
+                int size = RENDER_CALLS.size();
+                for (int counter = 0; counter < size; counter++) {
+                    RENDER_CALLS.removeFirst().accept(this.renderer);
+                }
+
+                var filters = BubbleBlaster.instance.getCurrentFilters();
+
+                profiler.section("renderGame", () -> this.renderGame(this.renderer, mouseX, mouseY, this.gameFrameTime));
+
+                if (isDebugMode() || this.debugGuiOpen.get()) {
+                    this.debugRenderer.render(this.renderer);
+                }
+
+                this.fps = Gdx.graphics.getFramesPerSecond();
+                this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
+
+                this.renderer.setPixel(new Pixel(0, 0, com.ultreon.libs.commons.v0.Color.rgb(0x01000000)));
+
+                if (this.showDebugUtils.get()) {
+                    this.renderImGui(this.renderer);
+                }
+
+                if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
+                    this.glitchRenderer.render(this.renderer);
+                } else {
+                    this.manualCrashOverlay.render(this.renderer, mouseX, mouseY, deltaTime);
+                }
+            } catch (OutOfMemoryError error) {
+                this.outOfMemory(error);
             }
 
-            if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
-                this.glitchRenderer.render(this.renderer);
-            } else {
-                this.manualCrashOverlay.render(this.renderer, mouseX, mouseY, deltaTime);
-            }
-        } catch (OutOfMemoryError error) {
-            this.outOfMemory(error);
+            this.currentRenderer = null;
+            this.renderer.end();
+        } catch (Exception e) {
+            this.crash(e);
         }
-
-        this.currentRenderer = null;
-        this.renderer.end();
     }
 
     private void markTickingDead() {
@@ -951,6 +958,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             } else if (keyCode == Keys.F7 && BubbleBlaster.isDevEnv()) {
                 this.isGlitched = true;
             }
+        }
+
+        if (keyCode == Keys.F8 && BubbleBlaster.isDevEnv() && !holding) {
+            this.renderer.triggerScissorLog();
         }
     }
 
