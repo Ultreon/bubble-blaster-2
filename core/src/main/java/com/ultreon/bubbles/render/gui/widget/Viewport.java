@@ -21,10 +21,13 @@ public class Viewport extends Container {
 
     @Override
     public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.subInstance(0, 0, (int) viewportRect.width, (int) viewportRect.height, viewportRender -> {
-            viewportRender.translate(-xScroll, -yScroll);
-            for (GuiComponent child : children) {
-                viewportRender.subInstance(child.getX(), child.getY(), child.getWidth(), child.getHeight(), renderer1 -> child.render(renderer1, mouseX, mouseY, deltaTime));
+        renderer.subInstance(0, 0, (int) this.viewportRect.width, (int) this.viewportRect.height, viewportRender -> {
+            viewportRender.translate(-this.xScroll, -this.yScroll);
+            for (GuiComponent child : this.children) {
+                viewportRender.subInstance(
+                        child.getX(), child.getY(), child.getWidth(), child.getHeight(),
+                        subRenderer -> child.render(subRenderer, mouseX, mouseY, deltaTime)
+                );
             }
         });
     }
@@ -35,14 +38,13 @@ public class Viewport extends Container {
         this.innerXOffset = (int) xScroll;
         this.renderComponent(renderer);
 
-//        Renderer viewportGraphics = renderer.subInstance(0, 0, width, height);
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
         renderer.setColor(getBackgroundColor());
-        renderer.rect(0, 0, getSize().x, getSize().y);
+        renderer.fill(this.x, this.y, getSize().x, getSize().y);
     }
 
     public void setViewportSize(IntSize size) {

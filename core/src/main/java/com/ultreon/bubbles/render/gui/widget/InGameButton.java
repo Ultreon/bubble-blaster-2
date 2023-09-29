@@ -6,7 +6,7 @@ import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.libs.text.v0.TextObject;
 
-public class IngameButton extends AbstractButton {
+public class InGameButton extends AbstractButton {
     private TextObject text = TextObject.EMPTY;
 
     public void setText(String text) {
@@ -30,8 +30,8 @@ public class IngameButton extends AbstractButton {
         public Builder() {
         }
 
-        public IngameButton build() {
-            IngameButton button = new IngameButton((int) _bounds.x, (int) _bounds.y, (int) _bounds.width, (int) _bounds.height);
+        public InGameButton build() {
+            InGameButton button = new InGameButton((int) _bounds.x, (int) _bounds.y, (int) _bounds.width, (int) _bounds.height);
 
             button.setText(text);
             button.setCommand(command);
@@ -64,7 +64,7 @@ public class IngameButton extends AbstractButton {
         }
     }
 
-    public IngameButton(int x, int y, int width, int height) {
+    public InGameButton(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
 
@@ -72,17 +72,16 @@ public class IngameButton extends AbstractButton {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
 
-        if (isPressed()) {
-            renderer.setLineWidth(1);
-            renderer.drawEffectBox(x + 1, y + 1, width - 2, height - 2);
+        if (this.isPressed()) {
+            renderer.drawEffectBox(x + 1, y + 1, width - 2, height - 2, new Insets(1));
             textColor = Color.WHITE;
-        } else if (isHovered()) {
-            renderer.setLineWidth(2);
-            renderer.drawEffectBox(x, y, width, height);
+        } else if (this.isHovered()) {
+            renderer.fill(x, y, width, height);
+            renderer.drawEffectBox(x, y, width, height, new Insets(2));
             textColor = Color.rgb(0xffffff);
         } else {
             renderer.setLineWidth(1);
-            renderer.drawEffectBox(x, y, width, height);
+            renderer.drawEffectBox(x, y, width, height, new Insets(1));
             textColor = Color.rgb(0x80ffffff);
         }
 

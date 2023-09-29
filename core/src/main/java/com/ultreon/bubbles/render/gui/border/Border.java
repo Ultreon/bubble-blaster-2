@@ -9,8 +9,8 @@ import com.ultreon.bubbles.render.Renderer;
 public class Border {
     private final Insets borderInsets;
     private boolean borderOpaque;
-    protected Color color;
-    protected RenderType renderType;
+    protected Color color = Color.WHITE;
+    protected RenderType renderType = RenderType.COLOR;
     protected int effectSpeed = BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get();
 
     public Border(Insets insets) {
@@ -37,10 +37,10 @@ public class Border {
         switch (renderType) {
             case COLOR -> {
                 renderer.setColor(this.color);
-                renderer.rect(x + insets.left, y, width - insets.left - insets.right, insets.top);
-                renderer.rect(x, y, insets.left, height);
-                renderer.rect(x + width - insets.right, y, insets.right, height);
-                renderer.rect(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom);
+                renderer.fill(x + insets.left, y, width - insets.left - insets.right, insets.top);
+                renderer.fill(x, y, insets.left, height);
+                renderer.fill(x + width - insets.right, y, insets.right, height);
+                renderer.fill(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom);
             }
             case EFFECT -> {
                 renderer.fillEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, effectSpeed);

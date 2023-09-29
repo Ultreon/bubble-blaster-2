@@ -39,6 +39,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,6 +63,7 @@ public class Renderer {
     private static final Color ANIM_COLOR_2 = Color.rgb(0x00ffa0);
     private static final Color ANIM_ERROR_COLOR_1 = Color.rgb(0xff3000);
     private static final Color ANIM_ERROR_COLOR_2 = Color.rgb(0xffa000);
+    private static final Matrix4 ORIGIN = new Matrix4();
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final GL20 gl20;
     private final GL30 gl30;
@@ -70,6 +72,7 @@ public class Renderer {
     private final OrthographicCamera camera;
     private float lineWidth;
     private final MatrixStack matrixStack;
+    private final MatrixStack globalMatrixStack;
     private Texture curTexture;
     private BitmapFont font;
     private final ThreadLocal<GlyphLayout> glyphLayout = new ThreadLocal<>();
@@ -81,6 +84,11 @@ public class Renderer {
     private boolean triggeredScissorLog = false; // TODO: DEBUG
     private boolean loggingScissors = false; // TODO: DEBUG
     private int scissorDepth = 0;
+    private final Vector2 tmp2A = new Vector2();
+    private final Vector2 tmp2B = new Vector2();
+    private final Vector3 tmp3A = new Vector3();
+    private final Vector3 tmp3B = new Vector3();
+    private final Matrix4 globalTransform = new Matrix4();
 
     @ApiStatus.Internal
     public Renderer(ShapeDrawer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -91,6 +99,7 @@ public class Renderer {
         this.shapes = shapes;
         this.camera = camera;
         this.matrixStack = new MatrixStack();
+        this.globalMatrixStack = new MatrixStack();
         this.matrixStack.stack.removeLast();
         this.shapes.setSideEstimator(new DefaultSideEstimator(50, 360, 2f));
 
@@ -111,6 +120,8 @@ public class Renderer {
             this.triggeredScissorLog = true;
             this.loggingScissors = true;
         }
+
+        this.globalTransform.set(ORIGIN);
 
         this.batch.begin();
 
@@ -164,36 +175,73 @@ public class Renderer {
         Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
     }
 
+    @Deprecated
     public void outline(Rectangle rect) {
         if (!this.rendering) return;
 
-        rectLine(rect.x, rect.y, rect.width, rect.height);
+        box(rect.x, rect.y, rect.width, rect.height);
     }
 
+    @Deprecated
     public void outline(Ellipse ellipse) {
         if (!this.rendering) return;
 
-        ovalLine(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
+        ellipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
     }
 
+    @Deprecated
     public void outline(Circle ellipse) {
         if (!this.rendering) return;
 
-        circleLine(ellipse.x, ellipse.y, ellipse.radius);
+        circle(ellipse.x, ellipse.y, ellipse.radius);
     }
 
+    public void outline(Rectangle rect, Color color) {
+        if (!this.rendering) return;
+
+        box(rect.x, rect.y, rect.width, rect.height, color);
+    }
+
+    public void outline(Ellipse ellipse, Color color) {
+        if (!this.rendering) return;
+
+        ellipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height, color);
+    }
+
+    public void outline(Circle ellipse, Color color) {
+        if (!this.rendering) return;
+
+        circle(ellipse.x, ellipse.y, ellipse.radius, color);
+    }
+
+    @Deprecated
+    public void fillCircle(float x, float y, float size) {
+        if (!this.rendering) return;
+
+        this.shapes.filledCircle(x, y, size / 2f);
+    }
+
+    public void fillCircle(float x, float y, float size, Color color) {
+        if (!this.rendering) return;
+
+        this.shapes.filledCircle(x, y, size / 2f, color.toGdx());
+    }
+
+    @Deprecated
     public void circle(float x, float y, float size) {
         if (!this.rendering) return;
 
-        shapes.filledCircle(x, y, size / 2f);
+        this.shapes.circle(x, y, size / 2f, lineWidth);
     }
 
-    public void circleLine(float x, float y, float size) {
+    public void circle(float x, float y, float size, Color color) {
         if (!this.rendering) return;
 
-        shapes.circle(x, y, size / 2f, lineWidth);
+        this.setColor(color);
+        this.shapes.circle(x, y, size / 2f, lineWidth);
     }
 
+    @Deprecated
     public void fill(Shape2D s) {
         if (!this.rendering) return;
 
@@ -204,40 +252,92 @@ public class Renderer {
         else if (s instanceof Polyline rect) fill(rect);
     }
 
+    @Deprecated
     public void fill(Circle ellipse) {
         if (!this.rendering) return;
 
-        circle(ellipse.x, ellipse.y, ellipse.radius);
+        fillCircle(ellipse.x, ellipse.y, ellipse.radius);
     }
 
+    @Deprecated
     public void fill(Ellipse ellipse) {
         if (!this.rendering) return;
 
-        ellipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
+        fillEllipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
     }
 
+    @Deprecated
     public void fill(Rectangle r) {
         if (!this.rendering) return;
 
-        rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+        fill(r.getX(), r.getY(), r.getWidth(), r.getHeight());
     }
 
+    @Deprecated
     public void fill(Polygon polygon) {
         if (!this.rendering) return;
 
-        polygon(polygon);
+        fillPolygon(polygon);
     }
 
+    @Deprecated
     public void fill(Polyline polyline) {
         if (!this.rendering) return;
 
         polyline(polyline);
     }
 
+    @Deprecated
     public void fill(Vec4i r) {
         if (!this.rendering) return;
 
-        rect(r.x, r.y, r.z, r.w);
+        fill(r.x, r.y, r.z, r.w);
+    }
+
+    public void fill(Shape2D s, Color color) {
+        if (!this.rendering) return;
+
+        if (s instanceof Circle circle) fill(circle, color);
+        else if (s instanceof Ellipse ellipse) fill(ellipse, color);
+        else if (s instanceof Rectangle rect) fill(rect, color);
+        else if (s instanceof Polygon rect) fill(rect, color);
+        else if (s instanceof Polyline rect) fill(rect, color);
+    }
+
+    public void fill(Circle ellipse, Color color) {
+        if (!this.rendering) return;
+
+        fillCircle(ellipse.x, ellipse.y, ellipse.radius, color);
+    }
+
+    public void fill(Ellipse ellipse, Color color) {
+        if (!this.rendering) return;
+
+        fillEllipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height, color);
+    }
+
+    public void fill(Rectangle r, Color color) {
+        if (!this.rendering) return;
+
+        fill(r.getX(), r.getY(), r.getWidth(), r.getHeight(), color);
+    }
+
+    public void fill(Polygon polygon, Color color) {
+        if (!this.rendering) return;
+
+        fillPolygon(polygon, color);
+    }
+
+    public void fill(Polyline polyline, Color color) {
+        if (!this.rendering) return;
+
+        polyline(polyline, color);
+    }
+
+    public void fill(Vec4i r, Color color) {
+        if (!this.rendering) return;
+
+        fill(r.x, r.y, r.z, r.w);
     }
 
     public void fillGradient(Rectangle bounds, Color color1, Color color2) {
@@ -270,159 +370,264 @@ public class Renderer {
     public void line(int x1, int y1, int x2, int y2) {
         if (!this.rendering) return;
 
-        shapes.line(x1, y1, x2, y2);
+        this.shapes.line(x1, y1, x2, y2);
     }
 
     public void line(float x1, float y1, float x2, float y2) {
         if (!this.rendering) return;
 
-        shapes.line(x1, y1, x2, y2);
+        this.shapes.line(x1, y1, x2, y2);
     }
 
-    public void rectLine(int x, int y, int width, int height) {
+    @Deprecated
+    public void box(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        shapes.rectangle(x, y, width, height, lineWidth);
+        this.shapes.rectangle(x, y, width, height, lineWidth);
     }
 
-    public void rectLine(float x, float y, float width, float height) {
+    @Deprecated
+    public void box(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        shapes.rectangle(x, y, width, height, lineWidth);
+        this.shapes.rectangle(x, y, width, height, lineWidth);
     }
 
-    public void rect(int x, int y, int width, int height) {
+    public void box(int x, int y, int width, int height, Color color) {
         if (!this.rendering) return;
 
-        shapes.filledRectangle(x, y, width, height);
+        this.shapes.rectangle(x, y, width, height, lineWidth);
     }
 
-    public void rect(float x, float y, float width, float height) {
+    public void box(float x, float y, float width, float height, Color color) {
         if (!this.rendering) return;
 
-        shapes.filledRectangle(x, y, width, height);
+        this.shapes.rectangle(x, y, width, height, lineWidth);
     }
 
-    public void roundRectLine(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+    public void box(int x, int y, int width, int height, Color color, Insets insets) {
         if (!this.rendering) return;
 
-        shapes.rectangle(x, y, width, height, lineWidth, JoinType.SMOOTH);
+        Border border = new Border(insets);
+        border.setColor(color);
+        border.drawBorder(this, x, y, width, height);
+    }
+
+    public void box(float x, float y, float width, float height, Color color, Insets insets) {
+        if (!this.rendering) return;
+
+        Border border = new Border(insets);
+        border.setColor(color);
+        border.drawBorder(this, (int) x, (int) y, (int) width, (int) height);
+    }
+
+    public void fill(int x, int y, int width, int height) {
+        if (!this.rendering) return;
+
+        this.shapes.filledRectangle(x, y, width, height);
+    }
+
+    public void fill(float x, float y, float width, float height) {
+        if (!this.rendering) return;
+
+        this.shapes.filledRectangle(x, y, width, height);
+    }
+
+    public void fill(float x, int y, float width, int height, Color color) {
+        if (!this.rendering) return;
+
+        this.shapes.filledRectangle(x, y, width, height, color.toGdx());
+    }
+
+    public void fill(float x, float y, float width, float height, Color color) {
+        if (!this.rendering) return;
+
+        this.shapes.filledRectangle(x, y, width, height, color.toGdx());
     }
 
     public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!this.rendering) return;
 
-        shapes.filledRectangle(x, y, width, height);
+        this.shapes.rectangle(x, y, width, height, lineWidth, JoinType.SMOOTH);
     }
 
-    public void rect3DLine(int x, int y, int width, int height, boolean raised) {
+    public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (!this.rendering) return;
 
-        shapes.rectangle(x, y, width, height, lineWidth);
+        this.shapes.filledRectangle(x, y, width, height);
     }
 
+    @Deprecated(forRemoval = true)
     public void rect3D(int x, int y, int width, int height, boolean raised) {
         if (!this.rendering) return;
 
-        shapes.filledRectangle(x, y, width, height);
+        this.shapes.rectangle(x, y, width, height, lineWidth);
     }
 
-    public void ovalLine(int x, int y, int width, int height) {
+    @Deprecated(forRemoval = true)
+    public void fillRect3D(int x, int y, int width, int height, boolean raised) {
         if (!this.rendering) return;
 
-        shapes.ellipse(x, y, width, height);
+        this.shapes.filledRectangle(x, y, width, height);
     }
 
     public void ellipse(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        shapes.filledEllipse(x, y, width, height);
-    }
-
-    public void ovalLine(float x, float y, float width, float height) {
-        if (!this.rendering) return;
-
-        shapes.ellipse(x, y, width, height);
+        this.shapes.ellipse(x, y, width, height);
     }
 
     public void ellipse(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        shapes.filledEllipse(x, y, width, height);
+        this.shapes.ellipse(x, y, width, height);
     }
 
+    public void ellipse(int x, int y, int width, int height, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.ellipse(x, y, width, height);
+    }
+
+    public void ellipse(float x, float y, float width, float height, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.ellipse(x, y, width, height);
+    }
+
+    public void fillEllipse(int x, int y, int width, int height) {
+        if (!this.rendering) return;
+
+        this.shapes.filledEllipse(x, y, width, height);
+    }
+
+    public void fillEllipse(float x, float y, float width, float height) {
+        if (!this.rendering) return;
+
+        this.shapes.filledEllipse(x, y, width, height);
+    }
+
+    public void fillEllipse(int x, int y, int width, int height, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.filledEllipse(x, y, width, height);
+    }
+
+    public void fillEllipse(float x, float y, float width, float height, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.filledEllipse(x, y, width, height);
+    }
+
+    @Deprecated(forRemoval = true)
     public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle) {
         if (!this.rendering) return;
 
-        shapes.arc(x, y, width, startAngle, arcAngle);
+        this.shapes.arc(x, y, width, startAngle, arcAngle);
     }
 
     public void arc(int x, int y, int width, int height, int startAngle, int arcAngle) {
         if (!this.rendering) return;
 
-        shapes.arc(x, y, width, startAngle, arcAngle);
+        this.shapes.arc(x, y, width, startAngle, arcAngle);
     }
 
-    public void polygonLine(Polygon p) {
+    @Deprecated
+    public void polygon(Polygon p) {
         if (!this.rendering) return;
 
         this.shapes.polygon(p);
     }
 
-    public void polygon(Polygon p) {
+    public void polygon(Polygon p, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.polygon(p);
+    }
+
+    @Deprecated
+    public void fillPolygon(Polygon p) {
         if (!this.rendering) return;
 
         this.shapes.filledPolygon(p);
     }
 
+    public void fillPolygon(Polygon p, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.filledPolygon(p);
+    }
+
+    @Deprecated
     public void polyline(Polyline p) {
         if (!this.rendering) return;
 
         this.shapes.polygon(p.getVertices());
     }
 
+    public void polyline(Polyline p, Color color) {
+        if (!this.rendering) return;
+
+        this.setColor(color);
+        this.shapes.polygon(p.getVertices());
+    }
+
     public void blit(Texture tex, float x, float y) {
         if (!this.rendering) return;
 
-        batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
+        this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(Texture tex, float x, float y, Color backgroundColor) {
         if (!this.rendering) return;
 
-        setColor(backgroundColor);
-        rect(x, y, tex.getWidth(), tex.getHeight());
-        batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
+        this.fill(x, y, tex.getWidth(), tex.getHeight(), backgroundColor);
+        this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(Texture tex, float x, float y, float width, float height) {
         if (!this.rendering) return;
 
-        batch.draw(tex, x, y + height, width, -height);
+        this.batch.draw(tex, x, y + height, width, -height);
     }
 
     public void blit(Texture tex, float x, float y, float width, float height, Color backgroundColor) {
         if (!this.rendering) return;
 
-        setColor(backgroundColor);
-        rect(x, y, width, height);
-        batch.draw(tex, x, y + height, width, -height);
+        this.fill(x, y, width, height, backgroundColor);
+        this.batch.draw(tex, x, y + height, width, -height);
     }
 
+    @Deprecated(forRemoval = true)
     public void drawText(BitmapFont font, String str, int x, int y) {
         if (!this.rendering) return;
 
         font.setColor(getColor().toGdx());
-        font.draw(batch, str, x, y);
+        font.draw(this.batch, str, x, y);
     }
 
+    public void drawText(BitmapFont font, String str, int x, int y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
+        font.draw(this.batch, str, x, y);
+    }
+
+    @Deprecated(forRemoval = true)
     public void drawText(String str, float x, float y) {
         if (!this.rendering) return;
 
-        font.setColor(getColor().toGdx());
-        font.draw(batch, str, x, y);
+        this.font.setColor(getColor().toGdx());
+        this.font.draw(this.batch, str, x, y);
     }
 
+    @ApiStatus.Experimental
     public void drawText(TextObject str, int x, int y) {
         if (!this.rendering) return;
 
@@ -430,6 +635,7 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @ApiStatus.Experimental
     public void drawText(TextObject str, float x, float y) {
         if (!this.rendering) return;
 
@@ -437,6 +643,23 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @ApiStatus.Experimental
+    public void drawText(TextObject str, int x, int y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    @ApiStatus.Experimental
+    public void drawText(TextObject str, float x, float y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    @Deprecated(forRemoval = true)
     public void drawText(BitmapFont font, String str, float x, float y) {
         if (!this.rendering) return;
 
@@ -444,6 +667,7 @@ public class Renderer {
         font.draw(batch, str, x, y);
     }
 
+    @Deprecated(forRemoval = true)
     public void drawText(BitmapFont font, TextObject str, int x, int y) {
         if (!this.rendering) return;
 
@@ -451,10 +675,34 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @Deprecated(forRemoval = true)
     public void drawText(BitmapFont font, TextObject str, float x, float y) {
         if (!this.rendering) return;
 
         font.setColor(getColor().toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    public void drawText(BitmapFont font, String str, float x, float y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
+        font.draw(batch, str, x, y);
+    }
+
+    @ApiStatus.Experimental
+    public void drawText(BitmapFont font, TextObject str, int x, int y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
+        font.draw(batch, str.getText(), x, y);
+    }
+
+    @ApiStatus.Experimental
+    public void drawText(BitmapFont font, TextObject str, float x, float y, Color color) {
+        if (!this.rendering) return;
+
+        font.setColor(color.toGdx());
         font.draw(batch, str.getText(), x, y);
     }
 
@@ -736,6 +984,7 @@ public class Renderer {
     private void editMatrix(Function<Matrix4, Matrix4> editor) {
         this.batch.flush();
         Matrix4 matrix = editor.apply(this.camera.combined);
+        editor.apply(this.globalTransform);
         this.matrixStack.last().set(this.camera.combined.set(matrix));
         this.batch.flush();
     }
@@ -743,73 +992,43 @@ public class Renderer {
     public void translate(float x, float y) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.translate(x, y);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.translate(x, y, 0));
     }
 
     public void translate(int x, int y) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.translate(x, y);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.translate(x, y, 0));
     }
 
     public void translate(float x, float y, float z) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.translate(x, y, z);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.translate(x, y, z));
     }
 
     public void translate(int x, int y, int z) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.translate(x, y, z);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.translate(x, y, z));
     }
 
     public void rotate(float theta) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.rotate(theta, 1, 0, 0);
-            return this.camera.combined;
-        });
-    }
-
-    public void rotate(float theta, float x, float y) {
-        if (!this.rendering) return;
-
-        this.editMatrix(matrix -> {
-            this.camera.rotateAround(new Vector3(x, y, 0), Vector3.X, theta);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.rotate(theta, 1, 0, 0));
     }
 
     public void scale(float width, float height, float depth) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.combined.scale(width, height, 0);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.scale(width, height, 0));
     }
 
     public void scale(float width, float height) {
         if (!this.rendering) return;
 
-        this.editMatrix(matrix -> {
-            this.camera.combined.scale(width, height, 0);
-            return this.camera.combined;
-        });
+        this.editMatrix(matrix -> matrix.scale(width, height, 0));
     }
 
     public void subInstance(Rectangle rectangle, Consumer<Renderer> consumer) {
@@ -823,7 +1042,15 @@ public class Renderer {
 
         this.pushMatrix();
         this.translate(x, y);
-        this.pushScissor(x, y, width, height);
+        if (this.pushScissor(x, y, width, height) == null) {
+            if (BubbleBlasterConfig.DEBUG_LOG_EMPTY_SCISSORS.getOrDefault()) {
+                String formatted = "Empty Scissor @ %d, %d".formatted(x, y);
+                BubbleBlaster.LOGGER.warn(formatted);
+                Debug.notifyOnce(UUID.fromString("b3d5760c-fbf6-4d61-b64c-0c0ef9d7f1a3"), "Scissor Debug", formatted);
+            }
+            this.popMatrix();
+            return;
+        }
         consumer.accept(this);
         this.popScissor();
         this.popMatrix();
@@ -836,16 +1063,26 @@ public class Renderer {
         if (rect.width <= 0) throw new IllegalArgumentException(rect.width + " is an invalid scissor width.");
         if (rect.height <= 0) throw new IllegalArgumentException(rect.width + " is an invalid scissor height.");
 
-        if (this.loggingScissors) {
-            scissorDepth++;
-            Debug.log("ScissorDebug", "Pushing scissor [%d]: %s".formatted(scissorDepth, rect));
-        }
+        rect.getPosition(this.tmp2A);
+        this.globalTransform.getTranslation(this.tmp3A);
+        rect.setPosition(this.tmp2A.add(this.tmp3A.x, this.tmp3A.y));
 
         rect.y = Gdx.graphics.getHeight() - rect.y - rect.height;
 
-        this.batch.flush();
-        ScissorStack.pushScissors(rect);
-        this.batch.flush();
+        if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
+            this.batch.flush();
+            if (!ScissorStack.pushScissors(rect)) {
+                if (loggingScissors) {
+                    Debug.log("ScissorDebug", "Scissor [%d]: %s".formatted(scissorDepth, rect));
+                }
+                return null;
+            }
+
+            if (this.loggingScissors) {
+                scissorDepth++;
+                Debug.log("ScissorDebug", "Pushing scissor [%d]: %s".formatted(scissorDepth, rect));
+            }
+        }
         return rect;
     }
 
@@ -871,15 +1108,17 @@ public class Renderer {
     public Rectangle popScissor() {
         if (!this.rendering) return null;
 
-        if (this.loggingScissors) {
-            Debug.log("ScissorDebug", "Popping scissor [%d]".formatted(scissorDepth));
-            scissorDepth--;
-        }
+        if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
+            this.batch.flush();
+            Rectangle rectangle = ScissorStack.popScissors();
 
-        this.batch.flush();
-        Rectangle rectangle = ScissorStack.popScissors();
-        this.batch.flush();
-        return rectangle;
+            if (this.loggingScissors) {
+                Debug.log("ScissorDebug", "Popping scissor [%d]".formatted(scissorDepth));
+                scissorDepth--;
+            }
+            return rectangle;
+        }
+        return new Rectangle();
     }
 
     @ApiStatus.Experimental
@@ -906,6 +1145,7 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.matrixStack.push();
+        this.globalMatrixStack.push();
     }
 
     public void popMatrix() {
@@ -916,6 +1156,7 @@ public class Renderer {
         this.batch.flush();
         this.matrixStack.pop();
         this.camera.combined.set(this.matrixStack.last());
+        this.globalTransform.set(this.globalMatrixStack.last());
         this.batch.flush();
     }
 
@@ -932,7 +1173,7 @@ public class Renderer {
     public void drawEffectBox(int x, int y, int width, int height, Insets insets) {
         if (!this.rendering) return;
 
-        this.drawEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get());
+        this.drawEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
     }
 
     public void drawEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
@@ -948,7 +1189,7 @@ public class Renderer {
     public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
         if (!this.rendering) return;
 
-        this.drawEffectBox(x, y, width, height, strokeWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get());
+        this.drawEffectBox(x, y, width, height, strokeWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
     }
 
     @Deprecated(forRemoval = true)
@@ -964,7 +1205,7 @@ public class Renderer {
     public void drawRoundEffectBox(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        drawRoundEffectBox(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get());
+        drawRoundEffectBox(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
     }
 
     public void drawRoundEffectBox(int x, int y, int width, int height, int radius) {
@@ -976,13 +1217,13 @@ public class Renderer {
     public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth) {
         if (!this.rendering) return;
 
-        drawRoundEffectBox(x, y, width, height, radius, borderWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get());
+        drawRoundEffectBox(x, y, width, height, radius, borderWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
     }
 
     public void drawRoundEffectBox(int x, int y, int width, int height, int radius, int borderWidth, int speed) {
         if (!this.rendering) return;
 
-        Border border = new Border(new Insets((int) borderWidth));
+        Border border = new Border(new Insets(borderWidth));
         border.setRenderType(Border.RenderType.EFFECT);
         border.setEffectSpeed(speed);
         border.drawBorder(this, x, y, width, height);
@@ -997,7 +1238,7 @@ public class Renderer {
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets) {
         if (!this.rendering) return;
 
-        drawErrorEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get());
+        drawErrorEffectBox(x, y, width, height, insets, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault());
     }
 
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, int speed) {
@@ -1012,7 +1253,7 @@ public class Renderer {
     public void fillErrorEffect(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get(), ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
+        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault(), ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
     }
 
     public void fillErrorEffect(int x, int y, int width, int height, int speed) {
@@ -1021,7 +1262,7 @@ public class Renderer {
         this.fillScrollingGradient(x, y, width, height, speed, ANIM_ERROR_COLOR_1, ANIM_ERROR_COLOR_2);
     }
 
-    public void fillEffect(int x, int y, int width, int height) {
+    public void fillEffect(float x, int y, int width, int height) {
         if (!this.rendering) return;
 
         this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault(), ANIM_COLOR_1, ANIM_COLOR_2);
@@ -1033,19 +1274,16 @@ public class Renderer {
         this.fillScrollingGradient(x, y, width, height, speed, ANIM_COLOR_1, ANIM_COLOR_2);
     }
 
-    private void fillScrollingGradient(int x, int y, int width, int height, int speed, Color color1, Color color2) {
+    private void fillScrollingGradient(float x, int y, int width, int height, int speed, Color color1, Color color2) {
         float gameWidth = this.getWidth();
         float gameHeight = this.getHeight();
         var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (float) (BubbleBlaster.TPS * speed) - camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
 
-        // Todo: do the effect!
-        this.pushScissor(new Rectangle(x, y, width, height));
+        if (this.pushScissor(new Rectangle(x, y, width, height)) == null) return;
         this.fillGradient(-shiftX, 0, gameWidth, gameHeight, color1, color2, Axis2D.HORIZONTAL);
         this.fillGradient(-shiftX + gameWidth, 0, gameWidth, gameHeight, color2, color1, Axis2D.HORIZONTAL);
         this.fillGradient(-shiftX + gameWidth * 2, 0, gameWidth, gameHeight, color1, color2, Axis2D.HORIZONTAL);
         this.popScissor();
-
-//        this.fillGradient(x, y, width, height, Color.rgb(color1), Color.rgb(color2), Axis2D.HORIZONTAL);
     }
 
     public float getWidth() {
@@ -1055,23 +1293,6 @@ public class Renderer {
     public float getHeight() {
         return Gdx.graphics.getHeight();
     }
-
-//    @NotNull
-//    private GradientPaint getEffectPaint(int speed) {
-//        return getEffectPaint(speed, 0x00a0ff, 0x00ffa0);
-//    }
-//
-//    @NotNull
-//    private GradientPaint getErrorEffectPaint(int speed) {
-//        return getEffectPaint(speed, 0xff3000, 0xffa000);
-//    }
-//
-//    @NotNull
-//    private GradientPaint getEffectPaint(int speed, int color1, int color2) {
-//        var width = game.getScaledWidth();
-//        var shiftX = (((double) width * 2) * BubbleBlaster.getTicks() / (double)(BubbleBlaster.TPS * speed)) - globalTranslation.x;
-//        return new GradientPaint((float) shiftX - width, 0, Color.rgb(color1).toAwt(), (float) shiftX, 0f, Color.rgb(color2).toAwt(), true);
-//    }
 
     public void blit(int x, int y) {
         if (!this.rendering) return;
@@ -1101,7 +1322,7 @@ public class Renderer {
 
     @ApiStatus.Experimental
     public Matrix4 getTransform() {
-        return matrixStack.last();
+        return camera.combined;
     }
 
     @ApiStatus.Experimental
@@ -1130,7 +1351,7 @@ public class Renderer {
         if (c == null) return;
 
         font.setColor(c.toGdx());
-        shapes.setColor(c.toGdx());
+        this.shapes.setColor(c.toGdx());
     }
 
     public void setColor(int r, int g, int b) {
@@ -1244,11 +1465,11 @@ public class Renderer {
     }
 
     public void roundedLine(float x1, float y1, float x2, float y2) {
-        shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), lineWidth, JoinType.SMOOTH, false);
+        this.shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), lineWidth, JoinType.SMOOTH, false);
     }
 
     public void setPixel(Pixel pixel) {
-        shapes.filledRectangle(pixel.getX(), pixel.getY(), 1, 1, Color.rgba(pixel.getColor().getRed(), pixel.getColor().getGreen(), pixel.getColor().getBlue(), pixel.getColor().getAlpha()).toGdx());
+        this.shapes.filledRectangle(pixel.getX(), pixel.getY(), 1, 1, Color.rgba(pixel.getColor().getRed(), pixel.getColor().getGreen(), pixel.getColor().getBlue(), pixel.getColor().getAlpha()).toGdx());
     }
 
     @Override
@@ -1256,6 +1477,24 @@ public class Renderer {
         return "Renderer{" +
                 "rendering=" + rendering +
                 '}';
+    }
+
+    public void scissored(Rectangle rect, Runnable func) {
+        this.pushScissor(rect);
+        func.run();
+        this.popScissor();
+    }
+
+    public void scissored(float x, float y, float width, float height, Runnable func) {
+        this.pushScissor(x, y, width, height);
+        func.run();
+        this.popScissor();
+    }
+
+    public void scissored(int x, int y, int width, int height, Runnable func) {
+        this.pushScissor(x, y, width, height);
+        func.run();
+        this.popScissor();
     }
 
     public enum State {

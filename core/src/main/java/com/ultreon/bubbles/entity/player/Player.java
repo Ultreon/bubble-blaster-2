@@ -3,7 +3,6 @@ package com.ultreon.bubbles.entity.player;
 import com.badlogic.gdx.math.*;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
-import com.ultreon.bubbles.Constants;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.*;
@@ -423,16 +422,10 @@ public class Player extends LivingEntity implements InputController {
      */
     @Override
     public void render(Renderer renderer) {
-        // Don't render if the player isn't spawned.
         if (this.isNotSpawned()) return;
 
-        // Fill the ship with the correct color.
-        renderer.setColor(Color.CRIMSON);
-        renderer.circle(this.pos.x, this.pos.y, RADIUS * 2);
-
-        // Fill the arrow with the correct color.
-        renderer.setColor(Color.WHITE);
-        renderer.polygon(getArrowShape());
+        renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.CRIMSON);
+        renderer.fillPolygon(this.getArrowShape(), Color.WHITE);
     }
 
     /**
@@ -728,7 +721,7 @@ public class Player extends LivingEntity implements InputController {
      */
     public void shoot(boolean force) {
         if (force || this.canShoot()) {
-            shootCooldown = TimeProcessor.secondsToTicks(1.0);
+            shootCooldown = TimeProcessor.millisToTicks(BubbleBlasterConfig.SHOOT_COOLDOWN.get());
 
             Vector2 bulletPos = this.pos.cpy();
             Bullet bullet = new Bullet(this.currentAmmo, bulletPos, rotation, environment);

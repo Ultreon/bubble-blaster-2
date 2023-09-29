@@ -167,10 +167,10 @@ public class CommandScreen extends Screen {
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.argb(0x40000000));
-        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), height);
+        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), height);
 
         renderer.setColor(Color.argb(0x80000000));
-        renderer.rect(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
+        renderer.fill(0, height - 32, BubbleBlaster.getInstance().getWidth(), 32);
 
         renderer.setColor(Color.argb(0xffffffff));
         GraphicsUtils.drawLeftAnchoredString(renderer, currentText, new Vector2(2f, height - 28f), 28, font);

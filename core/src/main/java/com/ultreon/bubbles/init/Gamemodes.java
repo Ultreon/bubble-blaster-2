@@ -1,10 +1,7 @@
 package com.ultreon.bubbles.init;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.gamemode.ClassicMode;
-import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.gamemode.ImpossibleMode;
-import com.ultreon.bubbles.gamemode.ModernMode;
+import com.ultreon.bubbles.gamemode.*;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.registries.v0.DelayedRegister;
@@ -24,6 +21,7 @@ import java.util.function.Supplier;
 public class Gamemodes {
     private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(BubbleBlaster.NAMESPACE, Registries.GAMEMODES);
 
+    public static final RegistrySupplier<LegacyMode> LEGACY = register("legacy", LegacyMode::new);
     public static final RegistrySupplier<ClassicMode> CLASSIC = register("classic", ClassicMode::new);
     public static final RegistrySupplier<ModernMode> MODERN = register("modern", ModernMode::new);
     public static final RegistrySupplier<ImpossibleMode> IMPOSSIBLE = register("impossible", ImpossibleMode::new);

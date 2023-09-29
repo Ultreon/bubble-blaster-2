@@ -8,11 +8,11 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.render.gui.widget.InGameButton;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.libs.text.v0.TextObject;
@@ -21,9 +21,9 @@ import com.ultreon.libs.translations.v0.Language;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {
-    private IngameButton forfeitButton;
-    private IngameButton prevButton;
-    private IngameButton nextButton;
+    private InGameButton forfeitButton;
+    private InGameButton prevButton;
+    private InGameButton nextButton;
 
     private final TextObject minRadius = TextObject.translation("bubbleblaster/screen/pause/min_radius");
     private final TextObject maxRadius = TextObject.translation("bubbleblaster/screen/pause/max_radius");
@@ -64,9 +64,9 @@ public class PauseScreen extends Screen {
 
         this.title = TextObject.translation("bubbleblaster/screen/pause/text");
 
-        this.forfeitButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster/screen/pause/forfeit")).command(this.game::saveAndQuit).build();
-        this.prevButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
-        this.nextButton = new IngameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
+        this.forfeitButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster/screen/pause/forfeit")).command(this.game::saveAndQuit).build();
+        this.prevButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
+        this.nextButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
 
         this.registeredBubbles = Registries.BUBBLES.values().size();
         tickPage();
@@ -138,7 +138,7 @@ public class PauseScreen extends Screen {
 
         // Darkened background
         renderer.setColor(Color.argb(0xc0000000));
-        renderer.rect(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
 
         // Pause text
         renderer.setColor(Color.argb(0x80ffffff));
@@ -152,8 +152,7 @@ public class PauseScreen extends Screen {
         renderChildren(renderer, mouseX, mouseY, deltaTime);
 
         // Border
-        renderer.setColor(Color.argb(0x80ffffff));
-        renderer.rectLine((int) (BubbleBlaster.getMiddleX() - 480), 300, 960, 300);
+        renderer.box((int) (BubbleBlaster.getMiddleX() - 480), 300, 960, 300, Color.argb(0x80ffffff));
 
         // Bubble
 

@@ -78,6 +78,8 @@ public class BB2GameProvider implements GameProvider {
     public Collection<BuiltinMod> getBuiltinMods() {
         return List.of(
                 new BuiltinMod(List.of(libGdxJar), new BuiltinModMetadata.Builder("libgdx", versions.getProperty("libgdx"))
+                        .setName("LibGDX")
+                        .setDescription("A game framework used by Bubble Blaster (and various other games).")
                         .addLicense("Apache-2.0")
                         .addAuthor("libGDX", Map.of("homepage", "http://www.libgdx.com/", "patreon", "https://patreon.com/libgdx", "github", "https://github.com/libgdx", "sources", "https://github.com/libgdx/libgdx"))
                         .addAuthor("Mario Zechner", Map.of("github", "https://github.com/badlogic", "email", "badlogicgames@gmail.com"))
@@ -85,9 +87,12 @@ public class BB2GameProvider implements GameProvider {
                         .addIcon(200, "assets/libgdx/icon.png")
                         .build()),
                 new BuiltinMod(gameJars, new BuiltinModMetadata.Builder("bubbleblaster", versions.getProperty("bubbleblaster"))
-                        .addLicense("Apache-2.0")
-                        .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.github,io/", "github", "https://github.com/Ultreon", "sources", "https://github.com/libgdx/libgdx"))
-                        .setContact(new ContactInformationImpl(Map.of("homepage", "https://github.com/Ultreon/bubble-blaster-2/", "issues", "https://github.com/Ultreon/bubble-blaster-2/issues", "discord", "https://discord.gg/")))
+                        .setName("Bubble Blaster")
+                        .setDescription("A game by Ultreon, the game you are now playing.")
+                        .addLicense("Ultreon-API-v1.1") // Pls choose correct license <3
+                        .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.github,io/", "github", "https://github.com/Ultreon", "youtube", "https://youtube.com/@ultreon"))
+                        .addAuthor("XyperCode", Map.of("homepage", "http://xypercode.github,io/", "github", "https://github.com/XyperCode", "youtube", "https://youtube.com/@xypercode"))
+                        .setContact(new ContactInformationImpl(Map.of("homepage", "https://github.com/Ultreon/bubble-blaster-2/", "issues", "https://github.com/Ultreon/bubble-blaster-2/issues", "discord", "https://discord.gg/WePT9v2CmQ")))
                         .addIcon(200, "assets/bubbles/icon.png")
                         .build())
         );

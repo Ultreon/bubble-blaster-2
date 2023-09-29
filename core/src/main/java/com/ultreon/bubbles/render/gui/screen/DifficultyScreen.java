@@ -21,7 +21,7 @@ public class DifficultyScreen extends Screen {
     public void init() {
         clearWidgets();
 
-        int width = 100;
+        int width = 150;
         int height = 40;
         int y = 150;
         int x = (this.width - width) / 2;
@@ -30,15 +30,14 @@ public class DifficultyScreen extends Screen {
             add(new OptionsButton.Builder()
                     .text(text)
                     .bounds(x, y, width, height)
-                    .command(() -> this.play(difficulty, this.seed))
+                    .command(() -> this.next(difficulty, this.seed))
                     .build());
 
             y += height + 2;
         }
     }
 
-    public void play(Difficulty difficulty, long seed) {
-        Gamemode gamemode = GameSettings.instance().getGamemode();
-        BubbleBlaster.getInstance().createGame(seed, gamemode, difficulty);
+    public void next(Difficulty difficulty, long seed) {
+        this.game.showScreen(new GamemodeScreen(this, difficulty, seed));
     }
 }

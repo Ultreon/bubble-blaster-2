@@ -32,10 +32,10 @@ public class ManualCrashOverlay implements Renderable {
             long secondsLeft = timer.getEpochSecond() - Instant.now().getEpochSecond();
 
             renderer.setColor(Color.rgb(0x404040));
-            renderer.rect(0, 0, width, height);
+            renderer.fill(0, 0, width, height);
             renderer.setColor(Color.CRIMSON);
-            renderer.rect(0, 0, (int) width, 10);
-            renderer.rect(0, (int) (height - 10), (int) width, 10);
+            renderer.fill(0, 0, (int) width, 10);
+            renderer.fill(0, (int) (height - 10), (int) width, 10);
 
             renderer.drawText(Fonts.DONGLE_140.get(), "Manually Initiating Crash", 50, 60);
             renderer.setColor(Color.rgb(0xffffff));

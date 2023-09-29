@@ -378,12 +378,12 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
 
     public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
         renderer.setColor(color);
-        renderer.rect(x, y, width, height);
+        renderer.fill(x, y, width, height);
     }
 
     public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
         renderer.setColor(color);
-        renderer.rect(x, y, width, height);
+        renderer.fill(x, y, width, height);
     }
 
     protected void playMenuEvent() {

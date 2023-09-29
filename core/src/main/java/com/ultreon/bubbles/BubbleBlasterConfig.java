@@ -5,6 +5,7 @@ import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
+import com.ultreon.bubbles.render.TextureCollection;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -21,6 +22,7 @@ public class BubbleBlasterConfig {
     // Gameplay
     public static final Config.IntEntry LEVEL_THRESHOLD;
     public static final Config.DoubleEntry BASE_BUBBLE_SPEED;
+    public static final Config.IntEntry SHOOT_COOLDOWN;
     public static final Config.IntEntry BOOST_COOLDOWN;
     public static final Config.IntEntry BOOST_DURATION;
     public static final Config.DoubleEntry BUBBLE_SCORE_REDUCTION;
@@ -32,23 +34,38 @@ public class BubbleBlasterConfig {
     public static final Config.FloatEntry BUBBLE_LINE_THICKNESS;
     public static final Config.IntEntry DEFAULT_EFFECT_SPEEED;
 
+    // Debug
+    public static final Config.BooleanEntry DEBUG_DISABLE_SCISSORS;
+    public static final Config.BooleanEntry DEBUG_LOG_EMPTY_SCISSORS;
+
     private static final Config CONFIG;
 
     static {
         Config.Builder builder = new Config.Builder(FILE);
+
+        // Generic
         ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that can be annoying in some way.").value(false);
         AUTO_SAVE_RATE = builder.entry("generic.autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
         MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, 120);
-        LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 100_000, 8_800);
+
+        // Gameplay
+        LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 100_000, 10_000);
         BASE_BUBBLE_SPEED = builder.entry("gameplay.baseBubbleSpeed").comment("Speed of bubbles at level 1. (Will still increase after each level)").withinRange(0.1, 50.0, 2.0);
-        BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240000, 120000);
-        BOOST_DURATION = builder.entry("gameplay.boostDuration").comment("The amount of time to accelerate. (In milliseconds)").withinRange(500, 5000, 1000);
+        SHOOT_COOLDOWN = builder.entry("gameplay.shootCooldown").comment("How much time to wait until the player can shoot a bullet again. (In milliseconds)").withinRange(50, 2_000, 500);
+        BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240_000, 120_000);
+        BOOST_DURATION = builder.entry("gameplay.boostDuration").comment("The amount of time to accelerate. (In milliseconds)").withinRange(500, 5_000, 1_000);
         BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.001, 0.04, 16.0);
         BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.001, 0.1, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
+
+        // Graphical
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
         BUBBLE_LINE_THICKNESS = builder.entry("graphical.bubbleLineThickness").comment("The thickness of a singular circle of a bubble.").withinRange(1f, 2.5f, 2f);
         DEFAULT_EFFECT_SPEEED = builder.entry("graphical.defaultEffectSpeed").comment("How long it takes for one cycle of the scrolling gradient effect by default.").withinRange(0, 30, 10);
+
+        // Debug
+        DEBUG_DISABLE_SCISSORS = builder.entry("debug.disableScissors").comment("Disables ScissorStack.pushScissors() and ScissorStack.popScissors()").value(false);
+        DEBUG_LOG_EMPTY_SCISSORS = builder.entry("debug.logEmptyScissors").comment("Logs if a scissor call results into an empty glScissor() call.").value(false);
 
         CONFIG = builder.build();
 

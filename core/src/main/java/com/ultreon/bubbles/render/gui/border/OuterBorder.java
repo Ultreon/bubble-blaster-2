@@ -39,10 +39,10 @@ public class OuterBorder extends Border {
         switch (renderType) {
             case COLOR -> {
                 renderer.setColor(color);
-                renderer.rect(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top);
-                renderer.rect(x - insets.left, y, insets.left, height);
-                renderer.rect(x + width, y, insets.right, height);
-                renderer.rect(x - insets.left, y + height, width + insets.left + insets.right, insets.bottom);
+                renderer.fill(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top);
+                renderer.fill(x - insets.left, y, insets.left, height);
+                renderer.fill(x + width, y, insets.right, height);
+                renderer.fill(x - insets.left, y + height, width + insets.left + insets.right, insets.bottom);
             }
             case EFFECT -> {
                 renderer.fillEffect(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top, effectSpeed);

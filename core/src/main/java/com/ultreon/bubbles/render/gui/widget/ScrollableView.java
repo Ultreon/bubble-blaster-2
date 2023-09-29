@@ -57,7 +57,7 @@ public class ScrollableView extends Container {
 
     @Override
     public void renderComponent(Renderer renderer) {
-        fill(renderer, 0, 0, width, height, getBackgroundColor());
+        fill(renderer, x, y, width, height, getBackgroundColor());
     }
 
     @Override

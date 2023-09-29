@@ -41,9 +41,9 @@ public class Notifications implements Renderable {
             float motion = (NOTIFICATION_WIDTH + NOTIFICATION_OFFSET) * motionRatio;
 
             renderer.setColor(0xff101010);
-            renderer.rect(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
+            renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT);
             renderer.setColor(0xff505050);
-            renderer.rectLine(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10);
+            renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10);
             renderer.setColor(0xffd0d0d0);
             renderer.drawText(Fonts.SANS_BOLD_20.get(), title, x + motion + 10, y + 13);
             renderer.setColor(0xffb0b0b0);

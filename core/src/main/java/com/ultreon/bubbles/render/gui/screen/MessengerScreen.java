@@ -53,7 +53,7 @@ public class MessengerScreen extends Screen {
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.setColor(Color.rgb(0x404040));
-        renderer.rect(0, 0, game.getWidth(), game.getHeight());
+        renderer.fill(0, 0, game.getWidth(), game.getHeight());
 
         renderer.setColor(Color.rgb(0x00c0ff));
         renderer.drawCenteredText(Fonts.SANS_REGULAR_48.get(), "Loading Environment...", BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 8);

@@ -285,7 +285,7 @@ public class LoadedGame {
         for (String s : activeMessages) {
             int y = 71 + (32 * i);
             renderer.setColor(Color.argb(0x80000000));
-            renderer.rect(0, y, 1000, 32);
+            renderer.fill(0, y, 1000, 32);
 
             renderer.setColor(Color.argb(0xffffffff));
             renderer.drawText(Fonts.MONOSPACED_14.get(), s, 2, y);

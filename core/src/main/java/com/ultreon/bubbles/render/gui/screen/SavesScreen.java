@@ -111,22 +111,22 @@ public class SavesScreen extends Screen {
 
         this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 10, calcWidth, this.height - 120));
         this.saveList.setSelectable(true);
-        this.saveList.setEntryRenderer((renderer, width1, height1, y, save, selected, hovered) -> renderEntry(renderer, width1, height1, save, selected, hovered));
+        this.saveList.setEntryRenderer(this::renderEntry);
 
         this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/new")).build());
         this.newSaveBtn.setCommand(this::newSave);
 
-        this.openSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/open")).build());
+        this.openSaveBtn = add(new OptionsButton.Builder().bounds(width / 2 + 5, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/open")).build());
         this.openSaveBtn.setCommand(this::openSave);
 
         this.delSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/delete")).build());
         this.delSaveBtn.setCommand(this::deleteSave);
 
-        this.editSaveBtn = add(new OptionsButton.Builder().bounds((width / 2) + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/edit")).build());
+        this.editSaveBtn = add(new OptionsButton.Builder().bounds(width / 2 + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/edit")).build());
         this.editSaveBtn.setCommand(this::editSave);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, GameSave save, boolean selected, boolean hovered) {
+    private void renderEntry(Renderer renderer, int width, int height, float y, GameSave save, boolean selected, boolean hovered) {
         var cachedInfo = cache.get(save);
         try {
             if (cachedInfo == null) {

@@ -282,7 +282,7 @@ public class DebugRenderer {
         }
 
         renderer.setColor(0, 0, 0, 0x99);
-        renderer.rect(10, y, width + 4, height + 4);
+        renderer.fill(10, y, width + 4, height + 4);
         renderer.setColor("#fff");
         renderer.drawText(font.get(), text1, 12, y + 1);
     }
@@ -313,7 +313,7 @@ public class DebugRenderer {
         }
 
         renderer.setColor(0, 0, 0, 0x99);
-        renderer.rect(game.getWidth() - width - 10, y, width + 4, height + 4);
+        renderer.fill(game.getWidth() - width - 10, y, width + 4, height + 4);
         renderer.setColor("#fff");
         renderer.drawRightAnchoredText(font.get(), text1, game.getWidth() - 8, y + 1);
     }
@@ -337,7 +337,7 @@ public class DebugRenderer {
         int i = 400;
 
         renderer.setColor(0, 0, 0, 0x99);
-        renderer.rect(game.getWidth() - i - 10, y, i, height + 4);
+        renderer.fill(game.getWidth() - i - 10, y, i, height + 4);
         renderer.setColor("#fff");
         renderer.drawRightAnchoredText(font.get(), text2, game.getWidth() - i - 8, y + 1);
         if (!text1.getText().isEmpty()) {

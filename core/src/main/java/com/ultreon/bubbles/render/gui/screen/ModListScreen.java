@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.mod.ModDataManager;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
@@ -58,10 +59,10 @@ public class ModListScreen extends Screen {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        modList.setHeight(this.height);
-        detailsPane.setX(this.modList.getWidth());
-        detailsPane.setWidth(this.width - modList.getWidth());
-        detailsPane.setHeight(this.height);
+        this.modList.setHeight(this.height);
+        this.detailsPane.setX(this.modList.getWidth());
+        this.detailsPane.setWidth(this.width - modList.getWidth());
+        this.detailsPane.setHeight(this.height);
 
         super.render(renderer, mouseX, mouseY, deltaTime);
     }
@@ -78,17 +79,13 @@ public class ModListScreen extends Screen {
         });
 
         if (selected) {
-            renderer.drawEffectBox(10, (int) (y + 10), width - 20, height - 20, new Insets(2, 2, 2, 2));
+            renderer.drawEffectBox(5, (int) (y + 5), width - 10, height - 10, new Insets(2, 2, 2, 2));
         }
 
         int textX = 20 + iconSize + 20;
-
-        renderer.setColor(0x7fffffff);
-        renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, y + 20);
-        renderer.setColor(0xffffffff);
-        renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, y + 32);
-        renderer.setColor(0x80ffffff);
-        renderer.drawText(Fonts.SANS_REGULAR_14.get(), metadata.getDescription(), textX, y + ENTRY_HEIGHT - 18);
+        renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, y + 20, Color.argb(0x80ffffff));
+        renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, y + 32, Color.argb(0xffffffff));
+        renderer.drawText(Fonts.SANS_ITALIC_16.get(), metadata.getDescription(), textX, y + height - 25, Color.argb(0x80ffffff));
     }
 
     private class InfoContainer extends Container {

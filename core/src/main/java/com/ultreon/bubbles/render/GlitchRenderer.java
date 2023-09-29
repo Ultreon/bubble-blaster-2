@@ -57,7 +57,7 @@ public class GlitchRenderer {
 
                 renderer.setColor("#000");
                 if (matrix != 0) {
-                    renderer.rect(xi, yi, this.charW, this.charH);
+                    renderer.fill(xi, yi, this.charW, this.charH);
                 }
                 renderer.setColor(Color.rgb(this.cMatrix[x][y]));
 

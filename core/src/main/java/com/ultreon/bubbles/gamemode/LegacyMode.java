@@ -1,21 +1,19 @@
 package com.ultreon.bubbles.gamemode;
 
-import com.ultreon.bubbles.bubble.BubbleType;
+import com.badlogic.gdx.math.Vector2;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.init.Bubbles;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.ExceptionUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.Messenger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.geom.Rectangle2D;
@@ -26,12 +24,12 @@ import java.awt.geom.Rectangle2D;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @SuppressWarnings({"unused", "deprecation"})
-public class ImpossibleMode extends Gamemode {
+public class LegacyMode extends ClassicMode {
+    private static final Color BACKGROUND_COLOR = Color.rgb(0x00a7a7);
     // Threads
     private Thread spawner;
-    private final ModernHud classicHud = new ModernHud(this);
 
-    public ImpossibleMode() {
+    public LegacyMode() {
         super();
     }
 
@@ -44,19 +42,14 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void initEnv(Environment environment, Messenger messenger) {
-        this.hud = new ModernHud(this);
+        this.hud = new LegacyHud(this);
 
         initializeClassic(environment, messenger);
     }
 
     @Override
-    public @Nullable BubbleType getRandomBubble(long spawnIndex) {
-        return Bubbles.DAMAGE;
-    }
-
-    @Override
     public void onLoad(Environment environment, GameSave save, Messenger messenger) {
-        this.hud = new ModernHud(this);
+        this.hud = new LegacyHud(this);
         this.initialized = true;
     }
 
@@ -66,7 +59,7 @@ public class ImpossibleMode extends Gamemode {
      */
     @Override
     public void start() {
-
+//        spawner.start();
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -112,9 +105,14 @@ public class ImpossibleMode extends Gamemode {
         return 0;
     }
 
+    public boolean renderBackground(Renderer renderer, BubbleBlaster game) {
+        renderer.fill(0, 0, renderer.getWidth(), renderer.getHeight(), BACKGROUND_COLOR);
+        return true;
+    }
+
     @Override
     public void renderHUD(Renderer renderer) {
-        ((ClassicModeHud)hud).renderHUD(renderer);
+        getHud().renderHUD(renderer);
     }
 
     @Override
@@ -122,13 +120,13 @@ public class ImpossibleMode extends Gamemode {
 
     }
 
-    public ClassicModeHud getHud() {
-        return (ClassicModeHud) this.hud;
+    public LegacyHud getHud() {
+        return (LegacyHud) this.hud;
     }
 
     @Override
     public Rectangle2D getGameBounds() {
-        return new Rectangle2D.Double(70d, 0d, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight() - 70d);
+        return new Rectangle2D.Double(0d, 70d, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight() - 70d);
     }
 
     @Override
@@ -140,12 +138,14 @@ public class ImpossibleMode extends Gamemode {
      * Trigger Game Over
      * Deletes player and set game over flag in ClassicHUD. Showing Game Over message.
      *
-     * @see ClassicModeHud#setGameOver()
+     * @see LegacyHud#setGameOver()
      */
     @Override
     public void onGameOver() {
+//        environment.gameOver(game.player);
         game.player.delete();
-        classicHud.setGameOver();
+        getHud().setGameOver();
+//        gameOver = true;
     }
 
     @Override
@@ -158,7 +158,7 @@ public class ImpossibleMode extends Gamemode {
 
     @Override
     public void onQuit() {
-        this.hud = null;
+
     }
 
     public Thread getSpawner() {

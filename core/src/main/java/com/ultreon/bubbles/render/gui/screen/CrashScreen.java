@@ -1,32 +1,35 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.libs.commons.v0.Anchor;
+import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.CrashButton;
-import com.ultreon.commons.crash.CrashLog;
+import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.text.v0.TextObject;
 
 import java.io.File;
 
 public class CrashScreen extends Screen {
-    private final CrashLog report;
-    private final CrashButton crashButton;
-    private final String reportName;
+    private final CrashLog crashLog;
+    private final String fileName;
+    private CrashButton crashButton;
 
     public CrashScreen(CrashLog crashLog) {
-        super();
-        this.report = crashLog;
-        this.reportName = crashLog.getDefaultFileName();
+        super(TextObject.translation("bubbles/screen/crash/title"));
+        this.crashLog = crashLog;
+        this.fileName = crashLog.getDefaultFileName();
 
-        BubbleBlaster bb = BubbleBlaster.getInstance();
-        this.crashButton = this.add(new CrashButton(bb.getScaledWidth() / 2 - 64, 60, 128, 24));
-        this.crashButton.setText("Open crash report \uD83D\uDCCE");
+        this.crashLog.writeToFile(new File(BubbleBlaster.getDataDir(), this.fileName));
     }
 
     @Override
     public void init() {
-        this.report.writeToFile(new File(reportName));
+        clearWidgets();
+
+        this.crashButton = this.add(new CrashButton(this.game.getScaledWidth() / 2 - 64, 60, 128, 24));
+        this.crashButton.setText("Open crash report \uD83D\uDCCE");
     }
 
     @Override
@@ -36,11 +39,18 @@ public class CrashScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.setColor(Color.rgb(0xc00000));
-        renderer.rectLine(0, 0, game.getWidth(), game.getScaledHeight());
+        renderer.box(0, 0, game.getWidth(), game.getScaledHeight(), Color.CRIMSON, new Insets(10));
 
-        renderer.drawText(font, "The game crashed!", width / 2f, 25, Anchor.CENTER);
+        renderer.drawCenteredText(Fonts.DONGLE_75.get(), "The game crashed!", this.width / 2f, 25);
 
-        crashButton.setX((int) (game.getScaledWidth() / 2 - crashButton.getBounds().width / 2));
+        this.crashButton.setX((int) (game.getScaledWidth() / 2 - this.crashButton.getBounds().width / 2));
+    }
+
+    public CrashLog getCrashLog() {
+        return this.crashLog;
+    }
+
+    public String getFileName() {
+        return this.fileName;
     }
 }

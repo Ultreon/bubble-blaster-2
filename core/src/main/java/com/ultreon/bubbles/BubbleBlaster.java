@@ -100,7 +100,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL30;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -701,7 +700,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (exactWidgetAt != null) {
             var bounds = exactWidgetAt.getBounds();
             renderer.setColor(Color.rgb(0xff0000));
-            renderer.rectLine(bounds.x, bounds.y, bounds.width, bounds.height);
+            renderer.box(bounds.x, bounds.y, bounds.width, bounds.height);
         }
 
         ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);

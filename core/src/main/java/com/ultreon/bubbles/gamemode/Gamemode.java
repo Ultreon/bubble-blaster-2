@@ -298,6 +298,10 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
 
     }
 
+    public boolean renderBackground(Renderer renderer, BubbleBlaster game) {
+        return false;
+    }
+
     public abstract void renderHUD(Renderer renderer);
 
     @SuppressWarnings("EmptyMethod")
@@ -318,10 +322,8 @@ public abstract class Gamemode implements StateHolder, DefaultSaver, StateListen
                 renderer.setLineWidth(2.2f);
             }
 
-            renderer.setColor(color);
-
             Circle ellipse = this.getCircle(x - (float) radius / 2, y - (float) radius / 2, radius, i);
-            renderer.outline(ellipse);
+            renderer.outline(ellipse, color);
 
             i += 2f;
         }

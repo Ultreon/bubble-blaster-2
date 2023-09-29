@@ -86,7 +86,7 @@ public class ModernHud extends GameHud {
 
     private void drawBadgeBackground(Renderer renderer) {
         renderer.setColor(0x80000000);
-        renderer.rect(20, 20, 300, 80);
+        renderer.fill(20, 20, 300, 80);
     }
 
     /**
@@ -171,7 +171,7 @@ public class ModernHud extends GameHud {
 
             renderer.setColor(Color.argb(0x7f000000));
 
-            renderer.roundRect(
+            renderer.fillRoundRect(
                     (int)(gameBounds.getX() + gameBounds.getWidth() - width) / 2,
                     (int)(gameBounds.getY() + gameBounds.getHeight() - height) / 2, (int) width, (int) height,
                     10, 10);
@@ -196,7 +196,7 @@ public class ModernHud extends GameHud {
             Identifier id = appliedEffect.getType().getId();
 
             renderer.setColor(0x80000000);
-            renderer.rect(x, y, 300, 50);
+            renderer.fill(x, y, 300, 50);
 
             // Format duration to string.
             String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
@@ -207,7 +207,7 @@ public class ModernHud extends GameHud {
                 this.game.notifications.notifyOnce(UUID.fromString("ca1d5b52-1877-40fe-8c17-077dc637d9e2"), new Notification("Broken Texture!", "The texture for a status effect is broken", "Rendering System"));
 
                 renderer.setColor(0x80ffffff);
-                renderer.rect(x + 5, y + 5, 40, 40);
+                renderer.fill(x + 5, y + 5, 40, 40);
             }
 
             renderer.setColor(0xffffffff);

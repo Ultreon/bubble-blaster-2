@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.gui.widget.InGameButton;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.IngameButton;
 import com.ultreon.bubbles.util.helpers.Mth;
 import com.ultreon.libs.text.v0.TextObject;
 
@@ -45,7 +45,7 @@ public class GameOverScreen extends Screen {
 
         gameOverTime = System.currentTimeMillis();
 
-        add(new IngameButton.Builder()
+        add(new InGameButton.Builder()
                 .bounds((int) (BubbleBlaster.getMiddleX() - 128), 340, 256, 48)
                 .text(TextObject.translation("bubbleblaster/screen/game_over/back_to_title")).command(this::goToTitle).build());
     }

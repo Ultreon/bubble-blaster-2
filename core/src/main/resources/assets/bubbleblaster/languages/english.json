@@ -61,7 +61,9 @@
     "Info": {
       "Score": "Score",
       "Level": "Level",
-      "Health": "Health"
+      "Health": "Health",
+      "Lives": "Lives",
+      "Speed": "Speed"
     },
     "screen": {
       "title": {

@@ -58,11 +58,10 @@ public class EnvironmentRenderer implements IRenderer {
         // Loop colors.
         for (Color color : colors) {
             renderer.setLineWidth(thickness);
-            renderer.setColor(color);
 
             // Draw singular circle in the circle list.
             Circle circle = getCircle(x, y, radius, i);
-            renderer.circleLine(circle.x, circle.y, circle.radius);
+            renderer.circle(circle.x, circle.y, circle.radius, color);
 
             i += thickness;
         }
@@ -101,7 +100,9 @@ public class EnvironmentRenderer implements IRenderer {
             if (currentGameplayEvent != null) {
                 currentGameplayEvent.renderBackground(this.getEnvironment(), renderer);
             } else {
-                renderer.fillGradient(0, 0, game.getWidth(), game.getHeight(), UPPER_COLOR, LOWER_COLOR);
+                if (!environment.getGamemode().renderBackground(renderer, this.game)) {
+                    renderer.fillGradient(0, 0, game.getWidth(), game.getHeight(), UPPER_COLOR, LOWER_COLOR);
+                }
             }
         });
 

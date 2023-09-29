@@ -12,6 +12,7 @@ import com.ultreon.bubbles.render.gui.screen.Screen;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,10 @@ public class GameInput implements InputProcessor {
 
     public static boolean isKeyDown(int keycode) {
         return KEYS_DOWN.contains(keycode);
+    }
+
+    public static boolean areKeysDown(int... keys) {
+        return Arrays.stream(keys).allMatch(GameInput::isKeyDown);
     }
 
     @Override
