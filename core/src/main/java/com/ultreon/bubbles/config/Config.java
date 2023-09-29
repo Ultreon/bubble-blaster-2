@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.config;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import com.electronwill.nightconfig.core.io.*;
 import com.electronwill.nightconfig.toml.TomlFormat;
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.core.util.FileWatcher;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -307,6 +305,10 @@ public class Config {
         }
 
         public T getDefaultValue() {
+            return defaultValue;
+        }
+
+        public T getOrDefault() {
             return defaultValue;
         }
     }

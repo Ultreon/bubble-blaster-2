@@ -1024,7 +1024,7 @@ public class Renderer {
     public void fillEffect(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.get(), ANIM_COLOR_1, ANIM_COLOR_2);
+        this.fillScrollingGradient(x, y, width, height, BubbleBlasterConfig.DEFAULT_EFFECT_SPEEED.getOrDefault(), ANIM_COLOR_1, ANIM_COLOR_2);
     }
 
     public void fillEffect(int x, int y, int width, int height, int speed) {
