@@ -30,6 +30,7 @@ import com.ultreon.libs.resources.v0.Resource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.ModOrigin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -170,12 +171,15 @@ public final class LoadScreen extends Screen implements Runnable {
         this.progressAlt = new ProgressMessenger(msgAlt, allMods.size());
         for (ModContainer container : allMods) {
             progressAlt.sendNext(container.getMetadata().getName());
-            List<Path> paths = container.getOrigin().getPaths();
-            for (Path path : paths) {
-                try {
-                    game().getResourceManager().importPackage(path);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            ModOrigin origin = container.getOrigin();
+            if (origin.getKind() == ModOrigin.Kind.PATH) {
+                List<Path> paths = origin.getPaths();
+                for (Path path : paths) {
+                    try {
+                        game().getResourceManager().importPackage(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

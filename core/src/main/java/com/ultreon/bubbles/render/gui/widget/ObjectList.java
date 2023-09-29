@@ -188,7 +188,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         }
 
         public void render(Renderer renderer1, int mouseX, int mouseY, float deltaTime) {
-            this.list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, this.list.getViewport().yScroll + (list.entryHeight + list.gap) * index, value, list.selected == this && list.selectable, isHovered());
+            this.list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, -this.list.getViewport().yScroll + (list.entryHeight + list.gap) * index, value, list.selected == this && list.selectable, isHovered());
         }
 
         public void setIndex(int index) {
