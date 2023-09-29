@@ -516,8 +516,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             crash(t);
         }
 
-        // Request focus
-        getGameWindow().requestFocus();
+        if (!this.window.isFocused()) {
+            this.window.requestUserAttention();
+        }
     }
 
     private static Path getGamePath(URL resource) throws IOException, URISyntaxException {

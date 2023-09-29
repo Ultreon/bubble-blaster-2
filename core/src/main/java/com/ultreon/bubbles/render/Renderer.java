@@ -140,7 +140,7 @@ public class Renderer {
         this.camera.combined.set(this.backupMatrix);
 
         if (!this.matrixStack.isClear())
-            throw new IllegalStateException("Matrix stack isn't cleared before renderer completes (should have 1 left): " + matrixStack.stack.size());
+            this.clearMatrixStack();
 
         this.matrixStack.stack.removeLast();
 

@@ -182,7 +182,6 @@ public class GameWindow {
     }
 
     public void requestFocus() {
-        this.getLwjglWindow().flash();
         this.getLwjglWindow().focusWindow();
     }
 

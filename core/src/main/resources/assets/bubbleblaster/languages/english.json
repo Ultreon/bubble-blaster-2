@@ -24,6 +24,7 @@
     },
     "gamemode": {
       "names": {
+        "legacy": "Legacy Mode",
         "classic": "Classic Mode",
         "modern": "Modern Mode",
         "impossible": "Impossible Mode"
