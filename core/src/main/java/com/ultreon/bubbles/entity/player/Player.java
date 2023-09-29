@@ -650,7 +650,7 @@ public class Player extends LivingEntity implements InputController {
      *
      * @param bool true to activate, false to deactivate.
      */
-    public void left(boolean bool) {
+    public void rotateLeft(boolean bool) {
         this.left = bool;
     }
 
@@ -659,7 +659,7 @@ public class Player extends LivingEntity implements InputController {
      *
      * @param bool true to activate, false to deactivate.
      */
-    public void right(boolean bool) {
+    public void rotateRight(boolean bool) {
         this.right = bool;
     }
 

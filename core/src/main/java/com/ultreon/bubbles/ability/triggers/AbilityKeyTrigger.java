@@ -43,23 +43,25 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     }
 
     public boolean isShiftPressed() {
-        return GameInput.isShiftDown(modifiers);
+        return GameInput.isShiftDown();
     }
 
     public boolean isCtrlPressed() {
-        return GameInput.isCtrlDown(modifiers);
+        return GameInput.isCtrlDown();
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isMetaPressed() {
-        return GameInput.isMetaDown(modifiers);
+        return GameInput.isMetaDown();
     }
 
     public boolean isAltPressed() {
-        return GameInput.isAltDown(modifiers);
+        return GameInput.isAltDown();
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isAltGraphPressed() {
-        return GameInput.isAltGraphDown(modifiers);
+        return GameInput.isAltGraphDown();
     }
 
     public boolean isDown(int keyCode) {

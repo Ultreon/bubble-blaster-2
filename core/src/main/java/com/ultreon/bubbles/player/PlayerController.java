@@ -21,8 +21,8 @@ public class PlayerController {
 //            logger.info("PlayerController[8c217398]: " + this.player);
             this.controller.forward(GameInput.isKeyDown(Input.Keys.UP) || GameInput.isKeyDown(Input.Keys.W));
             this.controller.backward(GameInput.isKeyDown(Input.Keys.DOWN) || GameInput.isKeyDown(Input.Keys.S));
-            this.controller.right(GameInput.isKeyDown(Input.Keys.RIGHT) || GameInput.isKeyDown(Input.Keys.D));
-            this.controller.left(GameInput.isKeyDown(Input.Keys.LEFT) || GameInput.isKeyDown(Input.Keys.A));
+            this.controller.rotateRight(GameInput.isKeyDown(Input.Keys.RIGHT) || GameInput.isKeyDown(Input.Keys.D));
+            this.controller.rotateLeft(GameInput.isKeyDown(Input.Keys.LEFT) || GameInput.isKeyDown(Input.Keys.A));
         }
     }
 }

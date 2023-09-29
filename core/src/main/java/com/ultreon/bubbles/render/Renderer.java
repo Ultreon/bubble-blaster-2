@@ -706,6 +706,7 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @Deprecated
     public void drawText(String str, int x, int y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -724,6 +725,7 @@ public class Renderer {
         font.draw(batch, str, x, y);
     }
 
+    @Deprecated
     public void drawText(String str, float x, float y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -742,6 +744,7 @@ public class Renderer {
         font.draw(batch, str, x, y);
     }
 
+    @Deprecated
     public void drawText(TextObject str, int x, int y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -762,6 +765,7 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @Deprecated
     public void drawText(TextObject str, float x, float y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -782,6 +786,7 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @Deprecated
     public void drawText(BitmapFont font, String str, int x, int y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -800,6 +805,7 @@ public class Renderer {
         font.draw(batch, str, x, y);
     }
 
+    @Deprecated
     public void drawText(BitmapFont font, String str, float x, float y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -818,6 +824,7 @@ public class Renderer {
         font.draw(batch, str, x, y);
     }
 
+    @Deprecated
     public void drawText(BitmapFont font, TextObject str, int x, int y, Anchor anchor) {
         if (!this.rendering) return;
 
@@ -838,6 +845,7 @@ public class Renderer {
         font.draw(batch, str.getText(), x, y);
     }
 
+    @Deprecated
     public void drawText(BitmapFont font, TextObject str, float x, float y, Anchor anchor) {
         if (!this.rendering) return;
 

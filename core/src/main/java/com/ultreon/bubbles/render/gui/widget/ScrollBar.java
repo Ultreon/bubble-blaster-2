@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.util.helpers.Mth;
@@ -29,12 +30,12 @@ public class ScrollBar extends GuiComponent {
         setWidth(SIZE);
 
         Rectangle thumbBounds = getThumbBounds();
-        fill(renderer, 0, 0, width, height, 0x40000000);
-        fill(renderer, (int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, 0xff555555);
+        renderer.fill(this.x, this.y, this.width, this.height, Color.argb(0x40000000));
+        renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.argb(0xff555555));
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(getWidth() / 2 - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2 - 2), 3, (int) (scale()) - (getWidth() / 2 - 2) * 2);
+        return new Rectangle(getWidth() / 2f - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2f - 2), 3, (int) (scale()) - (getWidth() / 2f - 2) * 2);
     }
 
     private double scale() {
@@ -47,16 +48,6 @@ public class ScrollBar extends GuiComponent {
 
     public void setPercent(double percent) {
         this.percent = Mth.clamp(percent, 0.0, 1.0);
-    }
-
-    @Override
-    public void renderComponent(Renderer renderer) {
-
-    }
-
-    @Override
-    public void tick() {
-
     }
 
     public void setScale(double scale) {

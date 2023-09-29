@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
@@ -31,24 +32,26 @@ public class GameInput implements InputProcessor {
     private static final int ALT_MASK = 1 << 3;
     private static final int ALT_GRAPH_MASK = 1 << 5;
 
-    public static boolean isShiftDown(int modifiers) {
-        return (modifiers & SHIFT_MASK) != 0;
+    public static boolean isShiftDown() {
+        return isAnyKeyDownOf(Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
     }
 
-    public static boolean isCtrlDown(int modifiers) {
-        return (modifiers & CTRL_MASK) != 0;
+    public static boolean isCtrlDown() {
+        return isAnyKeyDownOf(Keys.CONTROL_LEFT, Keys.CONTROL_RIGHT);
     }
 
-    public static boolean isMetaDown(int modifiers) {
-        return (modifiers & META_MASK) != 0;
+    @Deprecated
+    public static boolean isMetaDown() {
+        return false;
     }
 
-    public static boolean isAltDown(int modifiers) {
-        return (modifiers & ALT_MASK) != 0;
+    public static boolean isAltDown() {
+        return isAnyKeyDownOf(Keys.ALT_LEFT, Keys.ALT_RIGHT);
     }
 
-    public static boolean isAltGraphDown(int modifiers) {
-        return (modifiers & ALT_GRAPH_MASK) != 0;
+    @Deprecated
+    public static boolean isAltGraphDown() {
+        return isCtrlDown() && isAltDown();
     }
 
     public static GridPoint2 getPos() {
@@ -61,6 +64,10 @@ public class GameInput implements InputProcessor {
 
     public static boolean areKeysDown(int... keys) {
         return Arrays.stream(keys).allMatch(GameInput::isKeyDown);
+    }
+
+    public static boolean isAnyKeyDownOf(int... keys) {
+        return Arrays.stream(keys).anyMatch(GameInput::isKeyDown);
     }
 
     @Override

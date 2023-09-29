@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui;
 
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -34,7 +35,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected volatile int width;
     protected volatile int height;
 
-    protected Color backgroundColor;
+    protected Color backgroundColor = Color.WHITE;
 
     public boolean enabled = true;
     public boolean visible = true;
@@ -48,10 +49,10 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     private int lastMouseY;
 
     /**
-     * @param x      position create the widget
-     * @param y      position create the widget
-     * @param width  size create the widget
-     * @param height size create the widget
+     * @param x      position of the widget
+     * @param y      position of the widget
+     * @param width  size of the widget
+     * @param height size of the widget
      */
     @SuppressWarnings("ConstantValue")
     public GuiComponent(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
@@ -83,10 +84,10 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Rendering method, should not be called unless you know what you are doing.
      * Override is fine.
      *
-     * @param renderer  the renderer to render with.
-     * @param mouseX
-     * @param mouseY
-     * @param deltaTime
+     * @param renderer the renderer to render with.
+     * @param mouseX the X position of the mouse pointer.
+     * @param mouseY the Y position of the mouse pointer.
+     * @param deltaTime the game's {@linkplain Graphics#getDeltaTime() delta time}.
      */
     public abstract void render(Renderer renderer, int mouseX, int mouseY, float deltaTime);
 
@@ -97,7 +98,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param x      the x position when clicked.
      * @param y      the y position when clicked.
      * @param button the button used.
-     * @param count  the amount create sequential clicks.
+     * @param count  the amount of sequential clicks.
      */
     public boolean mouseClick(int x, int y, int button, int count) {
         return false;
@@ -179,7 +180,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is pressed.
      *
      * @param keyCode   the code for the key pressed.
-     * @return to cancel out other usage create this method.
+     * @return to cancel out other usage of this method.
      */
     public boolean keyPress(int keyCode) {
         return false;
@@ -190,7 +191,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is released.
      *
      * @param keyCode   the code for the key released.
-     * @return to cancel out other usage create this method.
+     * @return to cancel out other usage of this method.
      */
     public boolean keyRelease(int keyCode) {
         return false;
@@ -201,7 +202,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Match a constant {@link Input.Keys} with the {@code keyCode} parameter for checking which key is typed.
      *
      * @param character the character typed.
-     * @return to cancel out other usage create this method.
+     * @return to cancel out other usage of this method.
      */
     public boolean charType(char character) {
         return false;
@@ -320,21 +321,21 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     /**
-     * Check if a position is withing the bounds create the widget
+     * Check if a position is withing the bounds of the widget
      *
      * @param x position to check for.
      * @param y position to check for.
-     * @return true if the x and y position given is withing the bounds create the widget
+     * @return true if the x and y position given is withing the bounds of the widget
      */
     public boolean isWithinBounds(int x, int y) {
         return x >= this.getX() && y >= this.getY() && x <= this.getX() + getWidth() && y <= this.getY() + getHeight();
     }
 
     /**
-     * Check if a position is withing the bounds create the widget
+     * Check if a position is withing the bounds of the widget
      *
      * @param pos position to check for.
-     * @return true if the x and y position given is withing the bounds create the widget
+     * @return true if the x and y position given is withing the bounds of the widget
      */
     public boolean isWithinBounds(Vec2i pos) {
         return pos.getX() >= this.getX() && pos.getY() >= this.getY() && pos.getX() <= this.getX() + getWidth() && pos.getY() <= this.getY() + getHeight();
@@ -376,14 +377,14 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
 
+    @Deprecated
     public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
-        renderer.setColor(color);
-        renderer.fill(x, y, width, height);
+        renderer.fill(x, y, width, height, Color.argb(color));
     }
 
+    @Deprecated
     public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
-        renderer.setColor(color);
-        renderer.fill(x, y, width, height);
+        renderer.fill(x, y, width, height, color);
     }
 
     protected void playMenuEvent() {

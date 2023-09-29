@@ -7,7 +7,7 @@ public interface InputController {
 
     void backward(boolean backward);
 
-    void left(boolean left);
+    void rotateLeft(boolean left);
 
-    void right(boolean right);
+    void rotateRight(boolean right);
 }

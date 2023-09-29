@@ -700,8 +700,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         if (exactWidgetAt != null) {
             var bounds = exactWidgetAt.getBounds();
-            renderer.setColor(Color.rgb(0xff0000));
-            renderer.box(bounds.x, bounds.y, bounds.width, bounds.height);
+            renderer.box(bounds.x, bounds.y, bounds.width, bounds.height, Color.RED);
         }
 
         ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);
@@ -830,6 +829,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return debugMode;
     }
 
+    @Deprecated
     public static boolean isDevEnv() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
@@ -941,27 +941,25 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (loadedGame != null) {
             final var environment = loadedGame.getEnvironment();
 
-            if (keyCode == Keys.F1 && BubbleBlaster.isDevEnv()) {
-                environment.triggerBloodMoon();
-            } else if (keyCode == Keys.F3 && BubbleBlaster.isDevEnv()) {
-                Objects.requireNonNull(environment.getPlayer()).destroy();
-            } else if (keyCode == Keys.F4 && BubbleBlaster.isDevEnv()) {
-                Objects.requireNonNull(environment.getPlayer()).levelUp();
-            } else if (keyCode == Keys.F5 && BubbleBlaster.isDevEnv()) {
-                Objects.requireNonNull(environment.getPlayer()).awardScore(1000);
-            } else if (keyCode == Keys.F6 && BubbleBlaster.isDevEnv()) {
-                var player = loadedGame.getGamemode().getPlayer();
-
-                if (player != null) {
-                    Objects.requireNonNull(player).setHealth(player.getMaxHealth());
-                }
-            } else if (keyCode == Keys.F7 && BubbleBlaster.isDevEnv()) {
-                this.isGlitched = true;
+            Player player = environment.getPlayer();
+            if (this.canExecuteDevCommands()) {
+                this.executeDevCommand(keyCode, environment, player, loadedGame);
             }
         }
 
-        if (keyCode == Keys.F8 && BubbleBlaster.isDevEnv() && !holding) {
+        if (this.canExecuteDevCommands() && keyCode == Keys.F8 && !holding) {
             this.renderer.triggerScissorLog();
+        }
+    }
+
+    private void executeDevCommand(int keyCode, Environment environment, Player player, LoadedGame loadedGame) {
+        switch (keyCode) {
+            case Keys.F1 -> environment.triggerBloodMoon();
+            case Keys.F3 -> player.destroy();
+            case Keys.F4 -> player.levelUp();
+            case Keys.F5 -> player.awardScore(1000);
+            case Keys.F6 -> DevCommands.resetHealth(loadedGame);
+            case Keys.F7 -> this.isGlitched = true;
         }
     }
 
@@ -1325,7 +1323,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         var screen = new MessengerScreen();
 
         // Show environment loader screen.
-        showScreen(screen);
+        this.showScreen(screen);
         try {
             var directory = save.getDirectory();
             if (create && directory.exists()) {
@@ -1670,15 +1668,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (screen != null)
             screen.tick();
 
-        if (player != null && GameInput.isKeyDown(Keys.SPACE))
-            player.shoot();
-
-        if (player != null) {
-            if (GameInput.isKeyDown(Keys.CONTROL_LEFT)) {
-                player.boost();
-            }
-        }
-
         if (this.ticker.advance() == 40) {
             this.ticker.reset();
             if (this.isLoaded())
@@ -1731,7 +1720,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private void renderGame(Renderer renderer, int mouseX, int mouseY, float frameTime) {
         // Call to game environment rendering.
         // Get field and set local variable. For multithreaded null-safety.
-        @Nullable Screen screen = screenManager.getCurrentScreen();
+        @Nullable Screen screen = this.getCurrentScreen();
         @Nullable Environment environment = this.environment;
         @Nullable EnvironmentRenderer environmentRenderer = this.environmentRenderer;
 
@@ -1760,7 +1749,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         });
 
         // Post render.
-        profiler.section("Post Render", () -> postRender(renderer));
+        profiler.section("Post Render", () -> this.postRender(renderer));
 
         // Post event after rendering the game.
         RenderEvents.RENDER_GAME_AFTER.factory().onRenderGameAfter(this, renderer, frameTime);
@@ -1770,20 +1759,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (this.fadeIn) {
             final var timeDiff = System.currentTimeMillis() - this.fadeInStart;
             if (timeDiff <= this.fadeInDuration) {
-                var clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / this.fadeInDuration), 0, 255);
-                var color = Color.rgba(0, 0, 0, clamp);
-                GuiComponent.fill(renderer, 0, 0, getWidth(), getHeight(), color);
+                int clamp = Mth.clamp((int) (255 * (1f - timeDiff / this.fadeInDuration)), 0, 255);
+                renderer.fill(0, 0, getWidth(), getHeight(), Color.BLACK.withAlpha(clamp));
             } else {
                 this.fadeIn = false;
             }
         }
-    }
-
-    /**
-     * Loads the game environment.
-     */
-    private void loadEnvironment() {
-        preparePlayer();
     }
 
     /**
@@ -1856,7 +1837,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.playerController = new PlayerController(this.input);
         this.player = player;
 
-        loadEnvironment();
+        this.preparePlayer();
     }
 
     /////////////////////
@@ -2035,7 +2016,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public void finish() {
         this.glitchRenderer = new GlitchRenderer(this);
-        showScreen(new TitleScreen());
+        this.showScreen(new TitleScreen());
         this.loaded = true;
 
         this.afterLoading.values().forEach(Runnable::run);
@@ -2095,7 +2076,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             notifications.notify(new Notification("Screenshot saved!", screenshot.fileHandle().name(), "SCREENSHOT MANAGER"));
             return true;
         } else if (environment != null) {
-            if (keyPressEnv(keycode, environment)) return true;
+            if (keyPressEnv(environment, keycode)) return true;
         }
 
         if (currentScreen != null) {
@@ -2109,26 +2090,33 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @ApiStatus.Internal
     @CanIgnoreReturnValue
-    private boolean keyPressEnv(int keycode, Environment environment) {
+    private boolean keyPressEnv(Environment environment, int keycode) {
         Player player = this.player;
-        boolean shouldTriggerDevCommand = debugMode || isDevEnv();
+        boolean isDev = this.canExecuteDevCommands();
 
         if (this.isInGame() && player != null) {
             if (keycode == Keys.UP) player.forward(true);
             if (keycode == Keys.DOWN) player.backward(true);
-            if (keycode == Keys.LEFT) player.left(true);
-            if (keycode == Keys.RIGHT) player.right(true);
+            if (keycode == Keys.LEFT) player.rotateLeft(true);
+            if (keycode == Keys.RIGHT) player.rotateRight(true);
+
+            if (keycode == Keys.SPACE) player.shoot();
+            if (keycode == Keys.CONTROL_LEFT) player.boost();
         }
 
-        if (keycode == Keys.F10 && (shouldTriggerDevCommand)) {
+        if (isDev && keycode == Keys.F10) {
             environment.triggerBloodMoon();
             return true;
-        } else if (keycode == Keys.SLASH && !hasScreenOpen()) {
+        } else if (keycode == Keys.SLASH && !this.hasScreenOpen()) {
             BubbleBlaster.getInstance().showScreen(new CommandScreen());
             return true;
         }
 
         return false;
+    }
+
+    private boolean canExecuteDevCommands() {
+        return BubbleBlaster.debugMode || FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @ApiStatus.Internal
@@ -2140,8 +2128,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (this.isInGame() && player != null) {
             if (keycode == Keys.UP) player.forward(false);
             if (keycode == Keys.DOWN) player.backward(false);
-            if (keycode == Keys.LEFT) player.left(false);
-            if (keycode == Keys.RIGHT) player.right(false);
+            if (keycode == Keys.LEFT) player.rotateLeft(false);
+            if (keycode == Keys.RIGHT) player.rotateRight(false);
         }
 
         return false;

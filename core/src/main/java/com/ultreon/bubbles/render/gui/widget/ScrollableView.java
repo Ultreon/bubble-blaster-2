@@ -57,12 +57,7 @@ public class ScrollableView extends Container {
 
     @Override
     public void renderComponent(Renderer renderer) {
-        fill(renderer, x, y, width, height, getBackgroundColor());
-    }
-
-    @Override
-    public void tick() {
-
+        renderer.fill(this.x, this.y, this.width, this.height, this.getBackgroundColor());
     }
 
     @Override

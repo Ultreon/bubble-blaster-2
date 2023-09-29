@@ -70,7 +70,7 @@ public class ModListScreen extends Screen {
     private void renderEntry(Renderer renderer, int width, int height, float y, ModContainer entry, boolean selected, boolean hovered) {
         var metadata = entry.getMetadata();
 
-        fill(renderer, 0, (int) y, width, height, hovered ? 0x40ffffff : 0x20ffffff);
+        renderer.fill(0, y, width, height, Color.argb(hovered ? 0x40ffffff : 0x20ffffff));
 
         int iconSize = ENTRY_HEIGHT - 40;
         metadata.getIconPath(256).flatMap(entry::findPath).ifPresent(path1 -> {
@@ -78,13 +78,11 @@ public class ModListScreen extends Screen {
             renderer.blit(tex, 20, y + 20, iconSize, iconSize);
         });
 
-        if (selected) {
-            renderer.drawEffectBox(5, (int) (y + 5), width - 10, height - 10, new Insets(2, 2, 2, 2));
-        }
+        if (selected) renderer.drawEffectBox(5, (int) (y + 5), width - 10, height - 10, new Insets(2, 2, 2, 2));
 
         int textX = 20 + iconSize + 20;
         renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, y + 20, Color.argb(0x80ffffff));
-        renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, y + 32, Color.argb(0xffffffff));
+        renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, y + 36, Color.argb(0xffffffff));
         renderer.drawText(Fonts.SANS_ITALIC_16.get(), metadata.getDescription(), textX, y + height - 25, Color.argb(0x80ffffff));
     }
 
@@ -105,18 +103,14 @@ public class ModListScreen extends Screen {
             if (selected == null) return;
             var metadata = selected.value.getMetadata();
 
-            layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
+            this.layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
 
-            renderer.setColor(0xffffffff);
-            renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), x + 20, y + 20);
-            renderer.setColor(0x80ffffff);
-            renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), x + 20 + layout.width, y + 20 + Fonts.SANS_REGULAR_48.get().getLineHeight() / 2, Anchor.W);
-            renderer.setColor(0x80ffffff);
-            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), x + 20, y + 70);
+            renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), x + 20, y + 20, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), x + 20 + this.layout.width, y + 20 + Fonts.SANS_REGULAR_48.get().getLineHeight() / 2, Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), x + 20, y + 70 - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
             String description = metadata.getDescription();
             AtomicInteger i = new AtomicInteger();
-            renderer.setColor(0x60ffffff);
-            description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, x + 20, y + 90 + i.getAndIncrement() * (font.getLineHeight() + 1)));
+            description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, x + 20, y + 90 + i.getAndIncrement() * (font.getLineHeight() + 1), Color.argb(0x60ffffff)));
         }
     }
 }
