@@ -23,7 +23,7 @@ public class BlindnessStatusEffect extends StatusEffect {
 
     @Override
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
-        startTime = System.currentTimeMillis();
+        this.startTime = System.currentTimeMillis();
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -44,6 +44,6 @@ public class BlindnessStatusEffect extends StatusEffect {
 
     @SuppressWarnings("unused")
     public long getStartTime() {
-        return startTime;
+        return this.startTime;
     }
 }

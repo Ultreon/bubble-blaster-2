@@ -1,13 +1,13 @@
 package com.ultreon.bubbles.command;
 
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.world.World;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.exceptions.InvalidValueException;
-import org.apache.commons.lang3.StringUtils;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SpawnCommand implements CommandExecutor {
     private World world;
@@ -142,6 +142,6 @@ public class SpawnCommand implements CommandExecutor {
     }
 
     public World getWorld() {
-        return world;
+        return this.world;
     }
 }

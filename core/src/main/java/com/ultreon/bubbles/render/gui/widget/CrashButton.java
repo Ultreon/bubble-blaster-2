@@ -80,12 +80,12 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
 
             textColor = Color.WHITE;
         } else if (this.isHovered()) {
-            renderer.setLineWidth(4.0f);
+            renderer.setLineThickness(4.0f);
             renderer.drawErrorEffectBox(this.x + 1, this.y + 1, this.width - 2, this.height - 2, new Insets(2));
 
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.setLineWidth(1.0f);
+            renderer.setLineThickness(1.0f);
             renderer.box(this.getBounds(), Color.WHITE, new Insets(1));
 
             textColor = Color.rgb(0xffffff);

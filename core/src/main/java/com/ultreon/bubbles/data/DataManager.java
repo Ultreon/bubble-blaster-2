@@ -7,7 +7,7 @@ import com.ultreon.data.types.MapType;
 public class DataManager {
     public MapType storeEntity(Entity entity) {
         MapType nbt = new MapType();
-        nbt.put("position", storePosition(entity.getPos()));
+        nbt.put("position", this.storePosition(entity.getPos()));
         nbt.put("data", entity.save());
         return nbt;
     }

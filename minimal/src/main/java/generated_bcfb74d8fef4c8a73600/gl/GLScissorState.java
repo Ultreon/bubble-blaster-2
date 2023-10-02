@@ -1,7 +1,6 @@
 package generated_bcfb74d8fef4c8a73600.gl;
 
 import com.badlogic.gdx.Gdx;
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -51,11 +50,11 @@ public class GLScissorState {
     }
 
     public void reapplyState() {
-        Gdx.gl.glScissor(x, y, width, height);
+        Gdx.gl.glScissor(this.x, this.y, this.width, this.height);
         if (Gdx.gl.glGetError() == GL20.GL_INVALID_VALUE)
-            throw new IllegalStateException("Gdx.gl.glScissor raised an GL20.GL_INVALID_VALUE! Scissor state: " + this.toString());
+            throw new IllegalStateException("Gdx.gl.glScissor raised an GL20.GL_INVALID_VALUE! Scissor state: " + this);
 
-        if (enabled) {
+        if (this.enabled) {
             if (!Gdx.gl.glIsEnabled(GL20.GL_SCISSOR_TEST))
                 Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
         } else if (Gdx.gl.glIsEnabled(GL20.GL_SCISSOR_TEST)) {
@@ -65,6 +64,6 @@ public class GLScissorState {
 
     @Override
     public String toString() {
-        return String.format("GLScissorState[x = %d (0x%X), y = %d (0x%X), w = %d (0x%X), h = %d (0x%X)]", x, x, y, y, width, width, height, height);
+        return String.format("GLScissorState[x = %d (0x%X), y = %d (0x%X), w = %d (0x%X), h = %d (0x%X)]", this.x, this.x, this.y, this.y, this.width, this.width, this.height, this.height);
     }
 }

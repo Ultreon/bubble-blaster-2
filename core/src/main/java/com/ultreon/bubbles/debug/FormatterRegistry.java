@@ -33,7 +33,7 @@ public class FormatterRegistry {
                 return FORMATTERS.get(clazz.getName());
             }
             for (Class<?> inter : clazz.getInterfaces()) {
-                Formatter<?> identify = identify(inter);
+                Formatter<?> identify = FormatterRegistry.identify(inter);
                 if (identify != null) return identify;
             }
         }

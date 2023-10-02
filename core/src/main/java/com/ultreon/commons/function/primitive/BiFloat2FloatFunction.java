@@ -8,7 +8,7 @@ public interface BiFloat2FloatFunction extends BiFunction<Float, Float, Float> {
     @Override
     @Deprecated
     default Float apply(Float a, Float b) {
-        return apply((float) a, (float) b);
+        return this.apply((float) a, (float) b);
     }
 
     float apply(float a, float b);

@@ -16,10 +16,10 @@ public abstract class EntityProperties implements Serializable {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 }

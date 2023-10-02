@@ -18,7 +18,7 @@ public class Abilities {
      *
      * @since 0.0.0
      */
-    public static final AbilityType<TeleportAbility> TELEPORT_ABILITY = register("teleport", new AbilityType<>(TeleportAbility::new));
+    public static final AbilityType<TeleportAbility> TELEPORT_ABILITY = Abilities.register("teleport", new AbilityType<>(TeleportAbility::new));
 
     /**
      * Register an ability.

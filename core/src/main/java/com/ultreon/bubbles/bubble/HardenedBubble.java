@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.bubble;
 
 import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.util.RandomValueSource;
+import com.ultreon.bubbles.world.World;
 
 public class HardenedBubble extends BubbleType {
     public HardenedBubble() {

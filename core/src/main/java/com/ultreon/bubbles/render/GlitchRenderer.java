@@ -42,12 +42,12 @@ public class GlitchRenderer {
     }
 
     private char randomChar() {
-        return chars[new SecureRandom().nextInt(chars.length)];
+        return this.chars[new SecureRandom().nextInt(this.chars.length)];
     }
 
     public void render(Renderer renderer) {
         SecureRandom rand = new SecureRandom();
-        this.addChar(randomChar(), rand.nextInt(this.matrixW), rand.nextInt(this.matrixH), new Random().nextInt(0xffffff));
+        this.addChar(this.randomChar(), rand.nextInt(this.matrixW), rand.nextInt(this.matrixH), new Random().nextInt(0xffffff));
 
         for (int x = 0; x < this.matrixW; x++) {
             for (int y = 0; y < this.matrixH; y++) {
@@ -57,11 +57,10 @@ public class GlitchRenderer {
 
                 renderer.setColor("#000");
                 if (matrix != 0) {
-                    renderer.fill(xi, yi, this.charW, this.charH);
+                    renderer.fill(xi, yi, this.charW, this.charH, Color.BLACK);
                 }
-                renderer.setColor(Color.rgb(this.cMatrix[x][y]));
 
-                renderer.drawText(this.font, Character.toString(matrix), xi + 2, yi);
+                renderer.drawText(this.font, Character.toString(matrix), xi + 2, yi, Color.rgb(this.cMatrix[x][y]));
 //                renderer.text("" + matrix, xi + 2, yi + charH / 1.5f + 4);
             }
         }

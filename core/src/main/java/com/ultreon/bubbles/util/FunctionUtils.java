@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.util;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

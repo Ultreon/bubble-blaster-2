@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Random;
 
-@SuppressWarnings({"unused", "FieldCanBeLocal", "SameParameterValue"})
+@SuppressWarnings({"unused", "SameParameterValue"})
 public class GameSave {
     public static final Marker MARKER = MarkerFactory.getMarker("GameSaves");
     private final String path;
@@ -28,11 +28,11 @@ public class GameSave {
     protected GameSave(File directory) {
         this.path = directory.getPath();
         this.directory = directory;
-        this.gameInfoFile = new File(path, "info.ubo");
+        this.gameInfoFile = new File(this.path, "info.ubo");
     }
 
     public GameSaveInfo getInfo() throws IOException {
-        return new GameSaveInfo(loadInfoData());
+        return new GameSaveInfo(this.loadInfoData());
     }
 
     public static GameSave fromFile(File file) {
@@ -48,7 +48,7 @@ public class GameSave {
     }
 
     public MapType loadInfoData() throws IOException {
-        return DataIo.readCompressed(gameInfoFile);
+        return DataIo.readCompressed(this.gameInfoFile);
     }
 
     public MapType debugInfoData() {
@@ -60,11 +60,11 @@ public class GameSave {
     }
 
     public MapType load(String name) throws IOException {
-        return load(name, true);
+        return this.load(name, true);
     }
 
     public MapType load(String name, boolean compressed) throws IOException {
-        return this.load(new File(path, name + ".ubo"), compressed);
+        return this.load(new File(this.path, name + ".ubo"), compressed);
     }
 
     private MapType load(File file, boolean compressed) throws IOException {
@@ -75,14 +75,13 @@ public class GameSave {
     }
 
     public void dump(String name, MapType data) throws IOException {
-        dump(name, data, true);
+        this.dump(name, data, true);
     }
 
     public void dump(String name, MapType data, boolean compressed) throws IOException {
-        this.dump(new File(path, name + ".ubo"), data, compressed);
+        this.dump(new File(this.path, name + ".ubo"), data, compressed);
     }
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private void dump(File file, MapType data, boolean compressed) throws IOException {
         if (compressed) {
             DataIo.writeCompressed(data, file);
@@ -92,51 +91,51 @@ public class GameSave {
     }
 
     public File getDirectory() {
-        return directory;
+        return this.directory;
     }
 
     public boolean hasMainState() {
-        return hasDataFile("game");
+        return this.hasDataFile("game");
     }
 
     private boolean hasDataFile(String name) {
-        return hasDataFile(new File(path, name + ".bson"));
+        return this.hasDataFile(new File(this.path, name + ".bson"));
     }
 
     private boolean hasDataFile(File file) {
-        return file.exists() && file.getAbsolutePath().startsWith(directory.getAbsolutePath());
+        return file.exists() && file.getAbsolutePath().startsWith(this.directory.getAbsolutePath());
     }
 
     @CanIgnoreReturnValue
     public void delete() throws IOException {
-        FileUtils.deleteDir(directory);
+        FileUtils.deleteDir(this.directory);
     }
 
     public void createFolders(String relPath) throws IOException {
-        File file = new File(directory.getPath(), relPath);
+        File file = new File(this.directory.getPath(), relPath);
         if (!file.mkdirs()) {
             if (!file.exists()) {
-                throw new IOException("Failed to create directories " + Path.of(directory.getPath(), relPath).toFile().getAbsolutePath());
+                throw new IOException("Failed to create directories " + Path.of(this.directory.getPath(), relPath).toFile().getAbsolutePath());
             }
         }
     }
 
     public Gamemode getGamemode() throws IOException {
-        return getInfo().getGamemode();
+        return this.getInfo().getGamemode();
     }
 
     public Difficulty getDifficulty() throws IOException {
-        return getInfo().getDifficulty();
+        return this.getInfo().getDifficulty();
     }
 
     public long getSeed() throws IOException {
-        return getInfo().getSeed();
+        return this.getInfo().getSeed();
     }
 
     @Override
     public String toString() {
         return "GameSave{" +
-                "path='" + path + '\'' +
+                "path='" + this.path + '\'' +
                 '}';
     }
 }

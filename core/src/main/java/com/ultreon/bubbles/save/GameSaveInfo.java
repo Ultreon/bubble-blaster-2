@@ -1,12 +1,12 @@
 package com.ultreon.bubbles.save;
 
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.util.EnumUtils;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.util.EnumUtils;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Identifier;
 
 public class GameSaveInfo {
     private final String name;
@@ -24,11 +24,11 @@ public class GameSaveInfo {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public long getSavedTime() {
-        return savedTime;
+        return this.savedTime;
     }
 
     @Deprecated(forRemoval = true)
@@ -37,14 +37,14 @@ public class GameSaveInfo {
     }
 
     public Gamemode getGamemode() {
-        return gamemode;
+        return this.gamemode;
     }
 
     public Difficulty getDifficulty() {
-        return difficulty;
+        return this.difficulty;
     }
 
     public long getSeed() {
-        return seed;
+        return this.seed;
     }
 }

@@ -14,7 +14,7 @@ public class Property<T> implements IProperty<T> {
 
     @Override
     public T get() {
-        return value;
+        return this.value;
     }
 
     @Override

@@ -23,18 +23,18 @@ public class LibraryJar {
     }
 
     public String getLibraryName() {
-        return libraryName;
+        return this.libraryName;
     }
 
     public JarInputStream openStream() throws IOException {
-        URLConnection connection = libraryUrl.openConnection();
+        URLConnection connection = this.libraryUrl.openConnection();
         return new JarInputStream(connection.getInputStream());
     }
 
     public InputStream openStream(String path) throws IOException {
         URL resourceUrl;
         try {
-            resourceUrl = new URL("libraryjar", libraryUrl.getHost(), addSepAtStart(path));
+            resourceUrl = new URL("libraryjar", this.libraryUrl.getHost(), this.addSepAtStart(path));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -47,6 +47,6 @@ public class LibraryJar {
     }
 
     public URL getLibraryUrl() {
-        return libraryUrl;
+        return this.libraryUrl;
     }
 }

@@ -21,6 +21,6 @@ public class NaturalSpawnReason extends SpawnReason {
     }
 
     public int getRetry() {
-        return retry;
+        return this.retry;
     }
 }

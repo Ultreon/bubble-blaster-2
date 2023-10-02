@@ -59,7 +59,7 @@ public class WorldRenderer implements Renderable {
 
         // Loop colors.
         for (Color color : colors) {
-            renderer.setLineWidth(thickness);
+            renderer.setLineThickness(thickness);
 
             // Draw singular circle in the circle list.
             Circle circle = WorldRenderer.getCircle(x, y, radius, i);
@@ -122,9 +122,9 @@ public class WorldRenderer implements Renderable {
             }
             if (this.game.isCollisionShapesShown()) {
                 Shape2D shape = entity.getShape();
-                renderer.setLineWidth(6.0f);
+                renderer.setLineThickness(6.0f);
                 renderer.outline(shape, Color.BLACK);
-                renderer.setLineWidth(2.0f);
+                renderer.setLineThickness(2.0f);
                 renderer.outline(shape, Color.WHITE);
             }
         }

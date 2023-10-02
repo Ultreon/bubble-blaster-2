@@ -12,15 +12,15 @@ public class Ticker {
 
     @IntRange(from = 1)
     public int advance() {
-        return ++ticks;
+        return ++this.ticks;
     }
 
     @IntRange(from = 0)
     public int get() {
-        return ticks;
+        return this.ticks;
     }
 
     public void reset() {
-        ticks = 0;
+        this.ticks = 0;
     }
 }

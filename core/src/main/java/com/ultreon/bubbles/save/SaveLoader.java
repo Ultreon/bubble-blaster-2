@@ -39,7 +39,7 @@ public class SaveLoader {
      * Save loader constructor.
      */
     private SaveLoader() {
-        savesDir = GameFolders.SAVES_DIR;
+        this.savesDir = GameFolders.SAVES_DIR;
     }
 
     /**
@@ -49,18 +49,18 @@ public class SaveLoader {
      */
     @NotNull
     public File getSavesDir() {
-        return savesDir;
+        return this.savesDir;
     }
 
     /**
      * Refresh saves index.
      */
     public void refresh() {
-        if (!savesDir.exists() && !savesDir.mkdirs())
+        if (!this.savesDir.exists() && !this.savesDir.mkdirs())
             throw new IllegalStateException("Saves directory wasn't created.");
 
-        File[] dirs = savesDir.listFiles();
-        saves.clear();
+        File[] dirs = this.savesDir.listFiles();
+        this.saves.clear();
 
         for (File dir : Objects.requireNonNull(dirs)) {
             Supplier<GameSave> saveSupplier = () -> GameSave.fromFile(dir);
@@ -70,7 +70,7 @@ public class SaveLoader {
 
     @Nullable
     public GameSave getSavedGame(String name) {
-        return saves.get(name).get();
+        return this.saves.get(name).get();
     }
 
     /**
@@ -80,6 +80,6 @@ public class SaveLoader {
      */
     @NotNull
     public Collection<Supplier<GameSave>> getSaves() {
-        return saves.values();
+        return this.saves.values();
     }
 }

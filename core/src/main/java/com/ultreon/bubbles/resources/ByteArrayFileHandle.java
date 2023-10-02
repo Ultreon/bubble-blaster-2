@@ -16,11 +16,11 @@ public class ByteArrayFileHandle extends FileHandle {
 
     @Override
     public InputStream read() {
-        return new ByteArrayInputStream(data);
+        return new ByteArrayInputStream(this.data);
     }
 
     @Override
     public byte[] readBytes() {
-        return data.clone();
+        return this.data.clone();
     }
 }

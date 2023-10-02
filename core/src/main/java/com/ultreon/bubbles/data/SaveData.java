@@ -16,11 +16,11 @@ public class SaveData {
     public String getString(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof String) {
             return (String) rawData;
         } else {
@@ -31,11 +31,11 @@ public class SaveData {
     public Integer getInt(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof Integer) {
             return (Integer) rawData;
         } else {
@@ -46,11 +46,11 @@ public class SaveData {
     public Float getFloat(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof Float) {
             return (Float) rawData;
         } else {
@@ -61,11 +61,11 @@ public class SaveData {
     public Double getDouble(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof Double) {
             return (Double) rawData;
         } else {
@@ -76,11 +76,11 @@ public class SaveData {
     public Boolean getBoolean(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof Boolean) {
             return (Boolean) rawData;
         } else {
@@ -91,11 +91,11 @@ public class SaveData {
     public Object getObject(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData != null) {
             return rawData;
         } else {
@@ -107,11 +107,11 @@ public class SaveData {
     public <T> ArrayList<? extends T> getArrayList(String... path) {
         ArrayList<String> stringArray = new ArrayList<>(Arrays.asList(path));
 
-        if (!saveData.containsKey(Arrays.asList(path))) {
+        if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
         }
 
-        Object rawData = saveData.get(stringArray);
+        Object rawData = this.saveData.get(stringArray);
         if (rawData instanceof ArrayList) {
             return (ArrayList<T>) rawData;
         } else {

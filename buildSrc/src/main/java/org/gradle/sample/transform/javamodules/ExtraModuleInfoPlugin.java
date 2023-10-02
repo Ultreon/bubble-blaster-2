@@ -18,7 +18,7 @@ public class ExtraModuleInfoPlugin implements Plugin<Project> {
         project.getExtensions().add(ExtraModuleInfoPluginExtension.class, "extraJavaModuleInfo", extension);
 
         // setup the transform for all projects in the build
-        project.getPlugins().withType(JavaPlugin.class).configureEach(javaPlugin -> configureTransform(project, extension));
+        project.getPlugins().withType(JavaPlugin.class).configureEach(javaPlugin -> this.configureTransform(project, extension));
     }
 
     private void configureTransform(Project project, ExtraModuleInfoPluginExtension extension) {

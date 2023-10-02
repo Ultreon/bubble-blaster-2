@@ -7,6 +7,7 @@ import org.gradle.api.artifacts.transform.TransformParameters;
 import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
@@ -31,12 +32,12 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
 
         @Input
         public Map<String, ModuleInfo> getModuleInfo() {
-            return moduleInfo;
+            return this.moduleInfo;
         }
 
         @Input
         public Map<String, String> getAutomaticModules() {
-            return automaticModules;
+            return this.automaticModules;
         }
 
         public void setModuleInfo(Map<String, ModuleInfo> moduleInfo) {
@@ -52,20 +53,20 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     protected abstract Provider<FileSystemLocation> getInputArtifact();
 
     @Override
-    public void transform(TransformOutputs outputs) {
-        Map<String, ModuleInfo> moduleInfo = getParameters().moduleInfo;
-        Map<String, String> automaticModules = getParameters().automaticModules;
-        File originalJar = getInputArtifact().get().getAsFile();
+    public void transform(@NotNull TransformOutputs outputs) {
+        Map<String, ModuleInfo> moduleInfo = this.getParameters().moduleInfo;
+        Map<String, String> automaticModules = this.getParameters().automaticModules;
+        File originalJar = this.getInputArtifact().get().getAsFile();
         String originalJarName = originalJar.getName();
 
-        if (isModule(originalJar)) {
+        if (this.isModule(originalJar)) {
             outputs.file(originalJar);
         } else if (moduleInfo.containsKey(originalJarName)) {
-            addModuleDescriptor(originalJar, getModuleJar(outputs, originalJar), moduleInfo.get(originalJarName));
-        } else if (isAutoModule(originalJar)) {
+            ExtraModuleInfoTransform.addModuleDescriptor(originalJar, this.getModuleJar(outputs, originalJar), moduleInfo.get(originalJarName));
+        } else if (this.isAutoModule(originalJar)) {
             outputs.file(originalJar);
         } else if (automaticModules.containsKey(originalJarName)) {
-            addAutomaticModuleName(originalJar,  getModuleJar(outputs, originalJar), automaticModules.get(originalJarName));
+            ExtraModuleInfoTransform.addAutomaticModuleName(originalJar, this.getModuleJar(outputs, originalJar), automaticModules.get(originalJarName));
         } else {
             throw new RuntimeException("Not a module and no mapping defined: " + originalJarName);
         }
@@ -74,7 +75,7 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     private boolean isModule(File jar) {
         Pattern moduleInfoClassMrjarPath = Pattern.compile("META-INF/versions/\\d+/module-info.class");
         try (JarInputStream inputStream =  new JarInputStream(new FileInputStream(jar))) {
-            boolean isMultiReleaseJar = containsMultiReleaseJarEntry(inputStream);
+            boolean isMultiReleaseJar = this.containsMultiReleaseJarEntry(inputStream);
             ZipEntry next = inputStream.getNextEntry();
             while (next != null) {
                 if ("module-info.class".equals(next.getName())) {
@@ -113,7 +114,7 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
             Manifest manifest = inputStream.getManifest();
             manifest.getMainAttributes().put(new Attributes.Name("Automatic-Module-Name"), moduleName);
             try (JarOutputStream outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
-                copyEntries(inputStream, outputStream);
+                ExtraModuleInfoTransform.copyEntries(inputStream, outputStream);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -123,9 +124,9 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     private static void addModuleDescriptor(File originalJar, File moduleJar, ModuleInfo moduleInfo) {
         try (JarInputStream inputStream = new JarInputStream(new FileInputStream(originalJar))) {
             try (JarOutputStream outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
-                copyEntries(inputStream, outputStream);
+                ExtraModuleInfoTransform.copyEntries(inputStream, outputStream);
                 outputStream.putNextEntry(new JarEntry("module-info.class"));
-                outputStream.write(addModuleInfo(moduleInfo));
+                outputStream.write(ExtraModuleInfoTransform.addModuleInfo(moduleInfo));
                 outputStream.closeEntry();
             }
         } catch (IOException e) {

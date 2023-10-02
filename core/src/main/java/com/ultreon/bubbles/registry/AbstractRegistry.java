@@ -40,5 +40,5 @@ public abstract class AbstractRegistry<K, V> {
 
     public abstract Set<K> keys();
 
-    public abstract Set<Map.Entry<K, V>> entries() throws IllegalAccessException;
+    public abstract Set<Map.Entry<K, V>> entries();
 }

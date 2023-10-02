@@ -18,7 +18,7 @@ public class Circle extends Shape {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public void setX(int x) {
@@ -26,7 +26,7 @@ public class Circle extends Shape {
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
     public void setY(int y) {
@@ -34,7 +34,7 @@ public class Circle extends Shape {
     }
 
     public int getRadius() {
-        return radius;
+        return this.radius;
     }
 
     public void setRadius(int radius) {
@@ -43,14 +43,14 @@ public class Circle extends Shape {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x - radius / 2, y - radius / 2, radius, radius);
+        return new Rectangle(this.x - (float) this.radius / 2, this.y - (float) this.radius / 2, this.radius, this.radius);
     }
 
     @Override
     public boolean contains(int x, int y) {
         int dx = abs(x - this.x);
         int dy = abs(y - this.y);
-        int r = radius;
+        int r = this.radius;
 
         if (dx > r) {
             return false;

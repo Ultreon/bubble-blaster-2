@@ -3,8 +3,8 @@ package com.ultreon.bubbles.common.random;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.common.EntityProperties;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.random.RandomSource;
+import com.ultreon.bubbles.world.World;
 
 /**
  * Entity properties generator.

@@ -31,15 +31,15 @@ public class AbilityKeyTrigger extends AbilityTrigger {
     }
 
     public int getKeyCode() {
-        return keyCode;
+        return this.keyCode;
     }
 
     public int getScanCode() {
-        return scanCode;
+        return this.scanCode;
     }
 
     public int getModifiers() {
-        return modifiers;
+        return this.modifiers;
     }
 
     public boolean isShiftPressed() {

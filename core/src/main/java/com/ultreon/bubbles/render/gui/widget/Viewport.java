@@ -16,7 +16,7 @@ public class Viewport extends Container {
     public Viewport(Rectangle viewportRect, int x, int y, int width, int height) {
         super(x, y, width, height);
         this.viewportRect = viewportRect;
-        setBackgroundColor(0xff333333);
+        this.setBackgroundColor(0xff333333);
     }
 
     @Override
@@ -34,8 +34,8 @@ public class Viewport extends Container {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        this.innerYOffset = (int) yScroll;
-        this.innerXOffset = (int) xScroll;
+        this.innerYOffset = (int) this.yScroll;
+        this.innerXOffset = (int) this.xScroll;
         this.renderComponent(renderer);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
@@ -43,8 +43,7 @@ public class Viewport extends Container {
 
     @Override
     public void renderComponent(Renderer renderer) {
-        renderer.setColor(getBackgroundColor());
-        renderer.fill(this.x, this.y, getSize().x, getSize().y);
+        renderer.fill(this.x, this.y, this.getSize().x, this.getSize().y, this.backgroundColor);
     }
 
     public void setViewportSize(IntSize size) {
@@ -56,7 +55,7 @@ public class Viewport extends Container {
     }
 
     public Vector2 getViewportSize() {
-        return viewportRect.getSize(new Vector2());
+        return this.viewportRect.getSize(new Vector2());
     }
 
     public void setViewportLocation(Vector2 location) {
@@ -64,58 +63,58 @@ public class Viewport extends Container {
     }
 
     public Vector2 getViewportLocation() {
-        return viewportRect.getPosition(new Vector2());
+        return this.viewportRect.getPosition(new Vector2());
     }
 
     public void setXScroll(float xScroll) {
-        float width = getBounds().width;
-        float viewportWidth = viewportRect.width;
+        float width = this.getBounds().width;
+        float viewportWidth = this.viewportRect.width;
         if (viewportWidth > width) {
-            viewportRect.x = (int) (this.xScroll = MathHelper.clamp(xScroll, 0, viewportWidth - height));
+            this.viewportRect.x = (int) (this.xScroll = MathHelper.clamp(xScroll, 0, viewportWidth - this.height));
         }
     }
 
     public void setYScroll(float yScroll) {
-        float height = getBounds().height;
-        float viewportHeight = viewportRect.height;
+        float height = this.getBounds().height;
+        float viewportHeight = this.viewportRect.height;
         if (viewportHeight > height) {
             this.viewportRect.y = (int) (this.yScroll = MathHelper.clamp(yScroll, 0, viewportHeight - height));
         }
     }
 
     public float getXScroll() {
-        float width = getBounds().width;
-        float viewportWidth = viewportRect.width;
+        float width = this.getBounds().width;
+        float viewportWidth = this.viewportRect.width;
         if (viewportWidth > width) {
-            return xScroll;
+            return this.xScroll;
         } else {
             return 0;
         }
     }
 
     public float getYScroll() {
-        float height = getBounds().height;
-        float viewportHeight = viewportRect.height;
+        float height = this.getBounds().height;
+        float viewportHeight = this.viewportRect.height;
         if (viewportHeight > height) {
-            return yScroll;
+            return this.yScroll;
         } else {
             return 0;
         }
     }
 
     public double getXPercent() {
-        return xScroll / (viewportRect.width - width);
+        return this.xScroll / (this.viewportRect.width - this.width);
     }
 
     public double getYPercent() {
-        return yScroll / (viewportRect.height - height);
+        return this.yScroll / (this.viewportRect.height - this.height);
     }
 
     public void setXPercent(float percent) {
-        this.xScroll = MathHelper.clamp(percent * (viewportRect.width - width), 0, viewportRect.width - width);
+        this.xScroll = MathHelper.clamp(percent * (this.viewportRect.width - this.width), 0, this.viewportRect.width - this.width);
     }
 
     public void setYPercent(float percent) {
-        this.yScroll = MathHelper.clamp(percent * (viewportRect.height - height), 0, viewportRect.height - height);
+        this.yScroll = MathHelper.clamp(percent * (this.viewportRect.height - this.height), 0, this.viewportRect.height - this.height);
     }
 }

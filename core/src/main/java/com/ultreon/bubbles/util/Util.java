@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.util;
 
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.GameFolders;

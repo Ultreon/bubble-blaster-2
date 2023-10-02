@@ -254,7 +254,9 @@ public class Config {
 
         @Override
         public Float get() {
-            return this.config.<Number>get(this.path).floatValue();
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.floatValue();
         }
     }
 
@@ -290,6 +292,8 @@ public class Config {
         }
 
         public T get() {
+            T value = this.config.get(this.path);
+            if (value == null) return this.defaultValue;
             return this.config.get(this.path);
         }
 
@@ -318,7 +322,7 @@ public class Config {
         }
 
         public T getOrDefault() {
-            return this.defaultValue;
+            return this.get();
         }
     }
 

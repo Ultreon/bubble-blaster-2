@@ -16,11 +16,11 @@ public class GarbageCollector {
     });
 
     public GarbageCollector() {
-        service.scheduleAtFixedRate(System::gc, 10, 5, TimeUnit.SECONDS);
+        this.service.scheduleAtFixedRate(System::gc, 10, 5, TimeUnit.SECONDS);
     }
 
     public void shutdown() {
-        service.shutdownNow();
+        this.service.shutdownNow();
 
         BubbleBlaster.getLogger().info(MARKER, "Shutting down garbage collector.");
     }

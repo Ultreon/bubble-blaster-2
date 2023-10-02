@@ -23,7 +23,7 @@ public class CustomOutputStream extends OutputStream {
         // to store characters until a newline is encountered,
         // this implementation is for illustration only
 //        if ((char) b != '\n') {
-        characters.add((char) b);
+        this.characters.add((char) b);
 //        }
     }
 
@@ -33,15 +33,15 @@ public class CustomOutputStream extends OutputStream {
         StringBuilder sb = new StringBuilder();
 
         // Appends characters one by one
-        for (Character ch : characters) {
+        for (Character ch : this.characters) {
             sb.append(ch);
         }
 
-        if (characters.isEmpty()) {
+        if (this.characters.isEmpty()) {
             return;
         }
 
-        characters.clear();
+        this.characters.clear();
 
         // convert in string
         String string = StringUtils.stripEnd(sb.toString()
@@ -49,6 +49,6 @@ public class CustomOutputStream extends OutputStream {
                 .replaceAll("\r", "\n"), "\n");
 
         // Log the output.
-        LogManager.getLogger(name).log(level, string);
+        LogManager.getLogger(this.name).log(this.level, string);
     }
 }

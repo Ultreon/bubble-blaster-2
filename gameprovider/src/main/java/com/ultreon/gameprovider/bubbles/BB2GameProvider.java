@@ -44,7 +44,7 @@ public class BB2GameProvider implements GameProvider {
     private final Properties versions;
 
     public BB2GameProvider() {
-        InputStream stream = getClass().getResourceAsStream("/versions.properties");
+        InputStream stream = this.getClass().getResourceAsStream("/versions.properties");
         Properties properties = new Properties();
         try {
             properties.load(stream);
@@ -66,18 +66,18 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public String getRawGameVersion() {
-        return versions.getProperty("bubbleblaster");
+        return this.versions.getProperty("bubbleblaster");
     }
 
     @Override
     public String getNormalizedGameVersion() {
-        return versions.getProperty("bubbleblaster");
+        return this.versions.getProperty("bubbleblaster");
     }
 
     @Override
     public Collection<BuiltinMod> getBuiltinMods() {
         return List.of(
-                new BuiltinMod(List.of(libGdxJar), new BuiltinModMetadata.Builder("libgdx", versions.getProperty("libgdx"))
+                new BuiltinMod(List.of(this.libGdxJar), new BuiltinModMetadata.Builder("libgdx", this.versions.getProperty("libgdx"))
                         .setName("LibGDX")
                         .setDescription("A game framework used by Bubble Blaster (and various other games).")
                         .addLicense("Apache-2.0")
@@ -86,7 +86,7 @@ public class BB2GameProvider implements GameProvider {
                         .addAuthor("Nathan Sweet", Map.of("github", "https://github.com/NathanSweet", "email", "nathan.sweet@gmail.com"))
                         .addIcon(200, "assets/libgdx/icon.png")
                         .build()),
-                new BuiltinMod(gameJars, new BuiltinModMetadata.Builder("bubbleblaster", versions.getProperty("bubbleblaster"))
+                new BuiltinMod(this.gameJars, new BuiltinModMetadata.Builder("bubbleblaster", this.versions.getProperty("bubbleblaster"))
                         .setName("Bubble Blaster")
                         .setDescription("A game by Ultreon, the game you are now playing.")
                         .addLicense("Ultreon-API-v1.1") // Pls choose correct license <3
@@ -100,7 +100,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public String getEntrypoint() {
-        return entrypoint;
+        return this.entrypoint;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class BB2GameProvider implements GameProvider {
         this.arguments.parse(args);
 
         try {
-            var classifier = new LibClassifier<>(GameLibrary.class, envType, this);
+            var classifier = new LibClassifier<>(GameLibrary.class, this.envType, this);
             var gameLib = GameLibrary.BB_DESKTOP;
             var gameJar = GameProviderHelper.getCommonGameJar();
             var commonGameJarDeclared = gameJar != null;
@@ -163,21 +163,21 @@ public class BB2GameProvider implements GameProvider {
             }
 
             if (gameJar != null) {
-                gameJars.add(gameJar);
+                this.gameJars.add(gameJar);
             }
 
             if (coreJar != null) {
-                gameJars.add(coreJar);
+                this.gameJars.add(coreJar);
             }
 
-            if (libGdxJar != null) {
-                gameJars.add(libGdxJar);
+            if (this.libGdxJar != null) {
+                this.gameJars.add(this.libGdxJar);
             }
 
-            entrypoint = classifier.getClassName(gameLib);
-            log4jAvailable = classifier.has(GameLibrary.LOG4J_API) && classifier.has(GameLibrary.LOG4J_CORE);
-            slf4jAvailable = classifier.has(GameLibrary.SLF4J_API) && classifier.has(GameLibrary.SLF4J_CORE);
-            var hasLogLib = log4jAvailable || slf4jAvailable;
+            this.entrypoint = classifier.getClassName(gameLib);
+            this.log4jAvailable = classifier.has(GameLibrary.LOG4J_API) && classifier.has(GameLibrary.LOG4J_CORE);
+            this.slf4jAvailable = classifier.has(GameLibrary.SLF4J_API) && classifier.has(GameLibrary.SLF4J_CORE);
+            var hasLogLib = this.log4jAvailable || this.slf4jAvailable;
 
             Log.configureBuiltin(hasLogLib, !hasLogLib);
 
@@ -186,35 +186,35 @@ public class BB2GameProvider implements GameProvider {
 
                 if (path != null) {
                     if (hasLogLib) {
-                        logJars.add(path);
-                    } else if (!gameJars.contains(path)) {
-                        miscGameLibraries.add(path);
+                        this.logJars.add(path);
+                    } else if (!this.gameJars.contains(path)) {
+                        this.miscGameLibraries.add(path);
                     }
                 }
             }
 
-            miscGameLibraries.addAll(classifier.getUnmatchedOrigins());
-            validParentClassPath = classifier.getSystemLibraries();
+            this.miscGameLibraries.addAll(classifier.getUnmatchedOrigins());
+            this.validParentClassPath = classifier.getSystemLibraries();
         } catch (IOException e) {
             throw ExceptionUtil.wrap(e);
         }
 
         // expose obfuscated jar locations for mods to more easily remap code from obfuscated to intermediary
         var share = FabricLoaderImpl.INSTANCE.getObjectShare();
-        share.put("fabric-loader:inputGameJar", gameJars.get(0)); // deprecated
-        share.put("fabric-loader:inputGameJars", gameJars);
+        share.put("fabric-loader:inputGameJar", this.gameJars.get(0)); // deprecated
+        share.put("fabric-loader:inputGameJars", this.gameJars);
 
         return true;
     }
 
     @Override
     public void initialize(FabricLauncher launcher) {
-        launcher.setValidParentClassPath(validParentClassPath);
+        launcher.setValidParentClassPath(this.validParentClassPath);
 
         // Load the logger libraries on the platform CL when in a unit test
-        if (!logJars.isEmpty() && !Boolean.getBoolean(SystemProperties.UNIT_TEST)) {
-            for (var jar : logJars) {
-                if (gameJars.contains(jar)) {
+        if (!this.logJars.isEmpty() && !Boolean.getBoolean(SystemProperties.UNIT_TEST)) {
+            for (var jar : this.logJars) {
+                if (this.gameJars.contains(jar)) {
                     launcher.addToClassPath(jar, ALLOWED_EARLY_CLASS_PREFIXES);
                 } else {
                     launcher.addToClassPath(jar);
@@ -222,9 +222,9 @@ public class BB2GameProvider implements GameProvider {
             }
         }
 
-        setupLogHandler(launcher, true);
+        this.setupLogHandler(launcher, true);
 
-        transformer.locateEntrypoints(launcher, new ArrayList<>());
+        this.transformer.locateEntrypoints(launcher, new ArrayList<>());
     }
 
     private void setupLogHandler(FabricLauncher launcher, boolean useTargetCl) {
@@ -252,7 +252,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public GameTransformer getEntrypointTransformer() {
-        return transformer;
+        return this.transformer;
     }
 
     @Override
@@ -262,26 +262,26 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public void unlockClassPath(FabricLauncher launcher) {
-        for (var gameJar : gameJars) {
-            if (logJars.contains(gameJar)) {
+        for (var gameJar : this.gameJars) {
+            if (this.logJars.contains(gameJar)) {
                 launcher.setAllowedPrefixes(gameJar);
             } else {
                 launcher.addToClassPath(gameJar);
             }
         }
 
-        for (var lib : miscGameLibraries) {
+        for (var lib : this.miscGameLibraries) {
             launcher.addToClassPath(lib);
         }
     }
 
     public Path getGameJar() {
-        return gameJars.get(0);
+        return this.gameJars.get(0);
     }
 
     @Override
     public void launch(ClassLoader loader) {
-        var targetClass = entrypoint;
+        var targetClass = this.entrypoint;
 
         MethodHandle invoker;
 
@@ -293,7 +293,7 @@ public class BB2GameProvider implements GameProvider {
         }
 
         try {
-            invoker.invokeExact(arguments.toArray());
+            invoker.invokeExact(this.arguments.toArray());
         } catch (Throwable t) {
             throw new FormattedException("Bubble Blaster has crashed", t);
         }
@@ -301,16 +301,16 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public Arguments getArguments() {
-        return arguments;
+        return this.arguments;
     }
 
     @Override
     public boolean canOpenErrorGui() {
-        if (arguments == null || envType == EnvType.CLIENT) {
+        if (this.arguments == null || this.envType == EnvType.CLIENT) {
             return true;
         }
 
-        var extras = arguments.getExtraArgs();
+        var extras = this.arguments.getExtraArgs();
         return !extras.contains("nogui") && !extras.contains("--nogui");
     }
 

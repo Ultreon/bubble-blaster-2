@@ -9,9 +9,9 @@ import java.util.UUID;
 public record AttributeModifier(UUID id, Type type, double value) {
     public MapType serialize() {
         MapType nbt = new MapType();
-        nbt.putUUID("id", id);
-        nbt.putString("type", type.name());
-        nbt.putDouble("value", value);
+        nbt.putUUID("id", this.id);
+        nbt.putString("type", this.type.name());
+        nbt.putDouble("value", this.value);
 
         return nbt;
     }
@@ -31,13 +31,13 @@ public record AttributeModifier(UUID id, Type type, double value) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         AttributeModifier modifier = (AttributeModifier) o;
-        return Objects.equals(id, modifier.id);
+        return Objects.equals(this.id, modifier.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.id);
     }
 }

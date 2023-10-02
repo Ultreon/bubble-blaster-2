@@ -13,14 +13,14 @@ public class BubblesTask extends BaseTask {
     }
 
     private void execute(Task task) {
-        if (versionType == null) {
+        if (this.versionType == null) {
             throw new IllegalArgumentException("Version type is not set.");
         }
     }
 
     @Internal
     public VersionType getVersionType() {
-        return versionType;
+        return this.versionType;
     }
 
     public void setVersionType(VersionType versionType) {

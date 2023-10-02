@@ -2,17 +2,17 @@ package com.ultreon.bubbles.gamemode;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Controllable;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.entity.spawning.SpawnInformation;
-import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.player.Player;
+import com.ultreon.bubbles.entity.spawning.SpawnInformation;
+import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.init.BubbleTypes;
-import com.ultreon.bubbles.world.World;
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
@@ -20,10 +20,10 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.save.GameSave;
-import com.badlogic.gdx.math.Vector2;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ import java.util.Objects;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@SuppressWarnings({"unused", "FieldCanBeLocal", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted", "RedundantThrows", "UnnecessaryLocalVariable"})
+@SuppressWarnings({"unused", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted", "RedundantThrows", "UnnecessaryLocalVariable"})
 public abstract class Gamemode implements Controllable {
     // Types.
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
@@ -52,7 +52,7 @@ public abstract class Gamemode implements Controllable {
     protected boolean initialized = false;
     private BubbleType defaultBubble = BubbleTypes.NORMAL;
     private boolean active;
-    private int randomIdx = 0;
+    private final int randomIdx = 0;
     private HudType hud;
 
     public long getSeed(World world) {
@@ -179,14 +179,14 @@ public abstract class Gamemode implements Controllable {
         for (Color color : colors) {
             if (i == 0) {
                 if (colors.length >= 2) {
-                    renderer.setLineWidth(2.2f);
+                    renderer.setLineThickness(2.2f);
                 } else {
-                    renderer.setLineWidth(2.0f);
+                    renderer.setLineThickness(2.0f);
                 }
             } else if (i == colors.length - 1) {
-                renderer.setLineWidth(2.0f);
+                renderer.setLineThickness(2.0f);
             } else {
-                renderer.setLineWidth(2.2f);
+                renderer.setLineThickness(2.2f);
             }
 
             Circle ellipse = this.getCircle(x - (float) radius / 2, y - (float) radius / 2, radius, i);
@@ -211,7 +211,7 @@ public abstract class Gamemode implements Controllable {
     }
 
     public final BubbleType getDefaultBubble() {
-        return defaultBubble;
+        return this.defaultBubble;
     }
 
     protected final void setDefaultBubble(BubbleType defaultBubble) {
@@ -227,16 +227,16 @@ public abstract class Gamemode implements Controllable {
     }
 
     public TextObject getName() {
-        return TextObject.translation(getTranslationId());
+        return TextObject.translation(this.getTranslationId());
     }
 
     public String getTranslationId() {
-        Identifier id = getId();
+        Identifier id = this.getId();
         return id.location() + ".gamemode." + id.path();
     }
 
     public Identifier getId() {
-        return Objects.requireNonNull(Registries.GAMEMODES.getKey(this), "Gamemode not registered: " + getClass().getName());
+        return Objects.requireNonNull(Registries.GAMEMODES.getKey(this), "Gamemode not registered: " + this.getClass().getName());
     }
 
     /**

@@ -7,13 +7,13 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v1.MutableText;
@@ -147,12 +147,10 @@ public class ModernHud extends HudType {
 
             Rectangle gameBounds = gamemode.getGameBounds();
 
-            renderer.setColor(Color.argb(0x7f000000));
-
             renderer.fillRoundRect(
-                    (int)(gameBounds.getX() + gameBounds.getWidth() - width) / 2,
-                    (int)(gameBounds.getY() + gameBounds.getHeight() - height) / 2, (int) width, (int) height,
-                    10, 10);
+                    (float) (int) (gameBounds.getX() + gameBounds.getWidth() - width) / 2,
+                    (float) (int) (gameBounds.getY() + gameBounds.getHeight() - height) / 2, (int) width, (int) height,
+                    10, Color.BLACK.withAlpha(0x80));
 
             renderer.drawTextCenter(this.levelUpFont, text, gameBounds.getX() + gameBounds.getWidth() / 2, gameBounds.getY() + gameBounds.getHeight() / 2, LEVEL_UP_COLOR);
         }

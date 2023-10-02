@@ -14,26 +14,26 @@ public class ThreadSection {
     }
 
     public void start(String name) {
-        if (current != null) {
-            current.start(name);
+        if (this.current != null) {
+            this.current.start(name);
             return;
         }
-        current = values.computeIfAbsent(name, $ -> new Section(name, profiler));
-        current.startThis();
+        this.current = this.values.computeIfAbsent(name, $ -> new Section(name, this.profiler));
+        this.current.startThis();
     }
 
     public void end() {
-        if (current == null) return;
-        if (current.hasCurrent()) {
-            current.end();
+        if (this.current == null) return;
+        if (this.current.hasCurrent()) {
+            this.current.end();
             return;
         }
-        current.endThis();
-        values.put(current.getName(), current);
-        current = null;
+        this.current.endThis();
+        this.values.put(this.current.getName(), this.current);
+        this.current = null;
     }
 
     public Map<String, Section> getValues() {
-        return Collections.unmodifiableMap(values);
+        return Collections.unmodifiableMap(this.values);
     }
 }

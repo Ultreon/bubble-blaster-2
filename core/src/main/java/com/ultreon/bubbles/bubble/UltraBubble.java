@@ -7,11 +7,8 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
-import org.apache.commons.lang3.Range;
 
 import java.util.ArrayList;
-
-import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 public class UltraBubble extends BubbleType {
     public UltraBubble() {

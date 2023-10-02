@@ -13,7 +13,6 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.input.GameInput;
@@ -21,6 +20,7 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.registries.v0.RegistrySupplier;
@@ -263,7 +263,7 @@ public class DebugRenderer {
 
     public void left(Renderer renderer, MutableText text, Object o) {
         FormatterContext formatterContext = new FormatterContext();
-        format(o, formatterContext);
+        DebugRenderer.format(o, formatterContext);
         this.left(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
 
@@ -282,10 +282,8 @@ public class DebugRenderer {
             y += (int) this.game.getGameBounds().y;
         }
 
-        renderer.setColor(0, 0, 0, 0x99);
-        renderer.fill(10, y, width + 4, height + 4);
-        renderer.setColor("#fff");
-        renderer.drawText(this.font.get(), text1, 12, y + 1);
+        renderer.fill(10, y, width + 4, height + 4, Color.BLACK.withAlpha(0x99));
+        renderer.drawText(this.font.get(), text1, 12, y + 1, Color.WHITE);
     }
 
     public void right(Renderer renderer, String text, Object o) {
@@ -294,7 +292,7 @@ public class DebugRenderer {
 
     public void right(Renderer renderer, MutableText text, Object o) {
         FormatterContext formatterContext = new FormatterContext();
-        format(o, formatterContext);
+        DebugRenderer.format(o, formatterContext);
         this.right(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
 
@@ -313,10 +311,8 @@ public class DebugRenderer {
             y += (int) this.game.getGameBounds().y;
         }
 
-        renderer.setColor(0, 0, 0, 0x99);
-        renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4);
-        renderer.setColor("#fff");
-        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1);
+        renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4, Color.BLACK.withAlpha(0x99));
+        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1, Color.WHITE);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
@@ -337,12 +333,10 @@ public class DebugRenderer {
 
         int i = 400;
 
-        renderer.setColor(0, 0, 0, 0x99);
-        renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4);
-        renderer.setColor("#fff");
-        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1);
+        renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4, Color.BLACK.withAlpha(0x99));
+        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1, Color.WHITE);
         if (!text1.getText().isEmpty()) {
-            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1);
+            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1, Color.WHITE);
         }
     }
 }

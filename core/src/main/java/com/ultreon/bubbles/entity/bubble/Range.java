@@ -14,21 +14,21 @@ public record Range(double start, double end, double step) {
     }
 
     public boolean contains(double value) {
-        return (start <= value) && (end > value);
+        return (this.start <= value) && (this.end > value);
     }
 
     public @NotNull DoubleIterator iterator() {
         return new DoubleIterator() {
-            private double current = start;
+            private double current = Range.this.start;
 
             @Override
             public boolean hasNext() {
-                return current < end;
+                return this.current < Range.this.end;
             }
 
             @Override
             public double nextDouble() {
-                return current += step;
+                return this.current += Range.this.step;
             }
         };
     }

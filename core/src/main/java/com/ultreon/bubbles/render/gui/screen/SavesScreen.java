@@ -3,10 +3,11 @@ package com.ultreon.bubbles.render.gui.screen;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.render.gui.widget.Button;
+import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.save.GameSaveInfo;
 import com.ultreon.bubbles.save.SaveLoader;
@@ -143,15 +144,13 @@ public class SavesScreen extends Screen {
             var name = "Loading Error";
             var description = "Save filename: %s".formatted(save.getDirectory().getName());
 
-            fill(renderer, 0, 0, width, height, hovered ? 0x40ff0000 : 0x20ff0000);
+            renderer.fill(0, 0, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
             if (selected) {
                 renderer.drawErrorEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
             }
 
-            renderer.setColor(0xc0ffffff);
-            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20);
-            renderer.setColor(0x60ffffff);
-            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5);
+            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20, Color.WHITE.withAlpha(0xc0));
+            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
             return;
         }
 
@@ -160,15 +159,13 @@ public class SavesScreen extends Screen {
         var description = info.getGamemode().getName().getText();
         description += ", " + LocalDateTime.ofInstant(Instant.ofEpochSecond(info.getSavedTime()), ZoneOffset.systemDefault()).format(DateTimeFormatter.ofPattern("dd/LLL/yyyy HH:mm:ss"));
 
-        fill(renderer, 0, 0, width, height, hovered ? 0x40ffffff : 0x20ffffff);
+        renderer.fill(0, 0, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
         if (selected) {
             renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
         }
 
-        renderer.setColor(0xc0ffffff);
-        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20);
-        renderer.setColor(0x60ffffff);
-        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5);
+        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20, Color.WHITE.withAlpha(0xc0));
+        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
     }
 
     private int calculateWidth() {

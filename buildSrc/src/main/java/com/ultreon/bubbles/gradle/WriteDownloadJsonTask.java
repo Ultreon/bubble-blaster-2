@@ -18,7 +18,7 @@ public class WriteDownloadJsonTask extends BaseTask {
     public WriteDownloadJsonTask() {
         super("writeDownloadJson", "bubbles");
 
-        List<String> collect = getProject().getSubprojects().stream().map(Project::getName).toList();
+        List<String> collect = this.getProject().getSubprojects().stream().map(Project::getName).toList();
         this.dependsOn("retrieveUrls");
         for (String project : collect) {
             this.dependsOn(project + ":retrieveUrls");
@@ -27,8 +27,8 @@ public class WriteDownloadJsonTask extends BaseTask {
     }
 
     private void execute(Task task) {
-        Task t = getProject().getTasks().getByName("retrieveUrls");
-        Task t1 = getProject().getTasks().getByName("bubbles");
+        Task t = this.getProject().getTasks().getByName("retrieveUrls");
+        Task t1 = this.getProject().getTasks().getByName("bubbles");
         if (!(t instanceof RetrieveUrlsTask retrieveUrls)) {
             throw new RuntimeException("The task 'retrieveUrls' is not the internal bubble blaster task for retrieving urls.");
         }
@@ -41,8 +41,8 @@ public class WriteDownloadJsonTask extends BaseTask {
         StringWriter sw = new StringWriter();
         JsonWriter jw = new JsonWriter(sw);
         jw.setIndent("  ");
-        gson.toJson(new BuildVersion(getProject().getVersion().toString(), null, Date.from(Instant.now()), bubbles.getVersionType(), retrieveUrls.getGameDeps()), BuildVersion.class, jw);
-        Project rootProject = getProject().getRootProject();
+        gson.toJson(new BuildVersion(this.getProject().getVersion().toString(), null, Date.from(Instant.now()), bubbles.getVersionType(), retrieveUrls.getGameDeps()), BuildVersion.class, jw);
+        Project rootProject = this.getProject().getRootProject();
         try {
             Files.write(Paths.get(rootProject.getProjectDir().getPath() + "/build/libs/libraries.json"), sw.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         } catch (IOException e) {

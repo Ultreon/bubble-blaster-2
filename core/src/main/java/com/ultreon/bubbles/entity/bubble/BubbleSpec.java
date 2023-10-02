@@ -18,7 +18,7 @@ public class BubbleSpec {
     }
 
     public List<BubbleCircle> getCircles() {
-        return circles;
+        return this.circles;
     }
 
     public static class Builder {
@@ -26,21 +26,21 @@ public class BubbleSpec {
         private int index = 0;
 
         public Builder() {
-            circles = new ArrayList<>();
+            this.circles = new ArrayList<>();
         }
 
         public void add(Color color) {
-            circles.add(new BubbleCircle(index, color));
-            index++;
+            this.circles.add(new BubbleCircle(this.index, color));
+            this.index++;
         }
 
         public void add(String hex) {
-            circles.add(new BubbleCircle(index, ColorUtils.unpackHex(hex)));
-            index++;
+            this.circles.add(new BubbleCircle(this.index, ColorUtils.unpackHex(hex)));
+            this.index++;
         }
 
         public BubbleSpec build() {
-            return new BubbleSpec(circles);
+            return new BubbleSpec(this.circles);
         }
     }
 }

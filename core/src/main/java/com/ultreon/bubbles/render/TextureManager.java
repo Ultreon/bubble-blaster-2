@@ -60,7 +60,7 @@ public final class TextureManager {
             return this.textureMap.get(entry);
         }
 
-        return loadTexture(entry, new TextureSource() {
+        return this.loadTexture(entry, new TextureSource() {
             @Override
             public Texture create() {
                 @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();

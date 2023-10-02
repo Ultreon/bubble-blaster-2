@@ -13,11 +13,11 @@ public final class VisibilityFileFilter implements FileFilter {
 
     @Override
     public boolean accept(File pathname) {
-        return filterVisible != pathname.isHidden();
+        return this.filterVisible != pathname.isHidden();
     }
 
     public boolean filterVisible() {
-        return filterVisible;
+        return this.filterVisible;
     }
 
     @Override
@@ -30,13 +30,13 @@ public final class VisibilityFileFilter implements FileFilter {
 
     @Override
     public int hashCode() {
-        return Objects.hash(filterVisible);
+        return Objects.hash(this.filterVisible);
     }
 
     @Override
     public String toString() {
         return "VisibilityFileFilter[" +
-                "filterVisible=" + filterVisible + ']';
+                "filterVisible=" + this.filterVisible + ']';
     }
 
 }

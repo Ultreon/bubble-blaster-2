@@ -40,13 +40,13 @@ public class StringUtils {
      * @return a non-empty list create strings
      */
     public static List<String> wrap(String str, BitmapFont font, GlyphLayout fm, int maxWidth) {
-        List<String> lines = splitIntoLines(str);
-        if (lines.size() == 0)
+        List<String> lines = StringUtils.splitIntoLines(str);
+        if (lines.isEmpty())
             return lines;
 
         ArrayList<String> strings = new ArrayList<>();
         for (String line : lines)
-            wrapLineInto(line, strings, font, fm, maxWidth);
+            StringUtils.wrapLineInto(line, strings, font, fm, maxWidth);
         return strings;
     }
 
@@ -74,14 +74,14 @@ public class StringUtils {
             width = (int) fm.width;
             int pos;
             if (width > maxWidth) // Too long
-                pos = findBreakBefore(line, guess);
+                pos = StringUtils.findBreakBefore(line, guess);
             else { // Too short or possibly just right
-                pos = findBreakAfter(line, guess);
+                pos = StringUtils.findBreakAfter(line, guess);
                 if (pos != -1) { // Make sure this doesn't make us too long
                     before = line.substring(0, pos).trim();
                     fm.setText(font, before);
                     if (fm.width > maxWidth)
-                        pos = findBreakBefore(line, guess);
+                        pos = StringUtils.findBreakBefore(line, guess);
                 }
             }
             if (pos == -1)

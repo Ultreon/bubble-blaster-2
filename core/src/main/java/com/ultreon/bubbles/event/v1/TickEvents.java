@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.event.v1;
 
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.world.World;
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.libs.events.v1.Event;
 
 public class TickEvents {

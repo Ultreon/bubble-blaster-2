@@ -24,33 +24,33 @@ public final class GlobalSaveData extends GameData {
 
     @Override
     protected void load(MapType tag) {
-        highScore = tag.getDouble("HighScore");
-        highScoreTime = tag.getLong("HighScoreTime");
+        this.highScore = tag.getDouble("HighScore");
+        this.highScoreTime = tag.getLong("HighScoreTime");
     }
 
     public void load() throws IOException {
         if (!FILE.exists()) {
-            create();
+            this.create();
         }
         this.load(FILE);
     }
 
     public MapType dump(MapType tag) {
-        tag.putDouble("HighScore", highScore);
-        tag.putLong("HighScoreTime", highScoreTime);
+        tag.putDouble("HighScore", this.highScore);
+        tag.putLong("HighScoreTime", this.highScoreTime);
         return tag;
     }
 
     public void dump() throws IOException {
-        dump(FILE);
+        this.dump(FILE);
     }
 
     public double getHighScore() {
-        return highScore;
+        return this.highScore;
     }
 
     public long getHighScoreTime() {
-        return highScoreTime;
+        return this.highScoreTime;
     }
 
     public void setHighScore(double highScore, long time) {
@@ -59,7 +59,7 @@ public final class GlobalSaveData extends GameData {
             this.highScoreTime = time;
 
             try {
-                dump();
+                this.dump();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -75,8 +75,8 @@ public final class GlobalSaveData extends GameData {
     }
 
     public void create() throws IOException {
-        if (isNotCreated()) {
-            dump();
+        if (this.isNotCreated()) {
+            this.dump();
         }
     }
 }

@@ -10,14 +10,14 @@ import java.util.List;
 public class PlayerItemCollection extends ItemCollection {
     private final Player player;
     private final List<Player> watchers = new ArrayList<>();
-    private Item[] items = new Item[size()];
+    private Item[] items = new Item[this.size()];
 
     public PlayerItemCollection(Player player) {
         this.player = player;
     }
 
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -26,7 +26,7 @@ public class PlayerItemCollection extends ItemCollection {
     }
 
     public List<Player> getWatchers() {
-        return Collections.unmodifiableList(watchers);
+        return Collections.unmodifiableList(this.watchers);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class PlayerItemCollection extends ItemCollection {
 
     @Override
     public void clear() {
-        this.items = new Item[size()];
+        this.items = new Item[this.size()];
     }
 
     @Override

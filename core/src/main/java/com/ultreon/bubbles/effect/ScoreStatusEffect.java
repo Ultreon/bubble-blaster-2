@@ -23,8 +23,4 @@ public class ScoreStatusEffect extends AttributeStatusEffect {
                 .build();
     }
 
-    @Override
-    protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
-        return false;
-    }
 }

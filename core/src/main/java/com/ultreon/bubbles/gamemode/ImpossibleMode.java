@@ -2,8 +2,8 @@ package com.ultreon.bubbles.gamemode;
 
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.init.BubbleTypes;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.random.RandomSource;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 

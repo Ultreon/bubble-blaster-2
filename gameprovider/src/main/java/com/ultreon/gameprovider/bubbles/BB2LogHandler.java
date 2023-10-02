@@ -14,13 +14,13 @@ public class BB2LogHandler implements LogHandler {
 
     @Override
     public void log(long time, LogLevel level, LogCategory category, String msg, Throwable exc, boolean fromReplay, boolean wasSuppressed) {
-        Marker marker = markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
-        LOGGER.log(getLevel(level), marker, msg, exc);
+        Marker marker = this.markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
+        LOGGER.log(BB2LogHandler.getLevel(level), marker, msg, exc);
     }
 
     @Override
     public boolean shouldLog(LogLevel level, LogCategory category) {
-        return LOGGER.isEnabled(getLevel(level));
+        return LOGGER.isEnabled(BB2LogHandler.getLevel(level));
     }
 
     private static Level getLevel(LogLevel level) {

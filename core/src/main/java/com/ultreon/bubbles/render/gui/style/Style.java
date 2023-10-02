@@ -43,7 +43,7 @@ public class Style {
     }
 
     public StateBundle<Color> getBackgroundColors() {
-        return backgroundColors;
+        return this.backgroundColors;
     }
 
     public void setBackgroundColors(StateBundle<Color> backgroundColors) {
@@ -51,7 +51,7 @@ public class Style {
     }
 
     public StateBundle<Color> getForegroundColors() {
-        return foregroundColors;
+        return this.foregroundColors;
     }
 
     public void setForegroundColors(StateBundle<Color> foregroundColors) {
@@ -59,7 +59,7 @@ public class Style {
     }
 
     public StateBundle<Color> getBorderColors() {
-        return borderColors;
+        return this.borderColors;
     }
 
     public void setBorderColors(StateBundle<Color> borderColors) {
@@ -67,7 +67,7 @@ public class Style {
     }
 
     public StateBundle<Float> getBorderWidths() {
-        return borderWidths;
+        return this.borderWidths;
     }
 
     public void setBorderWidths(StateBundle<Float> borderWidths) {
@@ -75,7 +75,7 @@ public class Style {
     }
 
     public StateBundle<Float> getActiveBorderWidths() {
-        return activeBorderWidths;
+        return this.activeBorderWidths;
     }
 
     public void setActiveBorderWidths(StateBundle<Float> activeBorderWidths) {
@@ -83,7 +83,7 @@ public class Style {
     }
 
     public StateBundle<Color> getActiveBorderColors() {
-        return activeBorderColors;
+        return this.activeBorderColors;
     }
 
     public void setActiveBorderColors(StateBundle<Color> activeBorderColors) {
@@ -91,7 +91,7 @@ public class Style {
     }
 
     public StateBundle<Color> getActiveBackgroundColors() {
-        return activeBackgroundColors;
+        return this.activeBackgroundColors;
     }
 
     public void setActiveBackgroundColors(StateBundle<Color> activeBackgroundColors) {
@@ -99,7 +99,7 @@ public class Style {
     }
 
     public StateBundle<Color> getActiveForegroundColors() {
-        return activeForegroundColors;
+        return this.activeForegroundColors;
     }
 
     public void setActiveForegroundColors(StateBundle<Color> activeForegroundColors) {

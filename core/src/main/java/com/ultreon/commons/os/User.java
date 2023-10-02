@@ -42,26 +42,26 @@ public class User implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getVariant() {
-        return variant;
+        return this.variant;
     }
 
     public String getHome() {
-        return home;
+        return this.home;
     }
 
     public String getDir() {
-        return dir;
+        return this.dir;
     }
 
     public String getCountryName() {
-        return countryName;
+        return this.countryName;
     }
 
     public String getLanguage() {
-        return language;
+        return this.language;
     }
 }

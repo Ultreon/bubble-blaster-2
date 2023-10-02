@@ -10,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see AmmoType
  */
 public class AmmoTypes {
-    public static final BasicAmmoType BASIC = register("basic", new BasicAmmoType());
+    public static final BasicAmmoType BASIC = AmmoTypes.register("basic", new BasicAmmoType());
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends AmmoType> T register(String name, T ammoType) {

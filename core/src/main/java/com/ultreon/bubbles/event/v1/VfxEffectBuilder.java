@@ -3,7 +3,9 @@ package com.ultreon.bubbles.event.v1;
 import com.crashinvaders.vfx.effects.VfxEffect;
 import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 public class VfxEffectBuilder {
     private final Map<UUID, VfxEffect> filters;

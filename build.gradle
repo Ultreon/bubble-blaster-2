@@ -1,12 +1,11 @@
 //file:noinspection GroovyUnusedCatchParameter
 
+
 import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-
-import static java.lang.System.getenv
 
 buildscript {
     repositories {

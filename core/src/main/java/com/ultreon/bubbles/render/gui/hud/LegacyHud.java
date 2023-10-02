@@ -7,12 +7,12 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.translations.v1.Language;
 import org.jetbrains.annotations.NotNull;
@@ -219,7 +219,7 @@ public class LegacyHud extends HudType {
         Rectangle topBar = new Rectangle(0, 0, game.getWidth(), 70);
         renderer.fill(topBar, TOP_BAR_BG_COLOR);
         renderer.setColor(Color.rgb(0xadd8e6));
-        renderer.setLineWidth(1);
+        renderer.setLineThickness(1);
         renderer.box(0, 71, game.getWidth(), 1, Color.rgb(0xadd8e6), new Insets(1));
     }
 

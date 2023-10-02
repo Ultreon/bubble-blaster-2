@@ -21,7 +21,7 @@ public enum FontWidth {
     public static FontWidth closestTo(float width) {
         float lastDiff = Float.MAX_VALUE;
         FontWidth cur = null;
-        for (FontWidth value : values()) {
+        for (FontWidth value : FontWidth.values()) {
             if (Mth.diff(width, value.width) < lastDiff) {
                 cur = value;
             }

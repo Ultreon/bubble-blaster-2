@@ -1,7 +1,9 @@
 package com.ultreon.bubbles.init;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.gamemode.*;
+import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.gamemode.ImpossibleMode;
+import com.ultreon.bubbles.gamemode.NormalMode;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.registries.v0.DelayedRegister;
 import com.ultreon.libs.registries.v0.RegistrySupplier;

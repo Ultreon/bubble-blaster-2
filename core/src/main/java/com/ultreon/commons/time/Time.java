@@ -30,9 +30,9 @@ public class Time implements Comparable<Time>, Serializable {
      * @return total seconds.
      */
     public int toSeconds() {
-        int sec = second;
-        sec += minute * 60;
-        sec += hour * 3600;
+        int sec = this.second;
+        sec += this.minute * 60;
+        sec += this.hour * 3600;
 
         return sec;
     }
@@ -43,9 +43,9 @@ public class Time implements Comparable<Time>, Serializable {
      * @return total minutes.
      */
     public float toMinutes() {
-        float min = (float) second / 60;
-        min += (float) minute;
-        min += (float) hour * 60;
+        float min = (float) this.second / 60;
+        min += (float) this.minute;
+        min += (float) this.hour * 60;
 
         return min;
     }
@@ -56,9 +56,9 @@ public class Time implements Comparable<Time>, Serializable {
      * @return total hours.
      */
     public float toHours() {
-        float hor = (float) second / 3600;
-        hor += (float) minute / 60;
-        hor += (float) hour;
+        float hor = (float) this.second / 3600;
+        hor += (float) this.minute / 60;
+        hor += (float) this.hour;
 
         return hor;
     }
@@ -74,7 +74,7 @@ public class Time implements Comparable<Time>, Serializable {
     public boolean isBetween(Time lo, Time hi) {
         if (lo.toSeconds() > hi.toSeconds()) throw new NullPointerException();
 
-        return ((lo.toSeconds() <= toSeconds()) && (hi.toSeconds() >= toSeconds()));
+        return ((lo.toSeconds() <= this.toSeconds()) && (hi.toSeconds() >= this.toSeconds()));
     }
 
     /**
@@ -83,7 +83,7 @@ public class Time implements Comparable<Time>, Serializable {
      * @return the hour.
      */
     public int getHour() {
-        return hour;
+        return this.hour;
     }
 
     public void setHour(int hour) {
@@ -91,7 +91,7 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     public int getMinute() {
-        return minute;
+        return this.minute;
     }
 
     public void setMinute(int minute) {
@@ -99,7 +99,7 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     public int getSecond() {
-        return second;
+        return this.second;
     }
 
     public void setSecond(int second) {
@@ -108,6 +108,6 @@ public class Time implements Comparable<Time>, Serializable {
 
     @Override
     public int compareTo(Time o) {
-        return Integer.compare(toSeconds(), o.toSeconds());
+        return Integer.compare(this.toSeconds(), o.toSeconds());
     }
 }

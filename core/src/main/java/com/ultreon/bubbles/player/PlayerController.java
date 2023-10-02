@@ -5,7 +5,6 @@ import com.ultreon.bubbles.input.GameInput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PlayerController {
     private final InputController controller;
 

@@ -15,6 +15,6 @@ public abstract class BaseData {
     }
 
     public DataProperties getProperties() {
-        return properties;
+        return this.properties;
     }
 }

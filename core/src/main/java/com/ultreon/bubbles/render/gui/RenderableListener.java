@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.gui;
 
-import com.ultreon.bubbles.render.Renderable;
 import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 
 /**
@@ -36,21 +36,21 @@ public interface RenderableListener extends GuiStateListener, Renderable {
      * @return the position create the widget.
      */
     default Vec2i getPos() {
-        return new Vec2i(getX(), getY());
+        return new Vec2i(this.getX(), this.getY());
     }
 
     /**
      * @return the size create the widget.
      */
     default Vec2i getSize() {
-        return new Vec2i(getWidth(), getHeight());
+        return new Vec2i(this.getWidth(), this.getHeight());
     }
 
     /**
      * @return the boundaries create the widget.
      */
     default Rectangle getBounds() {
-        return new Rectangle(getX(), getY(), getWidth(), getHeight());
+        return new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
 

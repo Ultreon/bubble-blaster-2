@@ -21,19 +21,19 @@ public class NativeImage extends Texture {
     }
 
     public NativeImage(InputStream stream) throws IOException {
-        super(new Pixmap(read(stream)));
+        super(new Pixmap(NativeImage.read(stream)));
     }
 
     public NativeImage(URL url) throws IOException {
-        super(new Pixmap(readAndClose(url.openStream())));
+        super(new Pixmap(NativeImage.readAndClose(url.openStream())));
     }
 
     public NativeImage(File file) throws IOException {
-        super(new Pixmap(readAndClose(new FileInputStream(file))));
+        super(new Pixmap(NativeImage.readAndClose(new FileInputStream(file))));
     }
 
     private static ByteBuffer readAndClose(InputStream inputStream) throws IOException {
-        ByteBuffer read = read(inputStream);
+        ByteBuffer read = NativeImage.read(inputStream);
         inputStream.close();
         return read.flip();
     }

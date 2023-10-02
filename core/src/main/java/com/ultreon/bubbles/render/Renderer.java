@@ -11,9 +11,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -27,12 +27,9 @@ import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Pixel;
-import com.ultreon.libs.commons.v0.vector.Vec4i;
 import com.ultreon.libs.text.v1.TextObject;
 import org.jetbrains.annotations.ApiStatus;
 import space.earlygrey.shapedrawer.DefaultSideEstimator;
-import space.earlygrey.shapedrawer.JoinType;
-import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -43,6 +40,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.*;
 
 /**
  * Renderer class.
@@ -69,9 +68,10 @@ public class Renderer {
     private final GL20 gl20;
     private final GL30 gl30;
     private final SpriteBatch batch;
-    private final ShapeDrawer shapes;
+    private final ShapeRenderer shapes;
     private final OrthographicCamera camera;
-    private float lineWidth;
+    private final DefaultSideEstimator sides;
+    private float lineThickness;
     private final MatrixStack matrixStack;
     private final MatrixStack globalMatrixStack;
     private Texture texture;
@@ -90,9 +90,12 @@ public class Renderer {
     private final Vector3 tmp3A = new Vector3();
     private final Vector3 tmp3B = new Vector3();
     private final Matrix4 globalTransform = new Matrix4();
+    private State state;
+    private boolean stateChange = true;
+    private boolean blendingEnabled;
 
     @ApiStatus.Internal
-    public Renderer(ShapeDrawer shapes, SpriteBatch batch, OrthographicCamera camera) {
+    public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
         this.font = this.game.getBitmapFont();
         this.gl20 = Gdx.gl20;
         this.gl30 = Gdx.gl30;
@@ -102,7 +105,7 @@ public class Renderer {
         this.matrixStack = new MatrixStack();
         this.globalMatrixStack = new MatrixStack();
         this.matrixStack.stack.removeLast();
-        this.shapes.setSideEstimator(new DefaultSideEstimator(50, 360, 2f));
+        this.sides = new DefaultSideEstimator(20, 4000, 3600f);
 
         // Projection matrix.
         this.matrixStack.onEdit = camera.combined::set;
@@ -125,12 +128,13 @@ public class Renderer {
         this.globalTransform.set(ORIGIN);
 
         this.batch.begin();
+        this.state = State.BATCH;
 
         this.rendering = true;
 
         this.clear();
         this.enableBlend();
-        this.enableDepthTest();
+//        this.enableDepthTest();
     }
 
     @ApiStatus.Internal
@@ -145,10 +149,17 @@ public class Renderer {
 
         this.matrixStack.stack.removeLast();
 
-        this.disableDepthTest();
+//        this.disableDepthTest();
         this.disableBlend();
 
-        this.batch.end();
+        if (this.batch.isDrawing()) {
+            this.batch.flush();
+            this.batch.end();
+        }
+        if (this.shapes.isDrawing()) {
+            this.shapes.flush();
+            this.shapes.end();
+        }
 
         if (this.triggeredScissorLog) {
             this.triggeredScissorLog = false;
@@ -159,8 +170,8 @@ public class Renderer {
     }
 
     public void enableBlend() {
-        Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        this.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        this.blendingEnabled = true;
     }
 
     private void enableDepthTest() {
@@ -169,6 +180,7 @@ public class Renderer {
     }
 
     public void disableBlend() {
+        this.blendingEnabled = false;
         Gdx.gl20.glDisable(GL20.GL_BLEND);
     }
 
@@ -176,25 +188,12 @@ public class Renderer {
         Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
     }
 
-    @Deprecated(forRemoval = true)
-    public void outline(Rectangle rect) {
-        if (!this.rendering) return;
-
-        this.box(rect.x, rect.y, rect.width, rect.height);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void outline(Ellipse ellipse) {
-        if (!this.rendering) return;
-
-        this.ellipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void outline(Circle ellipse) {
-        if (!this.rendering) return;
-
-        this.circle(ellipse.x, ellipse.y, ellipse.radius);
+    public void outline(Shape2D shape, Color color) {
+        if (shape instanceof Circle circle) this.outline(circle, color);
+        else if (shape instanceof Rectangle rectangle) this.outline(rectangle, color);
+        else if (shape instanceof Polygon polygon) this.outline(polygon, color);
+        else if (shape instanceof Ellipse ellipse) this.outline(ellipse, color);
+        else throw new UnsupportedOperationException("Shape not supported: " + shape.getClass().getName());
     }
 
     public void outline(Rectangle rect, Color color) {
@@ -215,84 +214,56 @@ public class Renderer {
         this.circle(ellipse.x, ellipse.y, ellipse.radius, color);
     }
 
-    @Deprecated(forRemoval = true)
-    public void fillCircle(float x, float y, float size) {
-        if (!this.rendering) return;
-
-        this.shapes.filledCircle(x, y, size / 2f);
-    }
-
     public void fillCircle(float x, float y, float size, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.filledCircle(x, y, size / 2f, color.toGdx());
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.circle(x, y, size / 2f, this.sides.estimateSidesRequired(1f, size / 2f, size / 2f));
     }
 
-    @Deprecated(forRemoval = true)
-    public void circle(float x, float y, float size) {
+    public void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.circle(x, y, size / 2f, this.lineWidth);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.triangle(x1, y1, x2, y2, x3, y3);
+    }
+
+    public void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color1, Color color2, Color color3) {
+        if (!this.rendering) return;
+
+        this.toShapes();
+        this.setFilled();
+        this.shapes.triangle(x1, y1, x2, y2, x3, y3, color1.toGdx(), color2.toGdx(), color3.toGdx());
+    }
+
+    public void triangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color) {
+        if (!this.rendering) return;
+
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.triangle(x1, y1, x2, y2, x3, y3);
+    }
+
+    public void triangle(float x1, float y1, float x2, float y2, float x3, float y3, Color color1, Color color2, Color color3) {
+        if (!this.rendering) return;
+
+        this.toShapes();
+        this.setLine();
+        this.shapes.triangle(x1, y1, x2, y2, x3, y3, color1.toGdx(), color2.toGdx(), color3.toGdx());
     }
 
     public void circle(float x, float y, float size, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.circle(x, y, size / 2f, this.lineWidth);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Shape2D s) {
-        if (!this.rendering) return;
-
-        if (s instanceof Circle circle) this.fill(circle);
-        else if (s instanceof Ellipse ellipse) this.fill(ellipse);
-        else if (s instanceof Rectangle rect) this.fill(rect);
-        else if (s instanceof Polygon rect) this.fill(rect);
-        else if (s instanceof Polyline rect) this.fill(rect);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Circle ellipse) {
-        if (!this.rendering) return;
-
-        this.fillCircle(ellipse.x, ellipse.y, ellipse.radius);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Ellipse ellipse) {
-        if (!this.rendering) return;
-
-        this.fillEllipse(ellipse.x, ellipse.y, ellipse.width, ellipse.height);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Rectangle r) {
-        if (!this.rendering) return;
-
-        this.fill(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Polygon polygon) {
-        if (!this.rendering) return;
-
-        this.fillPolygon(polygon);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Polyline polyline) {
-        if (!this.rendering) return;
-
-        this.polyline(polyline);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(Vec4i r) {
-        if (!this.rendering) return;
-
-        this.fill(r.x, r.y, r.z, r.w);
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.circle(x, y, size / 2f, this.sides.estimateSidesRequired(1, size, size));
     }
 
     public void fill(Shape2D s, Color color) {
@@ -303,6 +274,87 @@ public class Renderer {
         else if (s instanceof Rectangle rect) this.fill(rect, color);
         else if (s instanceof Polygon rect) this.fill(rect, color);
         else if (s instanceof Polyline rect) this.fill(rect, color);
+    }
+
+    private void enableEffect() {
+        /* Clear our depth buffer info from previous frame. */
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+
+        /* Set the depth function to LESS. */
+        Gdx.gl.glDepthFunc(GL20.GL_LESS);
+
+        /* Enable depth writing. */
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
+        /* Disable RGBA color writing. */
+        Gdx.gl.glColorMask(false, false, false, false);
+    }
+
+    private void disableEffect() {
+        /* Enable RGBA color writing. */
+        Gdx.gl.glColorMask(true, true, true, true);
+
+        /* Set the depth function to EQUAL. */
+        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
+        /* Render masked elements. */
+        this.fillEffect(0, 0, this.getWidth(), this.getHeight());
+
+        /* Disable depth writing. */
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+    }
+
+    private void drawMasks(Runnable func) {
+        /* Clear our depth buffer info from previous frame. */
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+
+        /* Set the depth function to LESS. */
+        Gdx.gl.glDepthFunc(GL20.GL_LESS);
+
+        /* Enable depth writing. */
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
+        /* Disable RGBA color writing. */
+        Gdx.gl.glColorMask(false, false, false, false);
+
+        /* Render mask elements. */
+        func.run();
+        this.shapes.flush();
+    }
+
+    private void drawMasked() {
+        /* Enable RGBA color writing. */
+        Gdx.gl.glColorMask(true, true, true, true);
+
+        /* Set the depth function to EQUAL. */
+        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
+        /* Render masked elements. */
+        this.fillEffect(0, 0, this.getWidth(), this.getHeight());
+        this.shapes.flush();
+
+        /* Disable depth writing. */
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+    }
+
+    public void withEffect(Runnable func) {
+        this.toShapes();
+        this.flush();
+        this.disableStateChange();
+//        this.disableDepthTest();
+        this.drawMasks(func);
+        this.drawMasked();
+//        this.enableDepthTest();
+        this.enableStateChange();
+        this.flush();
+    }
+
+    private void disableStateChange() {
+        this.stateChange = false;
+    }
+
+    private void enableStateChange() {
+        this.stateChange = true;
     }
 
     public void fill(Circle ellipse, Color color) {
@@ -335,12 +387,6 @@ public class Renderer {
         this.polyline(polyline, color);
     }
 
-    public void fill(Vec4i r, Color color) {
-        if (!this.rendering) return;
-
-        this.fill(r.x, r.y, r.z, r.w);
-    }
-
     public void fillGradient(Rectangle bounds, Color color1, Color color2) {
         if (!this.rendering) return;
 
@@ -362,44 +408,29 @@ public class Renderer {
     public void fillGradient(float x, float y, float width, float height, Color color1, Color color2, Axis2D axis) {
         if (!this.rendering) return;
 
+        this.toShapes();
+        this.setFilled();
         switch (axis) {
-            case HORIZONTAL -> this.shapes.filledRectangle(x, y, width, height, color1.toGdx(), color2.toGdx(), color2.toGdx(), color1.toGdx());
-            case VERTICAL -> this.shapes.filledRectangle(x, y, width, height, color2.toGdx(), color2.toGdx(), color1.toGdx(), color1.toGdx());
+            case HORIZONTAL -> this.shapes.rect(x, y, width, height, color2.toGdx(), color1.toGdx(), color1.toGdx(), color2.toGdx());
+            case VERTICAL -> this.shapes.rect(x, y, width, height, color1.toGdx(), color1.toGdx(), color2.toGdx(), color2.toGdx());
         }
-    }
-
-    @Deprecated(forRemoval = true)
-    public void line(int x1, int y1, int x2, int y2) {
-        if (!this.rendering) return;
-
-        this.shapes.line(x1, y1, x2, y2);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void line(float x1, float y1, float x2, float y2) {
-        if (!this.rendering) return;
-
-        this.shapes.line(x1, y1, x2, y2);
     }
 
     public void line(float x1, float y1, float x2, float y2, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.line(x1, y1, x2, y2, color.toGdx());
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.line(x1, y1, x2, y2);
     }
 
-    @Deprecated(forRemoval = true)
-    public void box(int x, int y, int width, int height) {
+    public void line(float x1, float y1, float x2, float y2, Color color1, Color color2) {
         if (!this.rendering) return;
 
-        this.shapes.rectangle(x, y, width, height, this.lineWidth);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void box(float x, float y, float width, float height) {
-        if (!this.rendering) return;
-
-        this.shapes.rectangle(x, y, width, height, this.lineWidth);
+        this.toShapes();
+        this.setLine();
+        this.shapes.line(x1, y1, x2, y2, color1.toGdx(), color2.toGdx());
     }
 
     public void box(Rectangle bounds, Color color) {
@@ -434,168 +465,238 @@ public class Renderer {
         border.drawBorder(this, (int) x, (int) y, (int) width, (int) height);
     }
 
-    @Deprecated(forRemoval = true)
-    public void fill(int x, int y, int width, int height) {
-        if (!this.rendering) return;
-
-        this.shapes.filledRectangle(x, y, width, height);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fill(float x, float y, float width, float height) {
-        if (!this.rendering) return;
-
-        this.shapes.filledRectangle(x, y, width, height);
-    }
-
     public void fill(float x, int y, float width, int height, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.filledRectangle(x, y, width, height, color.toGdx());
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.rect(x, y, width, height);
     }
 
     public void fill(float x, float y, float width, float height, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.filledRectangle(x, y, width, height, color.toGdx());
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.rect(x, y, width, height);
     }
 
-    public void roundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        if (!this.rendering) return;
-
-        this.shapes.rectangle(x, y, width, height, this.lineWidth, JoinType.SMOOTH);
+    public void arcLine(float x, float y, float radius, float startAngle, float angle, float lineWidth) {
+        this.arcLine(x, y, radius, startAngle, angle, lineWidth, this.sides.estimateSidesRequired(1.0f, radius, radius));
     }
 
-    public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        if (!this.rendering) return;
+    public void arcLine(float x, float y, float radius, float startAngle, float angle, float lineWidth, int segments) {
+        this.toShapes();
+        this.shapes.set(Line);
 
-        this.shapes.filledRectangle(x, y, width, height);
+        var endAngle = startAngle + angle;
+
+        float[] vertices = new float[segments * 2];
+
+        for (int i = 0; i < segments; i++) {
+            float angleNow = MathUtils.lerp(startAngle, endAngle, (float) i / (segments - 1));
+            float startX = x + radius * MathUtils.cosDeg(angleNow);
+            float startY = y + radius * MathUtils.sinDeg(angleNow);
+
+            vertices[i * 2] = startX;
+            vertices[i * 2 + 1] = startY;
+        }
+
+        this.shapes.polyline(vertices);
+        this.shapes.flush();
     }
 
-    @Deprecated(forRemoval = true)
-    public void rect3D(int x, int y, int width, int height, boolean raised) {
+    public void roundRect(float x, float y, float width, float height, float radius) {
         if (!this.rendering) return;
 
-        this.shapes.rectangle(x, y, width, height, this.lineWidth);
+        this.toShapes();
+        this.shapes.set(Line);
+
+        x += this.lineThickness / 2f;
+        y += this.lineThickness / 2f;
+        width -= this.lineThickness;
+        height -= this.lineThickness;
+        radius -= this.lineThickness / 2;
+
+        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+
+        Gdx.gl20.glLineWidth(this.lineThickness);
+        this.shapes.line(x + cornerRadius, y, x + width - cornerRadius, y); // Draw top line
+        this.shapes.line(x + cornerRadius, y + height, x + width - cornerRadius, y + height); // Draw bottom line
+        this.shapes.line(x, y + cornerRadius, x, y + height - cornerRadius); // Draw left line
+        this.shapes.line(x + width, y + cornerRadius, x + width, y + height - cornerRadius); // Draw right line
+
+        this.arcLine(x + cornerRadius, y + cornerRadius, cornerRadius, 180f, 90f, this.lineThickness); // Draw top-left arc
+        this.arcLine(x + width - cornerRadius, y + cornerRadius, cornerRadius, 270f, 90f, this.lineThickness); // Draw top-right arc
+        this.arcLine(x + cornerRadius, y + height - cornerRadius, cornerRadius, 90f, 90f, this.lineThickness); // Draw bottom-left arc
+        this.arcLine(x + width - cornerRadius, y + height - cornerRadius, cornerRadius, 0f, 90f, this.lineThickness); // Draw bottom-right arc
     }
 
-    @Deprecated(forRemoval = true)
-    public void fillRect3D(int x, int y, int width, int height, boolean raised) {
+    public void fillRoundRect(float x, float y, float width, float height, float radius, Color color) {
         if (!this.rendering) return;
 
-        this.shapes.filledRectangle(x, y, width, height);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+
+        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+
+        // Draw the top-left rounded corner
+        this.shapes.arc(x + cornerRadius, y + cornerRadius, cornerRadius, 180f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
+
+        // Draw the top-right rounded corner
+        this.shapes.arc(x + width - cornerRadius, y + cornerRadius, cornerRadius, 270f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
+
+        // Draw the bottom-right rounded corner
+        this.shapes.arc(x + width - cornerRadius, y + height - cornerRadius, cornerRadius, 0f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
+
+        // Draw the bottom-left rounded corner
+        this.shapes.arc(x + cornerRadius, y + height - cornerRadius, cornerRadius, 90f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
+
+        // Draw the top and bottom straight sides
+        this.shapes.rect(x + cornerRadius, y, width - 2 * cornerRadius, height);
+
+        // Draw the left and right straight sides
+        this.shapes.rect(x, y + cornerRadius, width, height - 2 * cornerRadius);
+
     }
 
     public void ellipse(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.shapes.ellipse(x, y, width, height);
-    }
-
-    public void ellipse(float x, float y, float width, float height) {
-        if (!this.rendering) return;
-
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(this.color.toGdx());
         this.shapes.ellipse(x, y, width, height);
     }
 
     public void ellipse(int x, int y, int width, int height, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
         this.shapes.ellipse(x, y, width, height);
     }
 
     public void ellipse(float x, float y, float width, float height, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
         this.shapes.ellipse(x, y, width, height);
     }
 
     public void fillEllipse(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.shapes.filledEllipse(x, y, width, height);
-    }
-
-    public void fillEllipse(float x, float y, float width, float height) {
-        if (!this.rendering) return;
-
-        this.shapes.filledEllipse(x, y, width, height);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(this.color.toGdx());
+        this.shapes.ellipse(x, y, width, height);
     }
 
     public void fillEllipse(int x, int y, int width, int height, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.filledEllipse(x, y, width, height);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.ellipse(x, y, width, height);
     }
 
     public void fillEllipse(float x, float y, float width, float height, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.filledEllipse(x, y, width, height);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.ellipse(x, y, width, height);
     }
 
-    @Deprecated(forRemoval = true)
-    public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle) {
+    public void arcLine(int x, int y, int width, int height, int startAngle, int arcAngle, Color color) {
         if (!this.rendering) return;
 
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
         this.shapes.arc(x, y, width, startAngle, arcAngle);
     }
 
-    public void arc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+    public void arc(int x, int y, int width, int height, int startAngle, int arcAngle, Color color) {
         if (!this.rendering) return;
 
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
         this.shapes.arc(x, y, width, startAngle, arcAngle);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void polygon(Polygon p) {
-        if (!this.rendering) return;
-
-        this.shapes.polygon(p);
     }
 
     public void polygon(Polygon p, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.polygon(p);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void fillPolygon(Polygon p) {
-        if (!this.rendering) return;
-
-        this.shapes.filledPolygon(p);
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.polygon(p.getTransformedVertices());
     }
 
     public void fillPolygon(Polygon p, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.filledPolygon(p);
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(color.toGdx());
+
+        float[] transformedVertices = p.getTransformedVertices();
+        for (int i = 0; i < transformedVertices.length - 2; i += 2) {
+            float x1 = transformedVertices[i];
+            float y1 = transformedVertices[i + 1];
+            float x2 = transformedVertices[i + 2];
+            float y2 = transformedVertices[i + 3];
+            float x3 = transformedVertices[0];
+            float y3 = transformedVertices[1];
+
+            this.shapes.triangle(x1, y1, x2, y2, x3, y3);
+        }
     }
 
     @Deprecated(forRemoval = true)
-    public void polyline(Polyline p) {
+    public void fillPolyline(Polyline p) {
         if (!this.rendering) return;
 
-        this.shapes.polygon(p.getVertices());
+        this.toShapes();
+        this.setFilled();
+        this.gl20.glLineWidth(this.lineThickness);
+        this.shapes.setColor(this.color.toGdx());
+        this.shapes.polyline(p.getTransformedVertices());
     }
 
     public void polyline(Polyline p, Color color) {
         if (!this.rendering) return;
 
-        this.setColor(color);
-        this.shapes.polygon(p.getVertices());
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(this.color.toGdx());
+        this.shapes.polyline(p.getTransformedVertices());
+    }
+
+    public void fillPolyline(Polyline p, Color color) {
+        if (!this.rendering) return;
+
+        this.toShapes();
+        this.setFilled();
+        this.shapes.setColor(this.color.toGdx());
+        this.shapes.polyline(p.getTransformedVertices());
     }
 
     public void blit(Texture tex, float x, float y) {
         if (!this.rendering) return;
 
+        this.toBatch();
         this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
@@ -603,12 +704,15 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.fill(x, y, tex.getWidth(), tex.getHeight(), backgroundColor);
+
+        this.toBatch();
         this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(Texture tex, float x, float y, float width, float height) {
         if (!this.rendering) return;
 
+        this.toBatch();
         this.batch.draw(tex, x, y + height, width, -height);
     }
 
@@ -616,91 +720,23 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.fill(x, y, width, height, backgroundColor);
+
+        this.toBatch();
         this.batch.draw(tex, x, y + height, width, -height);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, String str, int x, int y) {
-        if (!this.rendering) return;
-
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str, x, y);
     }
 
     public void drawText(BitmapFont font, String str, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        this.toBatch();
         font.setColor(color.toGdx());
         font.draw(this.batch, str, x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(String str, float x, float y) {
-        if (!this.rendering) return;
-
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str, x, y);
-    }
-
-    @ApiStatus.Experimental
-    public void drawText(TextObject str, int x, int y) {
-        if (!this.rendering) return;
-
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @ApiStatus.Experimental
-    public void drawText(TextObject str, float x, float y) {
-        if (!this.rendering) return;
-
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @ApiStatus.Experimental
-    public void drawText(TextObject str, int x, int y, Color color) {
-        if (!this.rendering) return;
-
-        this.font.setColor(color.toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @ApiStatus.Experimental
-    public void drawText(TextObject str, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        this.font.setColor(color.toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, String str, float x, float y) {
-        if (!this.rendering) return;
-
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str, x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, TextObject str, int x, int y) {
-        if (!this.rendering) return;
-
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, TextObject str, float x, float y) {
-        if (!this.rendering) return;
-
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str.getText(), x, y);
     }
 
     public void drawText(BitmapFont font, String str, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        this.toBatch();
         font.setColor(color.toGdx());
         font.draw(this.batch, str, x, y);
     }
@@ -709,6 +745,7 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        this.toBatch();
         font.setColor(color.toGdx());
         font.draw(this.batch, str.getText(), x, y);
     }
@@ -717,12 +754,12 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        this.toBatch();
         font.setColor(color.toGdx());
         font.draw(this.batch, str.getText(), x, y);
     }
 
-    @Deprecated(forRemoval = true)
-    public void drawText(String str, int x, int y, Anchor anchor) {
+    public void drawText(String str, float x, float y, Anchor anchor, Color color) {
         if (!this.rendering) return;
 
 
@@ -734,210 +771,18 @@ public class Renderer {
 
         layout.setText(this.font, str);
 
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        this.font.setColor(this.getColor().toGdx());
+        float anchoredX = (anchor.getX() + 1) * (layout.width / 2);
+        float anchoredY = (anchor.getY() + 1) * (layout.height / 2);
+        this.toBatch();
+        this.font.setColor(color.toGdx());
         this.font.draw(this.batch, str, x, y);
     }
 
-    @Deprecated(forRemoval = true)
-    public void drawText(String str, float x, float y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(this.font, str);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str, x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(TextObject str, int x, int y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        String text = str.getText();
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(this.font, text);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(TextObject str, float x, float y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        String text = str.getText();
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(this.font, text);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        this.font.setColor(this.getColor().toGdx());
-        this.font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, String str, int x, int y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(font, str);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str, x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, String str, float x, float y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(font, str);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str, x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, TextObject str, int x, int y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        String text = str.getText();
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(font, text);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str.getText(), x, y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawText(BitmapFont font, TextObject str, float x, float y, Anchor anchor) {
-        if (!this.rendering) return;
-
-
-        String text = str.getText();
-
-        GlyphLayout layout = this.glyphLayout.get();
-        if (layout == null) {
-            layout = new GlyphLayout();
-            this.glyphLayout.set(layout);
-        }
-
-        layout.setText(font, text);
-
-        float anchoredX = anchor.getX() * (layout.width / 2);
-        float anchoredY = anchor.getY() * (layout.height / 2);
-        font.setColor(this.getColor().toGdx());
-        font.draw(this.batch, str.getText(), x, y);
-    }
-
-    public void drawMultiLineText(String str, int x, int y) {
+    public void drawMultiLineText(BitmapFont font, String str, int x, int y, Color color) {
         if (!this.rendering) return;
 
         for (String line : str.split("\n"))
-            this.drawText(line, x, y += (int) this.font.getLineHeight());
-    }
-
-    public void drawMultiLineText(BitmapFont font, String str, int x, int y) {
-        if (!this.rendering) return;
-
-        for (String line : str.split("\n"))
-            this.drawText(font, line, x, y += (int) font.getLineHeight());
-    }
-
-    @Deprecated
-    public void drawWrappedText(String text, int x, int y, int maxWidth) {
-        if (!this.rendering) return;
-
-        List<String> lines = StringUtils.wrap(text, this.font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(joined, x, y);
-    }
-
-    @Deprecated
-    public void drawWrappedText(BitmapFont font, String text, int x, int y, int maxWidth) {
-        if (!this.rendering) return;
-
-        List<String> lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(font, joined, x, y);
-    }
-
-    @Deprecated
-    public void drawWrappedText(TextObject text, int x, int y, int maxWidth) {
-        if (!this.rendering) return;
-
-        List<String> lines = StringUtils.wrap(text.getText(), this.font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(joined, x, y);
-    }
-
-    @Deprecated
-    public void drawWrappedText(BitmapFont font, TextObject text, int x, int y, int maxWidth) {
-        if (!this.rendering) return;
-
-        List<String> lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(font, joined, x, y);
-    }
-
-    public void drawWrappedText(String text, int x, int y, int maxWidth, Color color) {
-        if (!this.rendering) return;
-
-        this.setColor(color);
-        List<String> lines = StringUtils.wrap(text, this.font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(joined, x, y);
+            this.drawText(font, line, x, y += (int) font.getLineHeight(), color);
     }
 
     public void drawWrappedText(BitmapFont font, String text, int x, int y, int maxWidth, Color color) {
@@ -946,16 +791,7 @@ public class Renderer {
         this.setColor(color);
         List<String> lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
         String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(font, joined, x, y);
-    }
-
-    public void drawWrappedText(TextObject text, int x, int y, int maxWidth, Color color) {
-        if (!this.rendering) return;
-
-        this.setColor(color);
-        List<String> lines = StringUtils.wrap(text.getText(), this.font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(joined, x, y);
+        this.drawMultiLineText(font, joined, x, y, color);
     }
 
     public void drawWrappedText(BitmapFont font, TextObject text, int x, int y, int maxWidth, Color color) {
@@ -964,50 +800,14 @@ public class Renderer {
         this.setColor(color);
         List<String> lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
         String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
-        this.drawMultiLineText(font, joined, x, y);
+        this.drawMultiLineText(font, joined, x, y, color);
     }
 
-    public void drawTabbedText(String str, int x, int y) {
+    public void drawTabbedText(BitmapFont font, String text, int x, int y, Color color) {
         if (!this.rendering) return;
 
-        for (String line : str.split("\t"))
-            this.drawText(line, x += (int) this.font.getLineHeight(), y);
-    }
-
-    public void drawTabbedText(BitmapFont font, String str, int x, int y) {
-        if (!this.rendering) return;
-
-        for (String line : str.split("\t"))
-            this.drawText(font, line, x += (int) font.getLineHeight(), y);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(String text, float x, float y) {
-        this.drawTextCenter(text, x, y, this.getColor());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(String text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), this.font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(TextObject text, float x, float y) {
-        this.drawTextCenter(text, x, y, this.getColor());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(TextObject text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawCenteredString(this, text.getText(), new Vector2(x, y), this.font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(BitmapFont font, String text, float x, float y) {
-        this.drawTextCenter(font, text, x, y, this.getColor());
+        for (String line : text.split("\t"))
+            this.drawText(font, line, x += (int) font.getLineHeight(), y, color);
     }
 
     public void drawTextCenter(BitmapFont font, String text, float x, float y, Color color) {
@@ -1016,97 +816,34 @@ public class Renderer {
         GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), font, color);
     }
 
-    @Deprecated(forRemoval = true)
-    public void drawTextCenter(BitmapFont font, TextObject text, float x, float y) {
-        this.drawTextCenter(font, text, x, y, this.getColor());
-    }
-
     public void drawTextCenter(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
         GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), font, color);
     }
 
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(String text, float x, float y) {
-        this.drawTextLeft(text, x, y, this.getColor());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(String text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), 0, this.font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(TextObject text, float x, float y) {
-        this.drawTextLeft(text, x, y, this.getColor());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(TextObject text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawLeftAnchoredString(this, text.getText(), new Vector2(x, y), 0, this.font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(BitmapFont font, TextObject text, float x, float y) {
-        this.drawTextLeft(font, text, x, y, this.getColor());
-    }
-
     public void drawTextLeft(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawLeftAnchoredString(this, text.getText(), new Vector2(x, y), 0, font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextLeft(BitmapFont font, String text, float x, float y) {
-        this.drawTextLeft(font, text, x, y, this.getColor());
+        GraphicsUtils.drawLeftAnchoredString(this, text.getText(), new Vector2(x, y), font, color);
     }
 
     public void drawTextLeft(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), 0, font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextRight(String text, float x, float y) {
-        this.drawTextRight(text, x, y, this.getColor());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextRight(String text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, this.font, color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextRight(TextObject text, float x, float y) {
-        this.drawTextRight(text, x, y, this.color);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawTextRight(TextObject text, float x, float y, Color color) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawRightAnchoredString(this, text.getText(), new Vector2(x, y), 0, this.font, color);
-    }
-
-    public void drawTextRight(BitmapFont font, String text, float x, float y) {
-        if (!this.rendering) return;
-
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, font);
+        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), font, color);
     }
 
     public void drawTextRight(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), 0, font, color);
+        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), font, color);
+    }
+
+    public void drawTextRight(BitmapFont font, TextObject text, float x, float y, Color color) {
+        if (!this.rendering) return;
+
+        GraphicsUtils.drawRightAnchoredString(this, text.getText(), new Vector2(x, y), font, color);
     }
 
     public void clear() {
@@ -1119,11 +856,11 @@ public class Renderer {
     //     Transformation     //
     ////////////////////////////
     private void editMatrix(Function<Matrix4, Matrix4> editor) {
-        this.batch.flush();
-        Matrix4 matrix = editor.apply(this.camera.combined);
-        editor.apply(this.globalTransform);
-        this.matrixStack.last().set(this.camera.combined.set(matrix));
-        this.batch.flush();
+//        this.flush();
+//        Matrix4 matrix = editor.apply(this.camera.combined);
+//        editor.apply(this.globalTransform);
+//        this.matrixStack.last().set(this.camera.combined.set(matrix));
+//        this.flush();
     }
 
     public void translate(float x, float y) {
@@ -1169,18 +906,11 @@ public class Renderer {
     }
 
     @Deprecated
-    public void subInstance(Rectangle rectangle, Consumer<Renderer> consumer) {
-        if (!this.rendering) return;
-
-        this.subInstance((int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, consumer);
-    }
-
-    @Deprecated
     public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
         if (!this.rendering) return;
 
-        this.pushMatrix();
-        this.translate(x, y);
+//        this.pushMatrix();
+//        this.translate(x, y);
         this.scissored(x, y, width, height, () -> {
             if (BubbleBlasterConfig.DEBUG_LOG_EMPTY_SCISSORS.getOrDefault()) {
                 String formatted = "Empty Scissor @ %d, %d".formatted(x, y);
@@ -1188,14 +918,16 @@ public class Renderer {
                 Debug.notifyOnce(UUID.fromString("b3d5760c-fbf6-4d61-b64c-0c0ef9d7f1a3"), "Scissor Debug", formatted);
             }
         });
-        consumer.accept(this);
-        this.popMatrix();
+//        consumer.accept(this);
+//        this.popMatrix();
     }
 
     @CheckReturnValue
     @ApiStatus.Internal
     private boolean pushScissor(Rectangle rect) {
         if (!this.rendering) return false;
+
+        if (BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.get()) return true;
 
         rect.getPosition(this.tmp2A);
         this.globalTransform.getTranslation(this.tmp3A);
@@ -1217,7 +949,7 @@ public class Renderer {
         rect.y = Gdx.graphics.getHeight() - rect.y - rect.height;
 
         if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
-            this.batch.flush();
+            this.flush();
             if (!ScissorStack.pushScissors(rect)) {
                 if (this.loggingScissors) {
                     Debug.log("ScissorDebug", "Scissor [%d]: %s".formatted(this.scissorDepth, rect));
@@ -1232,6 +964,13 @@ public class Renderer {
             return true;
         }
         return false;
+    }
+
+    public void flush() {
+        switch (this.state) {
+            case BATCH -> this.batch.flush();
+            case SHAPES -> this.shapes.flush();
+        }
     }
 
     public void triggerScissorLog() {
@@ -1259,8 +998,10 @@ public class Renderer {
     private Rectangle popScissor() {
         if (!this.rendering) return null;
 
+        if (BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.get()) return new Rectangle();
+
         if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
-            this.batch.flush();
+            this.flush();
             Rectangle rectangle = ScissorStack.popScissors();
 
             if (this.loggingScissors) {
@@ -1276,11 +1017,11 @@ public class Renderer {
     public void clearScissors() {
         if (!this.rendering) return;
 
-        this.batch.flush();
+        this.flush();
         while (ScissorStack.peekScissors() != null) {
             ScissorStack.popScissors();
         }
-        this.batch.flush();
+        this.flush();
     }
 
     @ApiStatus.Experimental
@@ -1300,15 +1041,15 @@ public class Renderer {
     }
 
     public void popMatrix() {
-        if (!this.rendering) return;
-
-        if (this.matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already clear");
-
-        this.batch.flush();
-        this.matrixStack.pop();
-        this.camera.combined.set(this.matrixStack.last());
-        this.globalTransform.set(this.globalMatrixStack.last());
-        this.batch.flush();
+//        if (!this.rendering) return;
+//
+//        if (this.matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already clear");
+//
+//        this.flush();
+//        this.matrixStack.pop();
+//        this.camera.combined.set(this.matrixStack.last());
+//        this.globalTransform.set(this.globalMatrixStack.last());
+//        this.flush();
     }
 
     public boolean hitClip(int x, int y, int width, int height) {
@@ -1348,23 +1089,6 @@ public class Renderer {
         border.drawBorder(this, x, y, width, height);
     }
 
-    @Deprecated(forRemoval = true)
-    public void drawEffectBox(int x, int y, int width, int height, float strokeWidth) {
-        if (!this.rendering) return;
-
-        this.drawEffectBox(x, y, width, height, strokeWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void drawEffectBox(int x, int y, int width, int height, float borderWidth, float speed) {
-        if (!this.rendering) return;
-
-        Border border = new Border(new Insets((int) borderWidth));
-        border.setRenderType(Border.RenderType.EFFECT);
-        border.setEffectSpeed(speed);
-        border.drawBorder(this, x, y, width, height);
-    }
-
     public void drawRoundEffectBox(float x, float y, float width, float height) {
         if (!this.rendering) return;
 
@@ -1374,7 +1098,7 @@ public class Renderer {
     public void drawRoundEffectBox(float x, float y, float width, float height, float radius) {
         if (!this.rendering) return;
 
-        this.drawRoundEffectBox(x, y, width, height, radius, 2);
+        this.drawRoundEffectBox(x, y, width, height, radius, 5);
     }
 
     public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int borderWidth) {
@@ -1383,13 +1107,18 @@ public class Renderer {
         this.drawRoundEffectBox(x, y, width, height, radius, borderWidth, BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.getOrDefault());
     }
 
-    public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int borderWidth, float speed) {
+    public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int lineWidth, float speed) {
         if (!this.rendering) return;
 
-        Border border = new Border(new Insets(borderWidth));
-        border.setRenderType(Border.RenderType.EFFECT);
-        border.setEffectSpeed(speed);
-        border.drawBorder(this, x, y, width, height);
+//        Border border = new Border(new Insets(lineWidth));
+//        border.setRenderType(Border.RenderType.EFFECT);
+//        border.setEffectSpeed(speed);
+//        border.drawBorder(this, x, y, width, height);
+
+        this.setLineThickness(lineWidth);
+        this.withEffect(() -> {
+            this.roundRect(x, y, width, height, radius);
+        });
     }
 
     public void drawErrorEffectBox(Rectangle bounds) {
@@ -1522,14 +1251,14 @@ public class Renderer {
         }
     }
 
-    public void setLineWidth(float lineWidth) {
+    public void setLineThickness(float lineThickness) {
         if (!this.rendering) return;
 
-        this.lineWidth = lineWidth;
+        this.lineThickness = lineThickness;
     }
 
-    public float getLineWidth() {
-        return this.lineWidth;
+    public float getLineThickness() {
+        return this.lineThickness;
     }
 
     public void setColor(Color c) {
@@ -1588,10 +1317,8 @@ public class Renderer {
         this.setColor(Color.hex(hex));
     }
 
-    public Color getColor() {
-        var color = new com.badlogic.gdx.graphics.Color();
-        com.badlogic.gdx.graphics.Color.abgr8888ToColor(color, this.shapes.getPackedColor());
-        return Color.gdx(color);
+    public Color getShapesColor() {
+        return Color.gdx(this.shapes.getColor());
     }
 
     public void setClearColor(Color color) {
@@ -1651,11 +1378,27 @@ public class Renderer {
     }
 
     public void roundedLine(float x1, float y1, float x2, float y2) {
-        this.shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), this.lineWidth, JoinType.SMOOTH, false);
+//        this.shapes.path(Array.with(new Vector2(x1, y1), new Vector2(x2, y2)), this.lineWidth, JoinType.SMOOTH, false);
     }
 
     public void setPixel(Pixel pixel) {
-        this.shapes.filledRectangle(pixel.getX(), pixel.getY(), 1, 1, Color.rgba(pixel.getColor().getRed(), pixel.getColor().getGreen(), pixel.getColor().getBlue(), pixel.getColor().getAlpha()).toGdx());
+        this.toShapes();
+        this.setPoint();
+        this.shapes.setColor(Color.rgba(pixel.getColor().getRed(), pixel.getColor().getGreen(), pixel.getColor().getBlue(), pixel.getColor().getAlpha()).toGdx());
+        this.shapes.rect(pixel.getX(), pixel.getY(), 1, 1);
+    }
+
+    private void setPoint() {
+        this.shapes.set(Point);
+    }
+
+    private void setLine() {
+        this.gl20.glLineWidth(this.lineThickness);
+        this.shapes.set(Line);
+    }
+
+    private void setFilled() {
+        this.shapes.set(Filled);
     }
 
     @Override
@@ -1686,12 +1429,34 @@ public class Renderer {
         }
     }
 
-    public void outline(Shape2D shape, Color color) {
-        if (shape instanceof Circle circle) this.outline(circle, color);
-        else if (shape instanceof Rectangle rectangle) this.outline(rectangle, color);
-        else if (shape instanceof Polygon polygon) this.outline(polygon, color);
-        else if (shape instanceof Ellipse ellipse) this.outline(ellipse, color);
-        else throw new UnsupportedOperationException("Shape not supported: " + shape.getClass().getName());
+    private void toBatch() {
+        if (!this.stateChange) return;
+
+        if (this.state == State.BATCH) {
+            return;
+        }
+        this.shapes.flush();
+        this.shapes.end();
+        this.batch.begin();
+        this.state = State.BATCH;
+    }
+
+    private void toShapes() {
+        if (!this.stateChange) return;
+
+        if (this.state == State.SHAPES) {
+            return;
+        }
+        this.batch.flush();
+        this.batch.end();
+
+        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
+            Gdx.gl20.glEnable(GL20.GL_BLEND);
+            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        this.shapes.begin();
+        this.state = State.SHAPES;
     }
 
     public enum State {

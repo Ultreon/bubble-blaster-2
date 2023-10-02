@@ -24,52 +24,52 @@ public class Progress implements Cloneable, Comparable<Progress>, Serializable {
     }
 
     public void increment() {
-        if (progress + 1 <= max) {
-            progress++;
+        if (this.progress + 1 <= this.max) {
+            this.progress++;
         } else {
-            throw new IllegalStateException("Progress increment at end: " + (progress + 1) + ", max: " + max);
+            throw new IllegalStateException("Progress increment at end: " + (this.progress + 1) + ", max: " + this.max);
         }
     }
 
     public int getProgress() {
-        return progress;
+        return this.progress;
     }
 
     public int getMax() {
-        return max;
+        return this.max;
     }
 
     public float getPercentage() {
-        return 100f * progress / max;
+        return 100f * this.progress / this.max;
     }
 
     public float getRelativeProgress() {
-        return (float) progress / (float) max;
+        return (float) this.progress / (float) this.max;
     }
 
     private int getTodo() {
-        return Math.max(max - progress, 0);
+        return Math.max(this.max - this.progress, 0);
     }
 
     @Override
     public String toString() {
         return "Progress{" +
-                "progress=" + progress +
-                ", max=" + max +
+                "progress=" + this.progress +
+                ", max=" + this.max +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Progress progress1 = (Progress) o;
-        return getProgress() == progress1.getProgress() && getMax() == progress1.getMax();
+        return this.getProgress() == progress1.getProgress() && this.getMax() == progress1.getMax();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getProgress(), getMax());
+        return Objects.hash(this.getProgress(), this.getMax());
     }
 
     @Override

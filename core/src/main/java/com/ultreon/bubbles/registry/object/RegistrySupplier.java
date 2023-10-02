@@ -19,15 +19,15 @@ public class RegistrySupplier<B> {
     }
 
     public void register() {
-        registry.register(identifier, supplier.get());
+        this.registry.register(this.identifier, this.supplier.get());
     }
 
     @SuppressWarnings("unchecked")
     public B get() {
-        return (B) registry.getValue(identifier);
+        return (B) this.registry.getValue(this.identifier);
     }
 
     public Identifier id() {
-        return identifier;
+        return this.identifier;
     }
 }

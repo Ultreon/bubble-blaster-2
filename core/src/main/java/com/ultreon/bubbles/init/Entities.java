@@ -7,9 +7,9 @@ import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,7 +30,6 @@ public class Entities {
 
     }
 
-    @SuppressWarnings("InnerClassMayBeStatic")
     private static class Undefined extends Entity {
         public Undefined(World world) {
             super(UNDEFINED_TYPE, world);
@@ -47,7 +46,7 @@ public class Entities {
         }
 
         @Override
-        public float getRadius() {
+        public float radius() {
             return 0;
         }
 

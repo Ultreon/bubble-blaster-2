@@ -3,7 +3,10 @@ package com.ultreon.bubbles.common;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.libs.text.v1.Translatable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * iDifficulty enum, used as api for difficulty information.
@@ -32,12 +35,12 @@ public enum Difficulty implements Translatable {
     }
 
     public float getPlainModifier() {
-        return plainModifier;
+        return this.plainModifier;
     }
 
     @Override
     public String getTranslationPath() {
-        return "bubbleblaster.misc.difficulty." + name().toLowerCase();
+        return "bubbleblaster.misc.difficulty." + this.name().toLowerCase();
     }
 
     public record Modifier<T>(T key, float value) {
@@ -66,13 +69,13 @@ public enum Difficulty implements Translatable {
         }
 
         public <T> Modifier<T> add(Modifier.Type<T> type, Modifier<T> modifier) {
-            modifiers.computeIfAbsent(type, t -> new ArrayList<>()).add(modifier);
+            this.modifiers.computeIfAbsent(type, t -> new ArrayList<>()).add(modifier);
             return modifier;
         }
 
         @SuppressWarnings("unchecked")
         public <T> List<Modifier<T>> getAll(Modifier.Type<T> type) {
-            return modifiers.get(type).stream().map(o -> (Modifier<T>) o).toList();
+            return this.modifiers.get(type).stream().map(o -> (Modifier<T>) o).toList();
         }
     }
 }

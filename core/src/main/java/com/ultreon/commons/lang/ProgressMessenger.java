@@ -19,11 +19,11 @@ public class ProgressMessenger extends Progress {
     }
 
     public void send(String text) {
-        messenger.send(text);
+        this.messenger.send(text);
     }
 
     public void sendNext(String text) {
-        messenger.send(text);
-        increment();
+        this.messenger.send(text);
+        this.increment();
     }
 }

@@ -36,6 +36,6 @@ public class IllegalJsonElementInArray extends Throwable {
     }
 
     public JsonElement getElement() {
-        return element;
+        return this.element;
     }
 }

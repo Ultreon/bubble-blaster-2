@@ -18,10 +18,10 @@ public abstract class Formatter<T> {
     }
 
     public Class<T> clazz() {
-        return clazz;
+        return this.clazz;
     }
 
     public Identifier registryName() {
-        return name;
+        return this.name;
     }
 }

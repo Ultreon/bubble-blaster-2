@@ -20,7 +20,7 @@ public class TextureCollection {
     }
 
     public void set(Index index, ITexture texture) {
-        if (textures.containsKey(index)) {
+        if (this.textures.containsKey(index)) {
             LOGGER.warn("Texture override: " + index);
         }
 
@@ -45,17 +45,17 @@ public class TextureCollection {
     }
 
     public Texture get(Index location) {
-        return textures.get(location);
+        return this.textures.get(location);
     }
 
     public String toString() {
-        return "TextureCollection[" + textures.size() + " textures]";
+        return "TextureCollection[" + this.textures.size() + " textures]";
     }
 
     public record Index(String modId, String id) {
         @Override
         public String toString() {
-            return modId + "#" + id;
+            return this.modId + "#" + this.id;
         }
     }
 }

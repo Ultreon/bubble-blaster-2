@@ -16,19 +16,19 @@ public class TimeSpan implements Serializable {
     }
 
     public boolean contains(DateTime dateTime) {
-        return DateTime.isBetween(from, to);
+        return DateTime.isBetween(this.from, this.to);
     }
 
     public Duration toDuration() {
-        return new Duration(to.toEpochSeconds() - from.toEpochSeconds());
+        return new Duration(this.to.toEpochSeconds() - this.from.toEpochSeconds());
     }
 
     public DateTime getFrom() {
-        return from;
+        return this.from;
     }
 
     public DateTime getTo() {
-        return to;
+        return this.to;
     }
 
     public void setFrom(DateTime from) {

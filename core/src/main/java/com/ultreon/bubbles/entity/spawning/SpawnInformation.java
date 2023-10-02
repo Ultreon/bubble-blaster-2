@@ -1,11 +1,11 @@
 package com.ultreon.bubbles.entity.spawning;
 
+import com.badlogic.gdx.math.Vector2;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.command.Command;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
-import com.ultreon.bubbles.BubbleBlaster;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.random.RandomSource;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.data.types.MapType;

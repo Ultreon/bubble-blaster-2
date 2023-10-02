@@ -24,32 +24,32 @@ class LibraryJarManager {
         this.reference = reference;
         this.jars = Set.of(jars);
 
-        openStreams();
+        this.openStreams();
     }
 
     private void openStreams() {
-        for (String jar : jars) {
+        for (String jar : this.jars) {
             try {
-                InputStream resource = reference.getResourceAsStream("/META-INF/jars/" + jar);
+                InputStream resource = this.reference.getResourceAsStream("/META-INF/jars/" + jar);
                 if (resource == null) continue;
                 JarInputStream stream = new JarInputStream(resource);
                 JarEntry e;
 
                 URL libUrl = new URL("libraryjar", jar, "");
-                libUrls.add(libUrl);
+                this.libUrls.add(libUrl);
                 while ((e = stream.getNextJarEntry()) != null) {
                     String entryName = e.getName();
                     byte[] data = stream.readAllBytes();
                     if (entryName.endsWith(".class")) {
                         String className = entryName.substring(0, entryName.length() - 6).replaceAll("/", ".");
-                        classData.put(className, data);
-                        classToJar.put(className, jar);
-                        classCertificates.put(className, e.getCertificates());
+                        this.classData.put(className, data);
+                        this.classToJar.put(className, jar);
+                        this.classCertificates.put(className, e.getCertificates());
                     }
 
                     URL url = new URL("libraryjar", jar, "/" + entryName);
-                    resources.put(jar + "/" + entryName, data);
-                    resourceUrls.add(url);
+                    this.resources.put(jar + "/" + entryName, data);
+                    this.resourceUrls.add(url);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,40 +68,40 @@ class LibraryJarManager {
         String jarFile = url.getHost();
         if (!url.getPath().isEmpty()) {
             String id = jarFile + url.getPath();
-            byte[] bytes = resources.get(id);
+            byte[] bytes = this.resources.get(id);
             return bytes == null ? null : new ByteArrayInputStream(bytes);
         } else {
-            return getClass().getResourceAsStream("/META-INF/jars/" + jarFile);
+            return this.getClass().getResourceAsStream("/META-INF/jars/" + jarFile);
         }
     }
 
     boolean jarExists(String name) {
         String[] split = name.split("/", 2);
         String jarFile = split[0];
-        return jars.contains(jarFile);
+        return this.jars.contains(jarFile);
     }
 
     public Map<String, byte[]> getResources() {
-        return resources;
+        return this.resources;
     }
 
     public List<URL> getResourceUrls() {
-        return resourceUrls;
+        return this.resourceUrls;
     }
 
     private byte[] locateClassData(String name) {
-        return classData.get(name);
+        return this.classData.get(name);
     }
 
     private URL locateClassURL(String name) {
         try {
-            return new URL("libraryjar", classToJar.get(name), "");
+            return new URL("libraryjar", this.classToJar.get(name), "");
         } catch (MalformedURLException e) {
             throw new Error(e);
         }
     }
 
     public URL[] getUrls() {
-        return libUrls.toArray(new URL[0]);
+        return this.libUrls.toArray(new URL[0]);
     }
 }

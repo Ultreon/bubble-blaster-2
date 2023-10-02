@@ -14,6 +14,6 @@ public enum Axis2D implements Translatable {
 
     @Override
     public String getTranslationPath() {
-        return "bubbles.misc." + name;
+        return "bubbles.misc." + this.name;
     }
 }

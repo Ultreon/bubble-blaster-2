@@ -22,72 +22,72 @@ public class Either<L, R> {
     }
 
     public L getLeft() {
-        if (left == null) throw new NoSuchElementException("The left part of the either is not present.");
-        return left.value;
+        if (this.left == null) throw new NoSuchElementException("The left part of the either is not present.");
+        return this.left.value;
     }
 
     public R getRight() {
-        if (right == null) throw new NoSuchElementException("The right part of the either is not present.");
-        return right.value;
+        if (this.right == null) throw new NoSuchElementException("The right part of the either is not present.");
+        return this.right.value;
     }
 
     public boolean isLeftPresent() {
-        return left != null;
+        return this.left != null;
     }
 
     public boolean isRightPresent() {
-        return right != null;
+        return this.right != null;
     }
 
     public void ifLeft(Consumer<L> onLeft) {
-        if (left != null) onLeft.accept(left.value);
+        if (this.left != null) onLeft.accept(this.left.value);
     }
 
     public void ifRight(Consumer<R> onRight) {
-        if (right != null) onRight.accept(right.value);
+        if (this.right != null) onRight.accept(this.right.value);
     }
 
     public void ifLeftOrElse(Consumer<L> onLeft, Runnable runnable) {
-        if (left != null) onLeft.accept(left.value);
+        if (this.left != null) onLeft.accept(this.left.value);
         else runnable.run();
     }
 
     public void ifRightOrElse(Consumer<R> onRight, Runnable runnable) {
-        if (right != null) onRight.accept(right.value);
+        if (this.right != null) onRight.accept(this.right.value);
         else runnable.run();
     }
 
     public L getLeftOrNull() {
-        return left.value;
+        return this.left.value;
     }
 
     public R getRightOrNull() {
-        return right.value;
+        return this.right.value;
     }
 
     public L getLeftOrNullOr(L other) {
-        L value = left.value;
+        L value = this.left.value;
         return value == null ? other : value;
     }
 
     public R getRightOrNullOr(R other) {
-        R value = right.value;
+        R value = this.right.value;
         return value == null ? other : value;
     }
 
     public L getLeftOrNullOrGet(Supplier<? extends L> other) {
-        L value = left.value;
+        L value = this.left.value;
         return value == null ? other.get() : value;
     }
 
     public R getRightOrNullOr(Supplier<? extends R> other) {
-        R value = right.value;
+        R value = this.right.value;
         return value == null ? other.get() : value;
     }
 
     public void ifAny(Consumer<L> onLeft, Consumer<R> onRight) {
-        if (left != null) onLeft.accept(left.value);
-        else if (right != null) onRight.accept(right.value);
+        if (this.left != null) onLeft.accept(this.left.value);
+        else if (this.right != null) onRight.accept(this.right.value);
     }
 
     private record Left<L>(L value) { }

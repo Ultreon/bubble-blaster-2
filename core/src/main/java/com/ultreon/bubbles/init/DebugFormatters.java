@@ -10,9 +10,9 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.libs.commons.v0.Color;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.*;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 import net.fabricmc.api.EnvType;
@@ -20,7 +20,6 @@ import net.fabricmc.api.EnvType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.List;
 
 @SuppressWarnings({"rawtypes", "unused"})
 public final class DebugFormatters {
@@ -272,90 +271,90 @@ public final class DebugFormatters {
     public static final Formatter<Vec2d> VEC2D = FormatterRegistry.register(new Formatter<>(Vec2d.class, new Identifier("vector/2_double")) {
         @Override
         public void format(Vec2d obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vector2> Vector2 = FormatterRegistry.register(new Formatter<>(Vector2.class, new Identifier("vector/2_float")) {
         @Override
         public void format(Vector2 obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec2i> VEC2I = FormatterRegistry.register(new Formatter<>(Vec2i.class, new Identifier("vector/2_int")) {
         @Override
         public void format(Vec2i obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec3d> VEC3D = FormatterRegistry.register(new Formatter<>(Vec3d.class, new Identifier("vector/3_double")) {
         @Override
         public void format(Vec3d obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec3f> VEC3F = FormatterRegistry.register(new Formatter<>(Vec3f.class, new Identifier("vector/3_float")) {
         @Override
         public void format(Vec3f obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec3i> VEC3I = FormatterRegistry.register(new Formatter<>(Vec3i.class, new Identifier("vector/3_int")) {
         @Override
         public void format(Vec3i obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec4d> VEC4D = FormatterRegistry.register(new Formatter<>(Vec4d.class, new Identifier("vector/4_double")) {
         @Override
         public void format(Vec4d obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec4f> VEC4F = FormatterRegistry.register(new Formatter<>(Vec4f.class, new Identifier("vector/4_float")) {
         @Override
         public void format(Vec4f obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
     
     public static final Formatter<Vec4i> VEC4I = FormatterRegistry.register(new Formatter<>(Vec4i.class, new Identifier("vector/4_int")) {
         @Override
         public void format(Vec4i obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
 
     public static final Formatter<Vector2> POINT = FormatterRegistry.register(new Formatter<>(Vector2.class, new Identifier("libgdx/vector2")) {
         @Override
         public void format(Vector2 obj, IFormatterContext context) {
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
 
@@ -374,9 +373,9 @@ public final class DebugFormatters {
         @Override
         public void format(Rectangle obj, IFormatterContext context) {
             context.operator("(");
-            context.parameter("x", roundTo(obj.x, 5));
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
             context.separator();
-            context.parameter("y", roundTo(obj.y, 5));
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
             context.operator(")");
             context.space();
             context.floatValue(obj.width);

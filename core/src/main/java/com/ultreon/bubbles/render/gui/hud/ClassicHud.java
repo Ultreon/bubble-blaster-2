@@ -7,12 +7,12 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.translations.v1.Language;
 import org.jetbrains.annotations.NotNull;
@@ -123,7 +123,6 @@ public class ClassicHud extends HudType {
     /**
      * Draw the player details.
      *
-     * @param world
      * @param renderer    renderer to draw with.
      * @param game        the game instance.
      * @param player      the player to draw information for.
@@ -174,7 +173,7 @@ public class ClassicHud extends HudType {
         }
 
         // Render health bar.
-        renderer.setLineWidth(HEALTH_LINE_WIDTH);
+        renderer.setLineThickness(HEALTH_LINE_WIDTH);
         renderer.fill(0, 68, (int) (game.getWidth() * playerDamage / playerMaxDamage), 2, Color.rgb(redValue, greenValue, 0x20));
     }
 
@@ -283,7 +282,7 @@ public class ClassicHud extends HudType {
      * @see #drawHealthLineForeground(Renderer, BubbleBlaster, Player)
      */
     public void drawHealthLineBackground(Renderer renderer, BubbleBlaster game) {
-        renderer.setLineWidth(HEALTH_LINE_WIDTH);
+        renderer.setLineThickness(HEALTH_LINE_WIDTH);
         renderer.fill(0, 68, game.getWidth(), 2, HEALTH_LINE_BG_COLOR);
     }
 

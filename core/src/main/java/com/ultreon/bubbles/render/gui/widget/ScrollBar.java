@@ -27,23 +27,23 @@ public class ScrollBar extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        setWidth(SIZE);
+        this.setWidth(SIZE);
 
-        Rectangle thumbBounds = getThumbBounds();
+        Rectangle thumbBounds = this.getThumbBounds();
         renderer.fill(this.x, this.y, this.width, this.height, Color.BLACK.withAlpha(0x40));
         renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.WHITE.withAlpha(0x60));
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(getWidth() / 2f - 2, (int) (percent * (getHeight() - scale())) + (getWidth() / 2f - 2), 3, (int) (scale()) - (getWidth() / 2f - 2) * 2);
+        return new Rectangle(this.getWidth() / 2f - 2, (int) (this.percent * (this.getHeight() - this.scale())) + (this.getWidth() / 2f - 2), 3, (int) (this.scale()) - (this.getWidth() / 2f - 2) * 2);
     }
 
     private double scale() {
-        return MathHelper.clamp(getHeight() * scale, SIZE * 2, getHeight());
+        return MathHelper.clamp(this.getHeight() * this.scale, SIZE * 2, this.getHeight());
     }
 
     public double getPercent() {
-        return percent;
+        return this.percent;
     }
 
     public void setPercent(double percent) {
@@ -60,7 +60,7 @@ public class ScrollBar extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        if (dragging) {
+        if (this.dragging) {
             float percent = (float)ny / this.getHeight();
             this.setPercent(percent);
             this.scrollHandler.onScroll(percent);

@@ -9,20 +9,20 @@ public class GraphicsSettings {
     private boolean textAntialiasEnabled;
 
     public boolean isAntialiasEnabled() {
-        return antialiasEnabled;
+        return this.antialiasEnabled;
     }
 
     public boolean isTextAntialiasEnabled() {
-        return textAntialiasEnabled;
+        return this.textAntialiasEnabled;
     }
 
     public void setAntialiasEnabled(boolean enabled) {
-        antialiasEnabled = enabled;
+        this.antialiasEnabled = enabled;
         GameSettings.save();
     }
 
     public void setTextAntialiasEnabled(boolean enabled) {
-        textAntialiasEnabled = enabled;
+        this.textAntialiasEnabled = enabled;
         GameSettings.save();
     }
 }

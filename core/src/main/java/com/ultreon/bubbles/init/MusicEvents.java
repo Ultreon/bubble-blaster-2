@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.init;
 
-import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.audio.MusicEvent;
+import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
 
 public class MusicEvents {

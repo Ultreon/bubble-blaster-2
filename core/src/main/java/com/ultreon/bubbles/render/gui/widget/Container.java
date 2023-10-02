@@ -4,8 +4,8 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.bubbles.render.gui.RenderableListener;
-import org.jetbrains.annotations.Nullable;
 import org.checkerframework.common.value.qual.IntRange;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -86,13 +86,13 @@ public abstract class Container extends GuiComponent {
         GuiComponent widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
-        pressingWidget = widgetAt;
+        this.pressingWidget = widgetAt;
         return widgetAt != null && widgetAt.mousePress(x - widgetAt.getX(), y - widgetAt.getY(), button);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        GuiComponent widgetAt = pressingWidget;
+        GuiComponent widgetAt = this.pressingWidget;
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         return widgetAt != null && widgetAt.mouseRelease(x - widgetAt.getX(), y - widgetAt.getY(), button);
@@ -177,6 +177,6 @@ public abstract class Container extends GuiComponent {
     }
 
     public GuiComponent getHoveredWidget() {
-        return hoveredInteractable;
+        return this.hoveredInteractable;
     }
 }

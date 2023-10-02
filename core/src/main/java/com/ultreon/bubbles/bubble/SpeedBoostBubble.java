@@ -4,7 +4,6 @@ import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.util.RandomValueSource;
-import org.apache.commons.lang3.Range;
 
 public class SpeedBoostBubble extends BubbleType {
     public SpeedBoostBubble() {

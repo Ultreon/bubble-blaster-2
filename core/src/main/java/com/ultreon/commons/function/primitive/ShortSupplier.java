@@ -8,88 +8,88 @@ public interface ShortSupplier extends Supplier<Short> {
     @Deprecated
     @Override
     default Short get() {
-        return getShort();
+        return this.getShort();
     }
 
     short getShort();
 
     default ShortSupplier and(ShortSupplier supplier) {
-        return () -> (short) (getShort() & supplier.getShort());
+        return () -> (short) (this.getShort() & supplier.getShort());
     }
 
     default ShortSupplier or(ShortSupplier supplier) {
-        return () -> (short) (getShort() | supplier.getShort());
+        return () -> (short) (this.getShort() | supplier.getShort());
     }
 
     default ShortSupplier add(ShortSupplier supplier) {
-        return () -> (short) (getShort() + supplier.getShort());
+        return () -> (short) (this.getShort() + supplier.getShort());
     }
 
     default ShortSupplier sub(ShortSupplier supplier) {
-        return () -> (short) (getShort() - supplier.getShort());
+        return () -> (short) (this.getShort() - supplier.getShort());
     }
 
     default ShortSupplier mul(ShortSupplier supplier) {
-        return () -> (short) (getShort() * supplier.getShort());
+        return () -> (short) (this.getShort() * supplier.getShort());
     }
 
     default ShortSupplier div(ShortSupplier supplier) {
-        return () -> (short) (getShort() / supplier.getShort());
+        return () -> (short) (this.getShort() / supplier.getShort());
     }
 
     default ShortSupplier mod(ShortSupplier supplier) {
-        return () -> (short) (getShort() % supplier.getShort());
+        return () -> (short) (this.getShort() % supplier.getShort());
     }
 
     default ShortSupplier pow(ShortSupplier supplier) {
-        return () -> (short) Math.pow(getShort(), supplier.getShort());
+        return () -> (short) Math.pow(this.getShort(), supplier.getShort());
     }
 
     default ShortSupplier sqrt() {
-        return () -> (short) Math.sqrt(getShort());
+        return () -> (short) Math.sqrt(this.getShort());
     }
 
     default ShortSupplier round() {
-        return () -> (short) Math.round(getShort());
+        return () -> (short) Math.round(this.getShort());
     }
 
     default ShortSupplier sin() {
-        return () -> (short) Math.sin(getShort());
+        return () -> (short) Math.sin(this.getShort());
     }
 
     default ShortSupplier cos() {
-        return () -> (short) Math.cos(getShort());
+        return () -> (short) Math.cos(this.getShort());
     }
 
     default ShortSupplier tan() {
-        return () -> (short) Math.tan(getShort());
+        return () -> (short) Math.tan(this.getShort());
     }
 
     default ShortSupplier asin() {
-        return () -> (short) Math.asin(getShort());
+        return () -> (short) Math.asin(this.getShort());
     }
 
     default ShortSupplier acos() {
-        return () -> (short) Math.acos(getShort());
+        return () -> (short) Math.acos(this.getShort());
     }
 
     default ShortSupplier atan() {
-        return () -> (short) Math.atan(getShort());
+        return () -> (short) Math.atan(this.getShort());
     }
 
     default ShortSupplier atan2(ShortSupplier supplier) {
-        return () -> (short) Math.atan2(getShort(), supplier.getShort());
+        return () -> (short) Math.atan2(this.getShort(), supplier.getShort());
     }
 
     default ShortSupplier sinh() {
-        return () -> (short) Math.sinh(getShort());
+        return () -> (short) Math.sinh(this.getShort());
     }
 
     default ShortSupplier cosh() {
-        return () -> (short) Math.cosh(getShort());
+        return () -> (short) Math.cosh(this.getShort());
     }
 
     default ShortSupplier tanh() {
-        return () -> (short) Math.tanh(getShort());
+        return () -> (short) Math.tanh(this.getShort());
     }
 }

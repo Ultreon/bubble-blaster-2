@@ -21,7 +21,7 @@ public class Pair<F, S> implements Cloneable {
     }
 
     public F getFirst() {
-        return first;
+        return this.first;
     }
 
     public void setFirst(F first) {
@@ -29,7 +29,7 @@ public class Pair<F, S> implements Cloneable {
     }
 
     public S getSecond() {
-        return second;
+        return this.second;
     }
 
     public void setSecond(S second) {
@@ -39,24 +39,24 @@ public class Pair<F, S> implements Cloneable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Pair<?, ?> pair = (Pair<?, ?>) o;
-        return Objects.equals(getFirst(), pair.getFirst()) && Objects.equals(getSecond(), pair.getSecond());
+        return Objects.equals(this.getFirst(), pair.getFirst()) && Objects.equals(this.getSecond(), pair.getSecond());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirst(), getSecond());
+        return Objects.hash(this.getFirst(), this.getSecond());
     }
 
     @Override
     public String toString() {
-        return "(" + first + ", " + second + ')';
+        return "(" + this.first + ", " + this.second + ')';
     }
 
     @Override
     protected Pair<F, S> clone() throws CloneNotSupportedException {
         super.clone();
-        return new Pair<F, S>(getFirst(), getSecond());
+        return new Pair<F, S>(this.getFirst(), this.getSecond());
     }
 }

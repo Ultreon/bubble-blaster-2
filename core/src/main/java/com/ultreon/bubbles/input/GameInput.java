@@ -28,11 +28,11 @@ public class GameInput implements InputProcessor {
     private static final int ALT_GRAPH_MASK = 1 << 5;
 
     public static boolean isShiftDown() {
-        return isAnyKeyDownOf(Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
+        return GameInput.isAnyKeyDownOf(Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
     }
 
     public static boolean isCtrlDown() {
-        return isAnyKeyDownOf(Keys.CONTROL_LEFT, Keys.CONTROL_RIGHT);
+        return GameInput.isAnyKeyDownOf(Keys.CONTROL_LEFT, Keys.CONTROL_RIGHT);
     }
 
     @Deprecated
@@ -41,12 +41,12 @@ public class GameInput implements InputProcessor {
     }
 
     public static boolean isAltDown() {
-        return isAnyKeyDownOf(Keys.ALT_LEFT, Keys.ALT_RIGHT);
+        return GameInput.isAnyKeyDownOf(Keys.ALT_LEFT, Keys.ALT_RIGHT);
     }
 
     @Deprecated
     public static boolean isAltGraphDown() {
-        return isCtrlDown() && isAltDown();
+        return GameInput.isCtrlDown() && GameInput.isAltDown();
     }
 
     public static Vector2 getPos() {
@@ -71,7 +71,7 @@ public class GameInput implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (isKeyDown(keycode)) {
+        if (GameInput.isKeyDown(keycode)) {
             InputEvents.KEY_PRESS.factory().onKeyPress(keycode, true);
             return true;
         }
@@ -100,9 +100,9 @@ public class GameInput implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (pointer == 0) POS.set(screenX, screenY);
-        pressedByPointer.put(pointer, true);
+        this.pressedByPointer.put(pointer, true);
 
-        dragStarts.put(button, new GridPoint2(screenX, screenY));
+        this.dragStarts.put(button, new GridPoint2(screenX, screenY));
 
         InputEvents.MOUSE_PRESS.factory().onMousePress(screenX, screenY, button);
 
@@ -113,9 +113,9 @@ public class GameInput implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pointer == 0) POS.set(screenX, screenY);
 
-        pressedByPointer.put(pointer, false);
+        this.pressedByPointer.put(pointer, false);
 
-        dragStarts.remove(button);
+        this.dragStarts.remove(button);
 
         InputEvents.MOUSE_RELEASE.factory().onMouseRelease(screenX, screenY, button);
 
@@ -126,7 +126,7 @@ public class GameInput implements InputProcessor {
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (pointer == 0) POS.set(screenX, screenY);
 
-        for (var entry : dragStarts.int2ReferenceEntrySet()) {
+        for (var entry : this.dragStarts.int2ReferenceEntrySet()) {
             GridPoint2 vec = entry.getValue();
             this.game.mouseDragged(vec.x, vec.y, screenX, screenY, pointer, entry.getIntKey());
         }

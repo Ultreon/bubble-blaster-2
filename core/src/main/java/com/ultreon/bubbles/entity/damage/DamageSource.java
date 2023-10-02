@@ -8,6 +8,6 @@ public class DamageSource {
     }
 
     public DamageType getType() {
-        return type;
+        return this.type;
     }
 }

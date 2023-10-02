@@ -21,7 +21,7 @@ public class TitleButton extends AbstractButton {
     }
 
     public TextObject getText() {
-        return text;
+        return this.text;
     }
 
     public static class Builder {
@@ -35,10 +35,10 @@ public class TitleButton extends AbstractButton {
         }
 
         public TitleButton build() {
-            TitleButton button = new TitleButton((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
+            TitleButton button = new TitleButton((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
-            button.setText(text);
-            button.setCommand(command);
+            button.setText(this.text);
+            button.setCommand(this.command);
             return button;
         }
 
@@ -77,24 +77,24 @@ public class TitleButton extends AbstractButton {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         Color textColor;
 
-        renderer.setColor(0xff606060);
-        renderer.fillRoundRect(x, y, width-1, height-1, Math.min(width, height)-4, Math.min(width, height)-2);
+        float radius = 14f;
+        renderer.fillRoundRect(this.x, this.y, this.width - 1, this.height - 1, radius, Color.GRAY_6);
 
-        if (isPressed()) {
+        if (this.isPressed()) {
             renderer.setColor(0xff484848);
-            renderer.fillRoundRect(x, y, width-1, height-1, Math.min(width, height)-4, 10);
+            renderer.fillRoundRect(this.x, this.y, this.width - 1, this.height - 1, radius, Color.GRAY_6);
 
-            renderer.drawRoundEffectBox(x, y, width-1, height-1, Math.min(width, height)-4, 1);
+            renderer.drawRoundEffectBox(this.x, this.y, this.width, this.height, radius, 2);
             textColor = Color.WHITE;
-        } else if (isHovered()) {
-            renderer.drawRoundEffectBox(x + 1, y + 1, width-4, height-4, Math.min(width, height)-8, 2);
+        } else if (this.isHovered()) {
+            renderer.drawRoundEffectBox(this.x, this.y, this.width, this.height, radius, 4);
             textColor = Color.rgb(0xffffff);
         } else {
-            renderer.setLineWidth(1.0f);
+            renderer.setLineThickness(1.0f);
             textColor = Color.rgb(0xe0e0e0);
         }
 
-        AbstractButton.drawText(renderer, textColor, getPos(), getSize(), text, Fonts.SANS_REGULAR_20.get());
+        AbstractButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, Fonts.SANS_REGULAR_20.get());
     }
 
     @SuppressWarnings("EmptyMethod")

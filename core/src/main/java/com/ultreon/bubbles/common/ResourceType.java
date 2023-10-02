@@ -22,6 +22,6 @@ public enum ResourceType {
 
     @Nullable
     public String getPath() {
-        return path;
+        return this.path;
     }
 }

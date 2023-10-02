@@ -13,7 +13,7 @@ public final class TabCompleter {
     public static List<String> getStrings(String arg, String... strings) {
         ArrayList<String> list = new ArrayList<>();
         for (String str : strings) {
-            addIfStartsWith(list, arg + " ", str);
+            TabCompleter.addIfStartsWith(list, arg + " ", str);
         }
         return list;
     }

@@ -16,6 +16,6 @@ public class SceneParameterCountError extends RuntimeException {
 
     @Deprecated
     public SceneParameterCountError(int needed, int got) {
-        super(getMessage(needed, got));
+        super(SceneParameterCountError.getMessage(needed, got));
     }
 }

@@ -37,8 +37,8 @@ public class RetrieveUrlsTask extends BaseTask {
                 for (var repository : project.getRepositories()) {
                     if (repository instanceof UrlArtifactRepository urlRepo) {
                         var url = urlRepo.getUrl();
-                        retrieveDependencyInfo(dependency, url, dep);
-                        retrieveArtifactsInfo(dependency, url, dep);
+                        this.retrieveDependencyInfo(dependency, url, dep);
+                        this.retrieveArtifactsInfo(dependency, url, dep);
                     }
                 }
             }
@@ -70,7 +70,7 @@ public class RetrieveUrlsTask extends BaseTask {
                     var jarFile = new URL(jarUrl);
                     try (var in = jarFile.openStream()) {
                         if (in != null) {
-                            getLogger().info(String.format("%s:%s:%s:%s:%s",
+                            this.getLogger().info(String.format("%s:%s:%s:%s:%s",
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
                                     jar.getArchiveClassifier(), jar.getArchiveExtension()));
                             this.urls.add(jarFile.toString());
@@ -108,7 +108,7 @@ public class RetrieveUrlsTask extends BaseTask {
                     var jarFile = new URL(jarUrl);
                     try (var in = jarFile.openStream()) {
                         if (in != null) {
-                            getLogger().info(String.format("%s:%s:%s:%s:%s",
+                            this.getLogger().info(String.format("%s:%s:%s:%s:%s",
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
                                     artifact.getClassifier(), artifact.getExtension()));
                             this.urls.add(jarFile.toString());
@@ -146,7 +146,7 @@ public class RetrieveUrlsTask extends BaseTask {
                     var jarFile = new URL(jarUrl);
                     try (var in = jarFile.openStream()) {
                         if (in != null) {
-                            getLogger().info(String.format("%s:%s:%s", dependency.getGroup(), dependency.getName(), dependency.getVersion()));
+                            this.getLogger().info(String.format("%s:%s:%s", dependency.getGroup(), dependency.getName(), dependency.getVersion()));
                             this.urls.add(jarFile.toString());
                             this.gameDeps.add(new com.ultreon.bubbles.gradle.Dependency(
                                     Objects.requireNonNull(dependency.getGroup(), "Dependency should have group."),
@@ -165,11 +165,11 @@ public class RetrieveUrlsTask extends BaseTask {
 
     @Internal
     public List<com.ultreon.bubbles.gradle.Dependency> getGameDeps() {
-        return gameDeps;
+        return this.gameDeps;
     }
 
     @Internal
     public JsonArray getUrls() {
-        return urls;
+        return this.urls;
     }
 }

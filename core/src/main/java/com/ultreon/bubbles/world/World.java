@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.world;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
@@ -86,11 +87,9 @@ public final class World implements CrashFiller, Closeable {
     private boolean bloodMoonTriggered;
 
     // Enums.
-    @SuppressWarnings("FieldMayBeFinal")
     private Difficulty difficulty;
 
     // State difficulties.
-    @SuppressWarnings("FieldCanBeLocal")
     private final Map<GameplayEvent, Float> stateDifficultyModifiers = new ConcurrentHashMap<>();
 
     // Animations:
@@ -265,6 +264,7 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private void addEntity(Entity entity) {
+        Preconditions.checkNotNull(entity, "Entity should not be null");
         this.entitiesLock.lock();
         this.addEntityUnlocked(entity);
         this.entitiesLock.unlock();
@@ -291,7 +291,6 @@ public final class World implements CrashFiller, Closeable {
         }
     }
 
-    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
     private <T> void dumpRegistryData(GameSave gameSave, Registry<T> registry) throws IOException {
         MapType tag = new MapType();
         ListType<StringType> entriesTag = new ListType<>();
@@ -618,8 +617,6 @@ public final class World implements CrashFiller, Closeable {
 
     /**
      * Spawn an entity into the world.
-     * @param entity
-     * @param information
      */
     public void spawn(Entity entity, SpawnInformation information) {
         BubbleBlaster.invokeTick(() -> {
@@ -734,7 +731,7 @@ public final class World implements CrashFiller, Closeable {
 
     public void gameOver(Player player) {
         synchronized (this.entitiesLock) {
-            this.entitiesById.remove(player);
+            this.entitiesById.remove(player.getId());
         }
     }
 

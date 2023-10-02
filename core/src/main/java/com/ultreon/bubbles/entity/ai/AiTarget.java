@@ -12,7 +12,7 @@ public class AiTarget extends AiTask {
 
     @Override
     public boolean executeTask(Entity entity) {
-        Entity nearestEntity = entity.getWorld().getNearestEntity(entity.getPos(), targetType);
+        Entity nearestEntity = entity.getWorld().getNearestEntity(entity.getPos(), this.targetType);
         Entity target = entity.getTarget();
         if (target == null) {
             if (nearestEntity != null) entity.setTarget(nearestEntity);

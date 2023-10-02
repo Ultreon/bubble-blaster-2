@@ -32,7 +32,7 @@ public class LoadedGame implements Controllable {
     private final Gamemode gamemode;
 
     private final World world;
-    public ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
+    public final ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
 
     // Files / folders.
     private final File saveDir;
@@ -42,7 +42,6 @@ public class LoadedGame implements Controllable {
     private final ArrayList<Long> activeMsgTimes = new ArrayList<>();
 
     // Flags.
-    @SuppressWarnings("FieldCanBeLocal")
     private boolean running = false;
 
     // Save
@@ -135,7 +134,6 @@ public class LoadedGame implements Controllable {
     }
 
     public void startup() {
-        ;
     }
 
     public void shutdown() {

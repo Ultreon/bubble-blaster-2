@@ -7,11 +7,11 @@ import com.ultreon.bubbles.common.gamestate.GameplayContext;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.data.DataKeys;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.event.v1.TickEvents;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.time.Date;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.commons.time.Time;
@@ -54,37 +54,37 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
         World world = loadedGame.getWorld();
 
-        if (stopTime < System.currentTimeMillis()) {
+        if (this.stopTime < System.currentTimeMillis()) {
             world.stopBloodMoon();
         }
 
-        if (activating) {
-            activating = false;
-            deactivating = false;
+        if (this.activating) {
+            this.activating = false;
+            this.deactivating = false;
 
-            stopTime = System.currentTimeMillis() + 60000;
+            this.stopTime = System.currentTimeMillis() + 60000;
 
             // Game effects.
-            if (!wasActive) BubbleBlaster.getLogger().info("Blood Moon activated!");
+            if (!this.wasActive) BubbleBlaster.getLogger().info("Blood Moon activated!");
 
             world.triggerBloodMoon();
             world.setStateDifficultyModifier(this, 64f);
-            wasActive = true;
+            this.wasActive = true;
 
             // Player effects.
-            if (!wasPlayerActive && loadedGame.getGamemode().getPlayer() != null) {
+            if (!this.wasPlayerActive && loadedGame.getGamemode().getPlayer() != null) {
                 BubbleBlaster.getLogger().info("Blood Moon for player activated!");
                 // Todo: implement this.
 //                playerDefenses.put(GameScene.getGameType().getPlayer(), GameScene.getGameType().getPlayer().getDefenseModifier());
-                wasPlayerActive = true;
+                this.wasPlayerActive = true;
             }
-        } else if (deactivating) {
-            deactivating = false;
+        } else if (this.deactivating) {
+            this.deactivating = false;
             // Game effects.
-            if (wasActive) {
+            if (this.wasActive) {
                 BubbleBlaster.getLogger().info("Blood Moon deactivated!");
                 world.removeStateDifficultyModifier(this);
-                wasActive = false;
+                this.wasActive = false;
             }
         }
     }
@@ -119,8 +119,8 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     }
 
     public final boolean wouldActive(DateTime dateTime) {
-        boolean flag1 = dateTime.getTime().isBetween(timeLo, timeHi);  // Devil's hour.
-        boolean flag2 = dateTime.getDate().equalsIgnoreYear(date);  // Halloween.
+        boolean flag1 = dateTime.getTime().isBetween(this.timeLo, this.timeHi);  // Devil's hour.
+        boolean flag2 = dateTime.getDate().equalsIgnoreYear(this.date);  // Halloween.
 
         boolean flag3 = dateTime.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;  // Friday
         boolean flag4 = dateTime.getDate().getDay() == 13;  // 13th
@@ -137,6 +137,6 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     }
 
     public Map<Player, Double> getPlayerDefenses() {
-        return playerDefenses;
+        return this.playerDefenses;
     }
 }

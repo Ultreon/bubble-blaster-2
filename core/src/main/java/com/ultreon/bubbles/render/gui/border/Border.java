@@ -36,11 +36,10 @@ public class Border {
         // in the component area itself.
         switch (this.renderType) {
             case COLOR -> {
-                renderer.setColor(this.color);
-                renderer.fill(x + insets.left, y, width - insets.left - insets.right, insets.top);
-                renderer.fill(x, y, insets.left, height);
-                renderer.fill(x + width - insets.right, y, insets.right, height);
-                renderer.fill(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom);
+                renderer.fill(x + insets.left, y, width - insets.left - insets.right, insets.top, this.color);
+                renderer.fill(x, y, insets.left, height, this.color);
+                renderer.fill(x + width - insets.right, y, insets.right, height, this.color);
+                renderer.fill(x + insets.left, y + height - insets.bottom, width - insets.left - insets.right, insets.bottom, this.color);
             }
             case EFFECT -> {
                 renderer.fillEffect(x + insets.left, y, width - insets.left - insets.right, insets.top, this.effectSpeed);

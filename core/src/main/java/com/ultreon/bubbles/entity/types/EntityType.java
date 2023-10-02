@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.entity.types;
 
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 
@@ -14,11 +14,11 @@ public class EntityType<T extends Entity> {
     }
 
     public T create(World world) {
-        return entityFactory.create(world);
+        return this.entityFactory.create(world);
     }
 
     public T create(World world, MapType document) {
-        T t = entityFactory.create(world);
+        T t = this.entityFactory.create(world);
         t.load(document);
         return t;
     }

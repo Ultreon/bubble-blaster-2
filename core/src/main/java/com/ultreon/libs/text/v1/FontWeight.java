@@ -21,7 +21,7 @@ public enum FontWeight {
     public static FontWeight closestTo(float weight) {
         float lastDiff = Float.MAX_VALUE;
         FontWeight cur = null;
-        for (FontWeight value : values()) {
+        for (FontWeight value : FontWeight.values()) {
             if (Mth.diff(weight, value.weight) < lastDiff) {
                 cur = value;
             }

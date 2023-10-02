@@ -1,10 +1,12 @@
 package com.ultreon.commons.lang;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Deprecated
 public final class Version implements Serializable {
+    @Serial
     private static final long serialVersionUID = 0L;
     private final int major;
     private final int minor;
@@ -23,43 +25,43 @@ public final class Version implements Serializable {
 
     @Override
     public String toString() {
-        return major + "." + minor + "." + build + "-" + type.getName() + release;
+        return this.major + "." + this.minor + "." + this.build + "-" + this.type.getName() + this.release;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Version version = (Version) o;
-        return major == version.major &&
-                minor == version.minor &&
-                release == version.release &&
-                type == version.type;
+        return this.major == version.major &&
+                this.minor == version.minor &&
+                this.release == version.release &&
+                this.type == version.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(major, minor, type, release);
+        return Objects.hash(this.major, this.minor, this.type, this.release);
     }
 
     public int major() {
-        return major;
+        return this.major;
     }
 
     public int minor() {
-        return minor;
+        return this.minor;
     }
 
     public int build() {
-        return build;
+        return this.build;
     }
 
     public VersionType type() {
-        return type;
+        return this.type;
     }
 
     public int release() {
-        return release;
+        return this.release;
     }
 
 }

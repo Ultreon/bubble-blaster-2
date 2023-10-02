@@ -1,13 +1,12 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.render.gui.widget.Button;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.libs.text.v1.TextObject;
 
@@ -66,9 +65,8 @@ public class GameOverScreen extends Screen {
         super.renderBackground(renderer);
 
         if (this.isHighScore) {
-            renderer.setColor(0xffffffff);
-            renderer.drawTextCenter(this.gameOverTitleFont, "Congratulations!", this.width / 2f, 152);
-            renderer.drawTextCenter(this.gameOverDescriptionFont, "You beat your high-score!", this.width / 2f, 216);
+            renderer.drawTextCenter(this.gameOverTitleFont, "Congratulations!", this.width / 2f, 152, Color.WHITE);
+            renderer.drawTextCenter(this.gameOverDescriptionFont, "You beat your high-score!", this.width / 2f, 216, Color.WHITE);
         } else {
             long cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
             int phase = (int) (Math.floorDiv(cycled, 1000));
@@ -77,12 +75,10 @@ public class GameOverScreen extends Screen {
                 case 1 -> renderer.setColor(GAME_OVER_COLOR_FLASH);
                 case 0 -> MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
             }
-            renderer.setColor(MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
-            renderer.drawTextCenter(this.gameOverTitleFont, "Game Over", this.width / 2f, 152);
+            renderer.drawTextCenter(this.gameOverTitleFont, "Game Over", this.width / 2f, 152, MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
         }
 
-        renderer.setColor(0x7fffffff);
-        renderer.drawText(Fonts.SANS_REGULAR_20.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Anchor.CENTER);
+        renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
     }
 
     public boolean isHighScore() {

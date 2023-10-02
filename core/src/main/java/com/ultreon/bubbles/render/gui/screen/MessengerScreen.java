@@ -37,7 +37,7 @@ public class MessengerScreen extends Screen {
     }
 
     public Messenger getMessenger() {
-        return messenger;
+        return this.messenger;
     }
 
     /**
@@ -46,22 +46,17 @@ public class MessengerScreen extends Screen {
      *
      * @param game      the game launched.
      * @param renderer  the graphics 2D processor.
-     * @param mouseX
-     * @param mouseY
      * @param deltaTime game frame time.
      */
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.setColor(Color.rgb(0x404040));
-        renderer.fill(0, 0, game.getWidth(), game.getHeight());
+        renderer.fill(0, 0, game.getWidth(), game.getHeight(), Color.grayscale(0x40));
 
-        renderer.setColor(Color.rgb(0x00c0ff));
-        renderer.drawTextCenter(Fonts.SANS_REGULAR_48.get(), "Loading World...", BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 8);
-        renderer.setColor(Color.rgb(0x7f7f7f));
-        renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), this.description, BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 65f);
+        renderer.drawTextCenter(Fonts.SANS_REGULAR_48.get(), "Loading World...", BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 8, Color.rgb(0x00c0ff));
+        renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), this.description, BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 65f, Color.rgb(0x7f7f7f));
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 }

@@ -32,7 +32,7 @@ import java.util.Arrays;
 public class GameRandom {
     private BigInteger seed;
 
-    protected static abstract class Range<T extends Number> {
+    public static abstract class Range<T extends Number> {
 
         abstract T clip(BigInteger bigVal);
     }
@@ -71,8 +71,8 @@ public class GameRandom {
          * @return an integer between min and max, inclusive.
          */
         Integer clip(BigInteger bigVal) {
-            BigInteger modulus = BigInteger.valueOf(max + 1L - min);
-            return (int) (min + bigVal.mod(modulus).longValue());
+            BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
+            return (int) (this.min + bigVal.mod(modulus).longValue());
         }
 
     }
@@ -101,8 +101,8 @@ public class GameRandom {
          * @return an 64-bit integer between min and max, inclusive.
          */
         Long clip(BigInteger bigVal) {
-            BigInteger modulus = BigInteger.valueOf(max + 1L - min);
-            return min + bigVal.mod(modulus).longValue();
+            BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
+            return this.min + bigVal.mod(modulus).longValue();
         }
 
     }
@@ -131,8 +131,8 @@ public class GameRandom {
          * @return an BigInteger between min and max, inclusive.
          */
         BigInteger clip(BigInteger bigVal) {
-            BigInteger modulus = max.add(new BigInteger("1")).subtract(min);
-            return min.add(bigVal.mod(modulus));
+            BigInteger modulus = this.max.add(new BigInteger("1")).subtract(this.min);
+            return this.min.add(bigVal.mod(modulus));
         }
 
     }
@@ -161,8 +161,8 @@ public class GameRandom {
          * @return an floateger between min and max, inclusive.
          */
         Float clip(BigInteger bigVal) {
-            BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
-            return (float) (min + mod(bigVal, modulus).doubleValue());
+            BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
+            return (float) (this.min + GameRandom.mod(bigVal, modulus).doubleValue());
         }
 
     }
@@ -191,8 +191,8 @@ public class GameRandom {
          * @return an 64-bit integer between min and max, inclusive.
          */
         Double clip(BigInteger bigVal) {
-            BigDecimal modulus = BigDecimal.valueOf(max + 1d - min);
-            return min + mod(bigVal, modulus).doubleValue();
+            BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
+            return this.min + GameRandom.mod(bigVal, modulus).doubleValue();
         }
 
     }
@@ -221,8 +221,8 @@ public class GameRandom {
          * @return an BigDecimal between min and max, inclusive.
          */
         BigDecimal clip(BigInteger bigVal) {
-            BigDecimal modulus = max.add(new BigDecimal("1")).subtract(min);
-            return min.add(mod(bigVal, modulus));
+            BigDecimal modulus = this.max.add(new BigDecimal("1")).subtract(this.min);
+            return this.min.add(GameRandom.mod(bigVal, modulus));
         }
 
     }
@@ -277,7 +277,7 @@ public class GameRandom {
         } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
-        initializeSeed(seed);
+        this.initializeSeed(seed);
     }
 
     public static byte[] serialize(String text) {
@@ -429,7 +429,7 @@ public class GameRandom {
      */
     private <T extends Number> T calculate(Range<T> r, BigInteger k) {
         BigInteger exp = TWO.modPow(k, lambdaM);
-        BigInteger s_k = s_0.modPow(exp, M);
+        BigInteger s_k = this.s_0.modPow(exp, M);
         return r.clip(s_k);
     }
 
@@ -437,168 +437,168 @@ public class GameRandom {
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, byte[] input) {
-        return getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, int... input) {
-        return getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, long... input) {
-        return getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, BigInteger... input) {
-        return getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public long getNumber(long min, long max, byte[] input) {
-        return getNumber(new LongRange(min, max), input);
+        return this.getNumber(new LongRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public long getNumber(long min, long max, int... input) {
-        return getNumber(new LongRange(min, max), input);
+        return this.getNumber(new LongRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public long getNumber(long min, long max, long... input) {
-        return getNumber(new LongRange(min, max), input);
+        return this.getNumber(new LongRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public long getNumber(long min, long max, BigInteger... input) {
-        return getNumber(new LongRange(min, max), input);
+        return this.getNumber(new LongRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, byte[] input) {
-        return getNumber(new BigIntegerRange(min, max), input);
+        return this.getNumber(new BigIntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, int... input) {
-        return getNumber(new BigIntegerRange(min, max), input);
+        return this.getNumber(new BigIntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, long... input) {
-        return getNumber(new BigIntegerRange(min, max), input);
+        return this.getNumber(new BigIntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, BigInteger... input) {
-        return getNumber(new BigIntegerRange(min, max), input);
+        return this.getNumber(new BigIntegerRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public float getNumber(float min, float max, byte[] input) {
-        return getNumber(new FloatRange(min, max), input);
+        return this.getNumber(new FloatRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public float getNumber(float min, float max, int... input) {
-        return getNumber(new FloatRange(min, max), input);
+        return this.getNumber(new FloatRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public float getNumber(float min, float max, long... input) {
-        return getNumber(new FloatRange(min, max), input);
+        return this.getNumber(new FloatRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public float getNumber(float min, float max, BigInteger... input) {
-        return getNumber(new FloatRange(min, max), input);
+        return this.getNumber(new FloatRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public double getNumber(double min, double max, byte[] input) {
-        return getNumber(new DoubleRange(min, max), input);
+        return this.getNumber(new DoubleRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public double getNumber(double min, double max, int... input) {
-        return getNumber(new DoubleRange(min, max), input);
+        return this.getNumber(new DoubleRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public double getNumber(double min, double max, long... input) {
-        return getNumber(new DoubleRange(min, max), input);
+        return this.getNumber(new DoubleRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public double getNumber(double min, double max, BigInteger... input) {
-        return getNumber(new DoubleRange(min, max), input);
+        return this.getNumber(new DoubleRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, byte[] input) {
-        return getNumber(new BigDecimalRange(min, max), input);
+        return this.getNumber(new BigDecimalRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, int... input) {
-        return getNumber(new BigDecimalRange(min, max), input);
+        return this.getNumber(new BigDecimalRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, long... input) {
-        return getNumber(new BigDecimalRange(min, max), input);
+        return this.getNumber(new BigDecimalRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, BigInteger... input) {
-        return getNumber(new BigDecimalRange(min, max), input);
+        return this.getNumber(new BigDecimalRange(min, max), input);
     }
 
     /**
@@ -607,12 +607,12 @@ public class GameRandom {
     @NotNull
     public <T extends Number> T getNumber(Range<T> r, byte[] input) {
         byte[] dig;
-        synchronized (md) {
-            md.reset();
-            md.update(input);
-            dig = md.digest();
+        synchronized (this.md) {
+            this.md.reset();
+            this.md.update(input);
+            dig = this.md.digest();
         }
-        return calculate(r, new BigInteger(1, dig));
+        return this.calculate(r, new BigInteger(1, dig));
     }
 
 
@@ -622,15 +622,15 @@ public class GameRandom {
     @NotNull
     public <T extends Number> T getNumber(Range<T> r, int... input) {
         byte[] dig;
-        synchronized (md) {
-            md.reset();
+        synchronized (this.md) {
+            this.md.reset();
             for (int i : input) {
-                md.update(new byte[]{(byte) (i >> 24), (byte) (i >> 16),
+                this.md.update(new byte[]{(byte) (i >> 24), (byte) (i >> 16),
                         (byte) (i >> 8), (byte) (i)});
             }
-            dig = md.digest();
+            dig = this.md.digest();
         }
-        return calculate(r, new BigInteger(1, dig));
+        return this.calculate(r, new BigInteger(1, dig));
     }
 
     /**
@@ -639,15 +639,15 @@ public class GameRandom {
     @NotNull
     public <T extends Number> T getNumber(Range<T> r, long... input) {
         byte[] dig;
-        synchronized (md) {
-            md.reset();
+        synchronized (this.md) {
+            this.md.reset();
             for (long i : input) {
-                md.update(new byte[]{(byte) (i >> 56), (byte) (i >> 48), (byte) (i >> 40), (byte) (i >> 32), (byte) (i >> 24), (byte) (i >> 16),
+                this.md.update(new byte[]{(byte) (i >> 56), (byte) (i >> 48), (byte) (i >> 40), (byte) (i >> 32), (byte) (i >> 24), (byte) (i >> 16),
                         (byte) (i >> 8), (byte) (i)});
             }
-            dig = md.digest();
+            dig = this.md.digest();
         }
-        return calculate(r, new BigInteger(1, dig));
+        return this.calculate(r, new BigInteger(1, dig));
     }
 
     /**
@@ -655,14 +655,14 @@ public class GameRandom {
      */
     public <T extends Number> T getNumber(Range<T> r, BigInteger... input) {
         byte[] dig;
-        synchronized (md) {
-            md.reset();
+        synchronized (this.md) {
+            this.md.reset();
             for (BigInteger i : input) {
-                md.update(i.toByteArray());
+                this.md.update(i.toByteArray());
             }
-            dig = md.digest();
+            dig = this.md.digest();
         }
-        return calculate(r, new BigInteger(1, dig));
+        return this.calculate(r, new BigInteger(1, dig));
     }
 
     /**
@@ -706,7 +706,7 @@ public class GameRandom {
     }
 
     public void setSeed(BigInteger seed) {
-        initializeSeed(seed);
+        this.initializeSeed(seed);
     }
 
     /**
@@ -813,6 +813,6 @@ public class GameRandom {
      * @return the current seed create the PseudoRandom.
      */
     public BigInteger getSeed() {
-        return seed;
+        return this.seed;
     }
 }

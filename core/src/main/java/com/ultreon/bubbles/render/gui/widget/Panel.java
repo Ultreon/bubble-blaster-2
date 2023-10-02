@@ -16,17 +16,13 @@ public class Panel extends Container {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderComponent(renderer);
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderComponent(renderer);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        fill(renderer, 0, 0, width, height, getBackgroundColor());
+        GuiComponent.fill(renderer, 0, 0, this.width, this.height, this.getBackgroundColor());
     }
 
-    @Override
-    public void tick() {
-
-    }
 }

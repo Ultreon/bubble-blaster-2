@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 @SuppressWarnings("unused")
 public class GameplayEvents {
     // Bubbles
-    public static final BloodMoonGameplayEvent BLOOD_MOON_EVENT = register("blood_moon", new BloodMoonGameplayEvent());
+    public static final BloodMoonGameplayEvent BLOOD_MOON_EVENT = GameplayEvents.register("blood_moon", new BloodMoonGameplayEvent());
 
     private static <T extends GameplayEvent> T register(String name, T gameplayuEvent) {
         Registries.GAMEPLAY_EVENTS.register(new Identifier(name), gameplayuEvent);

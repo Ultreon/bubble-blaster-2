@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.event.v1.WindowEvents;
-import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.size.IntSize;
@@ -210,7 +209,6 @@ public class GameWindow {
         private boolean fullscreen;
         private Runnable onClose = () -> {};
 
-        @SuppressWarnings("ConstantConditions")
         public Properties(@NotNull String title, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
             if (width < 0) throw new IllegalArgumentException("Width is negative");
             if (height < 0) throw new IllegalArgumentException("Height is negative");

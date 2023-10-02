@@ -5,7 +5,7 @@ import com.ultreon.bubbles.entity.player.Player;
 import java.util.HashMap;
 
 public final class CommandConstructor {
-    protected static final HashMap<String, CommandExecutor> commands = new HashMap<>();
+    private static final HashMap<String, CommandExecutor> commands = new HashMap<>();
 
     public static void add(String name, CommandExecutor handler) {
         commands.put(name, handler);
@@ -20,7 +20,7 @@ public final class CommandConstructor {
     }
 
     public static boolean execute(String name, Player player, String[] args) {
-        CommandExecutor handler = get(name);
+        CommandExecutor handler = CommandConstructor.get(name);
 
         if (handler == null) {
             return false;

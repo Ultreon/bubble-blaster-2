@@ -8,7 +8,7 @@ public interface Short2ShortFunction extends Function<Short, Short> {
     @Override
     @Deprecated
     default Short apply(Short aShort) {
-        return apply((short) aShort);
+        return this.apply((short) aShort);
     }
 
     short apply(short x);

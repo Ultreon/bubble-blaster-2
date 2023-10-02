@@ -8,7 +8,7 @@ public interface Float2FloatFunction extends Function<Float, Float> {
     @Override
     @Deprecated
     default Float apply(Float aFloat) {
-        return apply((float) aFloat);
+        return this.apply((float) aFloat);
     }
 
     float apply(float x);

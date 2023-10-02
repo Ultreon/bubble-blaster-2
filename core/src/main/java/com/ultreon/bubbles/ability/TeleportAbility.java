@@ -75,8 +75,8 @@ public class TeleportAbility extends Ability<TeleportAbility> {
             player.teleport(pos);
 
             // Use up the value, and set cooldown.
-            useValue((int) deltaTime);
-            setCooldown((int) (deltaTime / 3));
+            this.useValue((int) deltaTime);
+            this.setCooldown((int) (deltaTime / 3));
         }
     }
 

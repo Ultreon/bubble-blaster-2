@@ -35,6 +35,6 @@ public abstract class TextObject {
         if (text.isEmpty()) {
             return EMPTY;
         }
-        return literal(text);
+        return TextObject.literal(text);
     }
 }

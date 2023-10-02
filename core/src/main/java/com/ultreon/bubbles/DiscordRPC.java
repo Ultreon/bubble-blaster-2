@@ -42,7 +42,7 @@ public class DiscordRPC {
         if (!this.download()) return;
 
         try {
-            while (running) {
+            while (this.running) {
                 // Set parameters for the Core
                 try (var params = new CreateParams()) {
                     params.setClientID(933147296311427144L);
@@ -98,7 +98,7 @@ public class DiscordRPC {
      */
     @SuppressWarnings("BusyWait")
     private boolean callbackLoop(Core core) {
-        while (running) {
+        while (this.running) {
             try {
                 try {
                     core.runCallbacks();
@@ -107,9 +107,9 @@ public class DiscordRPC {
                     return true;
                 }
 
-                updateRpc(core);
+                this.updateRpc(core);
 
-                if (crashed) {
+                if (this.crashed) {
                     return true;
                 }
 
@@ -190,7 +190,7 @@ public class DiscordRPC {
     }
 
     public Activity getActivity() {
-        return currentActivity;
+        return this.currentActivity;
     }
 
     private void handleResult(Result result) {

@@ -7,7 +7,6 @@ import com.ultreon.commons.exceptions.InvalidValueException;
 
 import java.util.UUID;
 
-@SuppressWarnings("GrazieInspection")
 public class SwiftnessStatusEffect extends StatusEffect {
     private static final UUID SPEED_MODIFIER = UUID.fromString("6893c418-6fa3-457b-b012-6b07d1af7e12");
 

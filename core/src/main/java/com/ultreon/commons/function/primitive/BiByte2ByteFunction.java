@@ -8,7 +8,7 @@ public interface BiByte2ByteFunction extends BiFunction<Byte, Byte, Byte> {
     @Override
     @Deprecated
     default Byte apply(Byte a, Byte b) {
-        return apply((byte) a, (byte) b);
+        return this.apply((byte) a, (byte) b);
     }
 
     byte apply(byte a, byte b);

@@ -5,14 +5,16 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
-import com.ultreon.bubbles.entity.*;
+import com.ultreon.bubbles.entity.Bubble;
+import com.ultreon.bubbles.entity.Bullet;
+import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
@@ -21,6 +23,7 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.data.types.MapType;
@@ -191,8 +194,9 @@ public class Player extends LivingEntity implements InputController {
     }
 
     private Polygon transformArrow(Polygon arrow) {
-        arrow.setPosition(this.pos.x, this.pos.y);
+        // Set position based on mouse cursor
         arrow.setRotation(this.rotation);
+        arrow.setPosition(this.pos.x, this.pos.y);
 
         return arrow;
     }
@@ -346,10 +350,10 @@ public class Player extends LivingEntity implements InputController {
             this.pos.add((this.accel.x + this.velocity.x) / TPS, (this.accel.y + this.velocity.y) / TPS);
         }
 
-        double minX = bounds.x + this.getRadius();
-        double minY = bounds.y + this.getRadius();
-        double maxX = bounds.x + bounds.width - this.getRadius();
-        double maxY = bounds.y + bounds.height - this.getRadius();
+        double minX = bounds.x + this.radius();
+        double minY = bounds.y + this.radius();
+        double maxX = bounds.x + bounds.width - this.radius();
+        double maxY = bounds.y + bounds.height - this.radius();
 
         if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
         if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
@@ -713,7 +717,7 @@ public class Player extends LivingEntity implements InputController {
     }
 
     @Override
-    public float getRadius() {
+    public float radius() {
         return 20;
     }
 

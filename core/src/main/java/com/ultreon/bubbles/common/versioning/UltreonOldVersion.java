@@ -28,18 +28,18 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
         // Now create matcher object.
         Matcher m = r.matcher(s);
         if (m.find()) {
-            version = Integer.parseInt(m.group(1));
-            subversion = Integer.parseInt(m.group(2));
+            this.version = Integer.parseInt(m.group(1));
+            this.subversion = Integer.parseInt(m.group(2));
 
             switch (m.group(3)) {
-                case "alpha" -> type = Type.ALPHA;
-                case "beta" -> type = Type.BETA;
-                case "pre" -> type = Type.PRE;
-                case "release" -> type = Type.RELEASE;
+                case "alpha" -> this.type = Type.ALPHA;
+                case "beta" -> this.type = Type.BETA;
+                case "pre" -> this.type = Type.PRE;
+                case "release" -> this.type = Type.RELEASE;
                 default -> throw new InternalError("Regex has invalid output.");
             }
 
-            release = Integer.parseInt(m.group(4));
+            this.release = Integer.parseInt(m.group(4));
         } else {
             throw new IllegalArgumentException("Invalid version,");
         }
@@ -53,28 +53,28 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
     }
 
     public int getVersion() {
-        return version;
+        return this.version;
     }
 
     public Type getType() {
-        return type;
+        return this.type;
     }
 
     public int getSubversion() {
-        return subversion;
+        return this.subversion;
     }
 
     public int getRelease() {
-        return release;
+        return this.release;
     }
 
     @Override
     public boolean isStable() {
-        return type == Type.RELEASE;
+        return this.type == Type.RELEASE;
     }
 
     public String toString() {
-        return String.format("%d.%d-%s%d", version, subversion, type.name().toLowerCase(), release);
+        return String.format("%d.%d-%s%d", this.version, this.subversion, this.type.name().toLowerCase(), this.release);
     }
 
     @Override

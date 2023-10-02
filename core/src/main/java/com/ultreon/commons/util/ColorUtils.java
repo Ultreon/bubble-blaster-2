@@ -30,7 +30,7 @@ public final class ColorUtils {
             strings[i] = s.startsWith("#") ? s : "#" + s;
         }
 
-        return extractMultiHex(strings);
+        return ColorUtils.extractMultiHex(strings);
     }
 
     /**************************************************************************
@@ -80,7 +80,7 @@ public final class ColorUtils {
         ArrayList<Color> colors = new ArrayList<>();
 
         for (String colorStr : colorStrings) {
-            colors.add(unpackHex(colorStr));
+            colors.add(ColorUtils.unpackHex(colorStr));
         }
 
         return colors.toArray(new Color[0]);
@@ -97,7 +97,7 @@ public final class ColorUtils {
      */
     @Deprecated
     public static Color[] parseColorString(String colorString) {
-        return parseColorString(colorString, false);
+        return ColorUtils.parseColorString(colorString, false);
     }
 
     /**
@@ -116,6 +116,6 @@ public final class ColorUtils {
             }
         }
 
-        return multiConvertHexToRgb(strings);
+        return ColorUtils.multiConvertHexToRgb(strings);
     }
 }

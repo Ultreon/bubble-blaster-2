@@ -2,7 +2,6 @@ package com.ultreon.bubbles.text;
 
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
-import com.ultreon.libs.translations.v1.Language;
 
 public class Translations {
 

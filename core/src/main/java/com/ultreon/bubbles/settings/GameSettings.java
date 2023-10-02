@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 
-@SuppressWarnings("FieldMayBeFinal")
 public final class GameSettings implements Serializable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
             .create();
@@ -37,9 +36,9 @@ public final class GameSettings implements Serializable {
     private String language = "en";
 
     public Identifier gamemode = Gamemodes.NORMAL.id();
-    public GraphicsSettings graphicsSettings = new GraphicsSettings();
+    public final GraphicsSettings graphicsSettings = new GraphicsSettings();
     public Difficulty difficulty = Difficulty.NORMAL;
-    public DebugOptions debugOptions = new DebugOptions();
+    public final DebugOptions debugOptions = new DebugOptions();
 
 
     static {

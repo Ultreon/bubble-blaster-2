@@ -8,6 +8,6 @@ public class Command {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

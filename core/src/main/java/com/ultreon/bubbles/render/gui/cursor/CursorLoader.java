@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.resources.ResourceFileHandle;
 import com.ultreon.libs.commons.v0.Identifier;
 
 public abstract class CursorLoader {

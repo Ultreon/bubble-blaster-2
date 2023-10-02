@@ -6,22 +6,22 @@ public record KeyboardModifiers(boolean shift, boolean ctrl, boolean alt) implem
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         KeyboardModifiers that = (KeyboardModifiers) o;
-        return shift == that.shift && ctrl == that.ctrl && alt == that.alt;
+        return this.shift == that.shift && this.ctrl == that.ctrl && this.alt == that.alt;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shift, ctrl, alt);
+        return Objects.hash(this.shift, this.ctrl, this.alt);
     }
 
     @Override
     public String toString() {
         return "KeyboardModifiers{" +
-                "shift=" + shift +
-                ", ctrl=" + ctrl +
-                ", alt=" + alt +
+                "shift=" + this.shift +
+                ", ctrl=" + this.ctrl +
+                ", alt=" + this.alt +
                 '}';
     }
 

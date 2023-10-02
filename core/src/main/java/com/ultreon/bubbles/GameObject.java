@@ -11,7 +11,7 @@ public abstract class GameObject {
      * @return the x position.
      */
     public float getX() {
-        return pos.x;
+        return this.pos.x;
     }
 
     /**
@@ -27,7 +27,7 @@ public abstract class GameObject {
      * @return the y position.
      */
     public float getY() {
-        return pos.y;
+        return this.pos.y;
     }
 
     /**
@@ -39,7 +39,7 @@ public abstract class GameObject {
     }
 
     public Vector2 getPos() {
-        return pos;
+        return this.pos;
     }
 
     public abstract void render(Renderer renderer);

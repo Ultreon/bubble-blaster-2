@@ -18,13 +18,13 @@ public class DamageType {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         DamageType that = (DamageType) o;
-        return name.equals(that.name);
+        return this.name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(this.name);
     }
 }

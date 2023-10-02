@@ -10,7 +10,7 @@ public class Formula {
     }
 
     public IFormula getFormula() {
-        return formula;
+        return this.formula;
     }
 
     public void setFormula(IFormula formula) {

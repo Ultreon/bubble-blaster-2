@@ -29,7 +29,7 @@ public class TimeUtils extends UtilityClass {
      */
     @Deprecated
     public static String formatDuration(long seconds) {
-        return formatDuration(Duration.ofSeconds(seconds));
+        return TimeUtils.formatDuration(Duration.ofSeconds(seconds));
     }
 
     /**
@@ -44,12 +44,12 @@ public class TimeUtils extends UtilityClass {
 
         if (day == 0) {
             if (hour == 0)
-                return minute + ":" + pad(second);
+                return minute + ":" + TimeUtils.pad(second);
 
-            return hour + ":" + pad(minute) + ":" + pad(second);
+            return hour + ":" + TimeUtils.pad(minute) + ":" + TimeUtils.pad(second);
         }
 
-        return day + ":" + pad(hour) + ":" + pad(minute) + ":" + pad(second);
+        return day + ":" + TimeUtils.pad(hour) + ":" + TimeUtils.pad(minute) + ":" + TimeUtils.pad(second);
     }
 
     private static String pad(int value) {

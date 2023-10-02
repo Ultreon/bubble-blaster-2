@@ -20,16 +20,16 @@ public class ValueAnimator {
     public void start() {
         this.active = true;
         this.timeStart = (double) System.nanoTime() / 1000000000d;
-        this.timeEnd = timeStart + duration;
+        this.timeEnd = this.timeStart + this.duration;
     }
 
     public double animate() {
-        if (active) {
+        if (this.active) {
             double currentTime = (double) System.nanoTime() / 1000000000d;
 
             double now;
-            if (timeEnd - timeStart != 0) {
-                now = (((currentTime - timeEnd) / (timeEnd - timeStart)) + 1) / 2;
+            if (this.timeEnd - this.timeStart != 0) {
+                now = (((currentTime - this.timeEnd) / (this.timeEnd - this.timeStart)) + 1) / 2;
             } else {
                 now = 1;
             }
@@ -37,14 +37,14 @@ public class ValueAnimator {
             if (now >= 1) now = 1;
             else if (now <= 0) now = 0;
 
-            return (now * (valueEnd - valueStart)) + valueStart;
+            return (now * (this.valueEnd - this.valueStart)) + this.valueStart;
         }
         return 0;
     }
 
     public boolean isEnded() {
         double currentTime = (double) System.nanoTime() / 1000000000d;
-        double now = (((currentTime - timeEnd) / (timeEnd - timeStart)) + 1) / 2;
+        double now = (((currentTime - this.timeEnd) / (this.timeEnd - this.timeStart)) + 1) / 2;
 
         return now >= 1;
     }

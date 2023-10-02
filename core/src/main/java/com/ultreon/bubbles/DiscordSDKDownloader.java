@@ -133,12 +133,12 @@ class DiscordSDKDownloader implements IDownloader {
 
     @Override
     public float getPercent() {
-        return 100 * getRatio();
+        return 100 * this.getRatio();
     }
 
     @Override
     public float getRatio() {
-        return Mth.clamp(getBytesDownloaded() / getLength(), 0, 1);
+        return Mth.clamp(this.getBytesDownloaded() / this.getLength(), 0, 1);
     }
 
     public boolean isFailed() {

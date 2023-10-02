@@ -2,6 +2,7 @@ package com.ultreon.commons.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
  */
 @Deprecated
 public final class Percentage implements Serializable, Comparable<Percentage> {
+    @Serial
     private static final long serialVersionUID = 0L;
     private final double percentage;
 
@@ -28,16 +30,16 @@ public final class Percentage implements Serializable, Comparable<Percentage> {
     }
 
     public double value() {
-        return percentage / 100;
+        return this.percentage / 100;
     }
 
     @Override
     public int compareTo(@NotNull Percentage o) {
-        return Double.compare(percentage, o.percentage);
+        return Double.compare(this.percentage, o.percentage);
     }
 
     public double percentage() {
-        return percentage;
+        return this.percentage;
     }
 
     @Override
@@ -50,13 +52,13 @@ public final class Percentage implements Serializable, Comparable<Percentage> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(percentage);
+        return Objects.hash(this.percentage);
     }
 
     @Override
     public String toString() {
         return "Percentage[" +
-                "percentage=" + percentage + ']';
+                "percentage=" + this.percentage + ']';
     }
 
 }

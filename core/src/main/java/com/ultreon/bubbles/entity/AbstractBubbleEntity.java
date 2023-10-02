@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.entity;
 
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.world.World;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.data.types.MapType;
 
 /**
@@ -30,6 +30,8 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
         }
         this.health += value;
     }
+
+    public abstract float getRadius();
 
     @Override
     public void tick(World world) {

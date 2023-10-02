@@ -21,7 +21,7 @@ public class ExtraModuleInfoPluginExtension {
      * Add full module information for a given Jar file.
      */
     public void module(String jarName, String moduleName, String moduleVersion) {
-        module(jarName, moduleName, moduleVersion, null);
+        this.module(jarName, moduleName, moduleVersion, null);
     }
 
     /**
@@ -39,14 +39,14 @@ public class ExtraModuleInfoPluginExtension {
      * Add only an automatic module name to a given jar file.
      */
     public void automaticModule(String jarName, String moduleName) {
-        automaticModules.put(jarName, moduleName);
+        this.automaticModules.put(jarName, moduleName);
     }
 
     protected Map<String, ModuleInfo> getModuleInfo() {
-        return moduleInfo;
+        return this.moduleInfo;
     }
 
     protected Map<String, String> getAutomaticModules() {
-        return automaticModules;
+        return this.automaticModules;
     }
 }

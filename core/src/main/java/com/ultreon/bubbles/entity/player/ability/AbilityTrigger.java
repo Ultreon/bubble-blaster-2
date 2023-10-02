@@ -13,10 +13,10 @@ public abstract class AbilityTrigger {
     }
 
     public AbilityTriggerType getType() {
-        return type;
+        return this.type;
     }
 
     public Entity getEntity() {
-        return entity;
+        return this.entity;
     }
 }

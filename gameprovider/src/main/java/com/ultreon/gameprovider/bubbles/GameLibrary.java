@@ -59,6 +59,6 @@ enum GameLibrary implements LibraryType {
 
 	@Override
 	public String[] getPaths() {
-		return paths;
+		return this.paths;
 	}
 }

@@ -2,12 +2,9 @@
 
 
 import com.ultreon.bubbles.gradle.VersionType
-import org.apache.tools.ant.taskdefs.condition.Os
 
 import java.nio.file.Files
 import java.nio.file.Paths
-
-import static java.lang.System.getenv
 
 buildscript {
     repositories {
@@ -159,18 +156,6 @@ dependencies {
     api "org.apache.logging.log4j:log4j-jcl:$log4j_version"
     api "org.apache.logging.log4j:log4j-jul:$log4j_version"
     api "org.apache.logging.log4j:log4j-web:$log4j_version"
-    api("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
-    api("org.apache.xmlgraphics:batik-dom:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
-    api("org.apache.xmlgraphics:batik-swing:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
 
     // SLF4J
     api "org.slf4j:slf4j-api:$slf4j_version"

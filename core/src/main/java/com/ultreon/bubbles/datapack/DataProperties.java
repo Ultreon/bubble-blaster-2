@@ -8,7 +8,7 @@ public class DataProperties {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public static Builder builder() {
@@ -29,7 +29,7 @@ public class DataProperties {
 
         public DataProperties build() {
             DataProperties properties = new DataProperties();
-            properties.id = id;
+            properties.id = this.id;
             return properties;
         }
     }

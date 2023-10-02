@@ -54,22 +54,22 @@ public class Date implements Serializable, Comparable<Date> {
     }
 
     private long toEpochDay() {
-        LocalDate of = LocalDate.of(year, month.getIndex(), day);
+        LocalDate of = LocalDate.of(this.year, this.month.getIndex(), this.day);
         return of.toEpochDay();
     }
 
     private long toEpochSecond() {
-        LocalDate of = LocalDate.of(year, month.getIndex(), day);
+        LocalDate of = LocalDate.of(this.year, this.month.getIndex(), this.day);
         return of.toEpochDay() * 24 * 60 * 60;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(day, month, year);
+        return Objects.hash(this.day, this.month, this.year);
     }
 
     public int getDay() {
-        return day;
+        return this.day;
     }
 
     public void setDay(int day) {
@@ -77,7 +77,7 @@ public class Date implements Serializable, Comparable<Date> {
     }
 
     public Month getMonth() {
-        return month;
+        return this.month;
     }
 
     public void setMonth(Month month) {
@@ -85,7 +85,7 @@ public class Date implements Serializable, Comparable<Date> {
     }
 
     public int getYear() {
-        return year;
+        return this.year;
     }
 
     public void setYear(int year) {
@@ -93,81 +93,81 @@ public class Date implements Serializable, Comparable<Date> {
     }
 
     public DayOfWeek getDayOfWeek() {
-        LocalDate localDate = getLocalDate();
+        LocalDate localDate = this.getLocalDate();
         return localDate.getDayOfWeek();
     }
 
     public int getDayOfYear() {
-        LocalDate localDate = getLocalDate();
+        LocalDate localDate = this.getLocalDate();
         return localDate.getDayOfYear();
     }
 
     public Era getEra() {
-        LocalDate localDate = getLocalDate();
+        LocalDate localDate = this.getLocalDate();
         return localDate.getEra();
     }
 
     public MeteorologicalSeason getSeason() {
-        if (isBetween(WINTER.getStartDate(year), WINTER.getEndDate(year))) return WINTER;
-        if (isBetween(SPRING.getStartDate(year), SPRING.getEndDate(year))) return SPRING;
-        if (isBetween(SUMMER.getStartDate(year), SUMMER.getEndDate(year))) return SUMMER;
-        if (isBetween(AUTUMN.getStartDate(year), AUTUMN.getEndDate(year))) return AUTUMN;
+        if (Date.isBetween(WINTER.getStartDate(this.year), WINTER.getEndDate(this.year))) return WINTER;
+        if (Date.isBetween(SPRING.getStartDate(this.year), SPRING.getEndDate(this.year))) return SPRING;
+        if (Date.isBetween(SUMMER.getStartDate(this.year), SUMMER.getEndDate(this.year))) return SUMMER;
+        if (Date.isBetween(AUTUMN.getStartDate(this.year), AUTUMN.getEndDate(this.year))) return AUTUMN;
 
         throw new IllegalArgumentException("Expected to find season, but was outside any create the seasons.");
     }
 
     public IsoChronology getChronology() {
-        LocalDate localDate = getLocalDate();
+        LocalDate localDate = this.getLocalDate();
         return localDate.getChronology();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean isLeapYear() {
-        LocalDate localDate = getLocalDate();
+        LocalDate localDate = this.getLocalDate();
         localDate.toString();
-        return localDate.getChronology().isLeapYear(getYear());
+        return localDate.getChronology().isLeapYear(this.getYear());
     }
 
     private LocalDate getLocalDate() {
-        return LocalDate.of(year, month.getIndex(), day);
+        return LocalDate.of(this.year, this.month.getIndex(), this.day);
     }
 
     private LocalDateTime getLocalDateTime() {
-        return getStart().toLocalDateTime();
+        return this.getStart().toLocalDateTime();
     }
 
     private DateTime getStart() {
-        return new DateTime(day, month, year, 0, 0, 0);
+        return new DateTime(this.day, this.month, this.year, 0, 0, 0);
     }
 
     private DateTime getEnd() {
-        return new DateTime(day, month, year, 23, 59, 59);
+        return new DateTime(this.day, this.month, this.year, 23, 59, 59);
     }
 
     public TimeSpan toTimeSpan() {
-        return new TimeSpan(getStart(), getEnd());
+        return new TimeSpan(this.getStart(), this.getEnd());
     }
 
     @Override
     public int compareTo(@NotNull Date o) {
-        return Long.compare(toEpochDay(), toEpochDay());
+        return Long.compare(this.toEpochDay(), o.toEpochDay());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Date date = (Date) o;
-        return day == date.day &&
-                month == date.month &&
-                year == date.year;
+        return this.day == date.day &&
+                this.month == date.month &&
+                this.year == date.year;
     }
 
     public boolean equalsIgnoreYear(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Date date = (Date) o;
-        return day == date.day &&
-                month == date.month;
+        return this.day == date.day &&
+                this.month == date.month;
     }
 }

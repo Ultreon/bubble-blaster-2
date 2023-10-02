@@ -17,7 +17,7 @@ public class DebugOptions {
     }
 
     public boolean isSpacedNamespace() {
-        return spacedNamespace;
+        return this.spacedNamespace;
     }
 
     public void setSpacedNamespace(boolean spacedNamespace) {
@@ -25,7 +25,7 @@ public class DebugOptions {
     }
 
     public boolean isSpacedEnumConstants() {
-        return spacedEnumConstants;
+        return this.spacedEnumConstants;
     }
 
     public void setSpacedEnumConstants(boolean spacedEnumConstants) {

@@ -37,7 +37,7 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public long toEpochSeconds() {
-        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(year, month.getIndex(), day), LocalTime.of(hour, minute, second));
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(this.year, this.month.getIndex(), this.day), LocalTime.of(this.hour, this.minute, this.second));
         return localDateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0));
     }
 
@@ -78,7 +78,7 @@ public class DateTime implements Comparable<DateTime>, Serializable {
      * @return the hour.
      */
     public int getHour() {
-        return hour;
+        return this.hour;
     }
 
     /**
@@ -97,11 +97,10 @@ public class DateTime implements Comparable<DateTime>, Serializable {
      * @return the minute.
      */
     public int getMinute() {
-        return minute;
+        return this.minute;
     }
 
     /**
-     * @param minute
      */
     public void setMinute(int minute) {
         if (minute < 0 || minute > 59) throw new IllegalArgumentException("Minute must be between 0 and 23");
@@ -109,7 +108,7 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public int getSecond() {
-        return second;
+        return this.second;
     }
 
     public void setSecond(int second) {
@@ -118,20 +117,19 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     /**
-     * @return
      */
     public int getDay() {
-        return day;
+        return this.day;
     }
 
     public void setDay(int day) {
-        int days = getMonth().getDays(year);
-        if (minute < 1 || minute > days) throw new IllegalArgumentException("Minute must be between 1 and " + days);
+        int days = this.getMonth().getDays(this.year);
+        if (this.minute < 1 || this.minute > days) throw new IllegalArgumentException("Minute must be between 1 and " + days);
         this.day = day;
     }
 
     public int getMonthIndex() {
-        return month.getIndex();
+        return this.month.getIndex();
     }
 
     public void setMonthIndex(int index) {
@@ -139,7 +137,7 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public Month getMonth() {
-        return month;
+        return this.month;
     }
 
     public void setMonth(Month month) {
@@ -147,7 +145,7 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public int getYear() {
-        return year;
+        return this.year;
     }
 
     public void setYear(int year) {
@@ -155,11 +153,11 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public Time getTime() {
-        return new Time(hour, minute, second);
+        return new Time(this.hour, this.minute, this.second);
     }
 
     public Date getDate() {
-        return new Date(day, month, year);
+        return new Date(this.day, this.month, this.year);
     }
 
     public Duration getDuration() {
@@ -167,37 +165,37 @@ public class DateTime implements Comparable<DateTime>, Serializable {
     }
 
     public LocalTime toLocalTime() {
-        return LocalTime.of(hour, minute, second);
+        return LocalTime.of(this.hour, this.minute, this.second);
     }
 
     public LocalDate toLocalDate() {
-        return LocalDate.of(year, month.getIndex(), day);
+        return LocalDate.of(this.year, this.month.getIndex(), this.day);
     }
 
     public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(year, month.getIndex(), year, year, hour, minute, second);
+        return LocalDateTime.of(this.year, this.month.getIndex(), this.year, this.year, this.hour, this.minute, this.second);
     }
 
     @Override
     public int compareTo(DateTime o) {
-        return Long.compare(toEpochSeconds(), o.toEpochSeconds());
+        return Long.compare(this.toEpochSeconds(), o.toEpochSeconds());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getHour(), getMinute(), getSecond(), getDay(), getMonthIndex(), getYear());
+        return Objects.hash(this.getHour(), this.getMinute(), this.getSecond(), this.getDay(), this.getMonthIndex(), this.getYear());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         DateTime dateTime = (DateTime) o;
-        return getHour() == dateTime.getHour() &&
-                getMinute() == dateTime.getMinute() &&
-                getSecond() == dateTime.getSecond() &&
-                getDay() == dateTime.getDay() &&
-                getMonthIndex() == dateTime.getMonthIndex() &&
-                getYear() == dateTime.getYear();
+        return this.getHour() == dateTime.getHour() &&
+                this.getMinute() == dateTime.getMinute() &&
+                this.getSecond() == dateTime.getSecond() &&
+                this.getDay() == dateTime.getDay() &&
+                this.getMonthIndex() == dateTime.getMonthIndex() &&
+                this.getYear() == dateTime.getYear();
     }
 }

@@ -3,8 +3,8 @@ package com.ultreon.bubbles.entity.ammo;
 import com.badlogic.gdx.math.Shape2D;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.entity.Bullet;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.item.ItemType;
 import com.ultreon.bubbles.render.Renderer;
 

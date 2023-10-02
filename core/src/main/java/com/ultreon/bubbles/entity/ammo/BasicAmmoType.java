@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Shape2D;
 import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 
 public class BasicAmmoType extends AmmoType {
@@ -20,8 +21,7 @@ public class BasicAmmoType extends AmmoType {
 
     @Override
     public void render(Renderer renderer, Bullet entity) {
-        renderer.setColor(0xffdfff00);
-        renderer.fill(getShape(entity));
+        renderer.fill(this.getShape(entity), Color.rgb(0xdfff00));
     }
 
     @Override

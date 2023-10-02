@@ -4,8 +4,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.random.RandomSource;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 

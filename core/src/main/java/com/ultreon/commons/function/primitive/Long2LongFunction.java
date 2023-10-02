@@ -8,7 +8,7 @@ public interface Long2LongFunction extends Function<Long, Long> {
     @Override
     @Deprecated
     default Long apply(Long aLong) {
-        return apply((long) aLong);
+        return this.apply((long) aLong);
     }
 
     long apply(long x);

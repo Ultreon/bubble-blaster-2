@@ -8,7 +8,7 @@ public interface Byte2ByteFunction extends Function<Byte, Byte> {
     @Override
     @Deprecated
     default Byte apply(Byte aByte) {
-        return apply((byte) aByte);
+        return this.apply((byte) aByte);
     }
 
     byte apply(byte x);

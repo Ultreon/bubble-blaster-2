@@ -13,15 +13,15 @@ public class Keybind {
     }
 
     public int getDefaultKey() {
-        return defaultKey;
+        return this.defaultKey;
     }
 
     public boolean isDown() {
-        return GameInput.isKeyDown(keyCode);
+        return GameInput.isKeyDown(this.keyCode);
     }
 
     public int getKeyCode() {
-        return keyCode;
+        return this.keyCode;
     }
 
     public void setKeyCode(int keyCode) {

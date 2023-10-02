@@ -2,6 +2,8 @@ package com.ultreon.bubbles.registry;
 
 import com.badlogic.gdx.graphics.Cursor;
 import com.google.common.annotations.Beta;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.audio.SoundEvent;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.Identifier;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
@@ -10,10 +12,8 @@ import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.event.v1.GameEvents;
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
-import com.ultreon.bubbles.audio.SoundEvent;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.commons.map.OrderedHashMap;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +62,7 @@ public class Registry<T> {
     }
 
     public Identifier id() {
-        return id;
+        return this.id;
     }
 
     @SafeVarargs
@@ -87,7 +87,7 @@ public class Registry<T> {
      */
     @Nullable
     public Identifier getKey(T obj) {
-        return valueMap.get(obj);
+        return this.valueMap.get(obj);
     }
 
     /**
@@ -98,19 +98,19 @@ public class Registry<T> {
      * @throws ClassCastException if the type is invalid.
      */
     public T getValue(@Nullable Identifier key) {
-        if (!keyMap.containsKey(key)) {
-            throw new RegistryException("Cannot find object for: " + key + " | type: " + type.getSimpleName());
+        if (!this.keyMap.containsKey(key)) {
+            throw new RegistryException("Cannot find object for: " + key + " | type: " + this.type.getSimpleName());
         }
-        return keyMap.get(key);
+        return this.keyMap.get(key);
     }
 
     public boolean contains(Identifier rl) {
-        return keyMap.containsKey(rl);
+        return this.keyMap.containsKey(rl);
     }
 
     public void dumpRegistry() {
-        dumpLogger.info("Registry dump: " + type.getSimpleName());
-        for (Map.Entry<Identifier, T> entry : entries()) {
+        dumpLogger.info("Registry dump: " + this.type.getSimpleName());
+        for (Map.Entry<Identifier, T> entry : this.entries()) {
             T object = entry.getValue();
             Identifier rl = entry.getKey();
 
@@ -125,26 +125,26 @@ public class Registry<T> {
      * @param val the register item value.
      */
     public void register(Identifier rl, T val) {
-        if (!type.isAssignableFrom(val.getClass())) {
-            throw new IllegalArgumentException("Not allowed type detected, got " + val.getClass() + " expected assignable to " + type);
+        if (!this.type.isAssignableFrom(val.getClass())) {
+            throw new IllegalArgumentException("Not allowed type detected, got " + val.getClass() + " expected assignable to " + this.type);
         }
 
-        keyMap.put(rl, val);
-        valueMap.put(val, rl);
+        this.keyMap.put(rl, val);
+        this.valueMap.put(val, rl);
     }
 
     public Collection<T> values() {
-        return Collections.unmodifiableCollection(keyMap.values());
+        return Collections.unmodifiableCollection(this.keyMap.values());
     }
 
     public Set<Identifier> keys() {
-        return Collections.unmodifiableSet(keyMap.keySet());
+        return Collections.unmodifiableSet(this.keyMap.keySet());
     }
 
     public Set<Map.Entry<Identifier, T>> entries() {
         // I do this because IDE won's accept dynamic values and keys.
-        ArrayList<T> values = new ArrayList<>(values());
-        ArrayList<Identifier> keys = new ArrayList<>(keys());
+        ArrayList<T> values = new ArrayList<>(this.values());
+        ArrayList<Identifier> keys = new ArrayList<>(this.keys());
 
         if (keys.size() != values.size()) throw new IllegalStateException("Keys and values have different lengths.");
 
@@ -158,7 +158,7 @@ public class Registry<T> {
     }
 
     public Class<T> getType() {
-        return type;
+        return this.type;
     }
 
     public static void dump() {
@@ -187,6 +187,6 @@ public class Registry<T> {
     }
 
     public boolean isFrozen() {
-        return frozen;
+        return this.frozen;
     }
 }

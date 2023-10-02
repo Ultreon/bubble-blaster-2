@@ -35,29 +35,29 @@ public class RedirectPrintStream extends PrintStream {
         }
 
         @Override
-        public void write(char @NotNull [] cbuf, int off, int len) throws IOException {
-            synchronized (lock) {
+        public void write(char @NotNull [] cbuf, int off, int len) {
+            synchronized (this.lock) {
                 char[] dest = new char[len];
                 System.arraycopy(cbuf, off, dest, 0, len);
                 for (char c : dest) {
                     switch (c) {
                         case '\r' -> {
-                            if (carriageReturn) {
-                                carriageReturn = false;
-                                newLine();
+                            if (this.carriageReturn) {
+                                this.carriageReturn = false;
+                                this.newLine();
                             }
-                            carriageReturn = true;
+                            this.carriageReturn = true;
                         }
                         case '\n' -> {
-                            carriageReturn = false;
-                            newLine();
+                            this.carriageReturn = false;
+                            this.newLine();
                         }
                         default -> {
-                            if (carriageReturn) {
-                                carriageReturn = false;
-                                newLine();
+                            if (this.carriageReturn) {
+                                this.carriageReturn = false;
+                                this.newLine();
                             }
-                            chars.add(c);
+                            this.chars.add(c);
                         }
                     }
                 }
@@ -65,27 +65,27 @@ public class RedirectPrintStream extends PrintStream {
         }
 
         private void newLine() {
-            lines.add(new String(chars.toCharArray()));
-            chars.clear();
+            this.lines.add(new String(this.chars.toCharArray()));
+            this.chars.clear();
         }
 
         @Override
-        public void flush() throws IOException {
-            synchronized (lock) {
-                for (var line : lines) {
-                    logger.log(level, line);
+        public void flush() {
+            synchronized (this.lock) {
+                for (var line : this.lines) {
+                    this.logger.log(this.level, line);
                 }
-                lines.clear();
+                this.lines.clear();
             }
         }
 
         @Override
         public void close() throws IOException {
-            synchronized (lock) {
-                flush();
-                chars.clear();
-                lines.clear();
-                cache = null;
+            synchronized (this.lock) {
+                this.flush();
+                this.chars.clear();
+                this.lines.clear();
+                this.cache = null;
             }
         }
     }

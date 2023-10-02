@@ -110,7 +110,7 @@ public final class LoadScreen extends InternalScreen implements Runnable {
             int progress = this.progressMain.getProgress();
             int max = this.progressMain.getMax();
 
-            renderer.setLineWidth(9.0f);
+            renderer.setLineThickness(9.0f);
 
             // Draw current 1st line message.
             if (this.curMainMsg != null) {
@@ -283,11 +283,7 @@ public final class LoadScreen extends InternalScreen implements Runnable {
                 }
                 Resource finalResource = resource;
                 ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
-                    try {
-                        return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
                 }));
             });
         }
@@ -332,11 +328,7 @@ public final class LoadScreen extends InternalScreen implements Runnable {
         if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
         Resource finalResource = resource;
         ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> {
-            try {
-                return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
         }));
     }
 

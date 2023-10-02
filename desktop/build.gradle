@@ -121,18 +121,6 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-jcl:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-jul:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-web:$log4j_version"
-    implementation("org.apache.xmlgraphics:batik-svg-dom:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
-    implementation("org.apache.xmlgraphics:batik-dom:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
-    implementation("org.apache.xmlgraphics:batik-swing:$batik_version") {
-        exclude group: 'xml-apis', module: 'xml-apis-ext'
-        exclude group: 'xml-apis', module: 'xml-apis'
-    }
 
     // SLF4J
     implementation "org.slf4j:slf4j-api:$slf4j_version"

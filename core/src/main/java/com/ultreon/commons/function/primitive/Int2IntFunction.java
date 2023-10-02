@@ -8,7 +8,7 @@ public interface Int2IntFunction extends Function<Integer, Integer> {
     @Override
     @Deprecated
     default Integer apply(Integer aInteger) {
-        return apply((int) aInteger);
+        return this.apply((int) aInteger);
     }
 
     int apply(int x);
@@ -90,11 +90,11 @@ public interface Int2IntFunction extends Function<Integer, Integer> {
     }
 
     static Int2IntFunction floor() {
-        return x -> (int) Math.floor(x);
+        return x -> (int) (double) x;
     }
 
     static Int2IntFunction ceil() {
-        return x -> (int) Math.ceil(x);
+        return x -> (int) (double) x;
     }
 
     static Int2IntFunction log() {

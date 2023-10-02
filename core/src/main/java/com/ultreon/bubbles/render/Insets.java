@@ -40,32 +40,32 @@ public class Insets implements Cloneable, Serializable {
     }
 
     public void shrink(int amount) {
-        top -= amount;
-        left -= amount;
-        bottom -= amount;
-        right -= amount;
+        this.top -= amount;
+        this.left -= amount;
+        this.bottom -= amount;
+        this.right -= amount;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Insets insets = (Insets) o;
-        return top == insets.top && left == insets.left && bottom == insets.bottom && right == insets.right;
+        return this.top == insets.top && this.left == insets.left && this.bottom == insets.bottom && this.right == insets.right;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(top, left, bottom, right);
+        return Objects.hash(this.top, this.left, this.bottom, this.right);
     }
 
     @Override
     public String toString() {
         return "Insets{" +
-                "top=" + top +
-                ", left=" + left +
-                ", bottom=" + bottom +
-                ", right=" + right +
+                "top=" + this.top +
+                ", left=" + this.left +
+                ", bottom=" + this.bottom +
+                ", right=" + this.right +
                 '}';
     }
 

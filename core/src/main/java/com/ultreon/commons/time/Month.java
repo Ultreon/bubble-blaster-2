@@ -24,7 +24,7 @@ public enum Month {
     }
 
     public Date endDate(int year) {
-        return this.asDate(getDays(year), year);
+        return this.asDate(this.getDays(year), year);
     }
 
     public int getDays(int year) {

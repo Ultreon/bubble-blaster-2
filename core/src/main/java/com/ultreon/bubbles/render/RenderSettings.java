@@ -6,34 +6,34 @@ import com.ultreon.bubbles.GameWindow;
 public class RenderSettings {
     private final boolean antialiasingBackup = BubbleBlaster.getInstance().isAntialiasEnabled();
     private final GameWindow window = BubbleBlaster.getInstance().getGameWindow();
-    private boolean antialiasingOverride = antialiasingBackup;
+    private boolean antialiasingOverride = this.antialiasingBackup;
 
     public boolean isAntialiasingEnabled() {
-        return antialiasingOverride;
+        return this.antialiasingOverride;
     }
 
     public void setAntialiasing(boolean antialiasing) {
-        antialiasingOverride = antialiasing;
+        this.antialiasingOverride = antialiasing;
     }
 
     public void resetAntialiasing() {
-        antialiasingOverride = antialiasingBackup;
+        this.antialiasingOverride = this.antialiasingBackup;
     }
 
     public void enableAntialiasing() {
-        antialiasingOverride = true;
+        this.antialiasingOverride = true;
     }
 
     public void disableAntialiasing() {
-        antialiasingOverride = false;
+        this.antialiasingOverride = false;
     }
 
     public float getScale() {
         if (BubbleBlaster.getInstance() == null) {
             return 1.f;
         }
-        int width = window.getWidth();
-        int height = window.getHeight();
+        int width = this.window.getWidth();
+        int height = this.window.getHeight();
 
         return width > height ? width / 600f : height / 600f;
     }

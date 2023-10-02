@@ -17,7 +17,7 @@ public abstract class AttributeStatusEffect extends StatusEffect {
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         super.onStart(appliedEffect, entity);
 
-        for (Map.Entry<Attribute, AttributeModifier> entry : getAttributeModifiers(appliedEffect.getStrength()).entries()) {
+        for (Map.Entry<Attribute, AttributeModifier> entry : this.getAttributeModifiers(appliedEffect.getStrength()).entries()) {
             Attribute key = entry.getKey();
             AttributeModifier value = entry.getValue();
             entity.getAttributes().addModifier(key, value);
@@ -28,7 +28,7 @@ public abstract class AttributeStatusEffect extends StatusEffect {
     public void onStop(Entity entity) {
         super.onStop(entity);
 
-        for (Map.Entry<Attribute, AttributeModifier> entry : getAttributeModifiers(-1).entries()) {
+        for (Map.Entry<Attribute, AttributeModifier> entry : this.getAttributeModifiers(-1).entries()) {
             Attribute key = entry.getKey();
             AttributeModifier value = entry.getValue();
             entity.getAttributes().removeModifier(key, value.id());

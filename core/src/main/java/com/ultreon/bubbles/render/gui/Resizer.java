@@ -32,25 +32,25 @@ public class Resizer {
         float width;
         float height;
 
-        if (sourceWidth < sourceHeight) {
-            aspectRatio = (float) (sourceWidth / (double) sourceHeight);
+        if (this.sourceWidth < this.sourceHeight) {
+            aspectRatio = (float) (this.sourceWidth / (double) this.sourceHeight);
 
             width = maxWidth;
             height = (int) (width / aspectRatio);
 
             if (height < maxHeight) {
-                aspectRatio = (float) (sourceHeight / (double) sourceWidth);
+                aspectRatio = (float) (this.sourceHeight / (double) this.sourceWidth);
 
                 height = maxHeight;
                 width = (int) (height / aspectRatio);
             }
         } else {
-            aspectRatio = (float) (sourceHeight / (double) sourceWidth);
+            aspectRatio = (float) (this.sourceHeight / (double) this.sourceWidth);
 
             height = maxHeight;
             width = (int) (height / aspectRatio);
             if (width < maxWidth) {
-                aspectRatio = (float) (sourceWidth / (double) sourceHeight);
+                aspectRatio = (float) (this.sourceWidth / (double) this.sourceHeight);
 
                 width = maxWidth;
                 height = (int) (width / aspectRatio);
@@ -70,22 +70,22 @@ public class Resizer {
     }
 
     public float getRatio() {
-        return ratio;
+        return this.ratio;
     }
 
     public float getRelativeRatio() {
-        return relativeRatio;
+        return this.relativeRatio;
     }
 
     public Orientation getOrientation() {
-        return orientation;
+        return this.orientation;
     }
 
     public float getSourceWidth() {
-        return sourceWidth;
+        return this.sourceWidth;
     }
 
     public float getSourceHeight() {
-        return sourceHeight;
+        return this.sourceHeight;
     }
 }

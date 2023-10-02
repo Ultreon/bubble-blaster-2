@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.render.gui.widget.view;
 
-import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.checkerframework.common.value.qual.IntRange;
 

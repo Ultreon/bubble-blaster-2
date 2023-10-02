@@ -3,8 +3,8 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.common.EntityProperties;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 
 /**

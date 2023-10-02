@@ -11,6 +11,6 @@ public final class EntityDamageSource extends DamageSource {
     }
 
     public Entity getEntity() {
-        return entity;
+        return this.entity;
     }
 }

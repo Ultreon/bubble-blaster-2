@@ -51,7 +51,6 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public StatusEffectInstance(StatusEffect type, Duration duration, int strength) throws InvalidValueException {
-        //noinspection ConstantConditions
         if (strength < 1) {
             throw new InvalidValueException("Cannot create effect instance with strength < 1");
         }

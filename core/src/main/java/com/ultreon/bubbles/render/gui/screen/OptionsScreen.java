@@ -1,13 +1,13 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.text.Translations;
-import com.ultreon.libs.translations.v1.Language;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
+import com.ultreon.bubbles.text.Translations;
+import com.ultreon.libs.translations.v1.Language;
 
 @SuppressWarnings("unused")
 public class OptionsScreen extends Screen {
@@ -15,7 +15,7 @@ public class OptionsScreen extends Screen {
     private Button languageButton;
     private Button cancelButton;
     private Button saveButton;
-    private Screen back;
+    private final Screen back;
 
     public OptionsScreen(Screen back) {
         super();

@@ -5,7 +5,6 @@ import com.ultreon.bubbles.entity.ai.AiTarget;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
-import org.apache.commons.lang3.Range;
 
 public class PoisonBubble extends BubbleType {
     public PoisonBubble() {

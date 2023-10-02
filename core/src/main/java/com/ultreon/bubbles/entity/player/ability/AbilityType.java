@@ -23,6 +23,6 @@ public class AbilityType<T extends Ability<T>> {
      * @return the ability.
      */
     public T getAbility() {
-        return ability.get();
+        return this.ability.get();
     }
 }

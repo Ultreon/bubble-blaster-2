@@ -14,10 +14,10 @@ public enum DifficultyEffectType {
     }
 
     public boolean isSpeed() {
-        return speed;
+        return this.speed;
     }
 
     public boolean isLocal() {
-        return local;
+        return this.local;
     }
 }

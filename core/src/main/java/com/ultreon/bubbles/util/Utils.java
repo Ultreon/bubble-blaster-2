@@ -2,9 +2,8 @@ package com.ultreon.bubbles.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
-import com.ultreon.libs.commons.v0.vector.Vec3d;
-import com.ultreon.libs.commons.v0.vector.Vec3i;
 import com.badlogic.gdx.math.Vector3;
+import com.ultreon.libs.commons.v0.vector.Vec3d;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

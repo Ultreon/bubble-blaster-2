@@ -1,14 +1,14 @@
 package com.ultreon.bubbles.render.gui.widget.view;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.badlogic.gdx.math.Rectangle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@SuppressWarnings({"FieldMayBeFinal", "unused"})
+@SuppressWarnings({"unused"})
 public class ScrollView extends View {
     @SuppressWarnings("FieldCanBeLocal")
     private final Screen screen;
@@ -38,7 +38,7 @@ public class ScrollView extends View {
 
     @Override
     public void render(@NotNull Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.subInstance((int) outerBounds.getX(), (int) outerBounds.getY(), (int) outerBounds.getWidth(), (int) outerBounds.getHeight(), containerGraphics -> {
+        renderer.subInstance((int) this.outerBounds.getX(), (int) this.outerBounds.getY(), (int) this.outerBounds.getWidth(), (int) this.outerBounds.getHeight(), containerGraphics -> {
             for (GuiComponent child : this.children) {
                 child.render(containerGraphics, mouseX, mouseY, deltaTime);
             }

@@ -8,7 +8,7 @@ public interface BiShort2ShortFunction extends BiFunction<Short, Short, Short> {
     @Override
     @Deprecated
     default Short apply(Short a, Short b) {
-        return apply((short) a, (short) b);
+        return this.apply((short) a, (short) b);
     }
 
     short apply(short a, short b);

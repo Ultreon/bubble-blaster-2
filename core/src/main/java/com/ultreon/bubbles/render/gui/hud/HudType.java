@@ -2,11 +2,11 @@ package com.ultreon.bubbles.render.gui.hud;
 
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.common.Controllable;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.bubbles.world.World;
 
 /**
  * HUD Baseclass

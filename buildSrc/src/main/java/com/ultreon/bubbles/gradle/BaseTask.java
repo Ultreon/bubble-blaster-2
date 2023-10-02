@@ -7,6 +7,6 @@ public abstract class BaseTask extends DefaultTask {
 
     public BaseTask(String name, String group) {
         this.name = name;
-        setGroup(group);
+        this.setGroup(group);
     }
 }

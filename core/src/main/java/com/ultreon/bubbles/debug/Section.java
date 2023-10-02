@@ -1,6 +1,8 @@
 package com.ultreon.bubbles.debug;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Section {
     private long start;
@@ -25,53 +27,53 @@ public class Section {
     }
 
     public long getStart() {
-        return start;
+        return this.start;
     }
 
     public long getEnd() {
-        return end;
+        return this.end;
     }
 
     public long getMillis() {
-        return end - start;
+        return this.end - this.start;
     }
 
     public void start(String name) {
-        if (current != null) {
-            current.start(name);
+        if (this.current != null) {
+            this.current.start(name);
             return;
         }
-        current = values.computeIfAbsent(name, $ -> new Section(name, profiler));
-        current.startThis();
+        this.current = this.values.computeIfAbsent(name, $ -> new Section(name, this.profiler));
+        this.current.startThis();
     }
 
     public void end() {
-        if (current == null) return;
-        if (current.hasCurrent()) {
-            current.end();
+        if (this.current == null) return;
+        if (this.current.hasCurrent()) {
+            this.current.end();
             return;
         }
-        current.endThis();
-        values.put(name, current);
-        current = null;
+        this.current.endThis();
+        this.values.put(this.name, this.current);
+        this.current = null;
     }
 
     public Map<String, Section> getValues() {
-        return Collections.unmodifiableMap(values);
+        return Collections.unmodifiableMap(this.values);
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public boolean hasCurrent() {
-        return current != null;
+        return this.current != null;
     }
 
     @Override
     public String toString() {
         return "Section{" +
-                "name='" + name + '\'' +
+                "name='" + this.name + '\'' +
                 '}';
     }
 }

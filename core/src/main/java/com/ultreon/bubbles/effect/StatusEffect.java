@@ -1,14 +1,9 @@
 package com.ultreon.bubbles.effect;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
-import com.ultreon.bubbles.entity.attribute.AttributeModifier;
-import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.TextureManager;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -16,11 +11,7 @@ import com.ultreon.libs.registries.v0.exception.RegistryException;
 import com.ultreon.libs.resources.v0.Resource;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 
 public abstract class StatusEffect {
@@ -39,7 +30,7 @@ public abstract class StatusEffect {
 
     public Identifier getIconId() {
         Identifier key = Registries.EFFECTS.getKey(this);
-        if (key == null) throw new RegistryException("Object not registered: " + getClass().getName());
+        if (key == null) throw new RegistryException("Object not registered: " + this.getClass().getName());
         return key.mapPath(path -> "effects/" + path);
     }
 
@@ -53,13 +44,13 @@ public abstract class StatusEffect {
     }
 
     public Texture getIcon() {
-        if (cachedTexture != null) {
-            return cachedTexture;
+        if (this.cachedTexture != null) {
+            return this.cachedTexture;
         }
 
         BubbleBlaster game = BubbleBlaster.getInstance();
-        com.badlogic.gdx.graphics.Texture texture = game.getTextureManager().getOrLoadTexture(getIconId());
-        return cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
+        com.badlogic.gdx.graphics.Texture texture = game.getTextureManager().getOrLoadTexture(this.getIconId());
+        return this.cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 
     public final void tick(Entity entity, StatusEffectInstance appliedEffect) {

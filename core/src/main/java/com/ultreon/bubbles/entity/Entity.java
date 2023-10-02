@@ -15,12 +15,12 @@ import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.init.BubbleTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.CollisionUtil;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
@@ -53,7 +53,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     private UUID uuid;
 
     // Types
-    protected EntityType<?> type;
+    protected final EntityType<?> type;
 
     // Misc
     protected Shape2D shape;
@@ -64,7 +64,7 @@ public abstract class Entity extends GameObject implements StateHolder {
 
     // Attributes
     protected float scale = 1f;
-    protected AttributeContainer attributes = new AttributeContainer();
+    protected final AttributeContainer attributes = new AttributeContainer();
     protected AttributeContainer bases = new AttributeContainer();
 
     // Flags
@@ -102,7 +102,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param type the type of entity to use.
      * @param world the world where it would spawn in.
      */
-    public Entity(EntityType<?> type, World world) {
+    public Entity(EntityType<?> type, @NotNull World world) {
         this.world = world;
         this.type = type;
     }
@@ -890,7 +890,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      *
      * @return the entity collision size.
      */
-    public abstract float getRadius();
+    public abstract float radius();
 
     public float getDistanceToTarget() {
         return this.pos.dst(this.target.pos);
@@ -906,7 +906,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the distance between this entity and the other.
      */
     public final double distanceTo(Entity entityB) {
-        return this.pos.dst(entityB.pos);
+        return this.pos.cpy().dst(entityB.pos);
     }
 
     /**

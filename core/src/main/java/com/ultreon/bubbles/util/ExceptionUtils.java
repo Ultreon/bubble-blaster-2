@@ -13,11 +13,11 @@ public class ExceptionUtils {
     }
 
     public static String getStackTrace() {
-        return getStackTrace(new RuntimeException());
+        return ExceptionUtils.getStackTrace(new RuntimeException());
     }
 
     public static String getStackTrace(String message) {
-        return getStackTrace(new RuntimeException(message));
+        return ExceptionUtils.getStackTrace(new RuntimeException(message));
     }
 
     public static String getStackTrace(Throwable throwable) {

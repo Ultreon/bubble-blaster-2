@@ -23,13 +23,13 @@ public final class CrashLog extends CrashCategory {
     public CrashLog(String details, CrashLog report) {
         super(details);
 
-        throwable = addCrashLog(report).throwable;
+        this.throwable = this.addCrashLog(report).throwable;
     }
 
     public CrashLog(String details, @Nullable CrashLog report, Throwable t) {
         this(details, t);
 
-        if (report != null) addCrashLog(report);
+        if (report != null) this.addCrashLog(report);
     }
 
     public CrashLog(String details, Throwable t) {
@@ -40,10 +40,10 @@ public final class CrashLog extends CrashCategory {
         CrashCategory cat = new CrashCategory(log.getDetails(), log.getThrowable());
         cat.entries.clear();
         cat.entries.addAll(log.entries);
-        addCategory(cat);
+        this.addCategory(cat);
 
         for (CrashCategory category : log.getCategories()) {
-            addCategory(category);
+            this.addCategory(category);
         }
 
         return log;
@@ -54,12 +54,12 @@ public final class CrashLog extends CrashCategory {
         CrashLog crashLog1 = new CrashLog(crashLog.details, crashLog.throwable);
         crashLog1.categories.addAll(crashLog.categories.subList(0, crashLog.categories.size() - 1));
         crashLog1.entries.addAll(crashLog.entries);
-        return addCrashLog(crashLog1);
+        return this.addCrashLog(crashLog1);
     }
 
     @NotNull
     public Throwable getThrowable() {
-        return throwable;
+        return this.throwable;
     }
 
     public void addCategory(CrashCategory crashCategory) {
@@ -67,13 +67,13 @@ public final class CrashLog extends CrashCategory {
     }
 
     public List<CrashCategory> getCategories() {
-        return Collections.unmodifiableList(categories);
+        return Collections.unmodifiableList(this.categories);
     }
 
     private CrashLog getFinalForm() {
-        CrashLog crashLog = new CrashLog(details, throwable);
-        crashLog.categories.addAll(categories);
-        crashLog.entries.addAll(entries);
+        CrashLog crashLog = new CrashLog(this.details, this.throwable);
+        crashLog.categories.addAll(this.categories);
+        crashLog.entries.addAll(this.entries);
 
         Runtime runtime = Runtime.getRuntime();
 
@@ -86,20 +86,20 @@ public final class CrashLog extends CrashCategory {
     }
 
     public ApplicationCrash createCrash() {
-        return new ApplicationCrash(getFinalForm());
+        return new ApplicationCrash(this.getFinalForm());
     }
 
     @Override
     public String toString() {
-        String s1 = "// " + details + "\r\n";
+        String s1 = "// " + this.details + "\r\n";
         StringBuilder cs = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
         Runtime runtime = Runtime.getRuntime();
 
-        if (entries.size() > 0) {
+        if (!this.entries.isEmpty()) {
             sb.append("Details:").append(System.lineSeparator());
-            for (AbstractMap.SimpleEntry<String, String> entry : entries) {
+            for (AbstractMap.SimpleEntry<String, String> entry : this.entries) {
                 sb.append("  ").append(entry.getKey());
                 sb.append(": ");
                 sb.append(entry.getValue());
@@ -107,7 +107,7 @@ public final class CrashLog extends CrashCategory {
             }
         }
 
-        for (CrashCategory category : categories) {
+        for (CrashCategory category : this.categories) {
             cs.append(System.lineSeparator()).append("=------------------------------------------------------------------=");
             cs.append(System.lineSeparator()).append(category.toString());
         }
@@ -116,7 +116,7 @@ public final class CrashLog extends CrashCategory {
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
+        this.throwable.printStackTrace(pw);
 
         return ">>> C R A S H   R E P O R T <<<\r\n" + s1 + "\r\n" + sw + cs + "\r\n" + sb;
     }
@@ -136,12 +136,12 @@ public final class CrashLog extends CrashCategory {
             }
         }
 
-        writeToFile(new File(file, getDefaultFileName()));
+        this.writeToFile(new File(file, this.getDefaultFileName()));
     }
 
     public void writeToFile(File file) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(toString().getBytes(StandardCharsets.UTF_8));
+            fileOutputStream.write(this.toString().getBytes(StandardCharsets.UTF_8));
             fileOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

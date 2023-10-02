@@ -11,19 +11,19 @@ public class OS {
     public OS() {
     }
 
-    public static final boolean isWindows() {
-        return getOSType() == OS.OSType.OSWindows;
+    public static boolean isWindows() {
+        return OS.getOSType() == OS.OSType.OSWindows;
     }
 
-    public static final boolean isMacintosh() {
-        return getOSType() == OS.OSType.OSMacintosh;
+    public static boolean isMacintosh() {
+        return OS.getOSType() == OS.OSType.OSMacintosh;
     }
 
-    public static final boolean isLinux() {
-        return getOSType() == OS.OSType.OSLinux;
+    public static boolean isLinux() {
+        return OS.getOSType() == OS.OSType.OSLinux;
     }
 
-    private static final OSType getOSType() {
+    private static OSType getOSType() {
         if (osType == OS.OSType.OSUndefined) {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.startsWith("windows")) {
@@ -44,14 +44,14 @@ public class OS {
         osType = OS.OSType.OSUndefined;
     }
 
-    private static enum OSType {
+    private enum OSType {
         OSUndefined,
         OSLinux,
         OSWindows,
         OSMacintosh,
         OSUnknown;
 
-        private OSType() {
+        OSType() {
         }
     }
 }

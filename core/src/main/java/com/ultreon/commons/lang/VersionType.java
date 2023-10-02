@@ -20,16 +20,16 @@ public enum VersionType {
 
     @Override
     public String toString() {
-        return name;
+        return this.name;
     }
 
     public String toRepresentation() {
         return "VersionType{" +
-                "name='" + name + '\'' +
+                "name='" + this.name + '\'' +
                 '}';
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

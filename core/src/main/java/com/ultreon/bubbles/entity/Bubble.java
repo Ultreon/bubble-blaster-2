@@ -16,13 +16,13 @@ import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.init.BubbleTypes;
-import com.ultreon.bubbles.world.World;
-import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.util.EnumUtils;
@@ -255,7 +255,7 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public Circle getShape() {
-        float rad = this.radius;
+        float rad = this.radius / 2;
         return new Circle(this.pos.x - rad, this.pos.y - rad, rad);
     }
 
@@ -277,6 +277,10 @@ public class Bubble extends AbstractBubbleEntity {
 
     public float getRadius() {
         return this.radius;
+    }
+
+    public float radius() {
+        return this.getShape().radius;
     }
 
     public int getBaseSize() {
@@ -331,7 +335,7 @@ public class Bubble extends AbstractBubbleEntity {
         if (this.isValid() && this.isVisible())
             SoundEvents.BUBBLE_POP.play(0.3f);
 
-        this.destroy();
+        this.delete();
         this.isBeingDestroyed = true;
         this.attributes.removeModifiers(Attribute.SCORE);
         this.attributes.setBase(Attribute.SCORE, 0);

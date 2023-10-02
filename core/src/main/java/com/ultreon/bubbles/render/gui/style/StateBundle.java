@@ -23,7 +23,7 @@ public class StateBundle<T> {
 
     @Nullable
     public T getActive() {
-        return active;
+        return this.active;
     }
 
     public void setActive(@Nullable T active) {
@@ -32,7 +32,7 @@ public class StateBundle<T> {
 
     @NotNull
     public T getHover() {
-        return hover;
+        return this.hover;
     }
 
     public void setHover(@NotNull T hover) {
@@ -41,7 +41,7 @@ public class StateBundle<T> {
 
     @NotNull
     public T getNormal() {
-        return normal;
+        return this.normal;
     }
 
     public void setNormal(@NotNull T normal) {
@@ -50,7 +50,7 @@ public class StateBundle<T> {
 
     @NotNull
     public T getPressed() {
-        return pressed;
+        return this.pressed;
     }
 
     public void setPressed(@NotNull T pressed) {

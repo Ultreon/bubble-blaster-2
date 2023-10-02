@@ -8,88 +8,88 @@ public interface LongSupplier extends Supplier<Long> {
     @Deprecated
     @Override
     default Long get() {
-        return getLong();
+        return this.getLong();
     }
 
     long getLong();
 
     default LongSupplier and(LongSupplier supplier) {
-        return () -> getLong() & supplier.getLong();
+        return () -> this.getLong() & supplier.getLong();
     }
 
     default LongSupplier or(LongSupplier supplier) {
-        return () -> getLong() | supplier.getLong();
+        return () -> this.getLong() | supplier.getLong();
     }
 
     default LongSupplier add(LongSupplier supplier) {
-        return () -> getLong() + supplier.getLong();
+        return () -> this.getLong() + supplier.getLong();
     }
 
     default LongSupplier sub(LongSupplier supplier) {
-        return () -> getLong() - supplier.getLong();
+        return () -> this.getLong() - supplier.getLong();
     }
 
     default LongSupplier mul(LongSupplier supplier) {
-        return () -> getLong() * supplier.getLong();
+        return () -> this.getLong() * supplier.getLong();
     }
 
     default LongSupplier div(LongSupplier supplier) {
-        return () -> getLong() / supplier.getLong();
+        return () -> this.getLong() / supplier.getLong();
     }
 
     default LongSupplier mod(LongSupplier supplier) {
-        return () -> getLong() % supplier.getLong();
+        return () -> this.getLong() % supplier.getLong();
     }
 
     default LongSupplier pow(LongSupplier supplier) {
-        return () -> (long) Math.pow(getLong(), supplier.getLong());
+        return () -> (long) Math.pow(this.getLong(), supplier.getLong());
     }
 
     default LongSupplier sqrt() {
-        return () -> (long) Math.sqrt(getLong());
+        return () -> (long) Math.sqrt(this.getLong());
     }
 
     default LongSupplier round() {
-        return () -> (long) Math.round(getLong());
+        return () -> (long) Math.round(this.getLong());
     }
 
     default LongSupplier sin() {
-        return () -> (long) Math.sin(getLong());
+        return () -> (long) Math.sin(this.getLong());
     }
 
     default LongSupplier cos() {
-        return () -> (long) Math.cos(getLong());
+        return () -> (long) Math.cos(this.getLong());
     }
 
     default LongSupplier tan() {
-        return () -> (long) Math.tan(getLong());
+        return () -> (long) Math.tan(this.getLong());
     }
 
     default LongSupplier asin() {
-        return () -> (long) Math.asin(getLong());
+        return () -> (long) Math.asin(this.getLong());
     }
 
     default LongSupplier acos() {
-        return () -> (long) Math.acos(getLong());
+        return () -> (long) Math.acos(this.getLong());
     }
 
     default LongSupplier atan() {
-        return () -> (long) Math.atan(getLong());
+        return () -> (long) Math.atan(this.getLong());
     }
 
     default LongSupplier atan2(LongSupplier supplier) {
-        return () -> (long) Math.atan2(getLong(), supplier.getLong());
+        return () -> (long) Math.atan2(this.getLong(), supplier.getLong());
     }
 
     default LongSupplier sinh() {
-        return () -> (long) Math.sinh(getLong());
+        return () -> (long) Math.sinh(this.getLong());
     }
 
     default LongSupplier cosh() {
-        return () -> (long) Math.cosh(getLong());
+        return () -> (long) Math.cosh(this.getLong());
     }
 
     default LongSupplier tanh() {
-        return () -> (long) Math.tanh(getLong());
+        return () -> (long) Math.tanh(this.getLong());
     }
 }

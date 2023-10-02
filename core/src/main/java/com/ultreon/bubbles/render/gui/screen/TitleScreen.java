@@ -8,7 +8,6 @@ import com.ultreon.bubbles.render.gui.widget.TitleButton;
 import com.ultreon.libs.text.v1.TextObject;
 import net.fabricmc.loader.api.FabricLoader;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class TitleScreen extends Screen {
 
     public TitleScreen() {

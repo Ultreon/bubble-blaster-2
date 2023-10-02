@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.event.v1;
 
-import com.ultreon.bubbles.event.v1.utils.FontLoader;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.event.v1.utils.FontLoader;
 import com.ultreon.bubbles.registry.Registry;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.libs.crash.v0.ApplicationCrash;

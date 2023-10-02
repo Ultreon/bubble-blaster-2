@@ -6,9 +6,9 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.Label;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
-import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.OptionsTextEntry;
 import com.ultreon.libs.text.v1.TextObject;
 

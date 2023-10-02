@@ -4,7 +4,6 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
-import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
@@ -14,10 +13,10 @@ import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.libs.text.v1.TextObject;
 import com.ultreon.libs.translations.v1.Language;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {

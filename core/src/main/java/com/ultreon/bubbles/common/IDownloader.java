@@ -4,5 +4,5 @@ import java.io.File;
 import java.io.IOException;
 
 public interface IDownloader {
-    File download() throws IOException;
+    File download();
 }

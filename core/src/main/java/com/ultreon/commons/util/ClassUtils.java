@@ -16,7 +16,7 @@ public class ClassUtils {
     }
 
     public static Class<?> getCallerClass() {
-        String className = getCallerClassName();
+        String className = ClassUtils.getCallerClassName();
 
         if (className == null) {
             return null;
@@ -31,12 +31,12 @@ public class ClassUtils {
     }
 
     public static void checkCallerClassEquals(Class<?> clazz) {
-        if (getCallerClass() != clazz)
+        if (ClassUtils.getCallerClass() != clazz)
             throw new IllegalCallerException("Called from illegal class, valid class: " + clazz.getSimpleName());
     }
 
     public static void checkCallerClassExtends(Class<?> clazz) {
-        if (getCallerClass() == null || getCallerClass().isAssignableFrom(clazz))
+        if (ClassUtils.getCallerClass() == null || ClassUtils.getCallerClass().isAssignableFrom(clazz))
             throw new IllegalCallerException("Called from illegal class, valid (extendable) class: " + clazz.getSimpleName());
     }
 }

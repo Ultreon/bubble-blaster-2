@@ -9,15 +9,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -42,8 +42,6 @@ import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.debug.ThreadSection;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
-import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.bubbles.event.v1.*;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.*;
@@ -58,9 +56,10 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.*;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.*;
-import com.ultreon.bubbles.render.gui.screen.SplashScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.util.RandomValueSource;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.gameprovider.bubbles.OS;
 import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -107,7 +106,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.annotation.concurrent.NotThreadSafe;
-import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
@@ -270,13 +268,14 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private final Map<UUID, Runnable> afterLoading = new OrderedHashMap<>();
     private long lastTickMs;
     private boolean isTickThreadDead;
-    private CpuSpriteBatch batch;
+    private SpriteBatch batch;
     private final List<MusicEvent> menuMusicList = Lists.newArrayList(MusicEvents.SUBMARINE);
     private final List<MusicEvent> gameplayMusicList = Lists.newArrayList(MusicEvents.SUBMARINE);
     public final MusicSystem gameplayMusic = new MusicSystem(RandomValueSource.random(3.0, 6.0), RandomValueSource.random(40.0, 80.0), this.gameplayMusicList);
     public final MusicSystem menuMusic = new MusicSystem(RandomValueSource.random(1.0, 3.0), RandomValueSource.random(5.0, 10.0), this.menuMusicList);
     private int width;
     private int height;
+    private ShapeRenderer shapes;
 
     public BubbleBlaster() {
         if (instance != null) {
@@ -445,17 +444,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         HdpiUtils.setMode(HdpiMode.Pixels);
 
         // Create CPU sprite batch
-        this.batch = new CpuSpriteBatch();
-
-        // Create a pixmap with a single white pixel
-        var singlePxPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        singlePxPixmap.setColor(Color.rgb(0xffffff).toGdx());
-        singlePxPixmap.drawPixel(0, 0);
-        var singlePxTex = new Texture(singlePxPixmap);
-        var pixel = new TextureRegion(singlePxTex);
-
-        // Create shape drawer
-        var shapes = new ShapeDrawer(this.batch, pixel);
+        this.batch = new SpriteBatch();
 
         this.textureManager = TextureManager.instance();
         this.debugRenderer = new DebugRenderer(this);
@@ -463,7 +452,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.camera.setToOrtho(true, this.getWidth(), this.getHeight()); // Set up the camera's projection matrix
         this.viewport = new ScreenViewport(this.camera);
 
-        this.renderer = new Renderer(shapes, this.batch, this.camera);
+        // Create shape drawer
+        this.shapes = new ShapeRenderer();
+
+        this.shapes.setAutoShapeType(true);
+        this.renderer = new Renderer(this.shapes, this.batch, this.camera);
 
         // Set default uncaught exception handler.
         Thread.setDefaultUncaughtExceptionHandler(new GameExceptions());
@@ -607,6 +600,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     @Override
     public void resize(int width, int height) {
         this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000);
+        this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000);
         this.viewport.update(width, height);
         this.camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
 
@@ -618,7 +612,50 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (screen != null)
             screen.resize(width, height);
     }
+    private void drawMasks() {
+        /* Clear our depth buffer info from previous frame. */
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 
+        /* Set the depth function to LESS. */
+        Gdx.gl.glDepthFunc(GL20.GL_LESS);
+
+        /* Enable depth writing. */
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
+        /* Disable RGBA color writing. */
+        Gdx.gl.glColorMask(false, false, false, false);
+
+        /* Render mask elements. */
+        this.shapes.set(ShapeRenderer.ShapeType.Filled);
+        this.shapes.circle(100, 200, 100);
+        this.shapes.triangle(0, 0, 100, 100, 200, 0);
+        this.shapes.flush();
+    }
+    private void drawMasked() {
+        /* Enable RGBA color writing. */
+        Gdx.gl.glColorMask(true, true, true, true);
+
+        /* Set the depth function to EQUAL. */
+        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
+        /* Render masked elements. */
+        this.shapes.setColor(Color.RED.toGdx());
+        this.shapes.circle(100, 100, 100);
+        this.shapes.flush();
+    }
+    private void drawContours() {
+        /* Disable depth writing. */
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+
+        /* The circle and triangle masks. */
+        this.batch.setColor(Color.CYAN.toGdx());
+        this.shapes.circle(100, 200, 100);
+        this.shapes.triangle(0, 0, 100, 100, 200, 0);
+
+        /* The masked circle. */
+        this.batch.setColor(Color.GREEN.toGdx());
+        this.shapes.circle(100, 100, 100);
+    }
     @Override
     public void render() {
         try {
@@ -630,6 +667,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             this.tasks.clear();
 
             this.camera.update();
+
             this.renderer.begin();
             this.currentRenderer = this.renderer;
 
@@ -690,6 +728,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             } catch (OutOfMemoryError error) {
                 this.outOfMemory(error);
             }
+
+            this.renderer.withEffect(() -> {
+                this.renderer.fillCircle(50, 50, 10, Color.WHITE);
+            });
 
             this.currentRenderer = null;
             this.renderer.end();
@@ -1260,7 +1302,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             newScreen = new TitleScreen();
 
         if (force) {
-            ScreenEvents.FORCE_OPEN.factory().onOpen(newScreen);;
+            ScreenEvents.FORCE_OPEN.factory().onOpen(newScreen);
         } else {
             ValueEventResult<Screen> result = ScreenEvents.OPEN.factory().onOpen(newScreen);
             newScreen = result.isInterrupted() ? result.getValue() : newScreen;

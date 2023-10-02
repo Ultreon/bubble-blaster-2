@@ -8,7 +8,7 @@ public interface BiInt2IntFunction extends BiFunction<Integer, Integer, Integer>
     @Override
     @Deprecated
     default Integer apply(Integer a, Integer b) {
-        return apply((int) a, (int) b);
+        return this.apply((int) a, (int) b);
     }
 
     int apply(int a, int b);

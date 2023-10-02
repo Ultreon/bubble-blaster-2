@@ -16,7 +16,7 @@ public class FileHandles {
         return new ByteArrayFileHandle(".png", Buffers.readBytes(stream));
     }
 
-    public static FileHandle imageBytes(byte[] bytes) throws IOException {
+    public static FileHandle imageBytes(byte[] bytes) {
         return new ByteArrayFileHandle(".png", bytes);
     }
 }

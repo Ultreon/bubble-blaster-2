@@ -8,84 +8,84 @@ public interface DoubleSupplier extends Supplier<Double> {
     @Deprecated
     @Override
     default Double get() {
-        return getDouble();
+        return this.getDouble();
     }
 
     double getDouble();
 
     default DoubleSupplier add(DoubleSupplier supplier) {
-        return () -> getDouble() + supplier.getDouble();
+        return () -> this.getDouble() + supplier.getDouble();
     }
 
     default DoubleSupplier sub(DoubleSupplier supplier) {
-        return () -> getDouble() - supplier.getDouble();
+        return () -> this.getDouble() - supplier.getDouble();
     }
 
     default DoubleSupplier mul(DoubleSupplier supplier) {
-        return () -> getDouble() * supplier.getDouble();
+        return () -> this.getDouble() * supplier.getDouble();
     }
 
     default DoubleSupplier div(DoubleSupplier supplier) {
-        return () -> getDouble() / supplier.getDouble();
+        return () -> this.getDouble() / supplier.getDouble();
     }
 
     default DoubleSupplier mod(DoubleSupplier supplier) {
-        return () -> getDouble() % supplier.getDouble();
+        return () -> this.getDouble() % supplier.getDouble();
     }
 
     default DoubleSupplier pow(DoubleSupplier supplier) {
-        return () -> Math.pow(getDouble(), supplier.getDouble());
+        return () -> Math.pow(this.getDouble(), supplier.getDouble());
     }
 
     default DoubleSupplier sqrt() {
-        return () -> Math.sqrt(getDouble());
+        return () -> Math.sqrt(this.getDouble());
     }
 
     default LongSupplier round() {
-        return () -> Math.round(getDouble());
+        return () -> Math.round(this.getDouble());
     }
 
     default DoubleSupplier roundDouble() {
-        return () -> (double) Math.round(getDouble());
+        return () -> (double) Math.round(this.getDouble());
     }
 
     default DoubleSupplier sin() {
-        return () -> Math.sin(getDouble());
+        return () -> Math.sin(this.getDouble());
     }
 
     default DoubleSupplier cos() {
-        return () -> Math.cos(getDouble());
+        return () -> Math.cos(this.getDouble());
     }
 
     default DoubleSupplier tan() {
-        return () -> Math.tan(getDouble());
+        return () -> Math.tan(this.getDouble());
     }
 
     default DoubleSupplier asin() {
-        return () -> Math.asin(getDouble());
+        return () -> Math.asin(this.getDouble());
     }
 
     default DoubleSupplier acos() {
-        return () -> Math.acos(getDouble());
+        return () -> Math.acos(this.getDouble());
     }
 
     default DoubleSupplier atan() {
-        return () -> Math.atan(getDouble());
+        return () -> Math.atan(this.getDouble());
     }
 
     default DoubleSupplier atan2(DoubleSupplier supplier) {
-        return () -> Math.atan2(getDouble(), supplier.getDouble());
+        return () -> Math.atan2(this.getDouble(), supplier.getDouble());
     }
 
     default DoubleSupplier sinh() {
-        return () -> Math.sinh(getDouble());
+        return () -> Math.sinh(this.getDouble());
     }
 
     default DoubleSupplier cosh() {
-        return () -> Math.cosh(getDouble());
+        return () -> Math.cosh(this.getDouble());
     }
 
     default DoubleSupplier tanh() {
-        return () -> Math.tanh(getDouble());
+        return () -> Math.tanh(this.getDouble());
     }
 }

@@ -18,13 +18,13 @@ public class ExtensionFileFilter implements FileFilter {
     @Override
     public boolean accept(File file) {
         if (file.isFile()) {
-            return file.getName().endsWith("." + extension);
+            return file.getName().endsWith("." + this.extension);
         }
         return false;
     }
 
     public String getExtension() {
-        return extension;
+        return this.extension;
     }
 
     public void setExtension(String extension) {

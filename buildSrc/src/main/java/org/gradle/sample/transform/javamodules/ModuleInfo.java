@@ -8,11 +8,11 @@ import java.util.List;
  * Data class to hold the information that should be added as module-info.class to an existing Jar file.
  */
 public class ModuleInfo implements Serializable {
-    private String moduleName;
-    private String moduleVersion;
-    private List<String> exports = new ArrayList<>();
-    private List<String> requires = new ArrayList<>();
-    private List<String> requiresTransitive = new ArrayList<>();
+    private final String moduleName;
+    private final String moduleVersion;
+    private final List<String> exports = new ArrayList<>();
+    private final List<String> requires = new ArrayList<>();
+    private final List<String> requiresTransitive = new ArrayList<>();
 
     ModuleInfo(String moduleName, String moduleVersion) {
         this.moduleName = moduleName;
@@ -32,22 +32,22 @@ public class ModuleInfo implements Serializable {
     }
 
     public String getModuleName() {
-        return moduleName;
+        return this.moduleName;
     }
 
     protected String getModuleVersion() {
-        return moduleVersion;
+        return this.moduleVersion;
     }
 
     protected List<String> getExports() {
-        return exports;
+        return this.exports;
     }
 
     protected List<String> getRequires() {
-        return requires;
+        return this.requires;
     }
 
     protected List<String> getRequiresTransitive() {
-        return requiresTransitive;
+        return this.requiresTransitive;
     }
 }

@@ -28,11 +28,11 @@ public class DelayedRegister<T> {
     }
 
     public <C extends T> RegistrySupplier<C> register(@NotNull String key, @NotNull Supplier<@NotNull C> supplier) {
-        Identifier id = new Identifier(modId, key);
+        Identifier id = new Identifier(this.modId, key);
 
-        objects.add(new HashMap.SimpleEntry<>(id, supplier::get));
+        this.objects.add(new HashMap.SimpleEntry<>(id, supplier::get));
 
-        return new RegistrySupplier<>(registry, supplier, id);
+        return new RegistrySupplier<>(this.registry, supplier, id);
     }
 
     public void register() {
@@ -41,9 +41,9 @@ public class DelayedRegister<T> {
                 return;
             }
 
-            LogManager.getLogger("Registration").info("Mod " + modId + " registration for: " + registry.getType().getName());
+            LogManager.getLogger("Registration").info("Mod " + this.modId + " registration for: " + registry.getType().getName());
 
-            for (HashMap.Entry<Identifier, Supplier<T>> entry : objects) {
+            for (HashMap.Entry<Identifier, Supplier<T>> entry : this.objects) {
                 T object = entry.getValue().get();
                 Identifier id = entry.getKey();
 

@@ -16,7 +16,7 @@ public class JSONUtils {
      * Does the given JsonObject contain a string field with the given name?
      */
     public static boolean isString(JsonObject json, String memberName) {
-        return isJsonPrimitive(json, memberName) && json.getAsJsonPrimitive(memberName).isString();
+        return JSONUtils.isJsonPrimitive(json, memberName) && json.getAsJsonPrimitive(memberName).isString();
     }
 
     /**
@@ -31,14 +31,14 @@ public class JSONUtils {
     }
 
     public static boolean isBoolean(JsonObject json, String memberName) {
-        return isJsonPrimitive(json, memberName) && json.getAsJsonPrimitive(memberName).isBoolean();
+        return JSONUtils.isJsonPrimitive(json, memberName) && json.getAsJsonPrimitive(memberName).isBoolean();
     }
 
     /**
      * Does the given JsonObject contain an array field with the given name?
      */
     public static boolean isJsonArray(JsonObject json, String memberName) {
-        return hasField(json, memberName) && json.get(memberName).isJsonArray();
+        return JSONUtils.hasField(json, memberName) && json.get(memberName).isJsonArray();
     }
 
     /**
@@ -46,7 +46,7 @@ public class JSONUtils {
      * Java primitive wrapper)?
      */
     public static boolean isJsonPrimitive(JsonObject json, String memberName) {
-        return hasField(json, memberName) && json.get(memberName).isJsonPrimitive();
+        return JSONUtils.hasField(json, memberName) && json.get(memberName).isJsonPrimitive();
     }
 
     /**
@@ -68,7 +68,7 @@ public class JSONUtils {
         if (json.isJsonPrimitive()) {
             return json.getAsString();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a string, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a string, was " + JSONUtils.toString(json));
         }
     }
 
@@ -77,7 +77,7 @@ public class JSONUtils {
      */
     public static String getString(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getString(json.get(memberName), memberName);
+            return JSONUtils.getString(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a string");
         }
@@ -88,7 +88,7 @@ public class JSONUtils {
      * is missing.
      */
     public static String getString(JsonObject json, String memberName, String fallback) {
-        return json.has(memberName) ? getString(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getString(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -99,7 +99,7 @@ public class JSONUtils {
         if (json.isJsonPrimitive()) {
             return json.getAsBoolean();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a Boolean, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Boolean, was " + JSONUtils.toString(json));
         }
     }
 
@@ -108,7 +108,7 @@ public class JSONUtils {
      */
     public static boolean getBoolean(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getBoolean(json.get(memberName), memberName);
+            return JSONUtils.getBoolean(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Boolean");
         }
@@ -119,7 +119,7 @@ public class JSONUtils {
      * is missing.
      */
     public static boolean getBoolean(JsonObject json, String memberName, boolean fallback) {
-        return json.has(memberName) ? getBoolean(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getBoolean(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -130,7 +130,7 @@ public class JSONUtils {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber()) {
             return json.getAsFloat();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a Float, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Float, was " + JSONUtils.toString(json));
         }
     }
 
@@ -139,7 +139,7 @@ public class JSONUtils {
      */
     public static float getFloat(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getFloat(json.get(memberName), memberName);
+            return JSONUtils.getFloat(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Float");
         }
@@ -150,7 +150,7 @@ public class JSONUtils {
      * is missing.
      */
     public static float getFloat(JsonObject json, String memberName, float fallback) {
-        return json.has(memberName) ? getFloat(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getFloat(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -160,7 +160,7 @@ public class JSONUtils {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber()) {
             return json.getAsLong();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a Long, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Long, was " + JSONUtils.toString(json));
         }
     }
 
@@ -169,14 +169,14 @@ public class JSONUtils {
      */
     public static long getLong(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getLong(json.get(memberName), memberName);
+            return JSONUtils.getLong(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Long");
         }
     }
 
     public static long getLong(JsonObject json, String memberName, long fallback) {
-        return json.has(memberName) ? getLong(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getLong(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -187,7 +187,7 @@ public class JSONUtils {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber()) {
             return json.getAsInt();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a Int, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Int, was " + JSONUtils.toString(json));
         }
     }
 
@@ -196,7 +196,7 @@ public class JSONUtils {
      */
     public static int getInt(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getInt(json.get(memberName), memberName);
+            return JSONUtils.getInt(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Int");
         }
@@ -207,19 +207,19 @@ public class JSONUtils {
      * is missing.
      */
     public static int getInt(JsonObject json, String memberName, int fallback) {
-        return json.has(memberName) ? getInt(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getInt(json.get(memberName), memberName) : fallback;
     }
 
     public static byte getByte(JsonElement json, String memberName) {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber()) {
             return json.getAsByte();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a Byte, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Byte, was " + JSONUtils.toString(json));
         }
     }
 
     public static byte getByte(JsonObject json, String memberName, byte fallback) {
-        return json.has(memberName) ? getByte(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getByte(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -230,13 +230,13 @@ public class JSONUtils {
         if (json.isJsonObject()) {
             return json.getAsJsonObject();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a JsonObject, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a JsonObject, was " + JSONUtils.toString(json));
         }
     }
 
     public static JsonObject getJsonObject(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getJsonObject(json.get(memberName), memberName);
+            return JSONUtils.getJsonObject(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a JsonObject");
         }
@@ -247,7 +247,7 @@ public class JSONUtils {
      * missing.
      */
     public static JsonObject getJsonObject(JsonObject json, String memberName, JsonObject fallback) {
-        return json.has(memberName) ? getJsonObject(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getJsonObject(json.get(memberName), memberName) : fallback;
     }
 
     /**
@@ -258,7 +258,7 @@ public class JSONUtils {
         if (json.isJsonArray()) {
             return json.getAsJsonArray();
         } else {
-            throw new JsonSyntaxException("Expected " + memberName + " to be a JsonArray, was " + toString(json));
+            throw new JsonSyntaxException("Expected " + memberName + " to be a JsonArray, was " + JSONUtils.toString(json));
         }
     }
 
@@ -267,7 +267,7 @@ public class JSONUtils {
      */
     public static JsonArray getJsonArray(JsonObject json, String memberName) {
         if (json.has(memberName)) {
-            return getJsonArray(json.get(memberName), memberName);
+            return JSONUtils.getJsonArray(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a JsonArray");
         }
@@ -279,7 +279,7 @@ public class JSONUtils {
      */
     @Nullable
     public static JsonArray getJsonArray(JsonObject json, String memberName, @Nullable JsonArray fallback) {
-        return json.has(memberName) ? getJsonArray(json.get(memberName), memberName) : fallback;
+        return json.has(memberName) ? JSONUtils.getJsonArray(json.get(memberName), memberName) : fallback;
     }
 
     public static <T> T deserializeClass(@Nullable JsonElement json, String memberName, JsonDeserializationContext context, Class<? extends T> adapter) {
@@ -292,14 +292,14 @@ public class JSONUtils {
 
     public static <T> T deserializeClass(JsonObject json, String memberName, JsonDeserializationContext context, Class<? extends T> adapter) {
         if (json.has(memberName)) {
-            return deserializeClass(json.get(memberName), memberName, context, adapter);
+            return JSONUtils.deserializeClass(json.get(memberName), memberName, context, adapter);
         } else {
             throw new JsonSyntaxException("Missing " + memberName);
         }
     }
 
     public static <T> T deserializeClass(JsonObject json, String memberName, T fallback, JsonDeserializationContext context, Class<? extends T> adapter) {
-        return json.has(memberName) ? deserializeClass(json.get(memberName), memberName, context, adapter) : fallback;
+        return json.has(memberName) ? JSONUtils.deserializeClass(json.get(memberName), memberName, context, adapter) : fallback;
     }
 
     /**
@@ -355,47 +355,47 @@ public class JSONUtils {
 
     @Nullable
     public static <T> T fromJSON(Gson gson, String string, TypeToken<T> type, boolean lenient) {
-        return fromJSON(gson, new StringReader(string), type, lenient);
+        return JSONUtils.fromJSON(gson, new StringReader(string), type, lenient);
     }
 
     @Nullable
     public static <T> T fromJson(Gson gsonIn, String json, Class<T> adapter, boolean lenient) {
-        return fromJson(gsonIn, new StringReader(json), adapter, lenient);
+        return JSONUtils.fromJson(gsonIn, new StringReader(json), adapter, lenient);
     }
 
     @Nullable
     public static <T> T fromJSONUnlenient(Gson gson, Reader reader, TypeToken<T> type) {
-        return fromJSON(gson, reader, type, false);
+        return JSONUtils.fromJSON(gson, reader, type, false);
     }
 
     @Nullable
     public static <T> T fromJSONUnlenient(Gson gson, String string, TypeToken<T> type) {
-        return fromJSON(gson, string, type, false);
+        return JSONUtils.fromJSON(gson, string, type, false);
     }
 
     @Nullable
     public static <T> T fromJson(Gson gson, Reader reader, Class<T> jsonClass) {
-        return fromJson(gson, reader, jsonClass, false);
+        return JSONUtils.fromJson(gson, reader, jsonClass, false);
     }
 
     @Nullable
     public static <T> T fromJson(Gson gsonIn, String json, Class<T> adapter) {
-        return fromJson(gsonIn, json, adapter, false);
+        return JSONUtils.fromJson(gsonIn, json, adapter, false);
     }
 
     public static JsonObject fromJson(String json, boolean lenient) {
-        return fromJson(new StringReader(json), lenient);
+        return JSONUtils.fromJson(new StringReader(json), lenient);
     }
 
     public static JsonObject fromJson(Reader reader, boolean lenient) {
-        return fromJson(GSON, reader, JsonObject.class, lenient);
+        return JSONUtils.fromJson(GSON, reader, JsonObject.class, lenient);
     }
 
     public static JsonObject fromJson(String json) {
-        return fromJson(json, false);
+        return JSONUtils.fromJson(json, false);
     }
 
     public static JsonObject fromJson(Reader reader) {
-        return fromJson(reader, false);
+        return JSONUtils.fromJson(reader, false);
     }
 }

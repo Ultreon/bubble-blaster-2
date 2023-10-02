@@ -1,11 +1,11 @@
 package com.ultreon.bubbles.command;
 
-import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.effect.StatusEffect;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.commons.exceptions.InvalidValueException;
+import com.ultreon.libs.commons.v0.Identifier;
 
 public class EffectCommand implements CommandExecutor {
     @Override

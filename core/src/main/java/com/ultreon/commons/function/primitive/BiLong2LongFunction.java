@@ -8,7 +8,7 @@ public interface BiLong2LongFunction extends BiFunction<Long, Long, Long> {
     @Override
     @Deprecated
     default Long apply(Long a, Long b) {
-        return apply((long) a, (long) b);
+        return this.apply((long) a, (long) b);
     }
 
     long apply(long a, long b);

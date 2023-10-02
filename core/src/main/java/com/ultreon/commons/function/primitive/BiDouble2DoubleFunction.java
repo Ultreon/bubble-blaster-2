@@ -8,7 +8,7 @@ public interface BiDouble2DoubleFunction extends BiFunction<Double, Double, Doub
     @Override
     @Deprecated
     default Double apply(Double a, Double b) {
-        return apply((double) a, (double) b);
+        return this.apply((double) a, (double) b);
     }
 
     double apply(double a, double b);

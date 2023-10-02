@@ -72,8 +72,8 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @author XyperCode
      */
     public void onEntityTick() {
-        if (canRegenerate()) {
-            this.value += getRegenerationSpeed();
+        if (this.canRegenerate()) {
+            this.value += this.getRegenerationSpeed();
         }
     }
 
@@ -155,7 +155,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @author XyperCode
      */
     public AbilityType<T> getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @author XyperCode
      */
     public int getCooldown() {
-        return cooldown;
+        return this.cooldown;
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      * @author XyperCode
      */
     public int getValue() {
-        return value;
+        return this.value;
     }
 
     /**

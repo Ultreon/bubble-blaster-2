@@ -17,11 +17,11 @@ public class GameJar extends LibraryJar {
 
     @Override
     public JarInputStream openStream() throws IOException {
-        return (JarInputStream) jarUrl.openStream();
+        return (JarInputStream) this.jarUrl.openStream();
     }
 
     @Override
-    public InputStream openStream(String path) throws IOException {
+    public InputStream openStream(String path) {
         return Main.class.getResourceAsStream("/" + path);
     }
 }

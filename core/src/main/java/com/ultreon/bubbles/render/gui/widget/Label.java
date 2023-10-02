@@ -20,27 +20,27 @@ public class Label extends GuiComponent {
         super(x, y, width, height);
         this.text = text;
 
-        backgroundColor = Color.TRANSPARENT;
-        foregroundColor = Color.WHITE;
+        this.backgroundColor = Color.TRANSPARENT;
+        this.foregroundColor = Color.WHITE;
     }
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderComponent(renderer);
+        this.renderComponent(renderer);
     }
 
     @Override
     public void renderComponent(Renderer renderer) {
-        fill(renderer, 0, 0, width, height, backgroundColor);
+        GuiComponent.fill(renderer, 0, 0, this.width, this.height, this.backgroundColor);
 
-        renderer.setColor(foregroundColor);
+        renderer.setColor(this.foregroundColor);
 
-        if (wrapped) renderer.drawWrappedText(this.font, text.getText(), 0, 0, getWidth());
-        else renderer.drawMultiLineText(this.font , text.getText(), 0, 0);
+        if (this.wrapped) renderer.drawWrappedText(this.font, this.text.getText(), 0, 0, this.getWidth(), this.foregroundColor);
+        else renderer.drawMultiLineText(this.font , this.text.getText(), 0, 0, this.foregroundColor);
     }
 
     public TextObject getText() {
-        return text;
+        return this.text;
     }
 
     public void setText(TextObject text) {
@@ -56,7 +56,7 @@ public class Label extends GuiComponent {
     }
 
     public boolean isWrapped() {
-        return wrapped;
+        return this.wrapped;
     }
 
     public void setWrapped(boolean wrapped) {
@@ -64,7 +64,7 @@ public class Label extends GuiComponent {
     }
 
     public Color getForegroundColor() {
-        return foregroundColor;
+        return this.foregroundColor;
     }
 
     public void setForegroundColor(Color foregroundColor) {
@@ -76,6 +76,6 @@ public class Label extends GuiComponent {
     }
 
     public int getFontSize() {
-        return fontSize;
+        return this.fontSize;
     }
 }

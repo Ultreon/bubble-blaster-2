@@ -45,7 +45,7 @@ public class AbilityContainer {
      * @param abilityType the type of ability to use.
      */
     public void setCurrent(AbilityType<? extends Ability<?>> abilityType) {
-        this.currentAbility = abilities.get(abilityType);
+        this.currentAbility = this.abilities.get(abilityType);
     }
 
     /**
@@ -53,7 +53,7 @@ public class AbilityContainer {
      * @return the ability.
      */
     public Ability<?> getCurrent() {
-        return currentAbility;
+        return this.currentAbility;
     }
 
     /**

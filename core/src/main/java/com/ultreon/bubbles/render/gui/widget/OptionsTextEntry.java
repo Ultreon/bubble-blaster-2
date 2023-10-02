@@ -25,7 +25,7 @@ public class OptionsTextEntry extends GuiComponent {
     // Values.
     protected String text;
 
-    protected GlyphLayout layout = new GlyphLayout();
+    protected final GlyphLayout layout = new GlyphLayout();
 
     // State
     protected boolean activated;

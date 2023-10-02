@@ -7,10 +7,10 @@ import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +113,7 @@ public class Bullet extends Entity {
     }
 
     @Override
-    public float getRadius() {
+    public float radius() {
         return 3;
     }
 

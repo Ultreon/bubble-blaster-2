@@ -12,7 +12,7 @@ public final class ApplicationCrash {
     @NotNull
     private final CrashLog crashLog;
 
-    ApplicationCrash(CrashLog crashLog) {
+    ApplicationCrash(@NotNull CrashLog crashLog) {
         this.crashLog = crashLog;
     }
 
@@ -36,6 +36,6 @@ public final class ApplicationCrash {
 
     @NotNull
     public CrashLog getCrashLog() {
-        return crashLog;
+        return this.crashLog;
     }
 }
