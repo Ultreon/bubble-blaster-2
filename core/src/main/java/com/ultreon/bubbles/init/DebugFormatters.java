@@ -13,8 +13,8 @@ import com.ultreon.libs.commons.v0.Color;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.*;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.text.v0.MutableText;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.MutableText;
+import com.ultreon.libs.text.v1.TextObject;
 import net.fabricmc.api.EnvType;
 
 import java.math.BigDecimal;
@@ -223,14 +223,14 @@ public final class DebugFormatters {
     public static final Formatter<Entity> ENTITY = FormatterRegistry.register(new Formatter<>(Entity.class, new Identifier("entity")) {
         @Override
         public void format(Entity obj, IFormatterContext context) {
-            context.className(obj.getClass().getName()).space().other(obj.getUniqueId());
-            context.operator(" (").other(obj.getName()).operator(") #").other(obj.getId());
+            context.className(obj.getClass().getName()).space().other(obj.getUuid());
+            context.operator(" (").other(obj.getName()).operator(") #").other(obj.getKey());
         }
     });
     public static final Formatter<Player> PLAYER = FormatterRegistry.register(new Formatter<>(Player.class, new Identifier("player")) {
         @Override
         public void format(Player obj, IFormatterContext context) {
-            context.className("Player").space().other(obj.getUniqueId());
+            context.className("Player").space().other(obj.getUuid());
             context.operator(" (").other(obj.getName()).operator(")");
         }
     });
@@ -392,7 +392,7 @@ public final class DebugFormatters {
         public void format(EntityType obj, IFormatterContext context) {
             context.className("entity-type")
                     .space()
-                    .other(obj.getId());
+                    .other(obj.getKey());
         }
     });
     public static final Formatter<EnvType> ENV_TYPE = FormatterRegistry.register(new Formatter<>(EnvType.class, new Identifier("env_type")) {

@@ -27,9 +27,9 @@ public class Notifications implements Renderable {
     }
 
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        if (game.isLoading()) return;
+        if (this.game.isLoading()) return;
 
-        int x = game.getWidth() - NOTIFICATION_OFFSET - NOTIFICATION_WIDTH;
+        int x = this.game.getWidth() - NOTIFICATION_OFFSET - NOTIFICATION_WIDTH;
         int y = NOTIFICATION_OFFSET;
 
         this.lock.lock();

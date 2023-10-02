@@ -1,17 +1,12 @@
 package com.ultreon.bubbles.input;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.event.v1.InputEvents;
-import com.ultreon.bubbles.render.gui.screen.PauseScreen;
-import com.ultreon.bubbles.render.gui.screen.Screen;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,8 +49,12 @@ public class GameInput implements InputProcessor {
         return isCtrlDown() && isAltDown();
     }
 
-    public static GridPoint2 getPos() {
-        return POS.cpy();
+    public static Vector2 getPos() {
+        return new Vector2(POS.x, POS.y);
+    }
+
+    public static GridPoint2 getPosGrid() {
+        return new GridPoint2(POS.x, POS.y);
     }
 
     public static boolean isKeyDown(int keycode) {

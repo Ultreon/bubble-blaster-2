@@ -3,8 +3,6 @@ package com.ultreon.bubbles.entity.attribute;
 import com.ultreon.bubbles.common.holders.ListDataHolder;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
-import com.ultreon.libs.functions.v0.BiDouble2DoubleFunction;
-import com.ultreon.libs.functions.v0.Double2DoubleFunction;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -28,50 +26,6 @@ public class AttributeContainer implements ListDataHolder<MapType> {
             throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
         }
         return value;
-    }
-
-    public void getModified(Attribute attribute, BiDouble2DoubleFunction function, List<AttributeContainer> attributeMaps) {
-        if (!this.map.containsKey(attribute)) {
-            throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
-        }
-
-        double f = getBase(attribute);
-        for (AttributeContainer map : attributeMaps) {
-            f *= function.apply(f, map.getBase(attribute));
-        }
-    }
-
-    public void getModified(Attribute attribute, BiDouble2DoubleFunction function, AttributeContainer... attributeMaps) {
-        if (!this.map.containsKey(attribute)) {
-            throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
-        }
-
-        double f = getBase(attribute);
-        for (AttributeContainer map : attributeMaps) {
-            f *= function.apply(f, map.getBase(attribute));
-        }
-    }
-
-    public void getModified(Attribute attribute, List<Double2DoubleFunction> functions) {
-        if (!this.map.containsKey(attribute)) {
-            throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
-        }
-
-        double f = getBase(attribute);
-        for (Double2DoubleFunction function : functions) {
-            f *= function.apply(f);
-        }
-    }
-
-    public void getModified(Attribute attribute, Double2DoubleFunction... functions) {
-        if (!this.map.containsKey(attribute)) {
-            throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
-        }
-
-        double f = getBase(attribute);
-        for (Double2DoubleFunction function : functions) {
-            f *= function.apply(f);
-        }
     }
 
     public ListType<MapType> save() {
@@ -132,8 +86,8 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public double get(Attribute attribute) {
-        List<AttributeModifier> modifiers = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
-        double base = getBase(attribute);
+        List<AttributeModifier> modifiers = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        double base = this.getBase(attribute);
         if (modifiers.isEmpty()) {
             return base;
         }
@@ -149,27 +103,27 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public boolean has(Attribute attribute) {
-        return map.containsKey(attribute);
+        return this.map.containsKey(attribute);
     }
 
     public void addModifier(Attribute attribute, AttributeModifier modifier) {
-        List<AttributeModifier> list = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
         list.add(modifier);
     }
 
     public void removeModifier(Attribute attribute, UUID id) {
-        List<AttributeModifier> list = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         if (list.isEmpty()) return;
         list.removeIf(modifier -> modifier.id() == id);
     }
 
     public void removeModifier(Attribute attribute, AttributeModifier modifier) {
-        List<AttributeModifier> list = modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
     }
 
     public void removeModifiers(Attribute attribute) {
-        modifierMap.remove(attribute);
+        this.modifierMap.remove(attribute);
     }
 }

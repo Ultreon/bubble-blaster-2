@@ -4,7 +4,7 @@ import com.ultreon.bubbles.entity.Entity;
 
 @SuppressWarnings("unused")
 public class CollisionUtil {
-    public static boolean isColliding(Entity entityA, Entity entityB) {
-        return entityA.distanceTo(entityB) < entityA.size() / 2 + entityB.size() / 2;
+    public static boolean isColliding(Entity a, Entity b) {
+        return a.distanceTo(b) < a.getRadius() + b.getRadius();
     }
 }

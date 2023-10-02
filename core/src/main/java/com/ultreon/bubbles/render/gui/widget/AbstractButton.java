@@ -1,8 +1,13 @@
 package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.libs.commons.v0.vector.Vec2i;
+import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 public abstract class AbstractButton extends GuiComponent {
@@ -13,9 +18,15 @@ public abstract class AbstractButton extends GuiComponent {
         super(x, y, width, height);
     }
 
+    protected static void drawText(Renderer renderer, Color color, Vec2i pos, Vec2i size, TextObject text, BitmapFont font) {
+        renderer.scissored(pos.x + 4, pos.y + 4, size.x - 8, size.y - 8, () -> {
+            renderer.drawTextCenter(font, text.getText(), pos.x + (size.x - 8) / 2f, pos.y + (size.y - 8) / 2f, color);
+        });
+    }
+
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (isHovered() && button == Buttons.LEFT && enabled && visible) {
+        if (this.isHovered() && button == Buttons.LEFT && this.enabled && this.visible) {
             this.pressed = true;
             return true;
         }
@@ -24,7 +35,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (isHovered() && button == Buttons.LEFT && enabled && visible && pressed) {
+        if (this.isHovered() && button == Buttons.LEFT && this.enabled && this.visible && this.pressed) {
             this.pressed = false;
             this.playMenuEvent();
             this.command.run();
@@ -35,8 +46,8 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        if (isHovered() && button == Buttons.LEFT && enabled && visible) {
-            pressed = true;
+        if (this.isHovered() && button == Buttons.LEFT && this.enabled && this.visible) {
+            this.pressed = true;
             return;
         }
         super.mouseDrag(x, y, nx, ny, button);
@@ -46,14 +57,14 @@ public abstract class AbstractButton extends GuiComponent {
     public void make() {
         super.make();
 
-        if (isHovered()) {
+        if (this.isHovered()) {
             BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getPointerCursor());
         }
     }
 
     @Override
-    public void destroy() {
-        super.destroy();
+    public void dispose() {
+        super.dispose();
 
         if (this.isHovered()) {
             BubbleBlaster.getInstance().getGameWindow().setCursor(BubbleBlaster.getInstance().getDefaultCursor());
@@ -62,7 +73,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public void mouseExit() {
-        pressed = false;
+        this.pressed = false;
         super.mouseExit();
     }
 
@@ -87,6 +98,6 @@ public abstract class AbstractButton extends GuiComponent {
     }
 
     protected final void click() {
-        getCommand().run();
+        this.getCommand().run();
     }
 }

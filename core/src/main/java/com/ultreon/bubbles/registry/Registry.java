@@ -13,9 +13,8 @@ import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
-import com.ultreon.bubbles.media.SoundEvent;
+import com.ultreon.bubbles.audio.SoundEvent;
 import com.ultreon.bubbles.render.TextureCollection;
-import com.ultreon.bubbles.render.font.Font;
 import com.ultreon.commons.map.OrderedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +45,6 @@ public class Registry<T> {
     public static final Registry<ItemType> ITEMS = Registry.create(new Identifier("item"));
     public static final Registry<TextureCollection> TEXTURE_COLLECTIONS = Registry.create(new Identifier("texture_collection"));
     public static final Registry<SoundEvent> SOUNDS = Registry.create(new Identifier("sound"));
-    public static final Registry<Font> FONTS = Registry.create(new Identifier("font"));
 
     protected Registry(Class<T> clazz, Identifier id) throws IllegalStateException {
         this.id = id;

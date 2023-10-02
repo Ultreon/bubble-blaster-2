@@ -1,12 +1,9 @@
 package com.ultreon.bubbles.entity;
 
-import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.data.types.MapType;
-
-import java.util.UUID;
 
 /**
  * ItemType Entity base class
@@ -17,29 +14,27 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public abstract class AbstractBubbleEntity extends LivingEntity {
     // Constructor
-    public AbstractBubbleEntity(EntityType<?> type, Environment environment) {
-        super(type, environment);
+    public AbstractBubbleEntity(EntityType<?> type, World world) {
+        super(type, world);
     }
 
     @Override
-    public void onSpawn(Vector2 pos, Environment environment) {
-        this.health = getMaxHealth();
+    public void onSpawn(Vector2 pos, World world) {
+        this.health = this.getMaxHealth();
     }
 
     public void restoreDamage(double value) {
-        if (health + value > getMaxHealth()) {
-            this.health = getMaxHealth();
+        if (this.health + value > this.getMaxHealth()) {
+            this.health = this.getMaxHealth();
             return;
         }
         this.health += value;
     }
 
     @Override
-    public void tick(Environment environment) {
-        super.tick(environment);
+    public void tick(World world) {
+        super.tick(world);
     }
-
-    public abstract int getRadius();
 
     @Override
     public void load(MapType data) {

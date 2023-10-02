@@ -11,7 +11,7 @@ import net.fabricmc.loader.impl.util.Arguments;
 public class DesktopLauncher {
     public static void main(String[] argv) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8);
+        config.setBackBufferConfig(8, 8, 8, 8, 32, 0, 16);
         config.setResizable(false);
         config.useVsync(true);
         config.setForegroundFPS(60);
@@ -24,10 +24,15 @@ public class DesktopLauncher {
         Arguments arguments = new Arguments();
         arguments.parse(argv);
 
+        BubbleBlaster game;
         try {
-            new Lwjgl3Application(BubbleBlaster.launch(arguments), config);
+            game = BubbleBlaster.launch(arguments);
         } catch (Throwable t) {
             BubbleBlaster.crash(new CrashLog("Launch failure", t).createCrash());
+            Runtime.getRuntime().halt(1);
+            return;
         }
+
+        new Lwjgl3Application(game, config);
     }
 }

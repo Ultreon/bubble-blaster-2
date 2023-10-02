@@ -15,7 +15,7 @@ public class ResistanceStatusEffect extends AttributeStatusEffect {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(int strength) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(float strength) {
         return ImmutableMultimap.<Attribute, AttributeModifier>builder()
                 .put(Attribute.DEFENSE, new AttributeModifier(RESISTANCE_ID, AttributeModifier.Type.ADD, strength))
                 .build();

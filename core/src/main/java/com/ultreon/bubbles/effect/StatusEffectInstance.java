@@ -4,13 +4,12 @@ import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
-import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -47,11 +46,11 @@ public class StatusEffectInstance implements TagHolder {
         this.strength = document.getInt("strength");
     }
 
-    public StatusEffectInstance(StatusEffect type, int seconds, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
-        this(type, Duration.ofSeconds(seconds), strength);
+    public StatusEffectInstance(StatusEffect type, double seconds, int strength) throws InvalidValueException {
+        this(type, Duration.ofMillis((long) (seconds / 1000f)), strength);
     }
 
-    public StatusEffectInstance(StatusEffect type, Duration duration, @IntRange(from = 1, to = 255) int strength) throws InvalidValueException {
+    public StatusEffectInstance(StatusEffect type, Duration duration, int strength) throws InvalidValueException {
         //noinspection ConstantConditions
         if (strength < 1) {
             throw new InvalidValueException("Cannot create effect instance with strength < 1");
@@ -69,11 +68,11 @@ public class StatusEffectInstance implements TagHolder {
     public @NotNull MapType save() {
         MapType tag = new MapType();
         tag.put("Tag", this.tag);
-        tag.putLong("baseDuration", getBaseDuration());
-        tag.putLong("duration", getRemainingTime().toMillis());
-        tag.putInt("strength", getStrength());
+        tag.putLong("baseDuration", this.getBaseDuration());
+        tag.putLong("duration", this.getRemainingTime().toMillis());
+        tag.putInt("strength", this.getStrength());
 
-        Identifier key = Registries.EFFECTS.getKey(getType());
+        Identifier key = Registries.EFFECTS.getKey(this.getType());
         tag.putString("id", key == null ? "none" : key.toString());
 
         return tag;
@@ -84,19 +83,19 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public final void start(@NotNull Entity entity) {
-        onStart(entity);
+        this.onStart(entity);
 
-        active = true;
+        this.active = true;
     }
 
     public final void stop(@NotNull Entity entity) {
-        onStop(entity);
+        this.onStop(entity);
 
-        active = false;
+        this.active = false;
     }
 
     public final StatusEffect getType() {
-        return type;
+        return this.type;
     }
 
     public void tick(Entity entity) {
@@ -118,50 +117,50 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     @SuppressWarnings("EmptyMethod")
-    protected void updateStrength(int old, int _new) {
+    protected void updateStrength(float old, float _new) {
 
     }
 
     public void addStrength() {
-        int old = getStrength();
+        float old = this.getStrength();
         byte output = (byte) (this.strength + 1);
-        this.strength = Mth.clamp(output, 1, 255);
-        updateStrength(old, getStrength());
+        this.strength = MathHelper.clamp(output, 1, 255);
+        this.updateStrength(old, this.getStrength());
     }
 
     public void addStrength(byte amount) {
-        int old = getStrength();
+        float old = this.getStrength();
         byte output = (byte) (this.strength + amount);
-        this.strength = Mth.clamp(output, 1, 255);
-        updateStrength(old, getStrength());
+        this.strength = MathHelper.clamp(output, 1, 255);
+        this.updateStrength(old, this.getStrength());
     }
 
     public void removeStrength() {
-        int old = getStrength();
+        float old = this.getStrength();
         byte output = (byte) (this.strength - 1);
-        this.strength = Mth.clamp(output, 1, 255);
-        updateStrength(old, getStrength());
+        this.strength = MathHelper.clamp(output, 1, 255);
+        this.updateStrength(old, this.getStrength());
     }
 
     public void removeStrength(byte amount) {
-        int old = getStrength();
+        float old = this.getStrength();
         byte output = (byte) (this.strength - amount);
-        this.strength = Mth.clamp(output, 1, 255);
-        updateStrength(old, getStrength());
+        this.strength = MathHelper.clamp(output, 1, 255);
+        this.updateStrength(old, this.getStrength());
     }
 
     public final int getStrength() {
         return this.strength;
     }
 
-    public void setStrength(byte strength) throws InvalidValueException {
-        int old = getStrength();
+    public void setStrength(int strength) throws InvalidValueException {
+        float old = this.getStrength();
         if (strength < 1) {
             throw new InvalidValueException("Tried to set strength less than 1.");
         }
 
         this.strength = strength;
-        updateStrength(old, getStrength());
+        this.updateStrength(old, this.getStrength());
     }
 
     public final long getEndTime() {
@@ -202,7 +201,7 @@ public class StatusEffectInstance implements TagHolder {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getType());
+        return Objects.hash(this.getType());
     }
 
     @Override
@@ -215,7 +214,7 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public long getTimeActive() {
-        return System.currentTimeMillis() - getStartTime();
+        return System.currentTimeMillis() - this.getStartTime();
     }
 
     public long getBaseDuration() {

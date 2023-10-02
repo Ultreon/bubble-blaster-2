@@ -1,25 +1,25 @@
 package com.ultreon.bubbles.bubble;
 
 import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.environment.Environment;
-import org.apache.commons.lang3.Range;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.util.RandomValueSource;
 
 public class HardenedBubble extends BubbleType {
     public HardenedBubble() {
-        setColors("#000000,#4f4f4f,#ff7f00,#ffff00");
+        this.setColors("#000000,#4f4f4f,#ff7f00,#ffff00");
 
-        setPriority(387_500L);
-        setRadius(Range.between(21, 60));
-        setSpeed(Range.between(4.5, 7.0));
-        setAttack(0.0f);
-        setScore(1f);
-        setHardness(1.0d);
+        this.setPriority(387_500L);
+        this.setRadius(RandomValueSource.random(21, 60));
+        this.setSpeed(RandomValueSource.random(4.5, 7));
+        this.setAttack(RandomValueSource.random(1, 3));
+        this.setScore(RandomValueSource.random(1, 2));
+        this.setHardness(RandomValueSource.random(3, 8));
     }
 
     @Override
-    public float getDefense(Environment environment, Rng rng) {
-        float val = environment.getLocalDifficulty() * 4;
-        return rng.getNumber(val / 4f, 3f * val / 4f, environment.getTicks(), 1L);
+    public float getDefense(World world, Rng rng) {
+        float val = world.getLocalDifficulty() * 4;
+        return rng.getNumber(val / 4f, 3f * val / 4f, world.getTicks(), 1L);
     }
 
     @Override

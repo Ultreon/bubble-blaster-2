@@ -16,7 +16,7 @@ public class AttackBoostStatusEffect extends AttributeStatusEffect {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(int strength) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(float strength) {
         return ImmutableMultimap.<Attribute, AttributeModifier>builder()
                 .put(Attribute.ATTACK, new AttributeModifier(ATTACK_BOOST_ID, AttributeModifier.Type.ADD, strength))
                 .build();

@@ -6,10 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
@@ -29,12 +27,12 @@ public class Bullet extends Entity {
     private AmmoType ammoType;
     private int popsRemaining = 4;
 
-    public Bullet(Environment environment) {
-        this(AmmoTypes.BASIC, new Vector2(), 0, environment);
+    public Bullet(World world) {
+        this(AmmoTypes.BASIC, new Vector2(), 0, world);
     }
 
-    public Bullet(@NotNull AmmoType type, Vector2 pos, float rotation, Environment environment) {
-        super(Entities.BULLET, environment);
+    public Bullet(@NotNull AmmoType type, Vector2 pos, float rotation, World world) {
+        super(Entities.BULLET, world);
 
         this.pos.set(pos);
         this.pos.set(pos);
@@ -43,17 +41,14 @@ public class Bullet extends Entity {
         this.ammoType = type;
         this.attributes.setAll(type.getDefaultAttributes());
 
-        setSpeed(type.getSpeed());
+        this.setSpeed(type.getSpeed());
 
-        markAsCollidable(Entities.BUBBLE);
-        markAsCollidable(Entities.GIANT_BUBBLE);
-
-        markAsAttackable(Entities.BUBBLE);
-        markAsAttackable(Entities.GIANT_BUBBLE);
+        this.markAsCollidable(Entities.BUBBLE);
+        this.markAsAttackable(Entities.BUBBLE);
     }
 
     public @Nullable Player getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public void setOwner(@Nullable Player owner) {
@@ -61,7 +56,7 @@ public class Bullet extends Entity {
     }
 
     private void setSpeed(float speed) {
-        attributes.setBase(Attribute.SPEED, speed);
+        this.attributes.setBase(Attribute.SPEED, speed);
     }
 
     @Override
@@ -98,13 +93,13 @@ public class Bullet extends Entity {
         }
         this.popsRemaining--;
         if (this.popsRemaining <= 0) {
-            delete();
+            this.delete();
         }
     }
 
     @Override
     public Shape2D getShape() {
-        return ammoType.getShape(this);
+        return this.ammoType.getShape(this);
     }
 
     @Override
@@ -113,22 +108,12 @@ public class Bullet extends Entity {
     }
 
     @Override
-    protected void make() {
-
-    }
-
-    @Override
-    protected void invalidate() {
-
-    }
-
-    @Override
     public Rectangle getBounds() {
         return new Rectangle(this.pos.x, this.pos.y, 1, 1);
     }
 
     @Override
-    public double size() {
+    public float getRadius() {
         return 3;
     }
 
@@ -138,18 +123,18 @@ public class Bullet extends Entity {
     }
 
     @Override
-    public void tick(Environment environment) {
-        super.tick(environment);
+    public void tick(World world) {
+        super.tick(world);
 
-        if (!isVisible()) {
-            delete();
+        if (!this.isVisible()) {
+            this.delete();
         }
     }
 
     @SuppressWarnings("unused")
     @Nullable
     public AmmoType getAmmoType() {
-        return ammoType;
+        return this.ammoType;
     }
 
     @SuppressWarnings("unused")

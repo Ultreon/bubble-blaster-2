@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 public class Label extends GuiComponent {
     private TextObject text;

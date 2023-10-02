@@ -1,23 +1,22 @@
 package com.ultreon.bubbles.bubble;
 
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.init.StatusEffects;
-import org.apache.commons.lang3.Range;
+import com.ultreon.bubbles.util.RandomValueSource;
+
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 public class BubbleFreezeBubble extends BubbleType {
     public BubbleFreezeBubble() {
-        setPriority(72_750L);
-        setRadius(Range.between(17, 58));
-        setSpeed(Range.between(4.115d, 6.845d));
-        setScore(1.3125f);
-        setEffect((source, target) -> (new StatusEffectInstance(StatusEffects.BUBBLE_FREEZE, source.getRadius() / 8, (byte) ((byte) source.getSpeed() * 4))));
-        setColors("#ff0000,#ff7f00,#ffff00,#ffff7f,#ffffff");
+        this.setPriority(72_750L);
+        this.setRadius(RandomValueSource.random(17, 58));
+        this.setSpeed(RandomValueSource.random(4.115d, 6.845d));
+        this.setScore(RandomValueSource.random(0.8, 1.4));
+        this.setColors("#ff0000,#ff7f00,#ffff00,#ffff7f,#ffffff");
     }
 
     @Override
     public void onCollision(Bubble source, Entity target) {
-        source.getEnvironment().triggerBubbleFreeze((int) (source.getRadius() * 1.6f));
+        source.getWorld().freezeBubbles((int) (source.getRadius() * 1.6f) * TPS / 2);
     }
 }

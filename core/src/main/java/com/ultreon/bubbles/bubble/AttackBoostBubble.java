@@ -4,23 +4,24 @@ import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.StatusEffects;
-import org.apache.commons.lang3.Range;
+import com.ultreon.bubbles.util.ConstantValueSource;
+import com.ultreon.bubbles.util.RandomValueSource;
 
 public class AttackBoostBubble extends BubbleType {
     public AttackBoostBubble() {
-        setColors("804020,a07e5c,c0bc98,e0d8d0,ffffff");
+        this.setColors("804020,a07e5c,c0bc98,e0d8d0,ffffff");
 
-        setPriority(98_304);
-        setRadius(Range.between(21, 70));
-        setSpeed(Range.between(8.4, 15.6));
-        setDefense(0.0775f);
-        setAttack(0.0f);
-        setScore(2);
-        setHardness(1.0d);
+        this.setPriority(98_304);
+        this.setRadius(RandomValueSource.random(21, 70));
+        this.setSpeed(RandomValueSource.random(8.4, 15.6));
+        this.setDefense(RandomValueSource.random(0.075, 0.15));
+        this.setAttack(ConstantValueSource.of());
+        this.setScore(RandomValueSource.random(1, 2));
+        this.setHardness(ConstantValueSource.of(1));
     }
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.ATTACK_BOOST, source.getRadius() / 8, source.getRadius() / 24 + 1);
+        return new StatusEffectInstance(StatusEffects.ATTACK_BOOST, source.getRadius() / 8.0, (int) (source.getRadius() / 12 + 1));
     }
 }

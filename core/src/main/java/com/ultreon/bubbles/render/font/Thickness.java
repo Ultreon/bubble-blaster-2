@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.render.font;
 
-import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.util.helpers.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ public enum Thickness {
         var lastDiff = Integer.MAX_VALUE;
         Thickness cur = null;
         for (Thickness value : values()) {
-            if (Mth.diff(amount, value.amount) < lastDiff) {
+            if (MathHelper.diff(amount, value.amount) < lastDiff) {
                 cur = value;
             }
         }
@@ -33,7 +33,7 @@ public enum Thickness {
         var lastDiff = Integer.MAX_VALUE;
         Thickness cur = null;
         for (Thickness value : values) {
-            int diff = Mth.diff(amount, value.amount);
+            int diff = MathHelper.diff(amount, value.amount);
             if (diff < lastDiff) {
                 lastDiff = diff;
                 cur = value;

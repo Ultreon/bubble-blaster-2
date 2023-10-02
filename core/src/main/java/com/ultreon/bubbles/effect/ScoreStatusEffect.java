@@ -2,7 +2,6 @@ package com.ultreon.bubbles.effect;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeModifier;
@@ -18,7 +17,7 @@ public class ScoreStatusEffect extends AttributeStatusEffect {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(int strength) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(float strength) {
         return ImmutableMultimap.<Attribute, AttributeModifier>builder()
                 .put(Attribute.SCORE_MODIFIER, new AttributeModifier(SCORE_ID, AttributeModifier.Type.ADD, strength))
                 .build();

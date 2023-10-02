@@ -13,7 +13,7 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.input.GameInput;
@@ -24,8 +24,8 @@ import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.registries.v0.RegistrySupplier;
-import com.ultreon.libs.text.v0.MutableText;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.MutableText;
+import com.ultreon.libs.text.v1.TextObject;
 
 import java.util.*;
 
@@ -78,74 +78,75 @@ public class DebugRenderer {
     }
 
     public void render(Renderer renderer) {
-        if (game.isLoading()) return;
+        if (this.game.isLoading()) return;
 
-        reset();
+        this.reset();
 
         renderer.setColor(255, 255, 255);
 
-        Rectangle gameBounds = game.getGameBounds();
-        left(renderer, "FPS", game.getFps());
-        left(renderer, "TPS", game.getCurrentTps());
-        left(renderer, "RPT", game.getGameFrameTime());
-        left(renderer, "Game Bounds", gameBounds);
-        left(renderer, "Scaled Size", new FloatSize(game.getScaledWidth(), game.getScaledHeight()));
-        left(renderer, "Window Size", new FloatSize(game.getGameWindow().getWidth(), game.getGameWindow().getHeight()));
-        left(renderer, "Canvas Size", new FloatSize(game.getWidth(), game.getHeight()));
-        Environment environment = game.environment;
-        if (environment != null) {
-            GameplayEvent curGe = environment.getCurrentGameEvent();
-            left(renderer, "Entity Count", environment.getEntities().size());
-            left(renderer, "Visible Entity Count", environment.getEntities().stream().filter(Entity::isVisible).count());
-            left(renderer, "Entity Removal Count", environment.getEntities().stream().filter(Entity::willBeDeleted).count());
-            left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
-            left(renderer, "Is Initialized", environment.isInitialized());
-            left(renderer, "Difficulty", environment.getDifficulty().name());
-            left(renderer, "Local Difficulty", environment.getLocalDifficulty());
-            left(renderer, "Seed", environment.getSeed());
+        Rectangle gameBounds = this.game.getGameBounds();
+        this.left(renderer, "FPS", this.game.getFps());
+        this.left(renderer, "TPS", this.game.getCurrentTps());
+        this.left(renderer, "RPT", this.game.getGameFrameTime());
+        this.left(renderer, "Game Bounds", gameBounds);
+        this.left(renderer, "Scaled Size", new FloatSize(this.game.getScaledWidth(), this.game.getScaledHeight()));
+        this.left(renderer, "Window Size", new FloatSize(this.game.getGameWindow().getWidth(), this.game.getGameWindow().getHeight()));
+        this.left(renderer, "Canvas Size", new FloatSize(this.game.getWidth(), this.game.getHeight()));
+        World world = this.game.world;
+        if (world != null) {
+            GameplayEvent curGe = world.getCurrentGameEvent();
+            this.left(renderer, "Entity Count", world.getEntities().size());
+            this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Entity::isVisible).count());
+            this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Entity::willBeDeleted).count());
+            this.left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
+            this.left(renderer, "Is Initialized", world.isInitialized());
+            this.left(renderer, "Difficulty", world.getDifficulty().name());
+            this.left(renderer, "Local Difficulty", world.getLocalDifficulty());
+            this.left(renderer, "Seed", world.getSeed());
 
             if (GameInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
-                GridPoint2 pos = GameInput.getPos();
-                Entity entityAt = environment.getEntityAt(new Vec2i(pos.x, pos.y));
+                GridPoint2 pos = GameInput.getPosGrid();
+                Entity entityAt = world.getEntityAt(new Vec2i(pos.x, pos.y));
                 if (entityAt != null) {
-                    left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
+                    this.left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
                     if (entityAt instanceof Bubble bubble) {
-                        left(renderer, "Bubble Type", Registries.BUBBLES.getKey(bubble.getBubbleType()));
-                        left(renderer, "Base Speed:", bubble.getAttributes().getBase(Attribute.SPEED));
-                        left(renderer, "Speed", bubble.getAttributes().get(Attribute.SPEED));
-                        left(renderer, "Radius", bubble.getRadius());
+                        this.left(renderer, "Bubble Type", Registries.BUBBLES.getKey(bubble.getBubbleType()));
+                        this.left(renderer, "Base Speed:", bubble.getAttributes().getBase(Attribute.SPEED));
+                        this.left(renderer, "Speed", bubble.getAttributes().get(Attribute.SPEED));
+                        this.left(renderer, "Radius", bubble.getRadius());
                     }
                 }
             }
 
-            Player player = environment.getPlayer();
+            Player player = world.getPlayer();
             if (player != null) {
-                left(renderer, "Pos", player.getPos());
-                left(renderer, "Score", player.getScore());
-                left(renderer, "Level", player.getLevel());
-                left(renderer, "Speed", player.getSpeed());
-                left(renderer, "Rotation", player.getRotation());
-                left(renderer, "Rot Speed", player.getRotationSpeed());
-                left(renderer, "Acceleration", player.accel);
-                left(renderer, "Velocity", player.velocity);
-                left(renderer, "Temp Velocity", player.tempVel);
-                left(renderer, "BoostAccelTimer", player.boostAccelTimer);
-                left(renderer, "BoostRefillTimer", player.boostRefillTimer);
+                this.left(renderer, "Pos", player.getPos());
+                this.left(renderer, "Score", player.getScore());
+                this.left(renderer, "Level", player.getLevel());
+                this.left(renderer, "Speed", player.getSpeed());
+                this.left(renderer, "Rotation", player.getRotation());
+                this.left(renderer, "Rot Speed", player.getRotationSpeed());
+                this.left(renderer, "Acceleration", player.accel);
+                this.left(renderer, "Velocity", player.velocity);
+                this.left(renderer, "Temp Velocity", player.tempVel);
+                this.left(renderer, "BoostAccelTimer", player.boostAccelTimer);
+                this.left(renderer, "BoostRefillTimer", player.boostRefillTimer);
+                this.left(renderer, "DstToMouseCursor", player.distanceTo(GameInput.getPos()));
             }
         }
-        Screen screen = game.getCurrentScreen();
-        left(renderer, "Screen", (screen == null ? null : screen.getClass()));
+        Screen screen = this.game.getCurrentScreen();
+        this.left(renderer, "Screen", (screen == null ? null : screen.getClass()));
 
-        lastProfile = BubbleBlaster.getLastProfile();
-        if (selectedThread == null) {
-            List<Thread> threads = Lists.newArrayList(lastProfile.keySet());
+        this.lastProfile = BubbleBlaster.getLastProfile();
+        if (this.selectedThread == null) {
+            List<Thread> threads = Lists.newArrayList(this.lastProfile.keySet());
             threads.sort(Comparator.comparing(Thread::getName));
 
-            MutableText selInputText = TextObject.literal(selectInput);
+            MutableText selInputText = TextObject.literal(this.selectInput);
             selInputText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText typingText = TextObject.literal("Typing ");
             typingText.setColor(Color.rgb(0xffa040).toAwt());
-            right(renderer, typingText, selInputText);
+            this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
 
             for (int i = 0, threadsSize = threads.size(); i < threadsSize; i++) {
@@ -155,18 +156,18 @@ public class DebugRenderer {
                 MutableText thread = TextObject.literal("Thread");
                 MutableText index = TextObject.literal("[" + (i + 1) + "] ");
                 index.setColor(Color.rgb(0x30ff30).toAwt());
-                right(renderer, index.append(thread), literal);
+                this.right(renderer, index.append(thread), literal);
             }
         } else {
             ArrayList<Map.Entry<String, Section>> entries;
             long millis;
 
-            if (sectionStack.isEmpty()) {
-                entries = Lists.newArrayList(lastProfile.get(selectedThread).getValues().entrySet());
+            if (this.sectionStack.isEmpty()) {
+                entries = Lists.newArrayList(this.lastProfile.get(this.selectedThread).getValues().entrySet());
                 entries.sort(Map.Entry.comparingByKey());
                 millis = entries.stream().mapToLong(e -> e.getValue().getMillis()).sum();
             } else {
-                Section peek = sectionStack.peek();
+                Section peek = this.sectionStack.peek();
                 millis = peek.getMillis();
 
                 entries = Lists.newArrayList(peek.getValues().entrySet());
@@ -177,12 +178,12 @@ public class DebugRenderer {
             curMillisText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText curSectionText = TextObject.literal("Current Section: ");
             curSectionText.setColor(Color.rgb(0xffa040).toAwt());
-            right(renderer, curSectionText, curMillisText);
-            MutableText selInputText = TextObject.literal(selectInput);
+            this.right(renderer, curSectionText, curMillisText);
+            MutableText selInputText = TextObject.literal(this.selectInput);
             selInputText.setColor(Color.rgb(0xff4040).toAwt());
             MutableText typingText = TextObject.literal("Typing ");
             typingText.setColor(Color.rgb(0xffa040).toAwt());
-            right(renderer, typingText, selInputText);
+            this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
             for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
                 Map.Entry<String, Section> e = entries.get(i);
@@ -191,40 +192,40 @@ public class DebugRenderer {
                 MutableText name = TextObject.literal(e.getKey());
                 MutableText index = TextObject.literal("[" + (i + 1) + "] ");
                 index.setColor(Color.rgb(0x30ff30).toAwt());
-                right(renderer, index.append(name), millisText);
+                this.right(renderer, index.append(name), millisText);
             }
         }
     }
 
     private void keyPress(int keyCode) {
         if (keyCode == Input.Keys.ENTER) {
-            System.out.println("selectInput = " + selectInput);
-            if (selectInput.isEmpty()) return;
+            System.out.println("selectInput = " + this.selectInput);
+            if (this.selectInput.isEmpty()) return;
             int number;
             try {
-                number = Integer.parseInt(selectInput);
+                number = Integer.parseInt(this.selectInput);
             } catch (NumberFormatException e) {
                 return;
             }
-            selectInput = "";
+            this.selectInput = "";
             System.out.println("number = " + number);
             number--;
-            if (selectedThread == null) {
-                List<Thread> threads = Lists.newArrayList(lastProfile.keySet());
+            if (this.selectedThread == null) {
+                List<Thread> threads = Lists.newArrayList(this.lastProfile.keySet());
 
                 if (number >= threads.size()) return;
 
                 threads.sort(Comparator.comparing(Thread::getName));
-                selectedThread = threads.get(number);
-                System.out.println("selectedThread = " + selectedThread);
+                this.selectedThread = threads.get(number);
+                System.out.println("selectedThread = " + this.selectedThread);
             } else {
                 ArrayList<Map.Entry<String, Section>> entries;
 
-                if (sectionStack.isEmpty()) {
-                    entries = Lists.newArrayList(lastProfile.get(selectedThread).getValues().entrySet());
+                if (this.sectionStack.isEmpty()) {
+                    entries = Lists.newArrayList(this.lastProfile.get(this.selectedThread).getValues().entrySet());
                     entries.sort(Map.Entry.comparingByKey());
                 } else {
-                    Section peek = sectionStack.peek();
+                    Section peek = this.sectionStack.peek();
 
                     entries = Lists.newArrayList(peek.getValues().entrySet());
                     entries.sort(Map.Entry.comparingByKey());
@@ -233,115 +234,115 @@ public class DebugRenderer {
                 if (number >= entries.size()) return;
 
                 var entry = entries.get(number);
-                sectionStack.push(entry.getValue());
-                pathStack.push(entry.getKey());
+                this.sectionStack.push(entry.getValue());
+                this.pathStack.push(entry.getKey());
                 System.out.println("entry = " + entry.getKey());
             }
         } else if (keyCode == Input.Keys.FORWARD_DEL) {
-            if (selectedThread == null) return;
-            if (pathStack.isEmpty()) return;
-            sectionStack.pop();
-            pathStack.pop();
+            if (this.selectedThread == null) return;
+            if (this.pathStack.isEmpty()) return;
+            this.sectionStack.pop();
+            this.pathStack.pop();
         } else if (keyCode == Input.Keys.BACKSPACE) {
-            if (selectInput.isEmpty()) return;
-            selectInput = selectInput.substring(0, selectInput.length() - 1);
+            if (this.selectInput.isEmpty()) return;
+            this.selectInput = this.selectInput.substring(0, this.selectInput.length() - 1);
         } else if (keyCode >= Input.Keys.NUM_0 && keyCode <= Input.Keys.NUM_9) {
-            if (keyCode == Input.Keys.NUM_0 && selectInput.isEmpty()) return;
-            selectInput += keyCode - Input.Keys.NUM_0;
+            if (keyCode == Input.Keys.NUM_0 && this.selectInput.isEmpty()) return;
+            this.selectInput += keyCode - Input.Keys.NUM_0;
         }
     }
 
     private void reset() {
-        yLeft = 0;
-        yRight = 0;
+        this.yLeft = 0;
+        this.yRight = 0;
     }
 
     public void left(Renderer renderer, String text, Object o) {
-        left(renderer, TextObject.literal(text), o);
+        this.left(renderer, TextObject.literal(text), o);
     }
 
     public void left(Renderer renderer, MutableText text, Object o) {
         FormatterContext formatterContext = new FormatterContext();
         format(o, formatterContext);
-        left(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
+        this.left(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
 
     public void left(Renderer renderer, String text) {
-        left(renderer, TextObject.literal(text));
+        this.left(renderer, TextObject.literal(text));
     }
 
     public void left(Renderer renderer, MutableText text) {
         String text1 = text.getText();
-        layout.setText(font.get(), text1);
-        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
+        this.layout.setText(this.font.get(), text1);
+        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
         int width = (int) bounds.x;
         int height = (int) bounds.y;
-        int y = yLeft += height + 5;
-        if (game.isInGame()) {
-            y += (int) game.getGameBounds().y;
+        int y = this.yLeft += height + 5;
+        if (this.game.isInGame()) {
+            y += (int) this.game.getGameBounds().y;
         }
 
         renderer.setColor(0, 0, 0, 0x99);
         renderer.fill(10, y, width + 4, height + 4);
         renderer.setColor("#fff");
-        renderer.drawText(font.get(), text1, 12, y + 1);
+        renderer.drawText(this.font.get(), text1, 12, y + 1);
     }
 
     public void right(Renderer renderer, String text, Object o) {
-        right(renderer, TextObject.literal(text), o);
+        this.right(renderer, TextObject.literal(text), o);
     }
 
     public void right(Renderer renderer, MutableText text, Object o) {
         FormatterContext formatterContext = new FormatterContext();
         format(o, formatterContext);
-        right(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
+        this.right(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
 
     public void right(Renderer renderer, String text) {
-        right(renderer, TextObject.literal(text));
+        this.right(renderer, TextObject.literal(text));
     }
 
     public void right(Renderer renderer, MutableText text) {
         String text1 = text.getText();
-        layout.setText(font.get(), text1);
-        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
+        this.layout.setText(this.font.get(), text1);
+        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
         int width = (int) bounds.x;
         int height = (int) bounds.y;
-        int y = yRight += height + 5;
-        if (game.isInGame()) {
-            y += (int) game.getGameBounds().y;
+        int y = this.yRight += height + 5;
+        if (this.game.isInGame()) {
+            y += (int) this.game.getGameBounds().y;
         }
 
         renderer.setColor(0, 0, 0, 0x99);
-        renderer.fill(game.getWidth() - width - 10, y, width + 4, height + 4);
+        renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4);
         renderer.setColor("#fff");
-        renderer.drawRightAnchoredText(font.get(), text1, game.getWidth() - 8, y + 1);
+        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
         String text2 = text.getText();
-        layout.setText(font.get(), text2);
-        Vector2 bounds = new Vector2(layout.width, font.get().getLineHeight());
+        this.layout.setText(this.font.get(), text2);
+        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
         int height;
         if (!text1.getText().isEmpty()) {
-            Vector2 bounds1 = new Vector2(layout.width, font.get().getLineHeight());
+            Vector2 bounds1 = new Vector2(this.layout.width, this.font.get().getLineHeight());
             height = Math.max((int) bounds.y, (int) bounds1.y);
         } else {
             height = (int) bounds.y;
         }
-        int y = yRight += height + 5;
-        if (game.isInGame()) {
-            y += (int) game.getGameBounds().y;
+        int y = this.yRight += height + 5;
+        if (this.game.isInGame()) {
+            y += (int) this.game.getGameBounds().y;
         }
 
         int i = 400;
 
         renderer.setColor(0, 0, 0, 0x99);
-        renderer.fill(game.getWidth() - i - 10, y, i, height + 4);
+        renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4);
         renderer.setColor("#fff");
-        renderer.drawRightAnchoredText(font.get(), text2, game.getWidth() - i - 8, y + 1);
+        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1);
         if (!text1.getText().isEmpty()) {
-            renderer.drawRightAnchoredText(font.get(), text2, game.getWidth() - 12, y + 1);
+            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1);
         }
     }
 }

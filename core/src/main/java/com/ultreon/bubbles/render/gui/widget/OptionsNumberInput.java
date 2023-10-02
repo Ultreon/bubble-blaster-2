@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.util.helpers.MathHelper;
 
 
 @SuppressWarnings("unused")
@@ -39,12 +39,12 @@ public class OptionsNumberInput extends OptionsTextEntry {
     }
 
     private void add() {
-        this.value = Mth.clamp(this.value + 1, this.min, this.max);
+        this.value = MathHelper.clamp(this.value + 1, this.min, this.max);
         this.text = Integer.toString(this.value);
     }
 
     private void subtract() {
-        this.value = Mth.clamp(this.value - 1, this.min, this.max);
+        this.value = MathHelper.clamp(this.value - 1, this.min, this.max);
         this.text = Integer.toString(this.value);
     }
 
@@ -55,13 +55,13 @@ public class OptionsNumberInput extends OptionsTextEntry {
         super.mousePress(x, y, button);
         if (!this.activated) {
             try {
-                this.value = Mth.clamp(Integer.parseInt(this.text), this.min, this.max);
+                this.value = MathHelper.clamp(Integer.parseInt(this.text), this.min, this.max);
                 if (!this.text.equals(Integer.toString(this.value)))
                     this.cursorIndex = Integer.toString(this.value).length();
                 this.text = Integer.toString(this.value);
                 return true;
             } catch (NumberFormatException e) {
-                this.value = Mth.clamp(0, this.min, this.max);
+                this.value = MathHelper.clamp(0, this.min, this.max);
                 this.text = Integer.toString(this.value);
                 this.cursorIndex = this.text.length();
                 return true;
@@ -83,21 +83,21 @@ public class OptionsNumberInput extends OptionsTextEntry {
             this.layout.setText(this.font, this.text.substring(0, this.cursorIndex));
 
             this.cursorIndex--;
-            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
             this.cursorIndex--;
 
-            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
             this.cursorIndex++;
 
-            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
 
@@ -116,7 +116,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
             this.cursorIndex++;
 
-            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, this.text.length());
             return true;
         }
         return false;
@@ -131,11 +131,11 @@ public class OptionsNumberInput extends OptionsTextEntry {
     }
 
     @Override
-    public void destroy() {
-        super.destroy();
+    public void dispose() {
+        super.dispose();
 
-        this.upButton.destroy();
-        this.downButton.destroy();
+        this.upButton.dispose();
+        this.downButton.dispose();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
             renderer.fill(0, 0, this.width, this.height, Color.grayscale(0x50));
         }
 
-        renderer.drawLeftAnchoredText(this.font, this.text, 2, this.getHeight() / 2f, Color.WHITE);
+        renderer.drawTextLeft(this.font, this.text, 2, this.getHeight() / 2f, Color.WHITE);
 
         float cursorX = this.text.isEmpty() ? 0 : this.layout.width;
 
@@ -196,7 +196,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
     }
 
     public void setValue(int value) {
-        this.value = Mth.clamp(value, this.min, this.max);
+        this.value = MathHelper.clamp(value, this.min, this.max);
     }
 
     public int getMin() {
@@ -205,7 +205,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
     public void setMin(int min) {
         this.min = min;
-        this.value = Mth.clamp(this.value, min, this.max);
+        this.value = MathHelper.clamp(this.value, min, this.max);
     }
 
     public int getMax() {
@@ -214,10 +214,10 @@ public class OptionsNumberInput extends OptionsTextEntry {
 
     public void setMax(int max) {
         this.max = max;
-        this.value = Mth.clamp(this.value, this.min, max);
+        this.value = MathHelper.clamp(this.value, this.min, max);
     }
 
-    static class ArrowButton extends OptionsButton {
+    static class ArrowButton extends Button {
         private long previousCommand;
         private long pressedTime;
 
@@ -249,7 +249,7 @@ public class OptionsNumberInput extends OptionsTextEntry {
                 textColor = Color.WHITE.withAlpha(0x80);
             }
 
-            OptionsButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
+            AbstractButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
         }
 
         @Override

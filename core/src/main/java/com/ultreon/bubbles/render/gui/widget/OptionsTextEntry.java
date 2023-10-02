@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import org.checkerframework.checker.builder.qual.ReturnsReceiver;
@@ -70,7 +70,7 @@ public class OptionsTextEntry extends GuiComponent {
             if (this.responder.test(text)) {
                 this.text = text;
                 this.layout.setText(this.font, text.substring(0, this.cursorIndex));
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+                this.cursorIndex = MathHelper.clamp(this.cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
@@ -86,18 +86,18 @@ public class OptionsTextEntry extends GuiComponent {
             if (this.responder.test(text)) {
                 this.text = text;
                 this.layout.setText(this.font, text.substring(0, this.cursorIndex));
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+                this.cursorIndex = MathHelper.clamp(this.cursorIndex - 1, 0, this.text.length());
             }
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
-            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex - 1, 0, this.text.length());
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
-            this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+            this.cursorIndex = MathHelper.clamp(this.cursorIndex + 1, 0, this.text.length());
             return true;
         }
         return false;

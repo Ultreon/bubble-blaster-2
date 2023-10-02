@@ -17,8 +17,8 @@ public class BubbleFreezeStatusEffect extends StatusEffect {
     @Override
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         if (entity instanceof Player) {
-            if (!entity.getEnvironment().isGlobalBubbleFreeze()) {
-                entity.getEnvironment().setGlobalBubbleFreeze(true);
+            if (!entity.getWorld().isBubblesFrozen()) {
+                entity.getWorld().setBubblesFrozen(true);
             }
         }
     }
@@ -26,8 +26,8 @@ public class BubbleFreezeStatusEffect extends StatusEffect {
     @Override
     public void onStop(Entity entity) {
         if (entity instanceof Player) {
-            if (entity.getEnvironment().isGlobalBubbleFreeze()) {
-                entity.getEnvironment().setGlobalBubbleFreeze(false);
+            if (entity.getWorld().isBubblesFrozen()) {
+                entity.getWorld().setBubblesFrozen(false);
             }
         }
     }

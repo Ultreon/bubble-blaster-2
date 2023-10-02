@@ -1,17 +1,18 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.OptionsButton;
-import com.ultreon.libs.text.v0.TextObject;
-import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.bubbles.render.gui.widget.Button;
+import com.ultreon.libs.text.v1.TextObject;
+import com.ultreon.libs.translations.v1.Language;
 
-public class OutOfMemoryScreen extends Screen {
+public final class OutOfMemoryScreen extends Screen {
     public OutOfMemoryScreen() {
         super(TextObject.EMPTY);
 
-        if (this.game.isInGame() || this.game.environment != null) {
-            this.game.crash(new Error(getClass().getSimpleName() + " name violation, should only be used when outside of the game."));
+        if (this.game.isInGame() || this.game.world != null) {
+            this.game.crash(new Error(this.getClass().getSimpleName() + " name violation, should only be used when outside of the game."));
         }
     }
 
@@ -19,9 +20,9 @@ public class OutOfMemoryScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        this.add(new OptionsButton.Builder()
-                .bounds(width / 2 - 100, height / 3 + 140, 200, 40)
-                .text(TextObject.translation("bubbleblaster/screen/out_of_memory/back_to_title"))
+        this.add(Button.builder()
+                .bounds(this.width / 2 - 100, this.height / 3 + 140, 200, 40)
+                .text(TextObject.translation("bubbleblaster.screen.outOfMemory.backToTitle"))
                 .command(this::backToTitle)
                 .build());
     }
@@ -32,8 +33,8 @@ public class OutOfMemoryScreen extends Screen {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.drawCenteredText(Fonts.SANS_BOLD_48.get(), Language.translate("bubbleblaster/screen/out_of_memory/title"), width / 2f, height / 3f);
-        renderer.drawCenteredText(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster/screen/out_of_memory/line1"), width / 2f, height / 3f + 60);
-        renderer.drawCenteredText(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster/screen/out_of_memory/line2"), width / 2f, height / 3f + 80);
+        renderer.drawTextCenter(Fonts.SANS_BOLD_48.get(), Language.translate("bubbleblaster.screen.outOfMemory.title"), this.width / 2f, this.height / 3f, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster.screen.outOfMemory.line1"), this.width / 2f, this.height / 3f + 60, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster.screen.outOfMemory.line2"), this.width / 2f, this.height / 3f + 80, Color.WHITE);
     }
 }

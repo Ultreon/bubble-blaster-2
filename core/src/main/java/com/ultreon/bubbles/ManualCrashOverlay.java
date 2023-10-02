@@ -23,29 +23,25 @@ public class ManualCrashOverlay implements Renderable {
         float width = renderer.getWidth();
         float height = renderer.getHeight();
 
-        if (isHoldingCrashKey() && BubbleBlaster.getInstance().isLoaded()) {
+        if (ManualCrashOverlay.isHoldingCrashKey() && BubbleBlaster.getInstance().isLoaded()) {
             if (!this.crashing) {
                 this.crashing = true;
                 this.setTimer();
             }
 
-            long secondsLeft = timer.getEpochSecond() - Instant.now().getEpochSecond();
+            long secondsLeft = this.timer.getEpochSecond() - Instant.now().getEpochSecond();
 
-            renderer.setColor(Color.rgb(0x404040));
-            renderer.fill(0, 0, width, height);
-            renderer.setColor(Color.CRIMSON);
-            renderer.fill(0, 0, (int) width, 10);
-            renderer.fill(0, (int) (height - 10), (int) width, 10);
+            renderer.fill(0, 0, width, height, Color.GRAY_4);
+            renderer.fill(0, 0, (int) width, 10, Color.CRIMSON);
+            renderer.fill(0, (int) (height - 10), (int) width, 10, Color.CRIMSON);
 
-            renderer.drawText(Fonts.DONGLE_140.get(), "Manually Initiating Crash", 50, 60);
-            renderer.setColor(Color.rgb(0xffffff));
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "You have activated the MIC sequence!", 50, 210);
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240);
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270);
+            renderer.drawText(Fonts.DONGLE_140.get(), "Manually Initiating Crash", 50, 60, Color.CRIMSON);
+            renderer.drawText(Fonts.MONOSPACED_24.get(), "You have activated the MIC sequence!", 50, 210, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_24.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_24.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270, Color.WHITE);
 
-            if (Instant.now().isAfter(this.timer)) {
-                BubbleBlaster.crash(createMICLog().createCrash());
-            }
+            if (Instant.now().isAfter(this.timer))
+                BubbleBlaster.crash(ManualCrashOverlay.createMICLog().createCrash());
         } else {
             this.crashing = false;
         }

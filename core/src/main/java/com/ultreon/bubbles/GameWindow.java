@@ -42,7 +42,7 @@ public class GameWindow {
      * Window constructor.
      */
     public GameWindow(Properties properties) {
-        setSize(new IntSize(properties.width, properties.height));
+        this.setSize(new IntSize(properties.width, properties.height));
         Gdx.graphics.setResizable(false);
     }
 
@@ -61,7 +61,7 @@ public class GameWindow {
     }
 
     public void setWidth(int width) {
-        Gdx.graphics.setWindowedMode(width, getSize().height());
+        Gdx.graphics.setWindowedMode(width, this.getSize().height());
     }
 
     public int getHeight() {
@@ -69,24 +69,21 @@ public class GameWindow {
     }
 
     public void setHeight(int height) {
-        Gdx.graphics.setWindowedMode(getSize().width(), height);
+        Gdx.graphics.setWindowedMode(this.getSize().width(), height);
     }
 
     /**
      * Initialized window.
      */
     public synchronized void init() {
-        if (initialized) {
+        if (this.initialized) {
             throw new OneTimeUseException("The game window is already initialized.");
         }
-
-        BubbleBlaster.getLogger().info(MARKER, "Post-init stage of game window.");
-
         this.initialized = true;
 
         BubbleBlaster.getLogger().info(MARKER, "Initialized game window");
 
-        game().windowLoaded();
+        this.game().windowLoaded();
     }
 
     void dispose() {
@@ -94,7 +91,7 @@ public class GameWindow {
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
-        return Gdx.graphics.newCursor(new Pixmap(new ResourceFileHandle(identifier.mapPath(s -> "textures/cursor/" + s + ".png"))), hotSpotX, hotSpotY);
+        return Gdx.graphics.newCursor(new Pixmap(BubbleBlaster.resource(identifier.mapPath(s -> "textures/cursor/" + s + ".png"))), hotSpotX, hotSpotY);
     }
 
     private BubbleBlaster game() {
@@ -148,15 +145,15 @@ public class GameWindow {
     }
 
     public boolean isVisible() {
-        return visible;
+        return this.visible;
     }
 
     public boolean isInitialized() {
-        return initialized;
+        return this.initialized;
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(0, 0, getWidth(), getHeight());
+        return new Rectangle(0, 0, this.getWidth(), this.getHeight());
     }
 
     public int getX() {
@@ -186,7 +183,7 @@ public class GameWindow {
     }
 
     public boolean isFocused() {
-        return game().isFocused();
+        return this.game().isFocused();
     }
 
     /**

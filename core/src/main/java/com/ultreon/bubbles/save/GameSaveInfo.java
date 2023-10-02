@@ -20,7 +20,7 @@ public class GameSaveInfo {
         this.savedTime = tag.getLong("savedTime", 0L);
         this.seed = tag.getLong("seed",  0L);
         this.difficulty = EnumUtils.byName(tag.getString("difficulty"), Difficulty.NORMAL);
-        this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.MODERN.id().toString())));
+        this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.NORMAL.id().toString())));
     }
 
     public String getName() {

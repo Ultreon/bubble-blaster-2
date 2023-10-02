@@ -11,6 +11,7 @@
       <option name="taskNames">
         <list>
           <option value=":desktop-merge:jpackage" />
+          <option value=":desktop-merge:jpackageAlt" />
         </list>
       </option>
       <option name="vmOptions" />

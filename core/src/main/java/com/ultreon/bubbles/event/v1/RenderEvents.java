@@ -2,8 +2,8 @@ package com.ultreon.bubbles.event.v1;
 
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.environment.EnvironmentRenderer;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -16,8 +16,8 @@ public class RenderEvents {
     public static final Event<RenderEntityAfter> RENDER_ENTITY_AFTER = Event.create();
     public static final Event<RenderPlayerBefore> RENDER_PLAYER_BEFORE = Event.create();
     public static final Event<RenderPlayerAfter> RENDER_PLAYER_AFTER = Event.create();
-    public static final Event<RenderEnvironmentBefore> RENDER_ENVIRONMENT_BEFORE = Event.create();
-    public static final Event<RenderEnvironmentAfter> RENDER_ENVIRONMENT_AFTER = Event.create();
+    public static final Event<RenderWorldBefore> RENDER_WORLD_BEFORE = Event.create();
+    public static final Event<RenderWorldAfter> RENDER_WORLD_AFTER = Event.create();
     public static final Event<RenderScreenBefore> RENDER_SCREEN_BEFORE = Event.create();
     public static final Event<RenderScreenAfter> RENDER_SCREEN_AFTER = Event.create();
 
@@ -52,13 +52,13 @@ public class RenderEvents {
     }
 
     @FunctionalInterface
-    public interface RenderEnvironmentBefore {
-        void onRenderEnvironmentBefore(Environment environment, EnvironmentRenderer environmentRenderer, Renderer renderer);
+    public interface RenderWorldBefore {
+        void onRenderWorldBefore(World world, WorldRenderer worldRenderer, Renderer renderer);
     }
 
     @FunctionalInterface
-    public interface RenderEnvironmentAfter {
-        void onRenderEnvironmentAfter(Environment environment, EnvironmentRenderer environmentRenderer, Renderer renderer);
+    public interface RenderWorldAfter {
+        void onRenderWorldAfter(World world, WorldRenderer worldRenderer, Renderer renderer);
     }
 
     @FunctionalInterface

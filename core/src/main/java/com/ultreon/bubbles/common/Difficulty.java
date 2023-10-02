@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.common;
 
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
-import com.ultreon.libs.text.v0.Translatable;
+import com.ultreon.libs.text.v1.Translatable;
 
 import java.util.*;
 
@@ -12,13 +12,18 @@ import java.util.*;
  * @since 0.0.0
  */
 public enum Difficulty implements Translatable {
-    BABY(0.002f),  // Too easy
+    TOO_EASY(0.02f),
+    EZ_PZ(0.1f),
     EASY(0.5f),
     NORMAL(1.0f),
     HARD(4.0f),
     EXPERT(16.0f),
-    APOCALYPSE(64.0f),
-    ANNIHILATION(4096.0f);
+    ABSURD(64.0f),
+    INSANITY(256.0f),
+    SUPER_NATURAL(1024.0f),
+    LEGEND(4096.0f),
+    GG(65536.0f),
+    WHAT_THE_FRICK(Integer.MAX_VALUE / 2f + 1);
 
     private final float plainModifier;
 
@@ -32,7 +37,7 @@ public enum Difficulty implements Translatable {
 
     @Override
     public String getTranslationPath() {
-        return "bubbleblaster/misc/difficulty/" + name().toLowerCase();
+        return "bubbleblaster.misc.difficulty." + name().toLowerCase();
     }
 
     public record Modifier<T>(T key, float value) {

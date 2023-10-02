@@ -5,10 +5,15 @@ import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
+import com.ultreon.bubbles.init.HudTypes;
+import com.ultreon.bubbles.render.gui.hud.HudType;
+import com.ultreon.bubbles.registry.Registries;
+import com.ultreon.libs.commons.v0.Identifier;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
+import java.util.Objects;
 
 public class BubbleBlasterConfig {
     public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "bubble_blaster.toml");
@@ -32,10 +37,12 @@ public class BubbleBlasterConfig {
     public static final Config.IntEntry SECS_BEFORE_RED_EFFECT_TIME;
     public static final Config.FloatEntry BUBBLE_LINE_THICKNESS;
     public static final Config.FloatEntry DEFAULT_EFFECT_SPEED;
+    public static final Config.StringEntry GAME_HUD;
 
     // Debug
     public static final Config.BooleanEntry DEBUG_DISABLE_SCISSORS;
     public static final Config.BooleanEntry DEBUG_LOG_EMPTY_SCISSORS;
+    public static final Config.BooleanEntry DEBUG_LOG_SCREENS;
 
     private static final Config CONFIG;
 
@@ -61,10 +68,12 @@ public class BubbleBlasterConfig {
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
         BUBBLE_LINE_THICKNESS = builder.entry("graphical.bubbleLineThickness").comment("The thickness of a singular circle of a bubble.").withinRange(1f, 2.5f, 2f);
         DEFAULT_EFFECT_SPEED = builder.entry("graphical.defaultEffectSpeed").comment("How long it takes for one cycle of the scrolling gradient effect by default.").withinRange(0f, 30f, 10f);
+        GAME_HUD = builder.entry("graphical.gameHud").comment("Which game hud to use for playing.").value(Objects.requireNonNull(HudTypes.MODERN.id()).toString());
 
         // Debug
         DEBUG_DISABLE_SCISSORS = builder.entry("debug.disableScissors").comment("Disables ScissorStack.pushScissors() and ScissorStack.popScissors()").value(false);
         DEBUG_LOG_EMPTY_SCISSORS = builder.entry("debug.logEmptyScissors").comment("Logs if a scissor call results into an empty glScissor() call.").value(false);
+        DEBUG_LOG_SCREENS = builder.entry("debug.logScreens").comment("Logs when a new screen has opened.").value(false);
 
         CONFIG = builder.build();
 
@@ -83,5 +92,11 @@ public class BubbleBlasterConfig {
     public static void onReload() {
         int fps = MAX_FRAMERATE.get();
         Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
+
+        Identifier hudId = Identifier.tryParse(GAME_HUD.getOrDefault());
+        if (hudId != null) {
+            HudType hud = Registries.HUD.getValue(hudId);
+            HudType.setCurrent(hud);
+        }
     }
 }

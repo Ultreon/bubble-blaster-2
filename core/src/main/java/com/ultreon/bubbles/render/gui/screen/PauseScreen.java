@@ -1,48 +1,45 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.entity.bubble.BubbleSystem;
-import com.ultreon.bubbles.environment.EnvironmentRenderer;
-import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.bubbles.bubble.BubbleType;
+import com.ultreon.bubbles.entity.bubble.BubbleSystem;
+import com.ultreon.bubbles.world.WorldRenderer;
+import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.gui.widget.InGameButton;
-import com.ultreon.bubbles.text.Translations;
-import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.widget.Button;
+import com.ultreon.bubbles.text.Translations;
 import com.ultreon.bubbles.util.Utils;
-import com.ultreon.bubbles.util.helpers.Mth;
-import com.ultreon.libs.text.v0.TextObject;
-import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.libs.text.v1.TextObject;
+import com.ultreon.libs.translations.v1.Language;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {
-    private InGameButton forfeitButton;
-    private InGameButton prevButton;
-    private InGameButton nextButton;
+    private static final Color DETAIL_NAME_COLOR = Color.WHITE.withAlpha(0x80);
+    private static final Color DETAIL_VALUE_COLOR = Color.WHITE.withAlpha(0x60);
+    private Button forfeitButton;
+    private Button prevButton;
+    private Button nextButton;
 
-    private final TextObject minRadius = TextObject.translation("bubbleblaster/screen/pause/min_radius");
-    private final TextObject maxRadius = TextObject.translation("bubbleblaster/screen/pause/max_radius");
-    private final TextObject minSpeed = TextObject.translation("bubbleblaster/screen/pause/min_speed");
-    private final TextObject maxSpeed = TextObject.translation("bubbleblaster/screen/pause/max_speed");
-    private final TextObject defChance = TextObject.translation("bubbleblaster/screen/pause/default_chance");
-    private final TextObject curChance = TextObject.translation("bubbleblaster/screen/pause/current_chance");
-    private final TextObject defPriority = TextObject.translation("bubbleblaster/screen/pause/default_priority");
-    private final TextObject curPriority = TextObject.translation("bubbleblaster/screen/pause/current_priority");
-    private final TextObject defTotPriority = TextObject.translation("bubbleblaster/screen/pause/default_total_priority");
-    private final TextObject curTotPriority = TextObject.translation("bubbleblaster/screen/pause/current_total_priority");
-    private final TextObject scoreMod = TextObject.translation("bubbleblaster/screen/pause/score_modifier");
-    private final TextObject attackMod = TextObject.translation("bubbleblaster/screen/pause/attack_modifier");
-    private final TextObject defenseMod = TextObject.translation("bubbleblaster/screen/pause/defense_modifier");
-    private final TextObject canSpawn = TextObject.translation("bubbleblaster/screen/pause/can_spawn");
-    private final TextObject description = TextObject.translation("bubbleblaster/screen/pause/description");
-    private final TextObject random = TextObject.translation("bubbleblaster/misc/random");
-    private final TextObject boolTrue = TextObject.translation("bubbleblaster/misc/true");
-    private final TextObject boolFalse = TextObject.translation("bubbleblaster/misc/False");
+    private final TextObject id = TextObject.translation("bubbleblaster.screen.pause.id");
+    private final TextObject hardness = TextObject.translation("bubbleblaster.screen.pause.hardness");
+    private final TextObject radius = TextObject.translation("bubbleblaster.screen.pause.radius");
+    private final TextObject speed = TextObject.translation("bubbleblaster.screen.pause.speed");
+    private final TextObject curChance = TextObject.translation("bubbleblaster.screen.pause.chance");
+    private final TextObject curPriority = TextObject.translation("bubbleblaster.screen.pause.priority");
+    private final TextObject scoreMod = TextObject.translation("bubbleblaster.screen.pause.score");
+    private final TextObject attackMod = TextObject.translation("bubbleblaster.screen.pause.damage");
+    private final TextObject defenseMod = TextObject.translation("bubbleblaster.screen.pause.defense");
+    private final TextObject canSpawn = TextObject.translation("bubbleblaster.screen.pause.canSpawn");
+    private final TextObject description = TextObject.translation("bubbleblaster.screen.pause.description");
+    private final TextObject boolTrue = TextObject.translation("bubbleblaster.misc.true");
+    private final TextObject boolFalse = TextObject.translation("bubbleblaster.misc.false");
 
     private final int registeredBubbles;
     private static int helpIndex = 0;
@@ -62,43 +59,43 @@ public class PauseScreen extends Screen {
     public PauseScreen() {
         super();
 
-        this.title = TextObject.translation("bubbleblaster/screen/pause/text");
+        this.title = TextObject.translation("bubbleblaster.screen.pause.text");
 
-        this.forfeitButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster/screen/pause/forfeit")).command(this.game::saveAndQuit).build();
-        this.prevButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
-        this.nextButton = new InGameButton.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
+        this.forfeitButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster.screen.pause.forfeit")).command(this.game::saveAndQuit).build();
+        this.prevButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
+        this.nextButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
 
         this.registeredBubbles = Registries.BUBBLES.values().size();
-        tickPage();
+        this.tickPage();
     }
 
     private void previousPage() {
-        helpIndex = Mth.clamp(helpIndex - 1, 0, registeredBubbles - 1);
-        tickPage();
+        helpIndex = MathHelper.clamp(helpIndex - 1, 0, this.registeredBubbles - 1);
+        this.tickPage();
     }
 
     private void nextPage() {
-        helpIndex = Mth.clamp(helpIndex + 1, 0, registeredBubbles - 1);
-        tickPage();
+        helpIndex = MathHelper.clamp(helpIndex + 1, 0, this.registeredBubbles - 1);
+        this.tickPage();
     }
 
     private void tickPage() {
-        bubble = new ArrayList<>(Registries.BUBBLES.values()).get(helpIndex);
+        this.bubble = new ArrayList<>(Registries.BUBBLES.values()).get(helpIndex);
 
-        if (helpIndex >= registeredBubbles - 1 && nextButton.isValid()) {
-            nextButton.enabled = false;
-            nextButton.visible = false;
-        } else if (!nextButton.isValid()) {
-            nextButton.enabled = true;
-            nextButton.visible = true;
+        if (helpIndex >= this.registeredBubbles - 1) {
+            this.nextButton.enabled = false;
+            this.nextButton.visible = false;
+        } else {
+            this.nextButton.enabled = true;
+            this.nextButton.visible = true;
         }
 
-        if (helpIndex <= 0 && prevButton.isValid()) {
-            prevButton.enabled = false;
-            prevButton.visible = false;
-        } else if (!prevButton.isValid()) {
-            prevButton.enabled = true;
-            prevButton.visible = true;
+        if (helpIndex <= 0) {
+            this.prevButton.enabled = false;
+            this.prevButton.visible = false;
+        } else {
+            this.prevButton.enabled = true;
+            this.prevButton.visible = true;
         }
     }
 
@@ -110,9 +107,9 @@ public class PauseScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        this.forfeitButton = add(this.forfeitButton);
-        this.prevButton = add(this.prevButton);
-        this.nextButton = add(this.nextButton);
+        this.forfeitButton = this.add(this.forfeitButton);
+        this.prevButton = this.add(this.prevButton);
+        this.nextButton = this.add(this.nextButton);
 
         if (!this.game.isInGame()) {
             return;
@@ -122,11 +119,9 @@ public class PauseScreen extends Screen {
     }
 
     @Override
-    public boolean onClose(Screen to) {
-        clearWidgets();
-
+    public boolean close(Screen to) {
         if (to == null) Utils.hideCursor();
-        return super.onClose(to);
+        return super.close(to);
     }
 
     @Override
@@ -137,132 +132,68 @@ public class PauseScreen extends Screen {
         }
 
         // Darkened background
-        renderer.setColor(Color.argb(0xc0000000));
-        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Color.BLACK.withAlpha(0xc0));
 
         // Pause text
-        renderer.setColor(Color.argb(0x80ffffff));
-        renderer.setFont(Fonts.DONGLE_75.get());
-        renderer.drawCenteredText(this.title, this.width / 2f, 120f);
+        renderer.drawTextCenter(Fonts.DONGLE_75.get(), this.title, this.width / 2f, 120f, Color.argb(0x80ffffff));
 
         // Render widgets.
         this.prevButton.visible = PauseScreen.helpIndex > 0;
         this.nextButton.visible = PauseScreen.helpIndex < this.registeredBubbles - 1;
 
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
 
         // Border
-        renderer.box((int) (BubbleBlaster.getMiddleX() - 480), 300, 960, 300, Color.argb(0x80ffffff));
-
-        // Bubble
+        renderer.box(this.middleX - 480, 300, 960, 300, Color.WHITE.withAlpha(0x80));
 
         // Bubble name.
-        renderer.setColor(Color.argb(0xc0ffffff));
-        renderer.drawText(Fonts.SANS_REGULAR_32.get(), Language.translate(bubble.getTranslationPath()), BubbleBlaster.getMiddleX() - 470, 332, Anchor.W);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_32.get(), this.bubble.getTranslation(), this.middleX - 470, 322, DETAIL_NAME_COLOR);
 
         // Bubble icon.
-        EnvironmentRenderer.drawBubble(renderer, (int) (BubbleBlaster.getMiddleX() - 470), 350, 122, bubble.getColors());
+        WorldRenderer.drawBubble(renderer, this.middleX - 409, 411, 122, this.bubble.getColors());
 
         //********************//
         //     Info Names     //
         //********************//
 
-        // Set color & font.
-        renderer.setColor(Color.argb(0xc0ffffff));
-
         // Left data.
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.minRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.maxRadius, (BubbleBlaster.getMiddleX() - 326) + 10, 382, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.minSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 402, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.maxSpeed, (BubbleBlaster.getMiddleX() - 326) + 10, 422, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defChance, (BubbleBlaster.getMiddleX() - 326) + 10, 442, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curChance, (BubbleBlaster.getMiddleX() - 326) + 10, 462, Anchor.W);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.id, this.middleX - 326 + 10, 362, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.hardness, this.middleX - 326 + 10, 382, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.radius, this.middleX - 326 + 10, 402, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.speed, this.middleX - 326 + 10, 422, DETAIL_NAME_COLOR);
 
         // Right data.
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 322, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curTotPriority, BubbleBlaster.getMiddleX() + 72 + 10, 342, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defPriority, BubbleBlaster.getMiddleX() + 72 + 10, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.curPriority, BubbleBlaster.getMiddleX() + 72 + 10, 382, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.scoreMod, BubbleBlaster.getMiddleX() + 72 + 10, 402, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.attackMod, BubbleBlaster.getMiddleX() + 72 + 10, 422, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.defenseMod, BubbleBlaster.getMiddleX() + 72 + 10, 442, Anchor.W);
-        renderer.drawText(Fonts.SANS_REGULAR_16.get(), this.canSpawn, BubbleBlaster.getMiddleX() + 72 + 10, 462, Anchor.W);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.curChance, this.middleX + 72 + 10, 322, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.curPriority, this.middleX + 72 + 10, 342, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.scoreMod, this.middleX + 72 + 10, 362, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.attackMod, this.middleX + 72 + 10, 382, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.defenseMod, this.middleX + 72 + 10, 402, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.canSpawn, this.middleX + 72 + 10, 422, DETAIL_NAME_COLOR);
 
         // Description
-        renderer.drawWrappedText(this.font, this.description, (int) BubbleBlaster.getMiddleX() - 470, 502, 940);
+        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.description, this.middleX - 470, 502, DETAIL_NAME_COLOR);
 
         //****************//
         //     Values     //
         //****************//
 
-        // Set color & font.
-        renderer.setColor(Color.argb(0x80ffffff));
-
         // Left data.
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Integer.toString(bubble.getMinRadius()), (BubbleBlaster.getMiddleX() - 326) + 200, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Integer.toString(bubble.getMaxRadius()), (BubbleBlaster.getMiddleX() - 326) + 200, 382, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getMinSpeed(), 5)), (BubbleBlaster.getMiddleX() - 326) + 200, 402, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getMaxSpeed(), 5)), (BubbleBlaster.getMiddleX() - 326) + 200, 422, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Mth.round((double) 100 * BubbleSystem.getDefaultPercentageChance(bubble), 5) + "%", (BubbleBlaster.getMiddleX() - 326) + 200, 442, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), Mth.round((double) 100 * BubbleSystem.getPercentageChance(bubble), 5) + "%", (BubbleBlaster.getMiddleX() - 326) + 200, 462, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), compress(BubbleSystem.getDefaultTotalPriority()), BubbleBlaster.getMiddleX() + 72 + 200, 322, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), compress(BubbleSystem.getTotalPriority()), BubbleBlaster.getMiddleX() + 72 + 200, 342, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), compress(BubbleSystem.getDefaultPriority(bubble)), BubbleBlaster.getMiddleX() + 72 + 200, 362, Anchor.W);
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), compress(BubbleSystem.getPriority(bubble)), BubbleBlaster.getMiddleX() + 72 + 200, 382, Anchor.W);
+        float leftX = this.middleX - 326 + 200;
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getId().toString(), leftX, 362, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getHardness().getTranslation(), leftX, 382, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getRadius().getTranslation(), leftX, 402, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getSpeed().getTranslation(), leftX, 422, DETAIL_VALUE_COLOR);
 
         // Right data
-        if (bubble.isScoreRandom())
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 402);
-        else
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getScore(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 402, Anchor.W);
-
-        if (bubble.isAttackRandom())
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 422);
-        else
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getAttack(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 422, Anchor.W);
-
-        if (bubble.isDefenseRandom())
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), random, BubbleBlaster.getMiddleX() + 72 + 200, 442);
-        else
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), Double.toString(Mth.round(bubble.getDefense(), 5)), BubbleBlaster.getMiddleX() + 72 + 200, 442, Anchor.W);
-
-        renderer.drawText(Fonts.SANS_ITALIC_16.get(), bubble.canSpawn(loadedGame.getEnvironment()) ? boolTrue : boolFalse, BubbleBlaster.getMiddleX() + 72 + 200, 462, Anchor.W);
+        float rightX = this.middleX + 72 + 200;
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), MathHelper.toReadableString((double) 100 * BubbleSystem.getPercentageChance(this.bubble), 5) + "%", rightX, 322, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), MathHelper.compress(BubbleSystem.getPriority(this.bubble)) + " / " +  MathHelper.compress(BubbleSystem.getTotalPriority()), rightX, 342, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getScore().getTranslation(), rightX, 362, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getAttack().getTranslation(), rightX, 382, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getDefense().getTranslation(), rightX, 402, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.canSpawn(loadedGame.getWorld()) ? this.boolTrue : this.boolFalse, rightX, 422, DETAIL_NAME_COLOR);
 
         // Description
-        renderer.drawWrappedText(Fonts.SANS_ITALIC_16.get(), Language.translate(bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), (int) BubbleBlaster.getMiddleX() - 470, 522, 940);
-    }
-
-    private String compress(double totalPriority) {
-        if (totalPriority >= 0d && totalPriority < 1_000d) {
-            return Double.toString(totalPriority);
-        }
-        if (totalPriority >= 1_000d && totalPriority < 1_000_000d) {
-            return Mth.round(totalPriority / 1_000d, 1) + "K";
-        }
-        if (totalPriority >= 1_000_000d && totalPriority < 1_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000d, 1) + "M";
-        }
-        if (totalPriority >= 1_000_000_000d && totalPriority < 1_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000d, 1) + "B";
-        }
-        if (totalPriority >= 1_000_000_000_000d && totalPriority < 1_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000d, 1) + "T";
-        }
-        if (totalPriority >= 1_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000_000d, 1) + "QD";
-        }
-        if (totalPriority >= 1_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000_000_000d, 1) + "QT";
-        }
-        if (totalPriority >= 1_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000_000_000_000d, 1) + "S";
-        }
-        if (totalPriority >= 1_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000_000_000_000_000d, 1) + "SX";
-        }
-        if (totalPriority >= 1_000_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000_000d) {
-            return Mth.round(totalPriority / 1_000_000_000_000_000_000_000_000_000d, 1) + "C";
-        }
-        return Double.toString(totalPriority);
+        renderer.drawWrappedText(Fonts.SANS_ITALIC_16.get(), Language.translate(this.bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), this.middleX - 470, 512, 940, DETAIL_VALUE_COLOR);
     }
 }

@@ -13,18 +13,18 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
 public class Rng {
-    private final PseudoRandom random;
+    private final GameRandom random;
     private final int index;
     private final int subIndex;
 
     /**
      * RNG Constructor.
      *
-     * @param random   the {@link PseudoRandom} instance.
+     * @param random   the {@link GameRandom} instance.
      * @param index    the RNG-Index.
      * @param subIndex the RNG Sub-index.
      */
-    public Rng(PseudoRandom random, int index, int subIndex) {
+    public Rng(GameRandom random, int index, int subIndex) {
         this.random = random;
         this.index = index;
         this.subIndex = subIndex;
@@ -37,22 +37,22 @@ public class Rng {
     /**
      * @return get random number generator.
      */
-    public PseudoRandom getRandom() {
-        return random;
+    public GameRandom getRandom() {
+        return this.random;
     }
 
     /**
      * @return get rng-index.
      */
     public int getIndex() {
-        return index;
+        return this.index;
     }
 
     /**
      * @return get rng sub-index.
      */
     public int getSubIndex() {
-        return subIndex;
+        return this.subIndex;
     }
 
     /**
@@ -63,10 +63,10 @@ public class Rng {
      */
     public int getNumber(int min, int max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -77,10 +77,10 @@ public class Rng {
      */
     public int getNumber(int min, int max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -91,10 +91,10 @@ public class Rng {
      */
     public int getNumber(int min, int max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -105,13 +105,13 @@ public class Rng {
      */
     public int getNumber(int min, int max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -122,13 +122,13 @@ public class Rng {
      */
     public int getNumber(int min, int max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -139,13 +139,13 @@ public class Rng {
      */
     public int getNumber(int min, int max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -156,11 +156,11 @@ public class Rng {
      */
     public long getNumber(long min, long max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -171,10 +171,10 @@ public class Rng {
      */
     public long getNumber(long min, long max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -185,10 +185,10 @@ public class Rng {
      */
     public long getNumber(long min, long max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -199,13 +199,13 @@ public class Rng {
      */
     public long getNumber(long min, long max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -216,13 +216,13 @@ public class Rng {
      */
     public long getNumber(long min, long max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -233,13 +233,13 @@ public class Rng {
      */
     public long getNumber(long min, long max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -250,10 +250,10 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -264,10 +264,10 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -278,10 +278,10 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -292,13 +292,13 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -309,13 +309,13 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -326,13 +326,13 @@ public class Rng {
      */
     public BigInteger getNumber(BigInteger min, BigInteger max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -343,10 +343,10 @@ public class Rng {
      */
     public float getNumber(float min, float max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -357,10 +357,10 @@ public class Rng {
      */
     public float getNumber(float min, float max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -371,10 +371,10 @@ public class Rng {
      */
     public float getNumber(float min, float max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -385,13 +385,13 @@ public class Rng {
      */
     public float getNumber(float min, float max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -402,13 +402,13 @@ public class Rng {
      */
     public float getNumber(float min, float max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -419,13 +419,13 @@ public class Rng {
      */
     public float getNumber(float min, float max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -436,10 +436,10 @@ public class Rng {
      */
     public double getNumber(double min, double max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -450,10 +450,10 @@ public class Rng {
      */
     public double getNumber(double min, double max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -464,10 +464,10 @@ public class Rng {
      */
     public double getNumber(double min, double max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -478,13 +478,13 @@ public class Rng {
      */
     public double getNumber(double min, double max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -495,13 +495,13 @@ public class Rng {
      */
     public double getNumber(double min, double max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -512,13 +512,13 @@ public class Rng {
      */
     public double getNumber(double min, double max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -529,10 +529,10 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -543,10 +543,10 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -557,10 +557,10 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 
     /**
@@ -571,13 +571,13 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, char[] modifier, int... input) {
         List<Integer> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, subIndex);
-        list.add(0, index);
+        list.add(0, this.subIndex);
+        list.add(0, this.index);
         for (char b : modifier) {
             list.add((int) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToInt(i -> i).toArray());
     }
 
     /**
@@ -588,13 +588,13 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, char[] modifier, long... input) {
         List<Long> list = Arrays.stream(input).boxed().collect(Collectors.toList());
-        list.add(0, (long) subIndex);
-        list.add(0, (long) index);
+        list.add(0, (long) this.subIndex);
+        list.add(0, (long) this.index);
         for (char b : modifier) {
             list.add((long) b);
         }
 
-        return random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
+        return this.random.getNumber(min, max, list.stream().mapToLong(i -> i).toArray());
     }
 
     /**
@@ -605,12 +605,12 @@ public class Rng {
      */
     public BigDecimal getNumber(BigDecimal min, BigDecimal max, char[] modifier, BigInteger... input) {
         List<BigInteger> list = Arrays.asList(input);
-        list.add(0, BigInteger.valueOf(subIndex));
-        list.add(0, BigInteger.valueOf(index));
+        list.add(0, BigInteger.valueOf(this.subIndex));
+        list.add(0, BigInteger.valueOf(this.index));
         for (char b : modifier) {
             list.add(BigInteger.valueOf(b));
         }
 
-        return random.getNumber(min, max, list.toArray(new BigInteger[]{}));
+        return this.random.getNumber(min, max, list.toArray(new BigInteger[]{}));
     }
 }

@@ -1,16 +1,16 @@
 package com.ultreon.bubbles.command;
 
 import com.ultreon.bubbles.bubble.BubbleType;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class SpawnCommand implements CommandExecutor {
-    private Environment environment;
+    private World world;
 
     @Override
     public boolean execute(Player player, String[] args) {
@@ -52,7 +52,7 @@ public class SpawnCommand implements CommandExecutor {
                 String json = StringUtils.join(jsonParts, ' ');
 
                 try {
-//                    Objects.requireNonNull(BubbleBlaster.getInstance().getEnvironment()).spawnEntityFromState(BsonDocument.parse(json));
+//                    Objects.requireNonNull(BubbleBlaster.getInstance().getWorld()).spawnEntityFromState(BsonDocument.parse(json));
 //                    SNBTUtil.fromSNBT(json); // TODO: Allow deserializing a string to UBO data.
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -141,7 +141,7 @@ public class SpawnCommand implements CommandExecutor {
         return false;
     }
 
-    public Environment getEnvironment() {
-        return environment;
+    public World getWorld() {
+        return world;
     }
 }

@@ -1,34 +1,30 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.bubbles.text.Translations;
+import com.ultreon.libs.translations.v1.Language;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.OptionsButton;
+import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
 import com.ultreon.bubbles.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class OptionsScreen extends Screen {
-    private final OptionsNumberInput maxBubblesOption;
-    private final OptionsButton languageButton;
-    private final OptionsButton cancelButton;
-    private final OptionsButton saveButton;
+    private OptionsNumberInput maxBubblesOption;
+    private Button languageButton;
+    private Button cancelButton;
+    private Button saveButton;
     private Screen back;
 
     public OptionsScreen(Screen back) {
         super();
 
         this.back = back;
-
-        this.maxBubblesOption = new OptionsNumberInput(0, 0, 321, 48, GameSettings.instance().maxBubbles, 400, 2000);
-        this.languageButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::showLanguages).build();
-        this.cancelButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::back).build();
-        this.saveButton = new OptionsButton.Builder().bounds(0, 0, 321, 48).command(this::save).build();
     }
 
     private void save() {
-        int option = maxBubblesOption.getValue();
+        int option = this.maxBubblesOption.getValue();
 
         GameSettings settings = GameSettings.instance();
         settings.maxBubbles = option;
@@ -36,63 +32,45 @@ public class OptionsScreen extends Screen {
     }
 
     private void showLanguages() {
-        game.showScreen(new LanguageScreen(this));
+        this.game.showScreen(new LanguageScreen(this));
     }
 
     private void back() {
-        game.showScreen(back);
+        this.game.showScreen(this.back);
     }
 
     @Override
     public void init() {
         BubbleBlaster.getInstance().updateRPC();
 
-        maxBubblesOption.make();
-        languageButton.make();
-        cancelButton.make();
-        saveButton.make();
-    }
-
-    @Override
-    public boolean onClose(Screen to) {
-        maxBubblesOption.destroy();
-        languageButton.destroy();
-        cancelButton.destroy();
-        saveButton.destroy();
-
-        if (to == back) {
-            back = null;
-        }
-        return super.onClose(to);
+        this.maxBubblesOption = this.add(new OptionsNumberInput((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 101, 321, 48, GameSettings.instance().maxBubbles, 400, 2000));
+        this.languageButton = this.add(Button.builder().bounds((int) BubbleBlaster.getMiddleX() + 1, (int) BubbleBlaster.getMiddleY() + 101, 321, 48).command(this::showLanguages).build());
+        this.cancelButton = this.add(Button.builder().bounds((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 151, 321, 48).command(this::back).build());
+        this.saveButton = this.add(Button.builder().bounds((int) BubbleBlaster.getMiddleX() + 1, (int) BubbleBlaster.getMiddleY() + 151, 321, 48).command(this::save).build());
     }
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        maxBubblesOption.setX((int) BubbleBlaster.getMiddleX() - 322);
-        maxBubblesOption.setY((int) BubbleBlaster.getMiddleY() + 101);
-        maxBubblesOption.setWidth(321);
+        this.maxBubblesOption.setPos((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 101);
+        this.maxBubblesOption.setWidth(321);
 
-        languageButton.setX((int) BubbleBlaster.getMiddleX() + 1);
-        languageButton.setY((int) BubbleBlaster.getMiddleY() + 101);
-        languageButton.setWidth(321);
+        this.languageButton.setPos((int) BubbleBlaster.getMiddleX() + 1, (int) BubbleBlaster.getMiddleY() + 101);
+        this.languageButton.setWidth(321);
 
-        cancelButton.setX((int) BubbleBlaster.getMiddleX() - 322);
-        cancelButton.setY((int) BubbleBlaster.getMiddleY() + 151);
-        cancelButton.setWidth(321);
+        this.cancelButton.setPos((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 151);
+        this.cancelButton.setWidth(321);
 
-        saveButton.setX((int) BubbleBlaster.getMiddleX() + 1);
-        saveButton.setY((int) BubbleBlaster.getMiddleY() + 151);
-        saveButton.setWidth(321);
+        this.saveButton.setPos((int) BubbleBlaster.getMiddleX() + 1, (int) BubbleBlaster.getMiddleY() + 151);
+        this.saveButton.setWidth(321);
 
-        cancelButton.setText(Language.translate("bubbleblaster/misc/cancel"));
-        languageButton.setText(Language.translate("bubbleblaster/screen/options/language"));
-        saveButton.setText(Language.translate("bubbleblaster/misc/save"));
+        this.cancelButton.setText(Translations.CANCEL);
+        this.languageButton.setText(Language.translate("bubbleblaster.screen.options.language"));
+        this.saveButton.setText(Translations.SAVE);
 
         super.render(game, renderer, mouseX, mouseY, deltaTime);
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {
-        renderer.setColor(Color.rgb(0x606060));
-        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Color.GRAY_6);
     }
 }

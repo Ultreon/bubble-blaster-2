@@ -1,17 +1,15 @@
 package com.ultreon.bubbles.entity.bubble;
 
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.exceptions.ValueExists;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.common.random.Rng;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.collections.v0.exceptions.ValueExistsException;
 import com.ultreon.libs.collections.v0.list.SizedList;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class BubbleSystem {
@@ -19,47 +17,49 @@ public class BubbleSystem {
     protected static long maxPriority = 0L;
     private static final SizedList<BubbleType> defaults = new SizedList<>();
     private static final SizedList<BubbleType> priorities = new SizedList<>();
+    private static boolean active;
 
-    public static SizedList<BubbleType> getPriorities() {
-        return priorities;
+    public static void begin() {
+        active = true;
     }
 
-    public static SizedList<BubbleType> getDefaultsPriorities() {
-        return defaults;
+    public static void end() {
+        active = false;
     }
 
-    public static Double getDefaultPriority(BubbleType bubble) {
+    public static double getDefaultPriority(BubbleType bubble) {
         int index = defaults.indexOf(bubble);
         if (index == -1) {
             return 0d;
         }
 
-        return defaults.getSize(index);
+        return Objects.requireNonNullElse(defaults.getSize(index), 0.0);
     }
 
-    public static Double getDefaultTotalPriority() {
+    public static double getDefaultTotalPriority() {
         return defaults.getTotalSize();
     }
 
-    public static Double getDefaultPercentageChance(BubbleType bubble) {
-        return getDefaultPriority(bubble) / (double) getDefaultTotalPriority();
+    public static double getDefaultPercentageChance(BubbleType bubble) {
+        return BubbleSystem.getDefaultPriority(bubble) / BubbleSystem.getDefaultTotalPriority();
     }
 
-    public static Double getPriority(BubbleType bubble) {
+    public static double getPriority(BubbleType bubble) {
         int index = priorities.indexOf(bubble);
         if (index == -1) {
             return 0d;
         }
 
-        return priorities.getSize(index);
+
+        return Objects.requireNonNullElse(priorities.getSize(index), 0.0);
     }
 
-    public static Double getTotalPriority() {
+    public static double getTotalPriority() {
         return priorities.getTotalSize();
     }
 
-    public static Double getPercentageChance(BubbleType bubble) {
-        return (double) getPriority(bubble) / getTotalPriority();
+    public static double getPercentageChance(BubbleType bubble) {
+        return BubbleSystem.getPriority(bubble) / BubbleSystem.getTotalPriority();
     }
 
     /**
@@ -73,16 +73,18 @@ public class BubbleSystem {
         BubbleSystem.bubblePriorities = new HashMap<>();
         BubbleSystem.maxPriority = 0;
 
-        if (bubbleTypes == null) {
+        if (bubbleTypes == null)
             throw new NullPointerException();
-        }
+
+        defaults.clear();
+        priorities.clear();
 
         for (BubbleType bubbleType : bubbleTypes) {
             try {
                 priorities.add(bubbleType.getPriority(), bubbleType);
                 defaults.add(bubbleType.getPriority(), bubbleType);
             } catch (ValueExistsException valueExists) {
-                valueExists.printStackTrace();
+                BubbleBlaster.LOGGER.warn("Error occurred in bubble system initialization:");
             }
         }
     }
@@ -90,15 +92,14 @@ public class BubbleSystem {
     /**
      * Returns a random bubble from the bubbles initialized in {@link #init()}.
      *
-     * @param rand The random instance used for the bubble system e.g. {@code bubbles:bubble_system} from the initDefaults in {@link Gamemode}.
+     * @param random The random instance used for the bubble system e.g. {@code bubbles:bubble_system} from the initDefaults in {@link Gamemode}.
      * @return A random bubble.
      */
-    public static BubbleType random(Rng rand, long spawnIndex, int retry, Environment env) {
-        double localDifficulty = env.getLocalDifficulty();
+    public static BubbleType random(RandomSource random, World world) {
+        double localDifficulty = world.getLocalDifficulty();
         priorities.editLengths((bubbleType2) -> bubbleType2.getModifiedPriority(localDifficulty));
 
-        double randValue = rand.getNumber(0, priorities.getTotalSize(), spawnIndex, retry);
-
-        return priorities.getValue(randValue);
+        double index = random.nextDouble(0, priorities.getTotalSize());
+        return priorities.getValue(index);
     }
 }

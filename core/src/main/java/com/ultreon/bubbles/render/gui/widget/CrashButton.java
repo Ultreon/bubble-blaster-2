@@ -5,7 +5,7 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 
 public class CrashButton extends AbstractButton implements GuiStateListener {
@@ -91,7 +91,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
             textColor = Color.rgb(0xffffff);
         }
 
-        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
+        AbstractButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
     }
 
     public Runnable getCommand() {

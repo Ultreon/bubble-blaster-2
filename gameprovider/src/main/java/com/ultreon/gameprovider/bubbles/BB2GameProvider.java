@@ -140,7 +140,7 @@ public class BB2GameProvider implements GameProvider {
     public boolean locateGame(FabricLauncher launcher, String[] args) {
         this.envType = launcher.getEnvironmentType();
         this.arguments = new Arguments();
-        arguments.parse(args);
+        this.arguments.parse(args);
 
         try {
             var classifier = new LibClassifier<>(GameLibrary.class, envType, this);

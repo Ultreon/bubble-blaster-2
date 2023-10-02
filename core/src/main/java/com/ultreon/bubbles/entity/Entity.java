@@ -7,21 +7,26 @@ import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GameObject;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
-import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
+import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
+import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.init.Bubbles;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.init.BubbleTypes;
+import com.ultreon.bubbles.init.Entities;
+import com.ultreon.bubbles.random.JavaRandom;
+import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.commons.util.CollisionUtil;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.translations.v0.Language;
+import com.ultreon.libs.translations.v1.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,9 +46,11 @@ import static com.ultreon.bubbles.BubbleBlaster.TPS;
  */
 @SuppressWarnings("unused")
 public abstract class Entity extends GameObject implements StateHolder {
+    public static final Entity UNDEFINED = Entities.UNDEFINED_TYPE.create(null);
+
     // ID's
-    protected long entityId;
-    private UUID uniqueId;
+    protected long id = -1L;
+    private UUID uuid;
 
     // Types
     protected EntityType<?> type;
@@ -70,7 +77,8 @@ public abstract class Entity extends GameObject implements StateHolder {
     protected boolean valid;
     private boolean spawned;
 
-    protected final Environment environment;
+    @NotNull
+    protected final World world;
 
     // Tag
     private MapType tag = new MapType();
@@ -81,8 +89,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     // Abilities.
     private final HashMap<AbilityType<?>, MapType> abilities = new HashMap<>();
     private boolean willBeDeleted;
-    protected Rng xRng;
-    protected Rng yRng;
+    private final RandomSource random = new JavaRandom();
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private Entity target;
     @Nullable
@@ -93,13 +100,16 @@ public abstract class Entity extends GameObject implements StateHolder {
     /**
      * The entity constructor.
      * @param type the type of entity to use.
-     * @param environment the environment where it would spawn in.
+     * @param world the world where it would spawn in.
      */
-    public Entity(EntityType<?> type, Environment environment) {
-        this.environment = environment;
-        this.entityId = environment.getEntityId(this);
+    public Entity(EntityType<?> type, World world) {
+        this.world = world;
         this.type = type;
-        this.uniqueId = UUID.randomUUID();
+    }
+
+    @ApiStatus.Internal
+    public void setId(long id) {
+        this.id = id;
     }
 
     /**
@@ -116,7 +126,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the AI-tasks.
      */
     public Iterable<AiTask> getAiTasks() {
-        return Collections.unmodifiableList(aiTasks);
+        return Collections.unmodifiableList(this.aiTasks);
     }
 
     /**
@@ -124,8 +134,13 @@ public abstract class Entity extends GameObject implements StateHolder {
      *
      * @return the entity's uuid.
      */
-    public UUID getUniqueId() {
-        return uniqueId;
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
+    @ApiStatus.Internal
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     /**
@@ -133,27 +148,34 @@ public abstract class Entity extends GameObject implements StateHolder {
      *
      * @return the entity's id.
      */
-    public long getEntityId() {
-        return entityId;
+    public long getId() {
+        return this.id;
     }
 
     /**
      * Prepare spawning of the entity.
      * @param information the spawn information
      */
-    public void prepareSpawn(SpawnInformation information) {
-        @Nullable Vector2 pos = information.getPos();
-        if (pos != null) this.pos.set(pos);
+    public void preSpawn(SpawnInformation information) {
+        @Nullable Vector2 spawnPos = this.pos;
+        if (information.getReason() instanceof NaturalSpawnReason reason)
+            spawnPos.set(this.world.getGamemode().getSpawnPos(this, this.pos, reason.getUsage(), information.getRandom(), reason.getRetry()));
+
+        if (information.getPos() != null)
+            spawnPos = information.getPos();
+
+        if (spawnPos != null)
+            this.pos.set(spawnPos);
     }
 
     /**
      * On spawn.
      *
      * @param pos         the position to spawn at.
-     * @param environment te environment to spawn in.
+     * @param world te world to spawn in.
      */
-    public void onSpawn(Vector2 pos, Environment environment) {
-        spawned = true;
+    public void onSpawn(Vector2 pos, World world) {
+        this.spawned = true;
     }
 
     /**
@@ -181,10 +203,13 @@ public abstract class Entity extends GameObject implements StateHolder {
     /**
      * Handle collision between this entity and another.
      * Note that this is called periodically, but whenever it can.
-     * @param other the other entity.
+     *
+     * @param other     the other entity.
      * @param deltaTime the delta time from the check before this one. (This is for managing correct attack damage for example)
      */
-    public abstract void onCollision(Entity other, double deltaTime);
+    public void onCollision(Entity other, double deltaTime) {
+
+    }
 
     /**
      * Handles deletion of the entity.
@@ -200,7 +225,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return True if the events are bound, false otherwise.
      */
     protected boolean isValid() {
-        return valid;
+        return this.valid;
     }
 
     /**
@@ -256,7 +281,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public void bounceOff(Entity source, float velocity, float delta) {
         if (velocity == 0) return;
-        this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - pos.y, source.getX() - pos.x)), velocity, delta);
+        this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - this.pos.y, source.getX() - this.pos.x)), velocity, delta);
     }
 
     public void accelerate(float amount) {
@@ -277,14 +302,14 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the x acceleration.
      */
     public float getAccelerateX() {
-        return accel.x;
+        return this.accel.x;
     }
 
     /**
      * @return the y acceleration.
      */
     public float getAccelerateY() {
-        return accel.y;
+        return this.accel.y;
     }
 
     /**
@@ -304,9 +329,9 @@ public abstract class Entity extends GameObject implements StateHolder {
     /**
      * Tick event.
      *
-     * @param environment the environment where the entity is from.
+     * @param world the world where the entity is from.
      */
-    public void tick(Environment environment) {
+    public void tick(World world) {
         for (StatusEffectInstance effect : this.statusEffects) {
             effect.tick(this);
         }
@@ -329,18 +354,18 @@ public abstract class Entity extends GameObject implements StateHolder {
                     this.accel.y + this.velocity.y / TPS
             );
 
-        if (hasAi()) {
-            nextAiTask();
+        if (this.hasAi()) {
+            this.nextAiTask();
 
-            if (target != null) {
-                if (!target.isValid()) {
-                    target = null;
+            if (this.target != null) {
+                if (!this.target.isValid()) {
+                    this.target = null;
                 }
             }
 
-            if (target != null) {
+            if (this.target != null) {
                 float angleTo = this.getAngleToTarget();
-                setRotation(angleTo);
+                this.setRotation(angleTo);
             }
         }
     }
@@ -351,12 +376,12 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     @SuppressWarnings("UnusedReturnValue")
     public AiTask nextAiTask() {
-        for (AiTask task : aiTasks) {
+        for (AiTask task : this.aiTasks) {
             if (task.executeTask(this)) {
-                return currentAiTask = task;
+                return this.currentAiTask = task;
             }
         }
-        return currentAiTask = null;
+        return this.currentAiTask = null;
     }
 
     /**
@@ -374,14 +399,14 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @see #onDelete()
      */
     public final void delete() {
-        if (isValid()) {
-            invalidate();
-            valid = false;
+        if (this.isValid()) {
+            this.invalidate();
+            this.valid = false;
         }
 
-        onDelete();
+        this.onDelete();
 
-        willBeDeleted = true;
+        this.willBeDeleted = true;
     }
 
     /**
@@ -394,14 +419,18 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
         Entity entity = (Entity) o;
-        return entityId == entity.entityId;
+        return this.id == entity.id;
     }
 
-    protected abstract void make();
+    protected void make() {
 
-    protected abstract void invalidate();
+    }
+
+    protected void invalidate() {
+
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Get Bounds     //
@@ -409,7 +438,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public abstract Rectangle getBounds();
 
     public EntityType<?> getType() {
-        return type;
+        return this.type;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +449,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     public final void teleport(Vector2 dest) {
-        Vector2 old = pos.cpy();
+        Vector2 old = this.pos.cpy();
         if (this.onTeleporting(old, dest)) return;
         this.pos.set(dest);
         this.onTeleported(old, dest.cpy());
@@ -438,7 +467,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     public Vector2 getVelocity() {
-        return velocity.cpy();
+        return this.velocity.cpy();
     }
 
     public void setVelocity(Vector2 velocity) {
@@ -455,7 +484,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @see #toAdvancedString()
      */
     public String toSimpleString() {
-        return getId() + "@(" + Math.round(getX()) + "," + Math.round(getY()) + ")";
+        return this.getKey() + "@(" + Math.round(this.getX()) + "," + Math.round(this.getY()) + ")";
     }
 
     /**
@@ -464,10 +493,10 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @see #toSimpleString()
      */
     public final String toAdvancedString() {
-        @NotNull MapType nbt = save();
+        @NotNull MapType nbt = this.save();
         String data = nbt.toString();
 
-        return getId() + ":" + data;
+        return this.getKey() + ":" + data;
     }
 
     /**
@@ -476,7 +505,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the active effects.
      */
     public Set<StatusEffectInstance> getActiveEffects() {
-        return statusEffects;
+        return this.statusEffects;
     }
 
     /**
@@ -484,7 +513,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param appliedEffect the applied effect to add.
      */
     public void addEffect(StatusEffectInstance appliedEffect) {
-        for (StatusEffectInstance appliedEffect1 : statusEffects) {
+        for (StatusEffectInstance appliedEffect1 : this.statusEffects) {
             if (appliedEffect1.getType() == appliedEffect.getType()) {
                 if (appliedEffect1.getRemainingTime().toMillis() < appliedEffect.getRemainingTime().toMillis()) {
                     appliedEffect1.setRemainingTime(appliedEffect.getRemainingTime());
@@ -492,7 +521,7 @@ public abstract class Entity extends GameObject implements StateHolder {
                 return;
             }
         }
-        statusEffects.add(appliedEffect);
+        this.statusEffects.add(appliedEffect);
         appliedEffect.start(this);
     }
 
@@ -501,7 +530,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param appliedEffect the applied status effect.
      */
     public void removeEffect(StatusEffectInstance appliedEffect) {
-        statusEffects.remove(appliedEffect);
+        this.statusEffects.remove(appliedEffect);
         if (appliedEffect.isActive()) {
             appliedEffect.stop(this);
         }
@@ -511,16 +540,20 @@ public abstract class Entity extends GameObject implements StateHolder {
      * Load an entity without having the entity type.
      * This will load the type of entity too.
      *
-     * @param environment the environment to load it in.
+     * @param world the world to load it in.
      * @param tags the nbt data.
      * @return the loaded entity.
      */
     @Nullable
-    public static Entity loadFully(Environment environment, MapType tags) {
+    public static Entity loadFully(World world, MapType tags) {
         Identifier type = Identifier.tryParse(tags.getString("type"));
         if (type == null) return null;
         EntityType<?> entityType = Registries.ENTITIES.getValue(type);
-        return entityType == null ? null : entityType.create(environment, tags);
+        if (entityType == null) {
+            BubbleBlaster.LOGGER.warn("Unknown entity loaded: " + type);
+            return null;
+        }
+        return entityType.create(world, tags);
     }
 
     /**
@@ -550,13 +583,13 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.velocity.y = velocityTag.getFloat("y");
 
         ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
-        clearEffects();
+        this.clearEffects();
         for (var activeEffectData : activeEffectsData) {
             this.statusEffects.add(StatusEffectInstance.load(activeEffectData));
         }
 
-        this.entityId = data.getLong("id");
-        this.uniqueId = data.getUUID("uuid");
+        this.id = data.getLong("id");
+        this.uuid = data.getUUID("uuid");
         this.scale = data.getFloat("scale");
         this.rotation = data.getFloat("rotation");
     }
@@ -592,24 +625,26 @@ public abstract class Entity extends GameObject implements StateHolder {
         data.put("Velocity", velocityTag);
 
         var activeEffectsTag = new ListType<MapType>();
-        for (var instance : statusEffects)
+        for (var instance : this.statusEffects)
             activeEffectsTag.add(instance.save());
         data.put("ActiveEffects", activeEffectsTag);
 
         // Other properties.
-        data.putLong("id", this.entityId);
-        data.putUUID("uuid", this.uniqueId);
+        data.putLong("id", this.id);
+        if (this.uuid != null) {
+            data.putUUID("uuid", this.uuid);
+        }
         data.putDouble("scale", this.scale);
         data.putFloat("rotation", this.rotation);
 
         var key = Registries.ENTITIES.getKey(this.type);
-        data.putString("type", (key == null ? Bubbles.NORMAL.getId() : key).toString());
+        data.putString("type", (key == null ? BubbleTypes.NORMAL.getId() : key).toString());
         return data;
     }
 
     private void clearEffects() {
-        for (StatusEffectInstance activeEffect : new HashSet<>(statusEffects)) {
-            removeEffect(activeEffect);
+        for (StatusEffectInstance activeEffect : new HashSet<>(this.statusEffects)) {
+            this.removeEffect(activeEffect);
         }
     }
 
@@ -628,7 +663,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     @Deprecated
     public boolean isMobile() {
-        return canMove;
+        return this.canMove;
     }
 
     /**
@@ -654,7 +689,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the data tag.
      */
     public MapType getTag() {
-        return tag;
+        return this.tag;
     }
 
     /**
@@ -662,7 +697,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the attribute container.
      */
     public final AttributeContainer getAttributes() {
-        return attributes;
+        return this.attributes;
     }
 
     /**
@@ -670,7 +705,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the scale of the entity.
      */
     public float getScale() {
-        return scale;
+        return this.scale;
     }
 
     /**
@@ -687,7 +722,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the rotation of the entity.
      */
     public float getRotation() {
-        return rotation;
+        return this.rotation;
     }
 
     /**
@@ -703,7 +738,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if spawned.
      */
     public final boolean isSpawned() {
-        return spawned;
+        return this.spawned;
     }
 
     /**
@@ -711,15 +746,15 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if not spawned.
      */
     public final boolean isNotSpawned() {
-        return !spawned;
+        return !this.spawned;
     }
 
     /**
-     * Get the environment where the entity was spawned in.
-     * @return the spawn environment.
+     * Get the world where the entity was spawned in.
+     * @return the spawn world.
      */
-    public Environment getEnvironment() {
-        return environment;
+    public @NotNull World getWorld() {
+        return this.world;
     }
 
     /**
@@ -727,11 +762,11 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if it will be deleted soon!
      */
     public final boolean willBeDeleted() {
-        return willBeDeleted;
+        return this.willBeDeleted;
     }
 
     public boolean isGhost() {
-        return ghost;
+        return this.ghost;
     }
 
     public void setGhost(boolean ghost) {
@@ -743,9 +778,9 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if visible, false if invisible.
      */
     public boolean isVisible() {
-        Rectangle entityBounds = getBounds();
+        Rectangle entityBounds = this.getBounds();
         return entityBounds.x + entityBounds.width >= 0 && entityBounds.y + entityBounds.height >= 0 &&
-                entityBounds.x <= game.getWidth() && entityBounds.y <= game.getHeight();
+                entityBounds.x <= this.game.getWidth() && entityBounds.y <= this.game.getHeight();
     }
 
     /**
@@ -753,7 +788,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entity the entity.
      */
     public void markAsCollidable(Entity entity) {
-        canCollideWith.add(entity.getType());
+        this.canCollideWith.add(entity.getType());
     }
 
     /**
@@ -761,7 +796,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entityType the type of entity.
      */
     public void markAsCollidable(EntityType<?> entityType) {
-        canCollideWith.add(entityType);
+        this.canCollideWith.add(entityType);
     }
 
     /**
@@ -769,7 +804,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entity the entity.
      */
     public void markAsAttackable(Entity entity) {
-        canAttack.add(entity.getType());
+        this.canAttack.add(entity.getType());
     }
 
     /**
@@ -777,7 +812,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entityType the type of entity.
      */
     public void markAsAttackable(EntityType<?> entityType) {
-        canAttack.add(entityType);
+        this.canAttack.add(entityType);
     }
 
     /**
@@ -785,7 +820,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entity the entity.
      */
     public void markAsInvulnerableTo(Entity entity) {
-        invulnerableTo.add(entity.getType());
+        this.invulnerableTo.add(entity.getType());
     }
 
     /**
@@ -793,7 +828,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param entityType the type of entity.
      */
     public void markAsInvulnerableTo(EntityType<?> entityType) {
-        invulnerableTo.add(entityType);
+        this.invulnerableTo.add(entityType);
     }
 
     /**
@@ -802,7 +837,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if collidable.
      */
     public final boolean isCollidableWith(Entity other) {
-        return canCollideWith.contains(other.type);
+        return this.canCollideWith.contains(other.type);
     }
 
     /**
@@ -834,22 +869,6 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     /**
-     * Get the RNG instance for x spawn positions.
-     * @return the RNG instance.
-     */
-    public Rng getXRng() {
-        return xRng;
-    }
-
-    /**
-     * Get the RNG instance for y spawn positions.
-     * @return the RNG instance.
-     */
-    public Rng getYRng() {
-        return yRng;
-    }
-
-    /**
      * Get the current target entity to move to.
      * @return the current entity's target.
      */
@@ -868,9 +887,10 @@ public abstract class Entity extends GameObject implements StateHolder {
     /**
      * Get the size of the entity (counted as the complete size from one end to another end)
      * This is used for collision detection. The collision is meant for circle-shaped entities.
+     *
      * @return the entity collision size.
      */
-    public abstract double size();
+    public abstract float getRadius();
 
     public float getDistanceToTarget() {
         return this.pos.dst(this.target.pos);
@@ -912,7 +932,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return the speed.
      */
     public float getSpeed() {
-        return (float) getAttributes().get(Attribute.SPEED);
+        return (float) this.getAttributes().get(Attribute.SPEED);
     }
 
     public boolean isBad() {
@@ -920,17 +940,17 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     public String getName() {
-        return Language.translate(getId().location() + "/entity/names/" + getId().path());
+        return Language.translate(this.getKey().location() + "/entity/names/" + this.getKey().path());
     }
 
-    public Identifier getId() {
-        return getType().getId();
+    public Identifier getKey() {
+        return this.getType().getKey();
     }
 
     @Override
     public String toString() {
-        return "Entity[" + getId() +
-                "]#" + entityId +
-                "@" + uniqueId;
+        return "Entity[" + this.getKey() +
+                "]#" + this.id +
+                "@" + this.uuid;
     }
 }

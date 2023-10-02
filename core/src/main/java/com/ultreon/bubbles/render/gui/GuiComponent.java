@@ -355,7 +355,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     @Override
-    public void destroy() {
+    public void dispose() {
         this.valid = false;
     }
 
@@ -377,12 +377,12 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
         renderer.fill(x, y, width, height, Color.argb(color));
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void fill(Renderer renderer, int x, int y, int width, int height, Color color) {
         renderer.fill(x, y, width, height, color);
     }

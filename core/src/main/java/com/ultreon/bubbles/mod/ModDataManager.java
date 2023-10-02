@@ -21,6 +21,7 @@ public class ModDataManager {
     @ApiStatus.Internal
     @CanIgnoreReturnValue
     public static Texture setIcon(String id, Texture read) {
+        System.out.println("id = " + id + ", read = " + read);
         return ICONS.put(id, read);
     }
 

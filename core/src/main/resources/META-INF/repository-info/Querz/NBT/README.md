@@ -30,7 +30,7 @@ size* `ByteTag` payloads | | [StringTag](../../../src/main/java/net/querz/nbt/ta
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 8 | `ShortTag` payload *length*, then a UTF-8
 string with size *length* | | [ListType](../../../src/main/java/net/querz/nbt/tag/ListType.java)
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 9 | `ByteTag` payload *tagId*, then `IntTag`
-payload *size*, then *size* tags' payloads, all of type *tagId* |
+payload *size*, then *size* tags' payloads, all of variant *tagId* |
 | [MapType](../../../src/main/java/net/querz/nbt/tag/MapType.java)
 | [Tag](../../../src/main/java/net/querz/nbt/tag/Tag.java)               | 10 | Fully formed tags, followed by
 an `EndTag` | | [IntArrayTag](../../../src/main/java/net/querz/nbt/tag/IntArrayTag.java)

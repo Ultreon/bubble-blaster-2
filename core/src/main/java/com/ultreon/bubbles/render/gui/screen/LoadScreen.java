@@ -11,6 +11,7 @@ import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.event.v1.LifecycleEvents;
 import com.ultreon.bubbles.mod.ModDataManager;
+import com.ultreon.bubbles.registry.RegisterHandler;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -20,6 +21,7 @@ import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.FileHandles;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.Utils;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.MessengerImpl;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
@@ -27,22 +29,25 @@ import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.registries.v0.Registry;
 import com.ultreon.libs.registries.v0.event.RegistryEvents;
 import com.ultreon.libs.resources.v0.Resource;
+import com.ultreon.libs.translations.v1.LanguageManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
-public final class LoadScreen extends Screen implements Runnable {
+public final class LoadScreen extends InternalScreen implements Runnable {
     public static final Color BACKGROUND = Color.rgb(0x484848);
     private static final Color TEXT_COLOR = Color.rgb(0xc0c0c0);
     public static final Color PROGRESSBAR_BG = Color.rgb(0x808080);
@@ -81,19 +86,19 @@ public final class LoadScreen extends Screen implements Runnable {
     }
 
     @Override
-    public boolean onClose(Screen to) {
-        boolean done = isDone();
+    public boolean close(Screen to) {
+        boolean done = LoadScreen.isDone();
         if (done) {
             Utils.showCursor();
-            return super.onClose(to);
+            return super.close(to);
         }
-        return false;
+        return true;
     }
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        if (startTime == 0L) {
-            startTime = System.currentTimeMillis();
+        if (this.startTime == 0L) {
+            this.startTime = System.currentTimeMillis();
         }
 
         this.renderBackground(renderer);
@@ -109,8 +114,7 @@ public final class LoadScreen extends Screen implements Runnable {
 
             // Draw current 1st line message.
             if (this.curMainMsg != null) {
-                renderer.setColor(TEXT_COLOR);
-                renderer.drawCenteredText(this.font, this.curMainMsg, this.width / 2f, this.height / 2f);
+                renderer.drawTextCenter(this.font, this.curMainMsg, this.width / 2f, this.height / 2f, TEXT_COLOR);
             }
 
             renderer.fill(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 19 + 2, PROGRESS_BAR_WIDTH, 1, PROGRESSBAR_BG);
@@ -118,24 +122,23 @@ public final class LoadScreen extends Screen implements Runnable {
             renderer.setColor(Color.rgb(0x0040ff));
             int effectWidth = (int) (PROGRESS_BAR_WIDTH * (double) (progress + 1) / (double) max);
             if (effectWidth >= 1)
-                renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 19, effectWidth, 5);
+                renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, (float) this.height / 2 + 19, effectWidth, 5);
 
             // Draw 2nd progress components.
-            if (progressAlt != null) {
-                int progressSub = progressAlt.getProgress();
-                int maxSub = progressAlt.getMax();
+            if (this.progressAlt != null) {
+                int progressSub = this.progressAlt.getProgress();
+                int maxSub = this.progressAlt.getMax();
 
                 // Draw current 2nd line message.
-                if (curAltMsg != null) {
-                    renderer.setColor(TEXT_COLOR);
-                    renderer.drawCenteredText(font, curAltMsg, width / 2f, height / 2f + 75);
+                if (this.curAltMsg != null) {
+                    renderer.drawTextCenter(this.font, this.curAltMsg, this.width / 2f, this.height / 2f + 75, TEXT_COLOR);
                 }
 
                 renderer.fill(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 94 + 2, PROGRESS_BAR_WIDTH, 1, PROGRESSBAR_BG);
 
                 int effectWidthSub = (int) (PROGRESS_BAR_WIDTH * (double) (progressSub + 1) / (double) maxSub);
                 if (effectWidthSub >= 1)
-                    renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 94, effectWidthSub, 5);
+                    renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, (float) this.height / 2 + 94, effectWidthSub, 5);
             }
         }
     }
@@ -147,7 +150,7 @@ public final class LoadScreen extends Screen implements Runnable {
         GameSettings.nopInit();
         BubbleBlasterConfig.register();
 
-        this.progressMain = new ProgressMessenger(msgMain, 11);
+        this.progressMain = new ProgressMessenger(this.msgMain, 10);
 
         // Get game directory in Java's File format.
         File gameDir = BubbleBlaster.getGameDir();
@@ -161,32 +164,110 @@ public final class LoadScreen extends Screen implements Runnable {
 
         LOGGER.info("Loading resources...");
         this.progressMain.sendNext("Loading resources...");
-        try {
-            game().getResourceManager().importPackage(game.getGameFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Collection<ModContainer> allMods = FabricLoader.getInstance().getAllMods();
-        this.progressAlt = new ProgressMessenger(msgAlt, allMods.size());
-        for (ModContainer container : allMods) {
-            progressAlt.sendNext(container.getMetadata().getName());
-            ModOrigin origin = container.getOrigin();
-            if (origin.getKind() == ModOrigin.Kind.PATH) {
-                List<Path> paths = origin.getPaths();
-                for (Path path : paths) {
-                    try {
-                        game().getResourceManager().importPackage(path);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-        this.progressAlt = null;
+        Collection<ModContainer> allMods = this.loadResources();
 
         LOGGER.info("Setting up mods...");
         this.progressMain.sendNext("Setting up mods...");
+        this.setupMods(allMods);
+
+        // Set up components in registry.
+        this.progressMain.sendNext("Registering components...");
+        this.registerComponents();
+
+        // Loading object holders
+        this.progressMain.sendNext("Loading the fonts...");
+        this.loadFonts();
+
+        this.progressMain.sendNext("Setting up miscellaneous stuff...");
+        this.setupCommandsAndGlobalData();
+
+        this.progressMain.sendNext("Registering languages...");
+        this.registerLanguages();
+
+        this.progressMain.sendNext("Setting up texture collections....");
+        this.setupTextureCollections();
+
+        // BubbleSystem
+        this.progressMain.sendNext("Initialize bubble system...");
+        BubbleSystem.init();
+
+        // Load complete.
+        this.progressMain.sendNext("Finalize setup...");
+        this.game.finalizeSetup();
+
+        Registry.dump();
+        ConfigEvents.RELOAD_ALL.factory().onReloadAll();
+
+        LoadScreen.done = true;
+
+        BubbleBlaster.invoke(this.game::finish);
+    }
+
+    private void setupTextureCollections() {
+        Collection<TextureCollection> values = Registries.TEXTURE_COLLECTIONS.values();
+        this.progressAlt = new ProgressMessenger(this.msgAlt, values.size());
+        for (TextureCollection collection : values) {
+            GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
+            this.progressAlt.sendNext(String.valueOf(Registries.TEXTURE_COLLECTIONS.getKey(collection)));
+        }
+        this.progressAlt = null;
+    }
+
+    public void registerLanguages() {
+        this.registerLanguage("en_us");
+        this.registerLanguage("en_uk");
+        this.registerLanguage("nl_nl");
+        this.registerLanguage("fy_nl");
+        this.registerLanguage("de_de");
+        this.registerLanguage("it_it");
+        this.registerLanguage("fr_fr");
+        this.registerLanguage("es_es");
+        this.registerLanguage("af_za");
+        this.registerLanguage("uk_uk");
+        this.registerLanguage("hi_in");
+        this.registerLanguage("tr_tr");
+        this.registerLanguage("ko_kp");
+        this.registerLanguage("ko_kr");
+        this.registerLanguage("ru_ru");
+        this.registerLanguage("zh_cn");
+        this.registerLanguage("ja_jp");
+
+        this.progressAlt = null;
+    }
+
+    private void registerLanguage(String code) {
+        String[] s = code.split("_", 2);
+        if (s.length == 0) throw new IllegalArgumentException("Language requires a non-empty string.");
+        if (s.length == 1) throw new IllegalArgumentException("Language code needs to include country.");
+        Locale locale = new Locale(s[0], s[1]);
+        LanguageManager.INSTANCE.register(locale, BubbleBlaster.id(code));
+        LanguageManager.INSTANCE.load(locale, BubbleBlaster.id(code), BubbleBlaster.getInstance().getResourceManager());
+    }
+
+    private void loadFonts() {
+        BubbleBlaster.invokeAndWait(() -> {
+            this.game().loadFonts();
+        });
+        this.progressAlt = null;
+    }
+
+    private void registerComponents() {
+        Collection<Registry<?>> registries = Registry.getRegistries();
+        this.progressAlt = new ProgressMessenger(this.msgAlt, registries.size());
+        for (Registry<?> registry : registries) {
+            this.progressAlt.send(registry.id().toString());
+            this.progressAlt.increment();
+            RegistryEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
+            registry.entries().forEach(e -> {
+                 if (e.getValue() instanceof RegisterHandler handler)
+                     handler.onRegister(e.getKey());
+            });
+        }
+        Registry.freeze();
+        this.progressAlt = null;
+    }
+
+    private void setupMods(Collection<ModContainer> allMods) {
         for (ModContainer container : allMods) {
             ModMetadata metadata = container.getMetadata();
             metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
@@ -196,7 +277,7 @@ public final class LoadScreen extends Screen implements Runnable {
                     throw new RuntimeException(e);
                 }
             })), () -> {
-                Resource resource = game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
+                Resource resource = this.game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
                 if (resource == null) {
                     resource = TextureManager.DEFAULT_TEX_RESOURCE;
                 }
@@ -211,73 +292,43 @@ public final class LoadScreen extends Screen implements Runnable {
             });
         }
 
-        this.addModIcon("java", "textures/mods/java.png");
-        this.addModIcon("bubbleblaster", "icon.png");
+        this.addModIcon("java", BubbleBlaster.id("textures/mods/java.png"));
+        this.addModIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
 
-        LifecycleEvents.SETUP.factory().onSetup(game);
+        LifecycleEvents.SETUP.factory().onSetup(this.game);
         this.progressAlt = null;
-
-        // Set up components in registry.
-        this.progressMain.send("Setting up components...");
-        this.progressMain.increment();
-        Collection<Registry<?>> registries = Registry.getRegistries();
-        this.progressAlt = new ProgressMessenger(msgAlt, registries.size());
-        for (Registry<?> registry : registries) {
-            this.progressAlt.send(registry.id().toString());
-            this.progressAlt.increment();
-            RegistryEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
-        }
-        Registry.freeze();
-        this.progressAlt = null;
-
-        // Loading object holders
-        this.progressMain.sendNext("Loading the fonts...");
-        BubbleBlaster.invokeAndWait(() -> {
-            game().loadFonts();
-            GameEvents.LOAD_FONTS.factory().onLoadFonts(game::loadFont);
-        });
-        this.progressAlt = null;
-
-        this.progressMain.sendNext("Setting up the game...");
-        initialize();
-        this.progressAlt = null;
-
-        LOGGER.info("Setup the game...");
-        this.progressMain.sendNext("Setting up the game...");
-        this.game.setup();
-        this.progressAlt = null;
-
-        this.progressMain.send("");
-        this.progressMain.increment();
-        Collection<TextureCollection> values = Registries.TEXTURE_COLLECTIONS.values();
-        this.progressAlt = new ProgressMessenger(this.msgAlt, values.size());
-        for (TextureCollection collection : values) {
-            GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
-            this.progressAlt.sendNext(String.valueOf(Registries.TEXTURE_COLLECTIONS.getKey(collection)));
-        }
-        this.progressAlt = null;
-
-        // BubbleSystem
-        this.progressMain.sendNext("Initialize bubble system...");
-        BubbleSystem.init();
-
-        // Load complete.
-        this.progressMain.sendNext("Load Complete!");
-        this.game.finalizeSetup();
-
-        // Registry dump.
-        this.progressMain.sendNext("Registry Dump.");
-        Registry.dump();
-
-        ConfigEvents.RELOAD_ALL.factory().onReloadAll();
-
-        LoadScreen.done = true;
-
-        BubbleBlaster.invoke(this.game::finish);
     }
 
-    private void addModIcon(String modId, String path) {
-        Resource resource = this.game.getResourceManager().getResource(BubbleBlaster.id(path));
+    @NotNull
+    private Collection<ModContainer> loadResources() {
+        try {
+            this.game().getResourceManager().importPackage(this.game.getGameFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Collection<ModContainer> allMods = FabricLoader.getInstance().getAllMods();
+        this.progressAlt = new ProgressMessenger(this.msgAlt, allMods.size());
+        for (ModContainer container : allMods) {
+            this.progressAlt.sendNext(container.getMetadata().getName());
+            ModOrigin origin = container.getOrigin();
+            if (origin.getKind() == ModOrigin.Kind.PATH) {
+                List<Path> paths = origin.getPaths();
+                for (Path path : paths) {
+                    try {
+                        this.game().getResourceManager().importPackage(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+        this.progressAlt = null;
+        return allMods;
+    }
+
+    private void addModIcon(String modId, Identifier path) {
+        Resource resource = this.game.getResourceManager().getResource(path);
         if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
         Resource finalResource = resource;
         ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> {
@@ -297,11 +348,8 @@ public final class LoadScreen extends Screen implements Runnable {
         return LoadScreen.done;
     }
 
-    public void initialize() {
+    public void setupCommandsAndGlobalData() {
         BubbleBlaster main = Util.getGame();
-
-        // Request focus.
-        game.getGameWindow().requestFocus();
 
         // Commands
         CommandConstructor.add("tp", new TeleportCommand());
@@ -322,6 +370,7 @@ public final class LoadScreen extends Screen implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.progressAlt = null;
     }
 
     private void logAlt(String s) {

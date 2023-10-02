@@ -1,7 +1,9 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.google.common.collect.Lists;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.render.Color;
@@ -11,6 +13,7 @@ import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 
 import java.util.Comparator;
 import java.util.List;
@@ -103,17 +106,39 @@ public class ModListScreen extends Screen {
             if (selected == null) return;
             var metadata = selected.value.getMetadata();
 
-            this.layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
-
-            int textX = this.x + 20;
+            AtomicInteger textX = new AtomicInteger(this.x + 20);
             int textY = this.y + 20;
 
-            renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), textX, textY, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), this.x + 20 + this.layout.width, textY + Fonts.SANS_REGULAR_48.get().getLineHeight(), Color.argb(0x80ffffff));
-            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, textY + Fonts.SANS_REGULAR_48.get().getLineHeight() - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
+            this.drawIcon(renderer, metadata, selected, textX, textY);
+            this.drawModDetails(renderer, metadata, textX, textY);
+        }
+
+        private void drawIcon(Renderer renderer, ModMetadata metadata, ObjectList.ListEntry<ModContainer, ? extends ModContainer> selected, AtomicInteger textX, int textY) {
+            metadata.getIconPath(256).flatMap(selected.value::findPath).ifPresent(path1 -> {
+                try {
+                    Texture tex = ModDataManager.getIcon(selected.value);
+                    renderer.blit(tex, textX.get(), textY, 64, 64);
+                    textX.addAndGet(80);
+                } catch (RuntimeException e) {
+                    BubbleBlaster.LOGGER.warn("Can't load and draw mod icon for '" + selected.value.getMetadata().getId() + "': " + e);
+                }
+            });
+        }
+
+        private void drawModDetails(Renderer renderer, ModMetadata metadata, AtomicInteger textX, int textY) {
+            this.layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
+
+            renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), textX.get(), textY, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), textX.get() + this.layout.width, textY + Fonts.SANS_REGULAR_40.get().getLineHeight() / 2 - Fonts.MONOSPACED_BOLD_12.get().getLineHeight() + 1, Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_REGULAR_48.get().getLineHeight() - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_REGULAR_48.get().getLineHeight() - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
             String description = metadata.getDescription();
             AtomicInteger i = new AtomicInteger();
-            description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, textX, this.y + 90 + i.getAndIncrement() * (this.font.getLineHeight() + 1), Color.argb(0x60ffffff)));
+            description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, textX.get(), this.y + 90 + i.getAndUpdate(this::addFontHeight) * (this.font.getLineHeight() + 1), Color.argb(0x60ffffff)));
+        }
+
+        private int addFontHeight(int i1) {
+            return i1 + MathUtils.ceilPositive(this.font.getLineHeight() + 1);
         }
     }
 }

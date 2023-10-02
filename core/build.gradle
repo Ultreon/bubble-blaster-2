@@ -131,6 +131,7 @@ dependencies {
     api "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
     api "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
     api "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
+    api "com.github.Ultreon.corelibs:corelibs-translations-v1:$corelibs_version"
 
     // Apis
     api "commons-io:commons-io:$commons_io_version"

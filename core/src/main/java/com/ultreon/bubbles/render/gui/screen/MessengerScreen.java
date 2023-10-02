@@ -41,7 +41,7 @@ public class MessengerScreen extends Screen {
     }
 
     /**
-     * Renders the environment loading scene.<br>
+     * Renders the world loading scene.<br>
      * Shows the title in the blue accent color (#00b0ff), and the description in a 50% black color (#7f7f7f).
      *
      * @param game      the game launched.
@@ -56,9 +56,9 @@ public class MessengerScreen extends Screen {
         renderer.fill(0, 0, game.getWidth(), game.getHeight());
 
         renderer.setColor(Color.rgb(0x00c0ff));
-        renderer.drawCenteredText(Fonts.SANS_REGULAR_48.get(), "Loading Environment...", BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 8);
+        renderer.drawTextCenter(Fonts.SANS_REGULAR_48.get(), "Loading World...", BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 8);
         renderer.setColor(Color.rgb(0x7f7f7f));
-        renderer.drawCenteredText(Fonts.SANS_REGULAR_20.get(), this.description, BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 65f);
+        renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), this.description, BubbleBlaster.getMiddleX(), game.getHeight() / 2f + 65f);
     }
 
     public String getDescription() {

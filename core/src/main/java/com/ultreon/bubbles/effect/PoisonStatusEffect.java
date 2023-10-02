@@ -38,7 +38,7 @@ public class PoisonStatusEffect extends StatusEffect {
 
     @Override
     public void execute(Entity entity, StatusEffectInstance appliedEffect) {
-        entity.getEnvironment().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageType.POISON));
+        entity.getWorld().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageType.POISON));
         MapType tag = appliedEffect.getTag();
         long nextDamage = tag.getLong("nextDamage");
         tag.putLong("nextDamage", nextDamage + 2000L);

@@ -4,148 +4,59 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Random;
 
 /**
- * Bubble randomizer class.
+ * Random properties generator for bubbles.
  *
  * @author XyperCode
+ * @see Bubble
  */
 @SuppressWarnings("unused")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
-public class BubbleRandomizer extends EntityRandomizer {
-    public static final int BUBBLE_RNG_ID = 1399689663;
-    private final PseudoRandom random;
-    private final Rng variantRng;
-    private final Rng hardnessRng;
-    private final Rng speedRng;
-    private final Rng radiusRng;
-    private final Rng xRng;
-    private final Rng yRng;
-    private final Rng defenseRng;
-    private final Rng attackRng;
-    private final Rng scoreMultiplierRng;
-    private final Rng bubbleRng;
-
+public class BubbleRandomizer extends EntityRandomizer<Bubble> {
     /**
-     * Create bubble randomizer instance.
+     * Generate random properties for a bubble.
      *
-     * @param environment the game-type to assign the randomizer to.
-     * @param rng         the rng to randomize with.
-     */
-    public BubbleRandomizer(Environment environment, Rng rng) {
-        this.random = new PseudoRandom(rng.getNumber(Integer.MIN_VALUE, (long) Integer.MAX_VALUE, 1));
-        this.variantRng = new Rng(this.random, BUBBLE_RNG_ID, 1599095222);
-        this.hardnessRng = new Rng(this.random, BUBBLE_RNG_ID, -603965851);
-        this.speedRng = new Rng(this.random, BUBBLE_RNG_ID, -1068758051);
-        this.radiusRng = new Rng(this.random, BUBBLE_RNG_ID, -1872573691);
-        this.xRng = new Rng(this.random, BUBBLE_RNG_ID, 851733880);
-        this.yRng = new Rng(this.random, BUBBLE_RNG_ID, 1130525813);
-        this.defenseRng = new Rng(this.random, BUBBLE_RNG_ID, -107544301);
-        this.attackRng = new Rng(this.random, BUBBLE_RNG_ID, 1793557458);
-        this.scoreMultiplierRng = new Rng(this.random, BUBBLE_RNG_ID, -416980079);
-        this.bubbleRng = new Rng(this.random, BUBBLE_RNG_ID, -562259225);
-    }
-
-    /**
-     * Get a random bubble properties instance.
-     *
-     * @param bounds      game bounds.
-     * @param environment game type.
-     * @return a random bubble properties instance.
+     * @param bounds      the boundaries where the spawning positions can be in.
+     * @param random      the RandomSource to generate the random properties.
+     * @param world the world object holding the in-game state.
+     * @param bubble      the bubble to randomize the properties for.
+     * @return the randomly generated properties.
      */
     @Override
-    public BubbleProperties getRandomProperties(Rectangle bounds, long spawnIndex, int retry, Environment environment) {
-        BubbleType type = environment.getRandomBubble(spawnIndex);
+    public BubbleProperties randomProperties(Rectangle bounds, RandomSource random, int retry, World world, Bubble bubble) {
+        Random rng = new Random(random.nextLong() ^ retry);
+
+        BubbleType type = bubble.getBubbleType();
 
         // Properties
-        double minHardness = type.getHardness();
-        double maxHardness = type.getHardness();
-        double minSpeed = type.getMinSpeed();
-        double maxSpeed = type.getMaxSpeed();
-        int minRad = type.getMinRadius();
-        int maxRad = type.getMaxRadius();
+        double hardness = type.getHardness().getValue();
+        float speed = (float) type.getSpeed().getValue();
+        float radius = (float) type.getRadius().getValue();
 
-        // Randomizing.
-        double hardness = hardnessRng.getNumber(minHardness, maxHardness, spawnIndex, retry);
-        double speed = speedRng.getNumber(minSpeed, maxSpeed, spawnIndex, retry);
-        int radius = radiusRng.getNumber(minRad, maxRad, spawnIndex, retry);
-
-        if (bounds.getX() > bounds.getX() + bounds.getWidth() || bounds.getY() > bounds.getY() + bounds.getHeight()) {
-            throw new IllegalStateException("Game bounds is invalid: negative size");
-        }
-
+        int x, y;
         if (bounds.getX() == bounds.getX() + bounds.getWidth() || bounds.getY() == bounds.getY() + bounds.getHeight()) {
-            throw new IllegalStateException("Game bounds is invalid: zero size");
+            x = 0;
+            y = 0;
+        } else {
+            x = rng.nextInt((int) bounds.getX(), (int) bounds.getX() + (int) bounds.getWidth());
+            y = rng.nextInt((int) bounds.getY(), (int) bounds.getY() + (int) bounds.getHeight());
         }
 
-        int x = xRng.getNumber((int) bounds.getX(), (int) bounds.getX() + (int) bounds.getWidth(), spawnIndex, retry);
-        int y = yRng.getNumber((int) bounds.getY(), (int) bounds.getY() + (int) bounds.getHeight(), spawnIndex, retry);
+        int rad = (int) (radius + (type.getColors().size() * 3) + 4);
+        float defense = (float) type.getDefense().getValue();
+        float attack = (float) type.getAttack().getValue();
+        float score = (float) type.getScore().getValue();
 
-        int rad = radius + (type.getColors().size() * 3) + 4;
-        float defense = type.getDefense(environment, defenseRng);
-        float attack = type.getAttack(environment, attackRng);
-        float score = type.getScore(environment, scoreMultiplierRng);
-
-        return new BubbleProperties(type, radius, speed, rad, x, y, defense, attack, score, bubbleRng);
-    }
-
-    public PseudoRandom getRNG() {
-        return random;
-    }
-
-    public Rng getHardnessRng() {
-        return hardnessRng;
-    }
-
-    public Rng getSpeedRng() {
-        return speedRng;
-    }
-
-    public Rng getRadiusRnd() {
-        return radiusRng;
-    }
-
-    public Rng getXRng() {
-        return xRng;
-    }
-
-    public Rng getYRng() {
-        return yRng;
-    }
-
-    public Rng getDefenseRng() {
-        return defenseRng;
-    }
-
-    public Rng getAttackRng() {
-        return attackRng;
-    }
-
-    public Rng getScoreMultiplierRng() {
-        return scoreMultiplierRng;
-    }
-
-    public Rng getVariantRng() {
-        return variantRng;
-    }
-
-    /**
-     * Create an RNG instance.
-     * It's recommended to use a randomly chosen ID (that is set in a constant). Check the code in {@link Bubble}
-     *
-     * @param id the id.
-     * @return the created RNG instance.
-     * @see Bubble#X_RNG_ID
-     */
-    @Override
-    public Rng createRng(int id) {
-        return new Rng(random, BUBBLE_RNG_ID, id);
+        return new BubbleProperties(type, radius, speed, rad, x, y, defense, attack, score);
     }
 }

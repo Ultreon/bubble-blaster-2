@@ -1,7 +1,7 @@
 package com.ultreon.bubbles;
 
-import com.ultreon.bubbles.common.StateListener;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.common.Controllable;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.DummyMessenger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -9,7 +9,7 @@ import org.slf4j.MarkerFactory;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 
-class AutoSaver implements StateListener {
+class AutoSaver implements Controllable {
     private static final Marker MARKER = MarkerFactory.getMarker("AutoSaver");
     private final LoadedGame loadedGame;
     private ScheduledFuture<?> future;
@@ -20,19 +20,19 @@ class AutoSaver implements StateListener {
     }
 
     private void run() {
-        if (!loadedGame.getEnvironment().isGameOver()) {
-            onAutoSave();
+        if (!this.loadedGame.getWorld().isGameOver() && this.enabled) {
+            this.onAutoSave();
         }
     }
 
     private void onAutoSave() {
-        Environment environment = this.loadedGame.getEnvironment();
-        if (environment == null) {
+        World world = this.loadedGame.getWorld();
+        if (world == null) {
             this.end();
             return;
         }
         try {
-            this.loadedGame.getEnvironment().save(this.loadedGame.getGameSave(), new DummyMessenger());
+            this.loadedGame.getWorld().save(this.loadedGame.getGameSave(), new DummyMessenger());
         } catch (IOException e) {
             BubbleBlaster.getLogger().warn(MARKER, "Auto-saving failed:", e);
         }
@@ -51,6 +51,6 @@ class AutoSaver implements StateListener {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 }

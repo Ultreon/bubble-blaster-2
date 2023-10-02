@@ -7,7 +7,7 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.CrashButton;
 import com.ultreon.libs.crash.v0.CrashLog;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 import java.io.File;
 
@@ -33,15 +33,15 @@ public class CrashScreen extends Screen {
     }
 
     @Override
-    public boolean onClose(Screen to) {
-        return false;
+    public boolean close(Screen to) {
+        return true;
     }
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.box(0, 0, game.getWidth(), game.getScaledHeight(), Color.CRIMSON, new Insets(10));
 
-        renderer.drawCenteredText(Fonts.DONGLE_75.get(), "The game crashed!", this.width / 2f, 25);
+        renderer.drawTextCenter(Fonts.DONGLE_75.get(), "The game crashed!", this.width / 2f, 25);
 
         this.crashButton.setX((int) (game.getScaledWidth() / 2 - this.crashButton.getBounds().width / 2));
     }

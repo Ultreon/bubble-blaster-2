@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.entity.types;
 
 import com.ultreon.bubbles.entity.Entity;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -13,17 +13,17 @@ public class EntityType<T extends Entity> {
         this.entityFactory = entityFactory;
     }
 
-    public T create(Environment environment) {
-        return entityFactory.create(environment);
+    public T create(World world) {
+        return entityFactory.create(world);
     }
 
-    public T create(Environment environment, MapType document) {
-        T t = entityFactory.create(environment);
+    public T create(World world, MapType document) {
+        T t = entityFactory.create(world);
         t.load(document);
         return t;
     }
 
-    public Identifier getId() {
+    public Identifier getKey() {
         return Registries.ENTITIES.getKey(this);
     }
 }

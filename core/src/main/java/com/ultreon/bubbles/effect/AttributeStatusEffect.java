@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.effect;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
@@ -36,5 +35,5 @@ public abstract class AttributeStatusEffect extends StatusEffect {
         }
     }
 
-    public abstract Multimap<Attribute, AttributeModifier> getAttributeModifiers(int strength);
+    public abstract Multimap<Attribute, AttributeModifier> getAttributeModifiers(float strength);
 }

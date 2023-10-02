@@ -5,21 +5,25 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.StatusEffects;
+import com.ultreon.bubbles.util.ConstantValueSource;
+import com.ultreon.bubbles.util.RandomValueSource;
 import org.apache.commons.lang3.Range;
 
 import java.util.ArrayList;
 
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
+
 public class UltraBubble extends BubbleType {
     public UltraBubble() {
-        setColors("#007fff,#0000ff,#7f00ff,#ff00ff,#ff007f");
+        this.setColors("#007fff,#0000ff,#7f00ff,#ff00ff,#ff007f");
 
-        setPriority(4600d);
-        setRadius(Range.between(21, 55));
-        setSpeed(Range.between(19.2, 38.4));
-        setDefense(0.573f);
-        setAttack(0.0f);
-        setScore(10);
-        setHardness(1.0d);
+        this.setPriority(4600d);
+        this.setRadius(RandomValueSource.random(21, 55));
+        this.setSpeed(RandomValueSource.random(19.2, 38.4));
+        this.setDefense(RandomValueSource.random(0.5, 0.7));
+        this.setAttack(ConstantValueSource.of());
+        this.setScore(ConstantValueSource.of(10));
+        this.setHardness(RandomValueSource.random(1, 4));
     }
 
     @Override
@@ -40,8 +44,9 @@ public class UltraBubble extends BubbleType {
             player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, 10, 3));
             player.addEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 3));
             player.addEffect(new StatusEffectInstance(StatusEffects.SCORE, 12, 10));
-            player.addEffect(new StatusEffectInstance(StatusEffects.BUBBLE_FREEZE, 8, 1));
             player.addEffect(new StatusEffectInstance(StatusEffects.LUCK, 8, 1));
+
+            player.getWorld().freezeBubblesSecs(8);
         }
     }
 }

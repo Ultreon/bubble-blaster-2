@@ -1,12 +1,11 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.Difficulty;
-import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.render.gui.widget.OptionsButton;
-import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.libs.text.v0.MutableText;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.bubbles.render.gui.widget.Button;
+import com.ultreon.libs.text.v1.MutableText;
+import com.ultreon.libs.text.v1.TextObject;
+
+import java.math.BigDecimal;
 
 public class DifficultyScreen extends Screen {
     private static final TextObject TITLE = TextObject.translation("bubbles/screen/difficulty/title");
@@ -19,22 +18,33 @@ public class DifficultyScreen extends Screen {
 
     @Override
     public void init() {
-        clearWidgets();
+        this.clearWidgets();
 
-        int width = 150;
-        int height = 40;
-        int y = 150;
+        Difficulty[] values = Difficulty.values();
+        int gap = 2;
+        int width = 300;
+        int height = 50;
+        int totalHeight = (height + gap) * values.length - gap;
+        int y = (this.height - totalHeight) / 2;
         int x = (this.width - width) / 2;
-        for (Difficulty difficulty : Difficulty.values()) {
+        for (Difficulty difficulty : values) {
             MutableText text = difficulty.getTranslation();
-            add(new OptionsButton.Builder()
-                    .text(text)
+            this.add(Button.builder()
+                    .text(text.append(" (" + DifficultyScreen.fullNumberString(difficulty.getPlainModifier()) + "x)"))
                     .bounds(x, y, width, height)
                     .command(() -> this.next(difficulty, this.seed))
                     .build());
 
-            y += height + 2;
+            y += height + gap;
         }
+    }
+
+    public static String fullNumberString(double value) {
+        return BigDecimal.valueOf(value).toPlainString();
+    }
+
+    public static String fullNumberString(float value) {
+        return new BigDecimal(Float.toString(value)).toPlainString();
     }
 
     public void next(Difficulty difficulty, long seed) {

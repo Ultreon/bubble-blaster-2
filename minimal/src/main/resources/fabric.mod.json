@@ -29,7 +29,7 @@
   "mixins": [
     {
       "config": "bubbles.mixins.json",
-      "environment": "*"
+      "world": "*"
     }
   ],
   "license": "Ultreon-API-v1.2",

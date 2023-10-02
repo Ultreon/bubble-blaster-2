@@ -28,16 +28,16 @@ public class ScrollableView extends Container {
 
     @Override
     public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        this.viewport.setWidth(getWidth() - SCROLLBAR_WIDTH);
-        this.viewport.setHeight(getHeight());
-        this.viewport.setX(0);
-        this.viewport.setY(0);
-        renderer.subInstance(viewport.getBounds(), renderer1 -> this.viewport.render(renderer1, mouseX, mouseY, deltaTime));
+        this.viewport.setWidth(this.getWidth() - SCROLLBAR_WIDTH);
+        this.viewport.setHeight(this.getHeight());
+        this.viewport.setX(this.x);
+        this.viewport.setY(this.y);
+        renderer.scissored(this.viewport.getBounds(), () -> this.viewport.render(renderer, mouseX, mouseY, deltaTime));
         this.scrollBar.setWidth(SCROLLBAR_WIDTH);
-        this.scrollBar.setHeight(getHeight());
-        this.scrollBar.setX(getWidth() - SCROLLBAR_WIDTH);
-        this.scrollBar.setY(0);
-        renderer.subInstance(scrollBar.getBounds(), renderer1 -> this.scrollBar.render(renderer1, mouseX, mouseY, deltaTime));
+        this.scrollBar.setHeight(this.getHeight());
+        this.scrollBar.setX(this.x + this.getWidth() - SCROLLBAR_WIDTH);
+        this.scrollBar.setY(this.y);
+        renderer.scissored(this.scrollBar.getBounds(), () -> this.scrollBar.render(renderer, mouseX, mouseY, deltaTime));
     }
 
     @Override
@@ -46,13 +46,13 @@ public class ScrollableView extends Container {
         this.scrollBar.setPercent(this.viewport.getYPercent());
         this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().y - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().y));
 
-        renderComponent(renderer);
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderComponent(renderer);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     private void updateXYOffset() {
-        this.innerXOffset = (int) -this.viewport.xScroll - x;
-        this.innerYOffset = (int) -this.viewport.yScroll - y;
+        this.innerXOffset = (int) -this.viewport.xScroll - this.x;
+        this.innerYOffset = (int) -this.viewport.yScroll - this.y;
     }
 
     @Override
@@ -63,11 +63,11 @@ public class ScrollableView extends Container {
     @Override
     public @Nullable GuiComponent getWidgetAt(int x, int y) {
         this.updateXYOffset();
-        return viewport.getWidgetAt(x, y);
+        return this.viewport.getWidgetAt(x, y);
     }
 
     public @NotNull Viewport getViewport() {
-        return viewport;
+        return this.viewport;
     }
 
     public void setViewport(@NotNull Viewport viewport) {
@@ -90,7 +90,7 @@ public class ScrollableView extends Container {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (scrollBar.isWithinBounds(x, y) && scrollBar.mousePress(x, y, button)) {
+        if (this.scrollBar.isWithinBounds(x, y) && this.scrollBar.mousePress(x, y, button)) {
             return true;
         }
         return super.mousePress(x, y, button);
@@ -103,7 +103,7 @@ public class ScrollableView extends Container {
 
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
-        if (scrollBar.isWithinBounds(x, y) && scrollBar.mouseClick(x, y, button, count)) {
+        if (this.scrollBar.isWithinBounds(x, y) && this.scrollBar.mouseClick(x, y, button, count)) {
             return true;
         }
         return super.mouseClick(x, y, button, count);
@@ -111,8 +111,8 @@ public class ScrollableView extends Container {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        if (scrollBar.isWithinBounds(x, y)) {
-            scrollBar.mouseDrag(x, y, nx, ny, button);
+        if (this.scrollBar.isWithinBounds(x, y)) {
+            this.scrollBar.mouseDrag(x, y, nx, ny, button);
             return;
         }
         super.mouseDrag(x, y, nx, ny, button);
@@ -142,7 +142,7 @@ public class ScrollableView extends Container {
     public boolean mouseWheel(int x, int y, float rotation) {
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
-        if (viewport.isWithinBounds(x, y) && viewport.mouseWheel(x, y, rotation)) {
+        if (this.viewport.isWithinBounds(x, y) && this.viewport.mouseWheel(x, y, rotation)) {
             return true;
         }
         this.viewport.setYScroll(this.viewport.getYScroll() + rotation * 300 / 10);

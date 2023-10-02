@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.bubble;
 
-import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
@@ -9,15 +9,17 @@ import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
-import com.ultreon.bubbles.environment.Environment;
-import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.util.ConstantValueSource;
+import com.ultreon.bubbles.util.RandomValueSource;
+import com.ultreon.bubbles.util.ValueSource;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.commons.util.ColorUtils;
+import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.tuple.Pair;
-import com.ultreon.libs.text.v0.Translatable;
-import org.apache.commons.lang3.Range;
+import com.ultreon.libs.text.v1.Translatable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -30,25 +32,29 @@ import java.util.List;
  */
 @SuppressWarnings({"unused", "SameParameterValue", "SameReturnValue"})
 public abstract class BubbleType implements Serializable, Translatable {
+    private static final ValueSource DEFAULT_SCORE = ConstantValueSource.of(1);
+    private static final ValueSource DEFAULT_DEFENSE = ConstantValueSource.of(Float.MIN_NORMAL);
+    private static final ValueSource DEFAULT_ATTACK = ConstantValueSource.of();
+    private static final ValueSource DEFAULT_RADIUS = RandomValueSource.random(21, 80);
+    private static final ValueSource DEFAULT_SPEED = RandomValueSource.random(1, 2.5);
+    private static final ValueSource DEFAULT_HARDNESS = ConstantValueSource.of(1);
     private List<Color> colors;
     private double priority;
 
-    private Range<Integer> radius;
-    private Range<Double> speed;
+    private ValueSource radius = DEFAULT_RADIUS;
+    private ValueSource speed = DEFAULT_SPEED;
     private float bounceAmount;
     private BubbleEffectCallback effect = (source, target) -> null;
 
-    private float score;
-    private float defense = 1f;
-    private float attack = 0.2f;
-    private double hardness;
+    private ValueSource score = DEFAULT_SCORE;
+    private ValueSource defense = DEFAULT_DEFENSE;
+    private ValueSource attack = DEFAULT_ATTACK;
+    private ValueSource hardness = DEFAULT_HARDNESS;
     private int rarity;
     private boolean invincible;
 
     private final List<AiTask> aiTasks = new ArrayList<>();
-
-    public BubbleType() {
-    }
+    private boolean isBad;
 
     public void addAiTask(int i, AiTask task) {
         this.aiTasks.add(i, task);
@@ -72,77 +78,91 @@ public abstract class BubbleType implements Serializable, Translatable {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Attributes     //
     ////////////////////////
+    @Deprecated(forRemoval = true)
     public int getMinRadius() {
-        return this.radius.getMaximum();
+        return 0;
     }
 
+    @Deprecated(forRemoval = true)
     public int getMaxRadius() {
-        return this.radius.getMaximum();
+        return 0;
     }
 
+    @Deprecated(forRemoval = true)
     public double getMinSpeed() {
-        return this.speed.getMaximum();
+        return 0;
     }
 
+    @Deprecated(forRemoval = true)
     public double getMaxSpeed() {
-        return this.speed.getMaximum();
+        return 0;
     }
 
+    @Deprecated(forRemoval = true)
     protected final void setMinRadius(int radius) {
-        this.radius = Range.between(radius, this.radius.getMaximum());
+
     }
 
+    @Deprecated(forRemoval = true)
     protected final void setMaxRadius(int radius) {
-        this.radius = Range.between(this.radius.getMinimum(), radius);
+
     }
 
+    @Deprecated(forRemoval = true)
     protected final void setMinSpeed(double speed) {
-        this.speed = Range.between(speed, this.speed.getMaximum());
+
     }
 
+    @Deprecated(forRemoval = true)
     protected final void setMaxSpeed(double speed) {
-        this.speed = Range.between(this.speed.getMinimum(), speed);
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Modifiers     //
     ///////////////////////
+    @Deprecated(forRemoval = true)
     public boolean isDefenseRandom() {
         return false;
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isAttackRandom() {
         return false;
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isScoreRandom() {
         return false;
     }
 
-    public float getDefense(Environment environment, Rng rng) {
-        return this.getDefense();
+    @Deprecated(forRemoval = true)
+    public float getDefense(World world, Rng rng) {
+        return 0.0f;
     }
 
-    public float getAttack(Environment environment, Rng rng) {
-        return this.getAttack();
+    @Deprecated(forRemoval = true)
+    public float getAttack(World world, Rng rng) {
+        return 0.0f;
     }
 
-    public float getScore(Environment environment, Rng rng) {
-        return this.getScore();
+    @Deprecated(forRemoval = true)
+    public float getScore(World world, Rng rng) {
+        return 0.0f;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Other     //
     ///////////////////
     public boolean isBad() {
-        return this.getAttack() > 0;
+        return this.isBad;
     }
 
     public double getModifiedPriority(double localDifficulty) {
         return this.getPriority();
     }
 
-    public boolean canSpawn(@NotNull Environment environment) {
+    public boolean canSpawn(@NotNull World world) {
         return true;
     }
 
@@ -163,11 +183,11 @@ public abstract class BubbleType implements Serializable, Translatable {
         return this.priority;
     }
 
-    public Range<Integer> getRadius() {
+    public ValueSource getRadius() {
         return this.radius;
     }
 
-    public Range<Double> getSpeed() {
+    public ValueSource getSpeed() {
         return this.speed;
     }
 
@@ -175,19 +195,19 @@ public abstract class BubbleType implements Serializable, Translatable {
         return this.bounceAmount;
     }
 
-    public float getScore() {
+    public ValueSource getScore() {
         return this.score;
     }
 
-    public float getDefense() {
+    public ValueSource getDefense() {
         return this.defense;
     }
 
-    public float getAttack() {
+    public ValueSource getAttack() {
         return this.attack;
     }
 
-    public double getHardness() {
+    public ValueSource getHardness() {
         return this.hardness;
     }
 
@@ -203,11 +223,11 @@ public abstract class BubbleType implements Serializable, Translatable {
         this.priority = priority;
     }
 
-    protected final void setRadius(Range<Integer> radius) {
+    protected final void setRadius(ValueSource radius) {
         this.radius = radius;
     }
 
-    protected final void setSpeed(Range<Double> speed) {
+    protected final void setSpeed(ValueSource speed) {
         this.speed = speed;
     }
 
@@ -215,19 +235,19 @@ public abstract class BubbleType implements Serializable, Translatable {
         this.bounceAmount = bounceAmount;
     }
 
-    protected final void setScore(float score) {
+    protected final void setScore(ValueSource score) {
         this.score = score;
     }
 
-    protected final void setDefense(float defense) {
+    protected final void setDefense(ValueSource defense) {
         this.defense = defense;
     }
 
-    protected final void setAttack(float attack) {
+    protected final void setAttack(ValueSource attack) {
         this.attack = attack;
     }
 
-    protected final void setHardness(double hardness) {
+    protected final void setHardness(ValueSource hardness) {
         this.hardness = hardness;
     }
 
@@ -274,15 +294,15 @@ public abstract class BubbleType implements Serializable, Translatable {
 
     public static class Builder {
         private Long priority = null;
-        private float score = 1f;
-        private float defense = Float.MIN_NORMAL;
-        private float attack = 0f;
+        private ValueSource score = DEFAULT_SCORE;
+        private ValueSource defense = DEFAULT_DEFENSE;
+        private ValueSource attack = DEFAULT_ATTACK;
+        private ValueSource radius = DEFAULT_RADIUS;
+        private ValueSource speed = DEFAULT_SPEED;
+        private ValueSource hardness = DEFAULT_HARDNESS;
         private boolean invulnerable = false;
-        private Range<Integer> radius = Range.between(21, 80);
-        private Range<Double> speed = Range.between(1d, 2.5d);
         private int rarity;
         private float bounceAmount = 0f;
-        private double hardness = 1d;
         private Color[] colors;
         private BubbleEffectCallback bubbleEffect = (source, target) -> null;
         private boolean doesBounce = false;
@@ -341,7 +361,31 @@ public abstract class BubbleType implements Serializable, Translatable {
             return this;
         }
 
+        public Builder score(int score) {
+            return this.score(ConstantValueSource.of(score));
+        }
+
         public Builder score(float score) {
+            return this.score(ConstantValueSource.of(score));
+        }
+
+        public Builder score(double score) {
+            return this.score(ConstantValueSource.of(score));
+        }
+
+        public Builder score(int min, int max) {
+            return this.score(RandomValueSource.random(min, max));
+        }
+
+        public Builder score(float min, float max) {
+            return this.score(RandomValueSource.random(min, max));
+        }
+
+        public Builder score(double min, double max) {
+            return this.score(RandomValueSource.random(min, max));
+        }
+
+        public Builder score(ValueSource score) {
             this.score = score;
             return this;
         }
@@ -351,18 +395,89 @@ public abstract class BubbleType implements Serializable, Translatable {
             return this;
         }
 
-        // Doubles
+        public Builder attack(int attack) {
+            return this.attack(ConstantValueSource.of(attack));
+        }
+
         public Builder attack(float attack) {
+            return this.attack(ConstantValueSource.of(attack));
+        }
+
+        public Builder attack(double attack) {
+            return this.attack(ConstantValueSource.of(attack));
+        }
+
+        public Builder attack(int min, int max) {
+            return this.attack(RandomValueSource.random(min, max));
+        }
+
+        public Builder attack(float min, float max) {
+            return this.attack(RandomValueSource.random(min, max));
+        }
+
+        public Builder attack(double min, double max) {
+            return this.attack(RandomValueSource.random(min, max));
+        }
+
+        public Builder attack(ValueSource attack) {
             this.attack = attack;
             return this;
         }
 
+        public Builder defense(int defense) {
+            return this.defense(ConstantValueSource.of(defense));
+        }
+
         public Builder defense(float defense) {
+            return this.defense(ConstantValueSource.of(defense));
+        }
+
+        public Builder defense(double defense) {
+            return this.defense(ConstantValueSource.of(defense));
+        }
+
+        public Builder defense(int min, int max) {
+            return this.defense(RandomValueSource.random(min, max));
+        }
+
+        public Builder defense(float min, float max) {
+            return this.defense(RandomValueSource.random(min, max));
+        }
+
+        public Builder defense(double min, double max) {
+            return this.defense(RandomValueSource.random(min, max));
+        }
+
+        public Builder defense(ValueSource defense) {
             this.defense = defense;
             return this;
         }
 
+        public Builder hardness(int hardness) {
+            return this.hardness(ConstantValueSource.of(hardness));
+        }
+
+        public Builder hardness(float hardness) {
+            return this.hardness(ConstantValueSource.of(hardness));
+        }
+
         public Builder hardness(double hardness) {
+            return this.hardness(ConstantValueSource.of(hardness));
+        }
+
+        public Builder hardness(int min, int max) {
+            return this.hardness(RandomValueSource.random(min, max));
+        }
+
+        public Builder hardness(float min, float max) {
+            return this.hardness(RandomValueSource.random(min, max));
+        }
+
+        public Builder hardness(double min, double max) {
+            return this.hardness(RandomValueSource.random(min, max));
+        }
+
+        public Builder hardness(ValueSource hardness) {
             this.hardness = hardness;
             return this;
         }
@@ -375,22 +490,60 @@ public abstract class BubbleType implements Serializable, Translatable {
         }
 
         // Ranges
-        public Builder radius(int _min, int _max) {
-            this.radius = Range.between(_min, _max);
-            return this;
+        public Builder radius(int radius) {
+            return this.radius(ConstantValueSource.of(radius));
         }
 
-        public Builder radius(Range<Integer> range) {
+        public Builder radius(float radius) {
+            return this.radius(ConstantValueSource.of(radius));
+        }
+
+        public Builder radius(double radius) {
+            return this.radius(ConstantValueSource.of(radius));
+        }
+
+        public Builder radius(int min, int max) {
+            return this.radius(RandomValueSource.random(min, max));
+        }
+
+        public Builder radius(float min, float max) {
+            return this.radius(RandomValueSource.random(min, max));
+        }
+
+        public Builder radius(double min, double max) {
+            return this.radius(RandomValueSource.random(min, max));
+        }
+
+        public Builder radius(ValueSource range) {
             this.radius = range;
             return this;
         }
 
-        public Builder speed(double _min, double _max) {
-            this.speed = Range.between(_min, _max);
-            return this;
+        public Builder speed(int speed) {
+            return this.speed(ConstantValueSource.of(speed));
         }
 
-        public Builder speed(Range<Double> range) {
+        public Builder speed(float speed) {
+            return this.speed(ConstantValueSource.of(speed));
+        }
+
+        public Builder speed(double speed) {
+            return this.speed(ConstantValueSource.of(speed));
+        }
+
+        public Builder speed(int min, int max) {
+            return this.speed(RandomValueSource.random(min, max));
+        }
+
+        public Builder speed(float min, float max) {
+            return this.speed(RandomValueSource.random(min, max));
+        }
+
+        public Builder speed(double min, double max) {
+            return this.speed(RandomValueSource.random(min, max));
+        }
+
+        public Builder speed(ValueSource range) {
             this.speed = range;
             return this;
         }
@@ -452,11 +605,13 @@ public abstract class BubbleType implements Serializable, Translatable {
     @Override
     public String getTranslationPath() {
         Identifier registryName = Registries.BUBBLES.getKey(this);
-        return registryName.location() + "/bubble/name/" + registryName.path();
+        assert registryName != null;
+        return registryName.location() + ".bubble." + registryName.path();
     }
 
     public String getDescriptionTranslationPath() {
         Identifier registryName = Registries.BUBBLES.getKey(this);
-        return registryName.location() + "/bubble/description/" + registryName.path();
+        assert registryName != null;
+        return registryName.location() + ".bubble." + registryName.path() + ".desc";
     }
 }

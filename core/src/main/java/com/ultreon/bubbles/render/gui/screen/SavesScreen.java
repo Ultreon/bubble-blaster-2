@@ -6,14 +6,14 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
-import com.ultreon.bubbles.render.gui.widget.OptionsButton;
+import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.save.GameSaveInfo;
 import com.ultreon.bubbles.save.SaveLoader;
 import com.ultreon.bubbles.util.Either;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -39,10 +39,10 @@ public class SavesScreen extends Screen {
     private final SaveLoader loader;
     @Nullable
     private ObjectList<GameSave> saveList;
-    @Nullable private OptionsButton newSaveBtn;
-    @Nullable private OptionsButton openSaveBtn;
-    @Nullable private OptionsButton delSaveBtn;
-    @Nullable private OptionsButton editSaveBtn;
+    @Nullable private Button newSaveBtn;
+    @Nullable private Button openSaveBtn;
+    @Nullable private Button delSaveBtn;
+    @Nullable private Button editSaveBtn;
 
     public SavesScreen(Screen backScreen) {
         super(backScreen);
@@ -83,20 +83,20 @@ public class SavesScreen extends Screen {
                 } catch (IOException e) {
                     BubbleBlaster.getLogger().error("Failed to delete save " + selected.value.getDirectory().getName() + ":", e);
                 }
-                refresh();
+                this.refresh();
             }
         }
     }
 
     private void editSave() {
-        game.notifications.unavailable("Edit Save");
+        this.game.notifications.unavailable("Edit Save");
     }
 
     private void refresh() {
         this.loader.refresh();
         this.saves.clear();
         this.saves.addAll(this.loader.getSaves().stream().map(Supplier::get).toList());
-        game.showScreen(this);
+        this.game.showScreen(this);
     }
 
     @Nullable
@@ -106,37 +106,37 @@ public class SavesScreen extends Screen {
 
     @Override
     public void init() {
-        clearWidgets();
-        var calcWidth = calculateWidth();
+        this.clearWidgets();
+        var calcWidth = this.calculateWidth();
 
-        this.saveList = add(new ObjectList<>(saves, 130, 2, (width - calcWidth) / 2, 10, calcWidth, this.height - 120));
+        this.saveList = this.add(new ObjectList<>(this.saves, 130, 2, (this.width - calcWidth) / 2, 10, calcWidth, this.height - 120));
         this.saveList.setSelectable(true);
         this.saveList.setEntryRenderer(this::renderEntry);
 
-        this.newSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/new")).build());
+        this.newSaveBtn = this.add(Button.builder().bounds((this.width - calcWidth) / 2, this.height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster.screen.saves.new")).build());
         this.newSaveBtn.setCommand(this::newSave);
 
-        this.openSaveBtn = add(new OptionsButton.Builder().bounds(width / 2 + 5, height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/open")).build());
+        this.openSaveBtn = this.add(Button.builder().bounds(this.width / 2 + 5, this.height - 100, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster.screen.saves.open")).build());
         this.openSaveBtn.setCommand(this::openSave);
 
-        this.delSaveBtn = add(new OptionsButton.Builder().bounds((width - calcWidth) / 2, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/delete")).build());
+        this.delSaveBtn = this.add(Button.builder().bounds((this.width - calcWidth) / 2, this.height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster.screen.saves.delete")).build());
         this.delSaveBtn.setCommand(this::deleteSave);
 
-        this.editSaveBtn = add(new OptionsButton.Builder().bounds(width / 2 + 5, height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster/screen/saves/edit")).build());
+        this.editSaveBtn = this.add(Button.builder().bounds(this.width / 2 + 5, this.height - 50, calcWidth / 2 - 5, 40).text(TextObject.translation("bubbleblaster.screen.saves.edit")).build());
         this.editSaveBtn.setCommand(this::editSave);
     }
 
     private void renderEntry(Renderer renderer, int width, int height, float y, GameSave save, boolean selected, boolean hovered) {
-        var cachedInfo = cache.get(save);
+        var cachedInfo = this.cache.get(save);
         try {
             if (cachedInfo == null) {
                 cachedInfo = Either.left(save.getInfo());
-                cache.put(save, cachedInfo);
+                this.cache.put(save, cachedInfo);
             }
         } catch (Exception e) {
             BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getDirectory().getName() + ":", e);
             cachedInfo = Either.right(e);
-            cache.put(save, cachedInfo);
+            this.cache.put(save, cachedInfo);
         }
 
         if (cachedInfo.isRightPresent()) {
@@ -172,12 +172,12 @@ public class SavesScreen extends Screen {
     }
 
     private int calculateWidth() {
-        return Math.min(width - 50, 500);
+        return Math.min(this.width - 50, 500);
     }
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderBackground(renderer);
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderBackground(renderer);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 }

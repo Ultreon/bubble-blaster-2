@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 @SuppressWarnings("unused")
 public class GraphicsUtils {
@@ -124,10 +124,10 @@ public class GraphicsUtils {
         layout.setText(font, text);
 
         // Determine the X coordinate for the text
-        int x = (int) (pos.x - layout.width / 2);
+        float x = pos.x - layout.width / 2;
 
         // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
-        int y = (int) (pos.y - layout.height / 2);
+        float y = pos.y - (layout.height + font.getDescent()) / 2;
 
         // Draw the String
         renderer.drawText(font, text, x, y, color);

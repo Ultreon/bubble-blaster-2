@@ -5,6 +5,7 @@ import org.panteleyev.jpackage.ImageType
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.panteleyev.jpackage.JPackageTask
 
 buildscript {
     repositories {
@@ -198,7 +199,7 @@ jar {
     }
 }
 
-tasks.create('prepareRun', {
+tasks.register('prepareRun', {
     Files.createDirectories(Paths.get(rootProject.projectDir.getAbsolutePath(), "run"))
 })
 
@@ -245,6 +246,8 @@ tasks.register('package', Zip) {
 
 jpackage {
     dependsOn("build", ":gameprovider:build", ":desktop:build", ":core:build", "copyDependencies", "copyJar")
+
+    inputs.files(fileTree("$buildDir/jars"))
 
     input  = "$buildDir/jars"
     destination = "$buildDir/bin"
@@ -297,6 +300,64 @@ jpackage {
         winMenuGroup = "Ultreon Team"
         winConsole = false
         appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
+    }
+}
+
+tasks.register('jpackageAlt', JPackageTask) {
+    dependsOn("build", ":gameprovider:build", ":desktop:build", ":core:build", "copyDependencies", "copyJar")
+
+    inputs.files(fileTree("$buildDir/jars"))
+
+    input = "$buildDir/jars"
+    destination = "$buildDir/bin"
+
+    appName = project.property("app_name").toString()
+    appVersion = project.version.toString()
+    vendor = "Ultreon Team"
+    copyright = "Copyright (c) 2023 Ultreon Team"
+    runtimeImage = System.getProperty("java.home")
+
+    mainJar = jar.archiveFileName.get()
+    mainClass = "com.ultreon.bubbles.premain.PreMain"
+
+    destination = "$buildDir/dist"
+
+    licenseFile = "$rootProject.projectDir/package/LICENSE.txt"
+
+    javaOptions = ["-Dfile.encoding=UTF-8"]
+    arguments = ["--packaged"]
+
+    aboutUrl = "https://github.com/Ultreon/bubble-blaster"
+
+    mac {
+        icon = "$rootProject.projectDir/icons/icon.icns"
+        macPackageIdentifier = project_id
+        macPackageName = project_name
+        appVersion = packageVersion
+        type = ImageType.PKG
+    }
+
+    linux {
+        icon = "$rootProject.projectDir/icons/icon.png"
+        aboutUrl = null
+        licenseFile = null
+        appVersion = project.version.toString()
+        type = ImageType.APP_IMAGE
+    }
+
+    windows {
+        icon = "$rootProject.projectDir/icons/icon.ico"
+        winMenu = true
+        winDirChooser = true
+        winConsole = false
+        winPerUserInstall = true
+        winShortcutPrompt = true
+        winShortcut = false
+        winUpgradeUuid = "a539b496-ae50-4df2-9a1b-8a089e44f7ce"
+        winMenuGroup = "Ultreon Team"
+        winConsole = false
+        appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
+        type = ImageType.MSI
     }
 }
 

@@ -7,7 +7,7 @@ import com.ultreon.bubbles.common.gamestate.GameplayContext;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.data.DataKeys;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.event.v1.TickEvents;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.render.Color;
@@ -52,10 +52,10 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
             return;
         }
 
-        Environment environment = loadedGame.getEnvironment();
+        World world = loadedGame.getWorld();
 
         if (stopTime < System.currentTimeMillis()) {
-            environment.stopBloodMoon();
+            world.stopBloodMoon();
         }
 
         if (activating) {
@@ -67,8 +67,8 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
             // Game effects.
             if (!wasActive) BubbleBlaster.getLogger().info("Blood Moon activated!");
 
-            environment.triggerBloodMoon();
-            environment.setStateDifficultyModifier(this, 64f);
+            world.triggerBloodMoon();
+            world.setStateDifficultyModifier(this, 64f);
             wasActive = true;
 
             // Player effects.
@@ -83,7 +83,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
             // Game effects.
             if (wasActive) {
                 BubbleBlaster.getLogger().info("Blood Moon deactivated!");
-                environment.removeStateDifficultyModifier(this);
+                world.removeStateDifficultyModifier(this);
                 wasActive = false;
             }
         }
@@ -113,7 +113,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     }
 
     @Override
-    public void renderBackground(Environment environment, Renderer renderer) {
+    public void renderBackground(World world, Renderer renderer) {
         BubbleBlaster instance = BubbleBlaster.getInstance();
         renderer.fillGradient(instance.getBounds(), UPPER_COLOR, LOWER_COLOR);
     }

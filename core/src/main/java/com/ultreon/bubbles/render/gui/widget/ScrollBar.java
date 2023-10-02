@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.util.helpers.Mth;
+import com.ultreon.bubbles.util.helpers.MathHelper;
 import org.checkerframework.common.value.qual.IntRange;
 
 public class ScrollBar extends GuiComponent {
@@ -39,7 +39,7 @@ public class ScrollBar extends GuiComponent {
     }
 
     private double scale() {
-        return Mth.clamp(getHeight() * scale, SIZE * 2, getHeight());
+        return MathHelper.clamp(getHeight() * scale, SIZE * 2, getHeight());
     }
 
     public double getPercent() {
@@ -47,7 +47,7 @@ public class ScrollBar extends GuiComponent {
     }
 
     public void setPercent(double percent) {
-        this.percent = Mth.clamp(percent, 0.0, 1.0);
+        this.percent = MathHelper.clamp(percent, 0.0, 1.0);
     }
 
     public void setScale(double scale) {

@@ -2,7 +2,7 @@ package com.ultreon.bubbles.common.gamestate;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.environment.Environment;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
@@ -34,7 +34,7 @@ public abstract class GameplayEvent {
 
     public abstract void buildVfx(VfxEffectBuilder builder);
 
-    public void renderBackground(Environment environment, Renderer renderer) {
+    public void renderBackground(World world, Renderer renderer) {
 
     }
 

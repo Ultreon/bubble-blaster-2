@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class ObjectList<T> extends ScrollableView implements Iterable<T> {
-
     private final List<ListEntry<T, ? extends T>> entries = new ArrayList<>();
     private final int entryHeight;
     private final int gap;
@@ -21,19 +20,19 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     private final List<SelectHandler<T>> selectHandlers = new ArrayList<>();
 
     public ObjectList(List<T> items, int entryHeight, int gap, int x, int y, int width, int height) {
-        super(new Rectangle(0, 0, width, calculateViewHeight(items, entryHeight, gap)), x, y, width, height);
+        super(new Rectangle(0, 0, width, ObjectList.calculateViewHeight(items, entryHeight, gap)), x, y, width, height);
 
         this.entryType = items.getClass().getComponentType();
         this.entryHeight = entryHeight;
         this.gap = gap;
 
-        this.listContent = this.add(new Container(0, 0, width, getViewport().getHeight()) {
+        this.listContent = this.add(new Container(x, y, width, this.getViewport().getHeight()) {
             @Override
             public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-                var y = 0;
+                var y = ObjectList.this.getViewport().innerYOffset;
                 for (var entry : ObjectList.this.entries) {
-                    entry.setPos(0, y);
-                    entry.setSize(width, entryHeight);
+                    entry.setPos(ObjectList.this.x, y);
+                    entry.setSize(this.width, entryHeight);
                     entry.render(renderer, mouseX, mouseY, deltaTime);
                     y += entryHeight + gap;
                 }
@@ -43,12 +42,17 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         items.forEach(this::addItem);
     }
 
+    @Override
+    public void setX(int x) {
+        this.listContent.setX(x);
+    }
+
     public void addSelectHandler(SelectHandler<T> handler) {
-        selectHandlers.add(handler);
+        this.selectHandlers.add(handler);
     }
 
     public void removeSelectHandler(SelectHandler<T> handler) {
-        selectHandlers.remove(handler);
+        this.selectHandlers.remove(handler);
     }
 
     private static int calculateViewHeight(List<?> entries, int entryHeight, int gap) {
@@ -56,9 +60,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     private void recalculateViewport() {
-        int viewHeight = calculateViewHeight(entries, entryHeight, gap);
-        this.getViewport().setViewportSize(width - SCROLLBAR_WIDTH, viewHeight);
-        listContent.setHeight(viewHeight);
+        int viewHeight = ObjectList.calculateViewHeight(this.entries, this.entryHeight, this.gap);
+        this.getViewport().setViewportSize(this.width - SCROLLBAR_WIDTH, viewHeight);
+        this.listContent.setHeight(viewHeight);
     }
 
     public void setEntryRenderer(EntryRenderer<T> renderer) {
@@ -66,7 +70,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public boolean isSelectable() {
-        return selectable;
+        return this.selectable;
     }
 
     public void setSelectable(boolean selectable) {
@@ -74,7 +78,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public ListEntry<T, ? extends T> getSelected() {
-        return selected;
+        return this.selected;
     }
 
     public void setSelected(ListEntry<T, ? extends T> selected) {
@@ -82,64 +86,64 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public Class<?> getEntryType() {
-        return entryType;
+        return this.entryType;
     }
 
     @CanIgnoreReturnValue
     public <C extends T> ListEntry<T, C> addItem(C item) {
-        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (getViewport().getViewportSize().y + gap), width, height, entries.size());
-        entries.add(entry);
-        listContent.add(entry);
-        recalculateViewport();
+        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (this.getViewport().getViewportSize().y + this.gap), this.width, this.height, this.entries.size());
+        this.entries.add(entry);
+        this.listContent.add(entry);
+        this.recalculateViewport();
         return entry;
     }
 
     @SuppressWarnings("unchecked")
     public ListEntry<T, ? extends T> getEntryAt(int x, int y) {
-        return (ListEntry<T, ? extends T>) getExactWidgetAt(x, y);
+        return (ListEntry<T, ? extends T>) this.getExactWidgetAt(x, y);
     }
 
     @CanIgnoreReturnValue
     public <C extends T> C removeItem(ListEntry<T, C> entry) {
-        entries.remove(entry);
-        listContent.remove(entry);
-        recalculateViewport();
+        this.entries.remove(entry);
+        this.listContent.remove(entry);
+        this.recalculateViewport();
         return entry.value;
     }
 
     @CanIgnoreReturnValue
     public ListEntry<T, ? extends T> removeItem(int index) {
-        ListEntry<T, ? extends T> item = entries.remove(index);
-        recalculateViewport();
+        ListEntry<T, ? extends T> item = this.entries.remove(index);
+        this.recalculateViewport();
         return item;
     }
 
     public int size() {
-        return entries.size();
+        return this.entries.size();
     }
 
     public boolean isEmpty() {
-        return entries.isEmpty();
+        return this.entries.isEmpty();
     }
 
     public boolean hasItem(T o) {
-        return entries.stream().anyMatch(entry -> entry.value == o);
+        return this.entries.stream().anyMatch(entry -> entry.value == o);
     }
 
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return entries.stream().map(entry -> (T)entry.value).iterator();
+        return this.entries.stream().map(entry -> (T)entry.value).iterator();
     }
 
     @SafeVarargs
     public final T[] toArray(T... t) {
-        return entries.toArray(t);
+        return this.entries.toArray(t);
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")
     public boolean containsAll(@NotNull Collection<?> c) {
-        return new HashSet<>(entries).containsAll(c);
+        return new HashSet<>(this.entries).containsAll(c);
     }
 
     public void addAllItems(@NotNull Collection<? extends T> c) {
@@ -147,20 +151,20 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public boolean removeAllItems(@NotNull Collection<?> c) {
-        boolean b = entries.removeIf(entry -> c.contains(entry.value));
-        recalculateViewport();
+        boolean b = this.entries.removeIf(entry -> c.contains(entry.value));
+        this.recalculateViewport();
         return b;
     }
 
     public void clearList() {
-        entries.clear();
-        recalculateViewport();
+        this.entries.clear();
+        this.recalculateViewport();
     }
 
     @Override
     public void setWidth(int width) {
         super.setWidth(width);
-        recalculateViewport();
+        this.recalculateViewport();
     }
 
     @FunctionalInterface
@@ -188,7 +192,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         }
 
         public void render(Renderer renderer1, int mouseX, int mouseY, float deltaTime) {
-            this.list.entryRenderer.render(renderer1, list.width - SCROLLBAR_WIDTH, list.entryHeight, -this.list.getViewport().yScroll + (list.entryHeight + list.gap) * index, value, list.selected == this && list.selectable, isHovered());
+            this.list.entryRenderer.render(renderer1, this.list.width - SCROLLBAR_WIDTH, this.list.entryHeight, -this.list.getViewport().yScroll + (this.list.entryHeight + this.list.gap) * this.index, this.value, this.list.selected == this && this.list.selectable, this.isHovered());
         }
 
         public void setIndex(int index) {
@@ -197,9 +201,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
         @Override
         public boolean mousePress(int x, int y, int button) {
-            if (!list.selectable) return super.mousePress(x, y, button);
-            list.selected = this;
-            list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
+            if (!this.list.selectable) return super.mousePress(x, y, button);
+            this.list.selected = this;
+            this.list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
             return true;
         }
     }

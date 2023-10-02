@@ -6,13 +6,15 @@ import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.effect.StatusEffect;
-import com.ultreon.bubbles.entity.EntityFlag;
+import com.ultreon.bubbles.entity.flags.EntityFlag;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.item.ItemType;
-import com.ultreon.bubbles.media.SoundEvent;
+import com.ultreon.bubbles.audio.MusicEvent;
+import com.ultreon.bubbles.audio.SoundEvent;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.registries.v0.Registry;
@@ -33,5 +35,7 @@ public class Registries {
     public static final Registry<ItemType> ITEMS = Registry.create(new Identifier("item"));
     public static final Registry<TextureCollection> TEXTURE_COLLECTIONS = Registry.create(new Identifier("texture_collection"));
     public static final Registry<SoundEvent> SOUNDS = Registry.create(new Identifier("sound"));
+    public static final Registry<MusicEvent> MUSIC = Registry.create(new Identifier("music"));
     public static final Registry<EntityFlag> ENTITY_FLAGS = Registry.create(new Identifier("entity_flag"));
+    public static final Registry<HudType> HUD = Registry.create(new Identifier("hud"));
 }

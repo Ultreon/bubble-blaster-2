@@ -43,8 +43,6 @@ public class GLScissorState {
     }
 
     public static void glScissor(int x, int y, int w, int h) {
-        Preconditions.checkArgument(x >= 0 && y >= 0 && w >= 0 && h >= 0, "Position and size should not be negative");
-
         currentX = x;
         currentY = y;
         currentW = w;

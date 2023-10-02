@@ -24,23 +24,23 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.pushScissor(getBounds());
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
-        renderer.popScissor();
+        renderer.scissored(this.getBounds(), () -> {
+            this.renderChildren(renderer, mouseX, mouseY, deltaTime);
+        });
     }
 
     protected void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         for (GuiComponent child : this.children)
             if (child.visible) {
-                renderer.pushScissor(child.getBounds());
-                child.render(renderer, mouseX, mouseY, deltaTime);
-                renderer.popScissor();
+                renderer.scissored(child.getBounds(), () -> {
+                    child.render(renderer, mouseX, mouseY, deltaTime);
+                });
             }
     }
 
     @Nullable
     public GuiComponent getExactWidgetAt(int x, int y) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         if (widgetAt instanceof Container container) {
             return container.getExactWidgetAt(x, y);
         }
@@ -77,13 +77,13 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         return widgetAt != null && widgetAt.mouseClick(x - widgetAt.getX(), y - widgetAt.getY(), button, count);
     }
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         pressingWidget = widgetAt;
@@ -144,7 +144,7 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         nx -= this.x + this.innerXOffset;
@@ -162,7 +162,7 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public boolean mouseWheel(int x, int y, float rotation) {
-        GuiComponent widgetAt = getWidgetAt(x, y);
+        GuiComponent widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         if (widgetAt != null) return widgetAt.mouseWheel(x - widgetAt.getX(), y - widgetAt.getY(), rotation);
@@ -171,7 +171,7 @@ public abstract class Container extends GuiComponent {
 
     protected final void clearWidgets() {
         for (GuiComponent widget : this.children) {
-            widget.destroy();
+            widget.dispose();
         }
         this.children.clear();
     }

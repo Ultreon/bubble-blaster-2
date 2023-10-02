@@ -95,6 +95,7 @@ dependencies {
     implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
     implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
     implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
+    implementation "com.github.Ultreon.corelibs:corelibs-translations-v1:$corelibs_version"
 
     // Apis
     implementation "commons-io:commons-io:$commons_io_version"

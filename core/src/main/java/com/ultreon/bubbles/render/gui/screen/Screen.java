@@ -2,12 +2,14 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Cursor;
+import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.CrashFiller;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.libs.crash.v0.CrashLog;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,13 +23,15 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     private Screen backScreen;
 
     private final TextObject title;
+    protected int middleX;
+    protected int middleY;
 
     public Screen() {
         this(TextObject.EMPTY);
     }
 
     public Screen(TextObject title) {
-        super(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight());
+        super(0, 0, 0, 0);
         this.title = title;
     }
 
@@ -47,8 +51,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     public final void resize(int width, int height) {
         this.onResize(width, height);
-        this.width = width;
-        this.height = height;
+        this.init(width, height);
     }
 
     protected void onResize(int width, int height) {
@@ -56,6 +59,11 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     }
 
     public void init(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.middleX = width / 2;
+        this.middleY = height / 2;
+
         this.init();
     }
 
@@ -73,11 +81,11 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @return true to cancel change screen.
      * @author XyperCode
      */
-    public boolean onClose(Screen to) {
-        for (GuiComponent child : children) {
-            child.destroy();
-        }
-        return true;
+    public boolean close(Screen to) {
+        for (GuiComponent child : this.children)
+            child.dispose();
+
+        return false;
     }
 
     public void forceClose() {
@@ -87,11 +95,11 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     @Override
     public boolean keyPress(int keyCode) {
         if (keyCode == Input.Keys.ESCAPE) {
-            if (backScreen != null) {
-                game.showScreen(backScreen);
+            if (this.backScreen != null) {
+                this.game.showScreen(this.backScreen);
                 return true;
             }
-            game.showScreen(null);
+            this.game.showScreen(null);
             return true;
         }
 
@@ -99,7 +107,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
         if (keyCode == Input.Keys.TAB) {
             this.focusIndex++;
-            onChildFocusChanged();
+            this.onChildFocusChanged();
             return true;
         }
 
@@ -122,15 +130,15 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        GuiComponent inputWidget = getWidgetAt(x, y);
+        GuiComponent inputWidget = this.getWidgetAt(x, y);
         if (inputWidget != null) {
-            focused = inputWidget;
+            this.focused = inputWidget;
         }
         return super.mousePress(x, y, button);
     }
 
     public void onChildFocusChanged() {
-        CopyOnWriteArrayList<GuiComponent> clone = new CopyOnWriteArrayList<>(children);
+        CopyOnWriteArrayList<GuiComponent> clone = new CopyOnWriteArrayList<>(this.children);
         if (clone.isEmpty()) return;
         if (this.focusIndex >= clone.size()) {
             this.focusIndex = 0;
@@ -143,12 +151,14 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @return the currently focused widget.
      */
     public GuiComponent getFocusedWidget() {
-        return focused;
+        return this.focused;
     }
 
     public void renderBackground(Renderer renderer) {
-        int color = game.environment != null ? 0x80000000 : 0xff1e1e1e;
-        fill(renderer, 0, 0, this.getWidth(), this.getHeight(), color);
+        if (this.game.world != null)
+            renderer.fillGradient(0, 0, this.getWidth(), this.getHeight(), Color.BLACK.withAlpha(0x70), Color.BLACK.withAlpha(0x80), Axis2D.VERTICAL);
+        else
+            renderer.fill(0, 0, this.getWidth(), this.getHeight(), Color.grayscale(0x1e));
     }
 
     /**
@@ -162,13 +172,13 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @param deltaTime partial ticks / frame time.
      */
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        render(renderer, mouseX, mouseY, deltaTime);
+        this.render(renderer, mouseX, mouseY, deltaTime);
     }
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderBackground(renderer);
-        renderChildren(renderer, mouseX, mouseY, deltaTime);
+        this.renderBackground(renderer);
+        this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }
 
     /**

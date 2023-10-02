@@ -5,7 +5,7 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.libs.text.v0.TextObject;
+import com.ultreon.libs.text.v1.TextObject;
 
 
 @SuppressWarnings("unused")
@@ -94,7 +94,7 @@ public class TitleButton extends AbstractButton {
             textColor = Color.rgb(0xe0e0e0);
         }
 
-        OptionsNumberInput.ArrowButton.drawText(renderer, textColor, getPos(), getSize(), text, Fonts.SANS_REGULAR_20.get());
+        AbstractButton.drawText(renderer, textColor, getPos(), getSize(), text, Fonts.SANS_REGULAR_20.get());
     }
 
     @SuppressWarnings("EmptyMethod")

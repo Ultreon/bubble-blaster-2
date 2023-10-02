@@ -3,9 +3,8 @@ package com.ultreon.bubbles.util;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.annotations.Beta;
-import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.render.gui.screen.ScreenManager;
+import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
@@ -21,18 +20,9 @@ import java.util.function.Supplier;
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 public class Util {
-    @Deprecated
-    public static ScreenManager getSceneManager() {
-        return BubbleBlaster.getInstance().getScreenManager();
-    }
 
     public static BubbleBlaster getGame() {
         return BubbleBlaster.getInstance();
-    }
-
-    @Deprecated
-    public static BitmapFont getGameFont() {
-        return BubbleBlaster.getInstance().getLogoFont();
     }
 
     public static void setCursor(Cursor cursor) {

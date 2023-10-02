@@ -45,6 +45,7 @@ public class Fonts {
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_12 = Fonts.register("sans_bold_12", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 12));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_14 = Fonts.register("sans_bold_14", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 14));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_15 = Fonts.register("sans_bold_15", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 15));
+    public static final RegistrySupplier<BitmapFont> SANS_BOLD_16 = Fonts.register("sans_bold_16", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 16));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_20 = Fonts.register("sans_bold_20", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 20));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_24 = Fonts.register("sans_bold_24", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 24));
     public static final RegistrySupplier<BitmapFont> SANS_BOLD_32 = Fonts.register("sans_bold_32", () -> FontUtils.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_bold"), 32));

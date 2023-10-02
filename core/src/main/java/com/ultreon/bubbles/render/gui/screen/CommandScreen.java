@@ -29,11 +29,11 @@ public class CommandScreen extends Screen {
     }
 
     @Override
-    public boolean onClose(Screen to) {
+    public boolean close(Screen to) {
         this.currentText = "/";
         this.cursorIndex = 1;
 
-        return super.onClose(to);
+        return super.close(to);
     }
 
     @Override

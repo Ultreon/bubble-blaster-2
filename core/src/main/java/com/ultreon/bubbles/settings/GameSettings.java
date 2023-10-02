@@ -12,7 +12,7 @@ import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.Keybind;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.translations.v0.LanguageManager;
+import com.ultreon.libs.translations.v1.LanguageManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public final class GameSettings implements Serializable {
     public int maxBubbles = 200;
     private String language = "en";
 
-    public Identifier gamemode = Gamemodes.MODERN.id();
+    public Identifier gamemode = Gamemodes.NORMAL.id();
     public GraphicsSettings graphicsSettings = new GraphicsSettings();
     public Difficulty difficulty = Difficulty.NORMAL;
     public DebugOptions debugOptions = new DebugOptions();
@@ -66,7 +66,7 @@ public final class GameSettings implements Serializable {
             String json = Files.readString(GameFolders.SETTINGS_FILE.toPath());
             var instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
-                instance.gamemode = Gamemodes.MODERN.id();
+                instance.gamemode = Gamemodes.NORMAL.id();
                 GameSettings.save();
             }
             GameSettings.instance = instance;

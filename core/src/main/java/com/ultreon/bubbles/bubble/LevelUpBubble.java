@@ -3,8 +3,9 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.environment.Environment;
-import org.apache.commons.lang3.Range;
+import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.util.ConstantValueSource;
+import com.ultreon.bubbles.util.RandomValueSource;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,16 +17,16 @@ import org.jetbrains.annotations.NotNull;
 public class LevelUpBubble extends BubbleType {
     public LevelUpBubble() {
         // Color & key.
-        setColors("#ffff00,#ffffff,#ff9f00");
+        this.setColors("#ffff00,#ffffff,#ff9f00");
 
         // Set initial data values.
-        setPriority(131_072L);
-        setRadius(Range.between(21, 60));
-        setSpeed(Range.between(6.4, 19.2));
-        setDefense(Float.NaN);
-        setAttack(0.0f);
-        setScore(1);
-        setHardness(1.0d);
+        this.setPriority(131_072L);
+        this.setRadius(RandomValueSource.random(21, 60));
+        this.setSpeed(RandomValueSource.random(6.4, 19.2));
+        this.setDefense(ConstantValueSource.of(Float.NaN));
+        this.setAttack(ConstantValueSource.of());
+        this.setScore(RandomValueSource.random(1.0, 2.5));
+        this.setHardness(ConstantValueSource.of(Float.MIN_NORMAL));
     }
 
     @Override
@@ -43,15 +44,15 @@ public class LevelUpBubble extends BubbleType {
     }
 
     @Override
-    public boolean canSpawn(@NotNull Environment environment) {
+    public boolean canSpawn(@NotNull World world) {
         // If player is not spawned yet, the player cannot have any change. So return false.
-        if (environment.getPlayer() == null) return false;
+        if (world.getPlayer() == null) return false;
 
         // Calculate the maximum level for the player's score.
-        int maxLevelUp = (int) Math.round(environment.getPlayer().getScore()) / 50_000 + 1;
+        int maxLevelUp = (int) Math.round(world.getPlayer().getScore()) / 50_000 + 1;
 
         // Check for existing level-up bubble entities.
-        if (environment.getEntities().stream().
+        if (world.getEntities().stream().
                 filter((entity) -> entity instanceof Bubble) // Filter for bubble entities.
                 .map((entity) -> (Bubble) entity) // Cast to bubble entities.
                 .anyMatch(bubbleEntity -> bubbleEntity.getBubbleType() == this)) { // Check for level-up bubbles create the type create this class.
@@ -59,6 +60,6 @@ public class LevelUpBubble extends BubbleType {
         }
 
         // Return flag for ‘if the maximum level for score is greater than the player's current level’
-        return maxLevelUp > environment.getPlayer().getLevel();
+        return maxLevelUp > world.getPlayer().getLevel();
     }
 }
