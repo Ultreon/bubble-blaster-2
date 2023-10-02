@@ -2,6 +2,7 @@ package com.ultreon.premain;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.Objects;
 
 public class PreMain {

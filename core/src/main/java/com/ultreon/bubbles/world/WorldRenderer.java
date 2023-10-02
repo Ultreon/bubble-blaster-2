@@ -59,7 +59,7 @@ public class WorldRenderer implements Renderable {
 
         // Loop colors.
         for (Color color : colors) {
-            renderer.setLineThickness(thickness);
+            renderer.setLineThickness(thickness + 1 / 2f);
 
             // Draw singular circle in the circle list.
             Circle circle = WorldRenderer.getCircle(x, y, radius, i);

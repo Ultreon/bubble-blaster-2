@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.net.spi.URLStreamHandlerProvider;
 
 public final class LibraryJarURLStreamHandlerProvider extends URLStreamHandlerProvider {
 
