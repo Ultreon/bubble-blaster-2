@@ -22,7 +22,7 @@ public class Panel extends Container {
 
     @Override
     public void renderComponent(Renderer renderer) {
-        GuiComponent.fill(renderer, 0, 0, this.width, this.height, this.getBackgroundColor());
+        renderer.fill(0, 0, this.width, this.height, this.getBackgroundColor());
     }
 
 }
