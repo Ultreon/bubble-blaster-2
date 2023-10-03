@@ -81,9 +81,10 @@ public class Button extends AbstractButton implements GuiStateListener {
         else if (this.isHovered()) this.backgroundColor = Color.WHITE.withAlpha(0x30);
         else this.backgroundColor = Color.WHITE.withAlpha(0x20);
 
-        renderer.fill(this.getBounds(), this.backgroundColor);
+        if (this.enabled)
+            renderer.fill(this.getBounds(), this.backgroundColor);
 
-        if (this.isHovered())
+        if (this.isHovered() && this.enabled)
             renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
 
         AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.text, this.font);

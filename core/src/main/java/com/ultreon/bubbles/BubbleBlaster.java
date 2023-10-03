@@ -1803,11 +1803,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.profiler.section("Render World", () -> {
             if (world != null && worldRenderer != null) {
                 boolean enabledBlur = false;
-                if (screen != null) enabledBlur = renderer.enableBlur(15);
+                if (screen != null) renderer.enableBlur(15);
                 RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
                 worldRenderer.render(renderer, mouseX, mouseY, frameTime);
                 RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
-                if (enabledBlur) renderer.disableBlur();
+                if (screen != null) renderer.disableBlur();
             }
         });
 

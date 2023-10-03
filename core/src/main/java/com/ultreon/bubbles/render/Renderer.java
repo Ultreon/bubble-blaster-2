@@ -96,6 +96,7 @@ public class Renderer {
     private boolean blendingEnabled;
     private FrameBuffer fbo;
     private boolean depthEnabled;
+    private boolean blurring;
 
     @ApiStatus.Internal
     public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -115,6 +116,7 @@ public class Renderer {
 
         // Visual Effects setup.
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
+        this.vfxManager.setBlendingEnabled(false);
         this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.GaussianRad15);
 
         this.fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -150,6 +152,15 @@ public class Renderer {
     public void end() {
         if (!this.rendering)
             throw new IllegalStateException("Renderer isn't rendering yet");
+
+        if (this.vfxManager.isCapturing())
+            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still capturing.");
+
+        if (this.vfxManager.isApplyingEffects())
+            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still applying effects.");
+
+        if (this.blurring)
+            throw new IllegalStateException("Can´t end renderer while blurring statis is still enabled.");
 
         this.camera.combined.set(this.backupMatrix);
 
@@ -316,7 +327,11 @@ public class Renderer {
     }
 
     @ApiStatus.Experimental
-    public boolean enableBlur(int radius) {
+    public void enableBlur(int radius) {
+        if (this.blurring) {
+            throw new IllegalStateException("Can't enable blur while already enabled!");
+        }
+
         this.toBatch();
         this.batch.flush();
         this.batch.end();
@@ -327,15 +342,14 @@ public class Renderer {
         // Add blur effect.
         this.vfxManager.addEffect(this.vfxBlur);
 
-        this.vfxManager.setBlendingEnabled(false);
         this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
-        this.vfxManager.beginInputCapture();
+        this.fbo.begin();
         boolean b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
+        this.blurring = true;
+
         this.batch.begin();
-        return b;
-//        this.fbo.begin();
-//
-//        Gdx.gl20.glClearColor(0f, 0f, 0f, 0f);
+
+//        Gdx.gl20.glClearColor(0f, 0f, 0f, 1f);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 //
 //        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
@@ -351,16 +365,16 @@ public class Renderer {
 
     @ApiStatus.Experimental
     public void disableBlur() {
-//        this.fbo.end(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//
-//        Texture texture = this.fbo.getColorBufferTexture();
-
         this.toBatch();
-        this.batch.flush();
         this.batch.end();
 
+        this.blurring = false;
         this.popScissor();
-        this.vfxManager.endInputCapture();
+        this.fbo.end(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+
+        Texture texture = this.fbo.getColorBufferTexture();
+
+        this.vfxManager.useAsInput(texture);
 
         this.batch.begin();
 //        this.batch.end();
@@ -380,6 +394,16 @@ public class Renderer {
         this.vfxManager.removeEffect(this.vfxBlur);
 
 //        this.batch.begin();
+
+        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
+            Gdx.gl20.glEnable(GL20.GL_BLEND);
+            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
+            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        }
     }
 
     public void resize(int width, int height) {
