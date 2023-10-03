@@ -36,16 +36,6 @@ public class TitleScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        try {
-            Thread.sleep(70);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void init() {
         this.clearWidgets();
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
@@ -93,6 +94,8 @@ public class Renderer {
     private State state;
     private boolean stateChange = true;
     private boolean blendingEnabled;
+    private FrameBuffer fbo;
+    private boolean depthEnabled;
 
     @ApiStatus.Internal
     public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -113,6 +116,8 @@ public class Renderer {
         // Visual Effects setup.
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
         this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.GaussianRad15);
+
+        this.fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
     @ApiStatus.Internal
@@ -138,7 +143,7 @@ public class Renderer {
 
         this.clear();
         this.enableBlend();
-//        this.enableDepthTest();
+        this.enableDepthTest();
     }
 
     @ApiStatus.Internal
@@ -153,7 +158,7 @@ public class Renderer {
 
         this.matrixStack.stack.removeLast();
 
-//        this.disableDepthTest();
+        this.disableDepthTest();
         this.disableBlend();
 
         if (this.batch.isDrawing()) {
@@ -181,6 +186,7 @@ public class Renderer {
     private void enableDepthTest() {
         Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        this.depthEnabled = true;
     }
 
     public void disableBlend() {
@@ -189,6 +195,7 @@ public class Renderer {
     }
 
     public void disableDepthTest() {
+        this.depthEnabled = false;
         Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
     }
 
@@ -308,20 +315,57 @@ public class Renderer {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     }
 
-    public void enableBlur(int radius) {
+    @ApiStatus.Experimental
+    public boolean enableBlur(int radius) {
+        this.toBatch();
+        this.batch.flush();
+        this.batch.end();
+
         // Set blur type.
         this.vfxBlur.setAmount(radius);
 
         // Add blur effect.
         this.vfxManager.addEffect(this.vfxBlur);
 
-        // Begin render to an off-screen buffer.
+        this.vfxManager.setBlendingEnabled(false);
+        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
         this.vfxManager.beginInputCapture();
+        boolean b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
+        this.batch.begin();
+        return b;
+//        this.fbo.begin();
+//
+//        Gdx.gl20.glClearColor(0f, 0f, 0f, 0f);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+//
+//        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
+//            Gdx.gl20.glEnable(GL20.GL_BLEND);
+//            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        }
+//
+//        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
+//            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+//            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+//        }
     }
 
+    @ApiStatus.Experimental
     public void disableBlur() {
-        // End render to an off-screen buffer.
+//        this.fbo.end(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//
+//        Texture texture = this.fbo.getColorBufferTexture();
+
+        this.toBatch();
+        this.batch.flush();
+        this.batch.end();
+
+        this.popScissor();
         this.vfxManager.endInputCapture();
+
+        this.batch.begin();
+//        this.batch.end();
+
+//        this.vfxManager.useAsInput(texture);
 
         // Apply the effects chain to the captured frame.
         // In our case, only one effect (gaussian blur) will be applied.
@@ -330,14 +374,29 @@ public class Renderer {
         // Render result to the screen.
         this.vfxManager.renderToScreen();
 
+//        texture.dispose();
+
         // Add blur effect.
         this.vfxManager.removeEffect(this.vfxBlur);
+
+//        this.batch.begin();
     }
 
     public void resize(int width, int height) {
+        // Resize the sprite batch and shape renderer.
+        this.batch.setProjectionMatrix(this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
+        this.shapes.setProjectionMatrix(this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
+
+        this.fbo.dispose();
+        this.fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+
         // VfxManager manages internal off-screen buffers,
         // which should always match the required viewport (whole screen in our case).
         this.vfxManager.resize(width, height);
+    }
+
+    public void update(float deltaTime) {
+        this.vfxManager.update(deltaTime);
     }
 
     private void drawMasks(Runnable func) {
@@ -377,10 +436,10 @@ public class Renderer {
         this.toShapes();
         this.flush();
         this.disableStateChange();
-//        this.disableDepthTest();
+        this.disableDepthTest();
         this.drawMasks(func);
         this.drawMasked();
-//        this.enableDepthTest();
+        this.enableDepthTest();
         this.enableStateChange();
         this.flush();
     }
@@ -777,7 +836,6 @@ public class Renderer {
         font.draw(this.batch, str, x, y);
     }
 
-    @ApiStatus.Experimental
     public void drawText(BitmapFont font, TextObject str, int x, int y, Color color) {
         if (!this.rendering) return;
 
@@ -786,7 +844,6 @@ public class Renderer {
         font.draw(this.batch, str.getText(), x, y);
     }
 
-    @ApiStatus.Experimental
     public void drawText(BitmapFont font, TextObject str, float x, float y, Color color) {
         if (!this.rendering) return;
 
@@ -887,10 +944,10 @@ public class Renderer {
 
         // Clean up the screen.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         // Clean up internal buffers, as we don't need any information from the last render.
-        this.vfxManager.cleanUpBuffers();
+        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
 
         ScreenUtils.clear(this.clearColor.toGdx(), true);
     }
@@ -1059,7 +1116,6 @@ public class Renderer {
         return this.game.getBounds();
     }
 
-    @ApiStatus.Experimental
     public void clearScissors() {
         if (!this.rendering) return;
 
@@ -1079,6 +1135,7 @@ public class Renderer {
         }
     }
 
+    @ApiStatus.Experimental
     public void pushMatrix() {
         if (!this.rendering) return;
 
@@ -1086,16 +1143,17 @@ public class Renderer {
         this.globalMatrixStack.push();
     }
 
+    @ApiStatus.Experimental
     public void popMatrix() {
-//        if (!this.rendering) return;
-//
-//        if (this.matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already clear");
-//
-//        this.flush();
-//        this.matrixStack.pop();
-//        this.camera.combined.set(this.matrixStack.last());
-//        this.globalTransform.set(this.globalMatrixStack.last());
-//        this.flush();
+        if (!this.rendering) return;
+
+        if (this.matrixStack.isClear()) throw new IllegalStateException("Matrix stack is already clear");
+
+        this.flush();
+        this.matrixStack.pop();
+        this.camera.combined.set(this.matrixStack.last());
+        this.globalTransform.set(this.globalMatrixStack.last());
+        this.flush();
     }
 
     public boolean hitClip(int x, int y, int width, int height) {
@@ -1499,6 +1557,11 @@ public class Renderer {
         if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
             Gdx.gl20.glEnable(GL20.GL_BLEND);
             Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
+            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         }
 
         this.shapes.begin();

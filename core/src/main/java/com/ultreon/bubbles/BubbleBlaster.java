@@ -31,7 +31,6 @@ import com.google.common.collect.Queues;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.audio.MusicEvent;
 import com.ultreon.bubbles.audio.MusicSystem;
-import com.ultreon.bubbles.audio.SoundCategory;
 import com.ultreon.bubbles.audio.SoundInstance;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.GameFolders;
@@ -158,7 +157,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private static boolean debugMode;
     // Initial game information / types.
     private static ClassLoader classLoader;
-    private static SoundCategory soundPlayer;
     private static File gameDir = null;
     // Number values.
     private static long ticks = 0L;
@@ -591,8 +589,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     @Override
     public void resize(int width, int height) {
         this.camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
-        this.batch.setProjectionMatrix(this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
-        this.shapes.setProjectionMatrix(this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
+        this.renderer.resize(width, height);
         this.viewport.update(width, height);
 
         GlitchRenderer glitch = this.glitchRenderer;
@@ -944,13 +941,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public static Vector2 getMiddlePoint() {
         return new Vector2(BubbleBlaster.getMiddleX(), BubbleBlaster.getMiddleY());
-    }
-
-    ///////////////////
-    //     Media     //
-    ///////////////////
-    public static SoundCategory getAudioPlayer() {
-        return soundPlayer;
     }
 
     /////////////////////
@@ -1812,11 +1802,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Render world.
         this.profiler.section("Render World", () -> {
             if (world != null && worldRenderer != null) {
-                if (screen != null) renderer.enableBlur(15);
+                boolean enabledBlur = false;
+                if (screen != null) enabledBlur = renderer.enableBlur(15);
                 RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
                 worldRenderer.render(renderer, mouseX, mouseY, frameTime);
                 RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
-                if (screen != null) renderer.disableBlur();
+                if (enabledBlur) renderer.disableBlur();
             }
         });
 
