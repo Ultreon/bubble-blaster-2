@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class WorldRenderer implements Renderable {
-    private static final Color BG_TOP = Color.argb(0xff008EDA);
-    private static final Color BG_BOTTOM = Color.argb(0xff004BA1);
+    public static final Color BG_TOP = Color.argb(0xff008EDA);
+    public static final Color BG_BOTTOM = Color.argb(0xff004BA1);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = this.game.profiler;
 
@@ -36,7 +36,7 @@ public class WorldRenderer implements Renderable {
      * @param radius   the bubble radius (full width.).
      * @param colors   the bubble colors (on sequence).
      */
-    public static void drawBubble(Renderer renderer, float x, float y, int radius,  List<Color> colors) {
+    public static void drawBubble(Renderer renderer, float x, float y, float radius, List<Color> colors) {
         WorldRenderer.drawBubble(renderer, x, y, radius, 0, colors);
     }
 

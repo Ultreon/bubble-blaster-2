@@ -1,15 +1,17 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.widget.TitleButton;
+import com.ultreon.bubbles.render.gui.TitleScreenBackground;
+import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.libs.text.v1.TextObject;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class TitleScreen extends Screen {
+
+    private TitleScreenBackground background;
 
     public TitleScreen() {
 
@@ -37,38 +39,44 @@ public class TitleScreen extends Screen {
 
     @Override
     public void init() {
+        if (this.background != null) {
+            this.background.dispose();
+        }
+
         this.clearWidgets();
+
+        this.background = new TitleScreenBackground(this.width, this.height);
 
         if (this.game.menuMusic.isStopped() || this.game.menuMusic.isPaused()) {
             this.game.menuMusic.play();
         }
 
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 220, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.start"))
                 .command(this::startGame)
                 .build());
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 300, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.saves"))
                 .command(this::openSavesSelection)
                 .build());
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.mods"))
                 .command(this::openModList)
                 .build());
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 + 10, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.options"))
                 .command(this::openOptions)
                 .build());
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.language"))
                 .command(this::openLanguageSettings)
                 .build());
-        this.add(new TitleButton.Builder()
+        this.add(new Button.Builder()
                 .bounds(this.width / 2 + 10, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.quit"))
                 .command(this.game::shutdown)
@@ -76,10 +84,18 @@ public class TitleScreen extends Screen {
     }
 
     @Override
-    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        this.renderBackground(renderer);
+    public void tick() {
+        super.tick();
 
-        renderer.fill(BubbleBlaster.getInstance().getGameBounds(), Color.rgb(0x404040));
+        var background = this.background;
+        if (background != null) {
+            background.tick();
+        }
+    }
+
+    @Override
+    public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        this.background.render(renderer);
 
         renderer.fill(0, 0, this.width, 175, Color.grayscale(0x1e));
 

@@ -30,6 +30,7 @@ public class GaussianBlurEffect extends AbstractVfxEffect implements ChainVfxEff
 
     private enum Tap {
         // XyperCode: Removed old enum constants and replaced them with radius versions.
+        Radius3(3),
         Radius15(15),
         Radius30(30),
         Radius60(60),
@@ -46,6 +47,7 @@ public class GaussianBlurEffect extends AbstractVfxEffect implements ChainVfxEff
 
     public enum BlurType {
         // XyperCode: Removed old enum constants and replaced them with radius versions.
+        GaussianRad10(Tap.Radius3),
         GaussianRad15(Tap.Radius15),
         GaussianRad30(Tap.Radius30),
         GaussianRad60(Tap.Radius60),
@@ -163,6 +165,7 @@ public class GaussianBlurEffect extends AbstractVfxEffect implements ChainVfxEff
         float dy = this.invHeight;
 
         switch (this.type) {
+            case GaussianRad10:
             case GaussianRad15:
             case GaussianRad30:
             case GaussianRad60:

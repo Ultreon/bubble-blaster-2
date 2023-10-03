@@ -117,7 +117,8 @@ public class Renderer {
         // Visual Effects setup.
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
         this.vfxManager.setBlendingEnabled(false);
-        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.GaussianRad15);
+        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.GaussianRad10);
+        this.vfxBlur.setPasses(5);
 
         this.fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
