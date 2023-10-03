@@ -41,8 +41,6 @@ public class OptionsScreen extends Screen {
 
     @Override
     public void init() {
-        BubbleBlaster.getInstance().updateRPC();
-
         this.maxBubblesOption = this.add(new OptionsNumberInput((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 101, 321, 48, GameSettings.instance().maxBubbles, 400, 2000));
         this.languageButton = this.add(Button.builder().bounds((int) BubbleBlaster.getMiddleX() + 1, (int) BubbleBlaster.getMiddleY() + 101, 321, 48).command(this::showLanguages).build());
         this.cancelButton = this.add(Button.builder().bounds((int) BubbleBlaster.getMiddleX() - 322, (int) BubbleBlaster.getMiddleY() + 151, 321, 48).command(this::back).build());

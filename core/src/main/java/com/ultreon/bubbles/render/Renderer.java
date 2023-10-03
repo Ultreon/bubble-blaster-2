@@ -4,10 +4,7 @@
 package com.ultreon.bubbles.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.crashinvaders.vfx.VfxManager;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.ultreon.bubbles.Axis2D;
@@ -71,6 +69,8 @@ public class Renderer {
     private final ShapeRenderer shapes;
     private final OrthographicCamera camera;
     private final DefaultSideEstimator sides;
+    private final VfxManager vfxManager;
+    private final GaussianBlurEffect vfxBlur;
     private float lineThickness;
     private final MatrixStack matrixStack;
     private final MatrixStack globalMatrixStack;
@@ -109,6 +109,10 @@ public class Renderer {
 
         // Projection matrix.
         this.matrixStack.onEdit = camera.combined::set;
+
+        // Visual Effects setup.
+        this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
+        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.GaussianRad15);
     }
 
     @ApiStatus.Internal
@@ -302,6 +306,38 @@ public class Renderer {
 
         /* Disable depth writing. */
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+    }
+
+    public void enableBlur(int radius) {
+        // Set blur type.
+        this.vfxBlur.setAmount(radius);
+
+        // Add blur effect.
+        this.vfxManager.addEffect(this.vfxBlur);
+
+        // Begin render to an off-screen buffer.
+        this.vfxManager.beginInputCapture();
+    }
+
+    public void disableBlur() {
+        // End render to an off-screen buffer.
+        this.vfxManager.endInputCapture();
+
+        // Apply the effects chain to the captured frame.
+        // In our case, only one effect (gaussian blur) will be applied.
+        this.vfxManager.applyEffects();
+
+        // Render result to the screen.
+        this.vfxManager.renderToScreen();
+
+        // Add blur effect.
+        this.vfxManager.removeEffect(this.vfxBlur);
+    }
+
+    public void resize(int width, int height) {
+        // VfxManager manages internal off-screen buffers,
+        // which should always match the required viewport (whole screen in our case).
+        this.vfxManager.resize(width, height);
     }
 
     private void drawMasks(Runnable func) {
@@ -849,6 +885,13 @@ public class Renderer {
     public void clear() {
         if (!this.rendering) return;
 
+        // Clean up the screen.
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Clean up internal buffers, as we don't need any information from the last render.
+        this.vfxManager.cleanUpBuffers();
+
         ScreenUtils.clear(this.clearColor.toGdx(), true);
     }
 
@@ -856,11 +899,14 @@ public class Renderer {
     //     Transformation     //
     ////////////////////////////
     private void editMatrix(Function<Matrix4, Matrix4> editor) {
-//        this.flush();
-//        Matrix4 matrix = editor.apply(this.camera.combined);
-//        editor.apply(this.globalTransform);
-//        this.matrixStack.last().set(this.camera.combined.set(matrix));
-//        this.flush();
+        this.flush();
+        Matrix4 matrix = editor.apply(this.shapes.getProjectionMatrix());
+        editor.apply(this.globalTransform);
+        this.shapes.setProjectionMatrix(matrix);
+        this.batch.setProjectionMatrix(matrix);
+
+        this.matrixStack.last().set(matrix);
+        this.flush();
     }
 
     public void translate(float x, float y) {

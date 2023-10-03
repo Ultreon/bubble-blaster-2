@@ -39,7 +39,7 @@ public class CrashScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.box(0, 0, game.getWidth(), game.getScaledHeight(), Color.CRIMSON, new Insets(10));
+        renderer.box(0, 0, this.width, game.getScaledHeight(), Color.CRIMSON, new Insets(10));
 
         renderer.drawTextCenter(Fonts.DONGLE_75.get(), "The game crashed!", this.width / 2f, 25, Color.CRIMSON);
 

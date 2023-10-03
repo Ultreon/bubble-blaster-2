@@ -21,13 +21,9 @@ public class Viewport extends Container {
 
     @Override
     public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.subInstance(0, 0, (int) this.viewportRect.width, (int) this.viewportRect.height, viewportRender -> {
-            viewportRender.translate(-this.xScroll, -this.yScroll);
+        renderer.scissored(this.x, this.y, (int) this.viewportRect.width, (int) this.viewportRect.height, () -> {
             for (GuiComponent child : this.children) {
-                viewportRender.subInstance(
-                        child.getX(), child.getY(), child.getWidth(), child.getHeight(),
-                        subRenderer -> child.render(subRenderer, mouseX, mouseY, deltaTime)
-                );
+                renderer.scissored(child.getX(), child.getY(), child.getWidth(), child.getHeight(), () -> child.render(renderer, mouseX, mouseY, deltaTime));
             }
         });
     }

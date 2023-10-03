@@ -59,6 +59,8 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     }
 
     public void init(int width, int height) {
+        this.clearWidgets();
+
         this.width = width;
         this.height = height;
         this.middleX = width / 2;

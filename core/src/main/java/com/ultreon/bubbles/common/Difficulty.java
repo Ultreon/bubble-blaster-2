@@ -1,12 +1,10 @@
 package com.ultreon.bubbles.common;
 
-import com.ultreon.bubbles.common.gamestate.GameplayEvent;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.ultreon.libs.text.v1.Translatable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * iDifficulty enum, used as api for difficulty information.
@@ -43,39 +41,51 @@ public enum Difficulty implements Translatable {
         return "bubbleblaster.misc.difficulty." + this.name().toLowerCase();
     }
 
-    public record Modifier<T>(T key, float value) {
-        public record Type<T>(Class<T> type) {
-            public static final Type<GameplayEvent> GAME_EVENT = new Type<>(GameplayEvent.class);
+    public enum ModifierAction {
+        ADD, MULTIPLY, MULTIPLY_TOTAL
+    }
 
-            private static final HashMap<Class<?>, Type<?>> registry = new HashMap<>();
+    public record Modifier(ModifierAction action, float value) {
+    }
 
-            public static <T> Type<T> register(Type<T> type) {
-                registry.put(type.type(), type);
-                return type;
-            }
+    public record ModifierToken() {
 
-            @SuppressWarnings("unchecked")
-            public static <T> Type<T> get(Class<T> type) {
-                return (Type<T>) registry.get(type);
-            }
-        }
     }
 
     public static class ModifierMap {
-        private final Map<Modifier.Type<?>, List<Modifier<?>>> modifiers = new HashMap<>();
+        private final Map<ModifierToken, Modifier> modifiers = new HashMap<>();
 
         public ModifierMap() {
 
         }
 
-        public <T> Modifier<T> add(Modifier.Type<T> type, Modifier<T> modifier) {
-            this.modifiers.computeIfAbsent(type, t -> new ArrayList<>()).add(modifier);
-            return modifier;
+        @CanIgnoreReturnValue
+        public void set(ModifierToken token, Modifier modifier) {
+            this.modifiers.put(token, modifier);
         }
 
-        @SuppressWarnings("unchecked")
-        public <T> List<Modifier<T>> getAll(Modifier.Type<T> type) {
-            return this.modifiers.get(type).stream().map(o -> (Modifier<T>) o).toList();
+        @CheckReturnValue
+        public Modifier get(ModifierToken token) {
+            return this.modifiers.get(token);
+        }
+
+        @CanIgnoreReturnValue
+        public Modifier remove(ModifierToken token) {
+            return this.modifiers.remove(token);
+        }
+
+        public float modify(Difficulty difficulty) {
+            float value = difficulty.getPlainModifier();
+            float modifyTotal = 1;
+            for (Modifier modifier : this.modifiers.values()) {
+                switch (modifier.action) {
+                    case ADD -> value += modifier.value;
+                    case MULTIPLY -> value *= modifier.value;
+                    case MULTIPLY_TOTAL -> modifyTotal *= modifier.value;
+                }
+            }
+
+            return value * modifyTotal;
         }
     }
 }

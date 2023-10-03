@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"unused"})
 public abstract class GameplayEvent {
+    protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private Color backgroundColor;
-    private final BubbleBlaster game = BubbleBlaster.getInstance();
 
     public GameplayEvent() {
 
@@ -25,6 +25,18 @@ public abstract class GameplayEvent {
 
         LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         return loadedGame != null;
+    }
+
+    public void begin(World world) {
+
+    }
+
+    public void tick() {
+
+    }
+
+    public void end(World world) {
+
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

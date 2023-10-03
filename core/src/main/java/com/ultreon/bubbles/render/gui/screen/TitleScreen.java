@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
@@ -35,14 +36,22 @@ public class TitleScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        try {
+            Thread.sleep(70);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void init() {
         this.clearWidgets();
 
         if (this.game.menuMusic.isStopped() || this.game.menuMusic.isPaused()) {
             this.game.menuMusic.play();
         }
-
-        BubbleBlaster.getInstance().updateRPC();
 
         this.add(new TitleButton.Builder()
                 .bounds(this.width / 2 - 200, 220, 400, 60)
@@ -82,10 +91,10 @@ public class TitleScreen extends Screen {
 
         renderer.fill(BubbleBlaster.getInstance().getGameBounds(), Color.rgb(0x404040));
 
-        renderer.fill(0, 0, game.getWidth(), 175, Color.grayscale(0x1e));
+        renderer.fill(0, 0, this.width, 175, Color.grayscale(0x1e));
 
-        renderer.fillEffect(0, 175, game.getWidth(), 3);
-        renderer.fillGradient(0, 178, game.getWidth(), 20, Color.argb(0x20000000), Color.TRANSPARENT);
+        renderer.fillEffect(0, 175, this.width, 3);
+        renderer.fillGradient(0, 178, this.width, 20, Color.argb(0x20000000), Color.TRANSPARENT);
 
         renderer.drawTextCenter(Fonts.DONGLE_140.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
 

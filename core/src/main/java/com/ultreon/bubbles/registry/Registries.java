@@ -6,6 +6,7 @@ import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.audio.MusicEvent;
 import com.ultreon.bubbles.audio.SoundEvent;
 import com.ultreon.bubbles.bubble.BubbleType;
+import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.entity.ammo.AmmoType;

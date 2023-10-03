@@ -47,7 +47,7 @@ import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
-public final class LoadScreen extends InternalScreen implements Runnable {
+public final class LoadScreen extends InternalScreen {
     public static final Color BACKGROUND = Color.rgb(0x484848);
     private static final Color TEXT_COLOR = Color.rgb(0xc0c0c0);
     public static final Color PROGRESSBAR_BG = Color.rgb(0x808080);
@@ -68,6 +68,7 @@ public final class LoadScreen extends InternalScreen implements Runnable {
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
+    private Thread thread;
 //    private final ModLoader modLoader = new ModLoader(Main.mainClassLoader);
 
     public LoadScreen() {
@@ -82,7 +83,10 @@ public final class LoadScreen extends InternalScreen implements Runnable {
     public void init() {
         Utils.hideCursor();
 
-        new Thread(this).start();
+        if (this.thread == null) {
+            this.thread = new Thread(this::doLoading, "Loading-Thread");
+            this.thread.start();
+        }
     }
 
     @Override
@@ -143,8 +147,7 @@ public final class LoadScreen extends InternalScreen implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
+    private void doLoading() {
         LOGGER.info("Loading started");
 
         GameSettings.nopInit();

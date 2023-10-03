@@ -37,6 +37,7 @@ import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.common.exceptions.FontLoadException;
 import com.ultreon.bubbles.common.exceptions.ResourceNotFoundException;
+import com.ultreon.bubbles.data.DataKeys;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.debug.DebugRenderer;
 import com.ultreon.bubbles.debug.Profiler;
@@ -64,7 +65,6 @@ import com.ultreon.gameprovider.bubbles.OS;
 import com.ultreon.libs.collections.v0.maps.OrderedHashMap;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Mth;
-import com.ultreon.libs.commons.v0.Pixel;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.commons.v0.util.FileUtils;
 import com.ultreon.libs.commons.v0.util.IllegalCallerException;
@@ -273,8 +273,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private final List<MusicEvent> gameplayMusicList = Lists.newArrayList(MusicEvents.SUBMARINE);
     public final MusicSystem gameplayMusic = new MusicSystem(RandomValueSource.random(3.0, 6.0), RandomValueSource.random(40.0, 80.0), this.gameplayMusicList);
     public final MusicSystem menuMusic = new MusicSystem(RandomValueSource.random(1.0, 3.0), RandomValueSource.random(5.0, 10.0), this.menuMusicList);
-    private int width;
-    private int height;
     private ShapeRenderer shapes;
 
     public BubbleBlaster() {
@@ -416,9 +414,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public void create() {
         if (renderingThread == null) renderingThread = Thread.currentThread();
 
-        this.width = Gdx.graphics.getWidth();
-        this.height = Gdx.graphics.getHeight();
-
         HdpiUtils.setMode(HdpiMode.Pixels);
 
         // Pre-init ImGui
@@ -443,16 +438,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Set HiDpi mode
         HdpiUtils.setMode(HdpiMode.Pixels);
 
-        // Create CPU sprite batch
-        this.batch = new SpriteBatch();
-
         this.textureManager = TextureManager.instance();
         this.debugRenderer = new DebugRenderer(this);
         this.camera = new OrthographicCamera();
-        this.camera.setToOrtho(true, this.getWidth(), this.getHeight()); // Set up the camera's projection matrix
         this.viewport = new ScreenViewport(this.camera);
 
-        // Create shape drawer
+        this.batch = new SpriteBatch();
         this.shapes = new ShapeRenderer();
 
         this.shapes.setAutoShapeType(true);
@@ -599,10 +590,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void resize(int width, int height) {
-        this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000);
-        this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000);
-        this.viewport.update(width, height);
         this.camera.setToOrtho(true, width, height); // Set up the camera's projection matrix
+        this.batch.setProjectionMatrix(this.batch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
+        this.shapes.setProjectionMatrix(this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
+        this.viewport.update(width, height);
 
         GlitchRenderer glitch = this.glitchRenderer;
         if (glitch != null)
@@ -612,6 +603,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (screen != null)
             screen.resize(width, height);
     }
+
     private void drawMasks() {
         /* Clear our depth buffer info from previous frame. */
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
@@ -660,6 +652,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public void render() {
         try {
             if (Gdx.graphics.getFrameId() == 2) {
+                BubbleBlasterConfig.CONFIG.reload();
+                this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
                 this.firstRender();
             }
 
@@ -714,8 +708,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 this.fps = Gdx.graphics.getFramesPerSecond();
                 this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
 
-                this.renderer.setPixel(new Pixel(0, 0, com.ultreon.libs.commons.v0.Color.rgb(0x01000000)));
-
                 if (SHOW_DEBUG_UTILS.get()) {
                     this.renderImGui(this.renderer);
                 }
@@ -729,10 +721,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 this.outOfMemory(error);
             }
 
-            this.renderer.withEffect(() -> {
-                this.renderer.fillCircle(50, 50, 10, Color.WHITE);
-            });
-
             this.currentRenderer = null;
             this.renderer.end();
         } catch (Exception e) {
@@ -745,7 +733,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     private void firstRender() {
         this.window.setVisible(true);
-        this.window.setFullscreen(true);
+        this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
     }
 
     private void renderImGui(Renderer renderer) {
@@ -1056,12 +1044,30 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     private void executeDevCommand(int keyCode, World world, Player player, LoadedGame loadedGame) {
         switch (keyCode) {
-            case Keys.F1 -> world.triggerBloodMoon();
-            case Keys.F3 -> player.destroy();
-            case Keys.F4 -> player.levelUp();
-            case Keys.F5 -> player.awardScore(1000);
-            case Keys.F6 -> DevCommands.resetHealth(loadedGame);
-            case Keys.F7 -> this.isGlitched = true;
+            case Keys.F1 -> {
+                LOGGER.warn("Triggering developer command: TRIGGER_BLOOD_MOON");
+                world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
+            }
+            case Keys.F3 -> {
+                LOGGER.warn("Triggering developer command: SELF_DESTRUCT");
+                player.destroy();
+            }
+            case Keys.F4 -> {
+                LOGGER.warn("Triggering developer command: LEVEL_UP");
+                player.levelUp();
+            }
+            case Keys.F5 -> {
+                LOGGER.warn("Triggering developer command: SCORE_1000");
+                player.awardScore(1000);
+            }
+            case Keys.F6 -> {
+                LOGGER.warn("Triggering developer command: RESET_HP");
+                DevCommands.resetHealth(loadedGame);
+            }
+            case Keys.F7 -> {
+                LOGGER.warn("Triggering developer command: GLITCH");
+                this.isGlitched = true;
+            }
         }
     }
 
@@ -1078,10 +1084,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public URL getGameFile() {
         return this.gameFile;
-    }
-
-    public void updateRPC() {
-//        DiscordRPC.discordUpdatePresence(presence);
     }
 
     public Activity getActivity() {
@@ -1453,6 +1455,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.menuMusic.stop();
 
         BubbleBlaster.getInstance().showScreen(null);
+
+        this.gameplayMusic.play();
     }
 
     /**
@@ -1714,16 +1718,24 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             return;
         }
 
-        final var env = this.world;
+        if (this.isLoaded()) {
+            TickEvents.PRE_TICK_GAME.factory().onTickGame(this);
+        }
+
+        final var world = this.world;
         final var loadedGame = this.loadedGame;
         final var player = this.player;
-        if (env != null && loadedGame != null && !BubbleBlaster.isPaused()) {
-            final var gamemode = env.getGamemode();
+        if (world != null && loadedGame != null && !BubbleBlaster.isPaused()) {
+            final var gamemode = world.getGamemode();
             if (gamemode != null && player != null && player.getLevel() > 255)
                 BubbleBlaster.getInstance().glitch();
 
-            env.tick();
+            TickEvents.PRE_TICK_WORLD.factory().onTickWorld(world);
+            world.tick();
+            TickEvents.POST_TICK_WORLD.factory().onTickWorld(world);
+            TickEvents.PRE_TICK_LOADED_GAME.factory().onTickLoadedGame(loadedGame);
             loadedGame.tick();
+            TickEvents.POST_TICK_LOADED_GAME.factory().onTickLoadedGame(loadedGame);
         }
 
         final var screen = this.getCurrentScreen();
@@ -1739,8 +1751,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         BubbleBlaster.ticks++;
 
         // Call tick event.
-        if (this.isLoaded() && (screen == null || !screen.doesPauseGame()))
-            TickEvents.TICK_GAME.factory().onTickGame(this);
+        if (this.isLoaded()) {
+            TickEvents.POST_TICK_GAME.factory().onTickGame(this);
+        }
     }
 
     private void tickRichPresence(@Nullable Player player) {
@@ -1799,9 +1812,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Render world.
         this.profiler.section("Render World", () -> {
             if (world != null && worldRenderer != null) {
+                if (screen != null) renderer.enableBlur(15);
                 RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
                 worldRenderer.render(renderer, mouseX, mouseY, frameTime);
                 RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
+                if (screen != null) renderer.disableBlur();
             }
         });
 
@@ -1906,11 +1921,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public int getWidth() {
-        return this.width;
+        return Gdx.graphics.getWidth();
     }
 
     public int getHeight() {
-        return this.height;
+        return Gdx.graphics.getHeight();
     }
 
     public int getFps() {
@@ -2063,9 +2078,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         World world = this.world;
 
         if (keycode == Keys.F12) {
-
             DEBUG_GUI_OPEN.set(!DEBUG_GUI_OPEN.get());
-            LOGGER.debug("Toggling debug gui");
+            return true;
+        } else if (keycode == Keys.F11 && this.world == null) {
+            this.window.toggleFullscreen();
             return true;
         } else if (keycode == Keys.F2) {
             Screenshot screenshot = Screenshot.take();

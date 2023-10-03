@@ -1,6 +1,7 @@
 package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.graphics.Cursor;
@@ -106,25 +107,24 @@ public class GameWindow {
     }
 
     public void setFullscreen(boolean enable) {
-        if (!Flags.ALLOW_FULLSCREEN) {
-            this.setVisible(true);
-            this.requestFocus();
-            return;
-        }
-
         if (this.isFullscreen() && !enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
                 this.setVisible(true);
-                Gdx.graphics.setFullscreenMode(null);
+                Gdx.graphics.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
                 this.requestFocus();
             }
         } else if (!this.isFullscreen() && enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
                 this.setVisible(true);
                 Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
+                this.game().resize(mode.width, mode.height);
                 this.requestFocus();
             }
         }
+
+        BubbleBlasterConfig.FULLSCREEN.set(enable);
+        BubbleBlasterConfig.save();
     }
 
     public boolean isFullscreen() {
@@ -209,7 +209,7 @@ public class GameWindow {
         private boolean fullscreen;
         private Runnable onClose = () -> {};
 
-        public Properties(@NotNull String title, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
+        public Properties(@NotNull String title, int width, int height) {
             if (width < 0) throw new IllegalArgumentException("Width is negative");
             if (height < 0) throw new IllegalArgumentException("Height is negative");
             Objects.requireNonNull(title, "Title is set to null");

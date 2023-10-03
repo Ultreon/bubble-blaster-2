@@ -26,6 +26,7 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.event.v1.TickEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gameplay.GameplayStorage;
 import com.ultreon.bubbles.init.Gamemodes;
@@ -111,7 +112,7 @@ public final class World implements CrashFiller, Closeable {
     @IntRange(from = 0)
     private long ticks;
 
-    private final Difficulty.ModifierMap modifierMap = new Difficulty.ModifierMap();
+    private final Difficulty.ModifierMap difficultyModifiers = new Difficulty.ModifierMap();
 
     private final BubbleRandomizer bubbleRng;
     private boolean initialized;
@@ -373,15 +374,16 @@ public final class World implements CrashFiller, Closeable {
     public float getLocalDifficulty() {
         Difficulty diff = this.getDifficulty();
 
+        float value = this.difficultyModifiers.modify(diff);;
         if (!BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isLocal()) {
-            return diff.getPlainModifier();
+            return value;
         }
 
         this.stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(this.stateDifficultyModifiers.values()), 1f);
-        if (this.getPlayer() == null) return diff.getPlainModifier() * this.stateDifficultyModifier;
+        if (this.getPlayer() == null) return value * this.stateDifficultyModifier;
 
         int i = (this.getPlayer().getLevel() - 1) * 5 + 1;
-        return i * diff.getPlainModifier() * this.stateDifficultyModifier;
+        return i * value * this.stateDifficultyModifier;
     }
 
     public float getStateDifficultyModifier() {
@@ -500,8 +502,7 @@ public final class World implements CrashFiller, Closeable {
             this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
             this.bloodMoonTriggered = false;
             GameplayEvents.BLOOD_MOON_EVENT.deactivate();
-            BubbleBlaster.getInstance().gameplayMusic.stop();
-            this.currentGameplayEvent = null;
+            BubbleBlaster.getInstance().gameplayMusic.next();
         }
 
         BubbleBlaster.getInstance().getRenderSettings().resetAntialiasing();
@@ -556,6 +557,10 @@ public final class World implements CrashFiller, Closeable {
 
     public Difficulty getDifficulty() {
         return this.difficulty;
+    }
+
+    public Difficulty.ModifierMap getDifficultyModifiers() {
+        return this.difficultyModifiers;
     }
 
     public void setStateDifficultyModifier(GameplayEvent gameplayEvent, float modifier) {
@@ -673,8 +678,16 @@ public final class World implements CrashFiller, Closeable {
                 // Tick entities
                 List<Entity> toRemove = new ArrayList<>();
                 for (Entity entity : this.entitiesById.values()) {
-                    if (entity.willBeDeleted()) toRemove.add(entity);
+                    if (entity.willBeDeleted()) {
+                        toRemove.add(entity);
+                        continue;
+                    }
+
+                    if (entity instanceof Player p) TickEvents.PRE_TICK_PLAYER.factory().onTickPlayer(p);
+                    TickEvents.PRE_TICK_ENTITY.factory().onTickEntity(entity);
                     entity.tick(this);
+                    TickEvents.POST_TICK_ENTITY.factory().onTickEntity(entity);
+                    if (entity instanceof Player p) TickEvents.POST_TICK_PLAYER.factory().onTickPlayer(p);
                 }
 
                 for (Entity entity : toRemove) {
@@ -692,7 +705,13 @@ public final class World implements CrashFiller, Closeable {
             gamePlayEvent: {
                 if (this.currentGameplayEvent != null) {
                     if (!this.currentGameplayEvent.shouldContinue(this.createGameplayContext())) {
+                        this.currentGameplayEvent.end(this);
                         this.currentGameplayEvent = null;
+                    }
+
+                    GameplayEvent gameplayEvent = this.currentGameplayEvent;
+                    if (gameplayEvent != null) {
+                        gameplayEvent.tick();
                     }
 
                     break gamePlayEvent;
@@ -703,6 +722,7 @@ public final class World implements CrashFiller, Closeable {
                     for (GameplayEvent gameplayEvent : choices) {
                         if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
                             this.currentGameplayEvent = gameplayEvent;
+                            this.currentGameplayEvent.begin(this);
                             break;
                         }
                     }

@@ -43,8 +43,11 @@ public class BubbleBlasterConfig {
     public static final Config.BooleanEntry DEBUG_DISABLE_SCISSORS;
     public static final Config.BooleanEntry DEBUG_LOG_EMPTY_SCISSORS;
     public static final Config.BooleanEntry DEBUG_LOG_SCREENS;
+    public static final Config.IntEntry BLOOD_MOON_STOP_LOW;
+    public static final Config.IntEntry BLOOD_MOON_STOP_HIGH;
+    public static final Config.BooleanEntry FULLSCREEN;
 
-    private static final Config CONFIG;
+    static final Config CONFIG;
 
     static {
         Config.Builder builder = new Config.Builder(FILE);
@@ -53,6 +56,7 @@ public class BubbleBlasterConfig {
         ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that can be annoying in some way.").value(false);
         AUTO_SAVE_RATE = builder.entry("generic.autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
         MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, 120);
+        FULLSCREEN = builder.entry("generic.fullscreen").comment("Play the game in fullscreen mode.").value(false);
 
         // Gameplay
         LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 100_000, 10_000);
@@ -63,6 +67,8 @@ public class BubbleBlasterConfig {
         BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.001, 0.04, 16.0);
         BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.001, 0.1, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
+        BLOOD_MOON_STOP_LOW = builder.entry("gameplay.bloodMoon.deactivateLow").comment("The lower point of deactivation time for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 10);
+        BLOOD_MOON_STOP_HIGH = builder.entry("gameplay.bloodMoon.deactivateHigh").comment("The higher point of deactivation time for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 25);
 
         // Graphical
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);
@@ -93,10 +99,18 @@ public class BubbleBlasterConfig {
         int fps = MAX_FRAMERATE.get();
         Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
 
-        Identifier hudId = Identifier.tryParse(GAME_HUD.getOrDefault());
-        if (hudId != null) {
-            HudType hud = Registries.HUD.getValue(hudId);
-            HudType.setCurrent(hud);
+        try {
+            Identifier hudId = Identifier.tryParse(GAME_HUD.getOrDefault());
+            if (hudId != null) {
+                HudType hud = Registries.HUD.getValue(hudId);
+                HudType.setCurrent(hud);
+            }
+        } catch (RuntimeException ignored) {
+
         }
+    }
+
+    public static void save() {
+        CONFIG.save();
     }
 }

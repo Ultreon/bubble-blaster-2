@@ -29,4 +29,16 @@ public interface RandomSource {
     default RandomSource nextRandom(Identifier seed) {
         return this.nextRandom(RngUtils.hash(seed));
     }
+
+    default boolean chance(int chance) {
+        return this.nextInt(chance) == 0;
+    }
+
+    default boolean chance(double chance) {
+        return this.nextDouble(1.0) <= chance;
+    }
+
+    default boolean chance(float chance) {
+        return this.nextFloat(1f) <= chance;
+    }
 }

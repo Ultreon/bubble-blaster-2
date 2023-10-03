@@ -170,9 +170,8 @@ public abstract class Container extends GuiComponent {
     }
 
     protected final void clearWidgets() {
-        for (GuiComponent widget : this.children) {
+        for (GuiComponent widget : this.children)
             widget.dispose();
-        }
         this.children.clear();
     }
 
