@@ -26,7 +26,10 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.event.v1.EntityEvents;
+import com.ultreon.bubbles.event.v1.PlayerEvents;
 import com.ultreon.bubbles.event.v1.TickEvents;
+import com.ultreon.bubbles.event.v1.WorldEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gameplay.GameplayStorage;
 import com.ultreon.bubbles.init.Gamemodes;
@@ -53,6 +56,7 @@ import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.crash.v0.CrashCategory;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.registries.v0.Registry;
+import com.ultreon.libs.text.v1.TextObject;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceArrayMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMaps;
@@ -153,6 +157,8 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public void firstInit(Messenger messenger) {
+        WorldEvents.WORLD_STARTING.factory().onWorldStarting(this);
+
         int maxBubbles = GameSettings.instance().maxBubbles;
 
         try {
@@ -181,6 +187,10 @@ public final class World implements CrashFiller, Closeable {
         this.gamemode.onFirstInit(this, messenger);
         this.player = this.game.player;
         this.initialized = true;
+
+        GameplayEvents.BLOOD_MOON_EVENT.resetNext();
+
+        WorldEvents.WORLD_STARTED.factory().onWorldStarted(this);
     }
 
     private void firstInit(Messenger messenger, int maxBubbles) {
@@ -201,6 +211,8 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public void load(GameSave save, Messenger messenger) throws IOException {
+        WorldEvents.WORLD_STARTING.factory().onWorldStarting(this);
+
         this.name = save.getInfo().getName();
 
         this.loadWorld(save.load("world", true));
@@ -209,6 +221,8 @@ public final class World implements CrashFiller, Closeable {
         this.gameplayStorage = new GameplayStorage(save.load("gameplay"));
 
         this.initialized = true;
+
+        WorldEvents.WORLD_STARTED.factory().onWorldStarted(this);
     }
 
     public void save() {
@@ -221,6 +235,8 @@ public final class World implements CrashFiller, Closeable {
 
     public boolean save(GameSave save, Messenger messenger) throws IOException {
         if (!this.saveLock.tryLock()) return false;
+        if (WorldEvents.WORLD_SAVING.factory().onWorldSaving(this, save, messenger).isCanceled()) return false;
+
         Notification notification = Notification.builder("Saving", "The game is being saved...")
                 .subText("Auto Save Feature")
                 .sticky()
@@ -239,6 +255,7 @@ public final class World implements CrashFiller, Closeable {
 
         this.saveLock.unlock();
         notification.set("Saved", "The game has been saved!");
+        WorldEvents.WORLD_SAVED.factory().onWorldSaved(this, save, messenger);
         return true;
     }
 
@@ -357,6 +374,11 @@ public final class World implements CrashFiller, Closeable {
 
     @CanIgnoreReturnValue
     public boolean triggerGameOver() {
+        return this.triggerGameOver(GameOverScreen.TITLE);
+    }
+
+    @CanIgnoreReturnValue
+    public boolean triggerGameOver(TextObject title) {
         if (!this.gameOverLock.tryLock()) return false;
 
         if (this.isAlive()) {
@@ -366,7 +388,10 @@ public final class World implements CrashFiller, Closeable {
         this.gameOverTime = Instant.now();
         this.gameOver = true;
         this.gamemode.onGameOver();
-        this.game.showScreen(new GameOverScreen(this.getResultScore()));
+
+        PlayerEvents.GAME_OVER.factory().onGameOver(this, this.player, this.gameOverTime);
+
+        this.game.showScreen(new GameOverScreen(this.getResultScore(), title));
         this.save();
         return true;
     }
@@ -625,6 +650,10 @@ public final class World implements CrashFiller, Closeable {
      */
     public void spawn(Entity entity, SpawnInformation information) {
         BubbleBlaster.invokeTick(() -> {
+            if (EntityEvents.SPAWN.factory().onSpawn(entity, information).isCanceled()) {
+                return;
+            }
+
             // Prepare entity with spawn information,
             entity.preSpawn(information);
 
@@ -705,8 +734,10 @@ public final class World implements CrashFiller, Closeable {
             gamePlayEvent: {
                 if (this.currentGameplayEvent != null) {
                     if (!this.currentGameplayEvent.shouldContinue(this.createGameplayContext())) {
-                        this.currentGameplayEvent.end(this);
-                        this.currentGameplayEvent = null;
+                        if (!WorldEvents.GAMEPLAY_EVENT_DEACTIVATED.factory().onGameplayEventDeactivated(this, this.currentGameplayEvent).isCanceled()) {
+                            this.currentGameplayEvent.end(this);
+                            this.currentGameplayEvent = null;
+                        }
                     }
 
                     GameplayEvent gameplayEvent = this.currentGameplayEvent;
@@ -721,9 +752,12 @@ public final class World implements CrashFiller, Closeable {
                     List<GameplayEvent> choices = RngUtils.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
                     for (GameplayEvent gameplayEvent : choices) {
                         if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
-                            this.currentGameplayEvent = gameplayEvent;
-                            this.currentGameplayEvent.begin(this);
-                            break;
+                            if (!WorldEvents.GAMEPLAY_EVENT_TRIGGERED.factory().onGameplayEventTriggered(this, gameplayEvent).isCanceled()) {
+                                this.currentGameplayEvent = gameplayEvent;
+                                this.currentGameplayEvent.begin(this);
+
+                                break;
+                            }
                         }
                     }
                 });
@@ -777,11 +811,15 @@ public final class World implements CrashFiller, Closeable {
     public void close() {
         this.shuttingDown = true;
 
+        WorldEvents.WORLD_STOPPING.factory().onWorldStopping(this);
+
         synchronized (this.entitiesLock) {
             for (Entity entity : this.entitiesById.values()) {
                 entity.delete();
             }
         }
+
+        WorldEvents.WORLD_STOPPED.factory().onWorldStopped(this);
     }
 
     public void setCurrentGameEvent(GameplayEvent currentGameplayEvent) {

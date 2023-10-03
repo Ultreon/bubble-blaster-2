@@ -167,6 +167,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private static final Supplier<ModContainer> FABRIC_LOADER_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer("fabricloader").orElseThrow());
     private static final Supplier<ModMetadata> FABRIC_LOADER_META = Suppliers.memoize(() -> FABRIC_LOADER_CONTAINER.get().getMetadata());
     private static final Supplier<Version> FABRIC_LOADER_VERSION = Suppliers.memoize(() -> FABRIC_LOADER_META.get().getVersion());
+    private static final Supplier<ModContainer> LIBGDX_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer("libgdx").orElseThrow());
+    private static final Supplier<ModMetadata> LIBGDX_META = Suppliers.memoize(() -> LIBGDX_CONTAINER.get().getMetadata());
+    private static final Supplier<Version> LIBGDX_VERSION = Suppliers.memoize(() -> LIBGDX_META.get().getVersion());
     private static final Supplier<ModContainer> GAME_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow());
     private static final Supplier<ModMetadata> GAME_META = Suppliers.memoize(() -> GAME_CONTAINER.get().getMetadata());
     private static final Supplier<Version> GAME_VERSION = Suppliers.memoize(() -> GAME_META.get().getVersion());
@@ -1009,6 +1012,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public static Version getFabricLoaderVersion() {
         return FABRIC_LOADER_VERSION.get();
+    }
+
+    public static Version getLibGDXVersion() {
+        return LIBGDX_VERSION.get();
     }
 
     public static Version getGameVersion() {
@@ -2022,6 +2029,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         this.afterLoading.values().forEach(Runnable::run);
         this.afterLoading.clear();
+
+        LifecycleEvents.FINISHED.factory().onFinished(this);
     }
 
     public long serializeSeed(String text) {

@@ -32,6 +32,7 @@ public class BubbleBlasterConfig {
     public static final Config.DoubleEntry BUBBLE_SCORE_REDUCTION;
     public static final Config.DoubleEntry BUBBLE_SCORE_REDUCTION_SELF;
     public static final Config.EnumEntry<DifficultyEffectType> DIFFICULTY_EFFECT_TYPE;
+    public static final Config.IntEntry TIME_LIMIT;
 
     // Graphical
     public static final Config.IntEntry SECS_BEFORE_RED_EFFECT_TIME;
@@ -45,9 +46,12 @@ public class BubbleBlasterConfig {
     public static final Config.BooleanEntry DEBUG_LOG_SCREENS;
     public static final Config.IntEntry BLOOD_MOON_STOP_LOW;
     public static final Config.IntEntry BLOOD_MOON_STOP_HIGH;
+    public static final Config.IntEntry BLOOD_MOON_TRIGGER_LOW;
+    public static final Config.IntEntry BLOOD_MOON_TRIGGER_HIGH;
     public static final Config.BooleanEntry FULLSCREEN;
 
     static final Config CONFIG;
+
 
     static {
         Config.Builder builder = new Config.Builder(FILE);
@@ -67,8 +71,11 @@ public class BubbleBlasterConfig {
         BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.001, 0.04, 16.0);
         BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.001, 0.1, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
-        BLOOD_MOON_STOP_LOW = builder.entry("gameplay.bloodMoon.deactivateLow").comment("The lower point of deactivation time for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 10);
-        BLOOD_MOON_STOP_HIGH = builder.entry("gameplay.bloodMoon.deactivateHigh").comment("The higher point of deactivation time for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 25);
+        BLOOD_MOON_STOP_LOW = builder.entry("gameplay.bloodMoon.deactivateLow").comment("The lower point of deactivation time (in seconds) for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 10);
+        BLOOD_MOON_STOP_HIGH = builder.entry("gameplay.bloodMoon.deactivateHigh").comment("The higher point of deactivation time (in seconds) for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 25);
+        BLOOD_MOON_TRIGGER_LOW = builder.entry("gameplay.bloodMoon.triggerLow").comment("The lower point of trigger time (in seconds) between blood moon events. (Random between lower and higher)").withinRange(30, 900, 240);
+        BLOOD_MOON_TRIGGER_HIGH = builder.entry("gameplay.bloodMoon.triggerHigh").comment("The higher point of trigger time (in seconds) between blood moon events. (Random between lower and higher)").withinRange(30, 900, 540);
+        TIME_LIMIT = builder.entry("gameplay.timedGamemode.timeLimit").comment("The time limit for the timed gamemode.").withinRange(10, 300, 60);
 
         // Graphical
         SECS_BEFORE_RED_EFFECT_TIME = builder.entry("graphical.secsBeforeRedEffectTime").comment("How many seconds left for the time of the status effect gets red.").withinRange(0, 20, 2);

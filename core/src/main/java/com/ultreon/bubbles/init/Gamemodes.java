@@ -4,6 +4,7 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gamemode.ImpossibleMode;
 import com.ultreon.bubbles.gamemode.NormalMode;
+import com.ultreon.bubbles.gamemode.TimedMode;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.registries.v0.DelayedRegister;
 import com.ultreon.libs.registries.v0.RegistrySupplier;
@@ -21,6 +22,7 @@ public class Gamemodes {
     private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(BubbleBlaster.NAMESPACE, Registries.GAMEMODES);
     public static final RegistrySupplier<NormalMode> NORMAL = Gamemodes.register("normal", NormalMode::new);
     public static final RegistrySupplier<ImpossibleMode> IMPOSSIBLE = Gamemodes.register("impossible", ImpossibleMode::new);
+    public static final RegistrySupplier<TimedMode> TIMED = Gamemodes.register("timed", TimedMode::new);
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends Gamemode> RegistrySupplier<T> register(String name, Supplier<T> gamemode) {

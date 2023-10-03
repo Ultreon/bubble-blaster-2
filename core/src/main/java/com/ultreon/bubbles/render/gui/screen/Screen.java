@@ -22,7 +22,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
     private int focusIndex = 0;
     private Screen backScreen;
 
-    private final TextObject title;
+    protected final TextObject title;
     protected int middleX;
     protected int middleY;
 

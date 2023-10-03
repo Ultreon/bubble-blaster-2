@@ -22,6 +22,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.util.UUID;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
@@ -39,6 +40,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
     private final RandomSource randomSource = new JavaRandom();
     private long deactivateTicks;
+    private Instant nextActivate;
 
     public BloodMoonGameplayEvent() {
         super();
@@ -64,8 +66,14 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public void end(World world) {
         super.end(world);
 
+        this.resetNext();
+
         world.getDifficultyModifiers().remove(MODIFIER_TOKEN);
         BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs) left.");
+    }
+
+    public void resetNext() {
+        this.nextActivate = Instant.now().plusSeconds((long) this.randomSource.nextInt(BubbleBlasterConfig.BLOOD_MOON_TRIGGER_LOW.get(), BubbleBlasterConfig.BLOOD_MOON_TRIGGER_HIGH.get()) * TPS);
     }
 
     @Override
@@ -82,7 +90,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         if (Date.current().equalsIgnoreYear(this.date)) return true;
         if (Time.current().isBetween(this.timeLo, this.timeHi)) return true;
 
-        if (context.world().getTicks() % TPS == 0 && this.randomSource.chance(60)) return true;
+        if (Instant.now().isAfter(this.nextActivate)) return true;
 
         MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE);

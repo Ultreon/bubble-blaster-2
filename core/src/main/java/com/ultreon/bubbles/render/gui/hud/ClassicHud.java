@@ -133,14 +133,14 @@ public class ClassicHud extends HudType {
         Color valueColor = Color.rgb(255, 255, 255);
 
         // As long the player isn't game over.
-        if (!world.isGameOver()) {
-            // As long the player exists.
-            // Draw player components.
-            this.drawStatusEffects(renderer, player);
-            this.drawScoreText(renderer, player, titleColor, valueColor);
-            this.drawLevelText(renderer, player, titleColor, valueColor);
-            this.drawHealthLineForeground(renderer, game, player);
-        }
+        if (world.isGameOver()) return;
+
+        // As long the player exists.
+        // Draw player components.
+        this.drawStatusEffects(renderer, player);
+        this.drawScoreText(renderer, player, titleColor, valueColor);
+        this.drawLevelText(renderer, player, titleColor, valueColor);
+        this.drawHealthLineForeground(renderer, game, player);
     }
 
     /**

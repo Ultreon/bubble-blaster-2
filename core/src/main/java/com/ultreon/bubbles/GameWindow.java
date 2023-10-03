@@ -2,8 +2,7 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
+import com.badlogic.gdx.backends.lwjgl3.*;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
@@ -76,6 +75,8 @@ public class GameWindow {
      * Initialized window.
      */
     public synchronized void init() {
+        this.getLwjglWindow().setWindowListener(new GameWindowAdapter());
+
         if (this.initialized) {
             throw new OneTimeUseException("The game window is already initialized.");
         }
@@ -228,6 +229,50 @@ public class GameWindow {
         public Properties close(Runnable onClose) {
             this.onClose = onClose;
             return this;
+        }
+    }
+
+    private class GameWindowAdapter implements Lwjgl3WindowListener {
+        @Override
+        public void created(Lwjgl3Window window) {
+            WindowEvents.WINDOW_CREATED.factory().onWindowCreated(GameWindow.this);
+        }
+
+        @Override
+        public void iconified(boolean isIconified) {
+            if (isIconified) WindowEvents.WINDOW_MINIMIZED.factory().onWindowMinimize(GameWindow.this);
+            else WindowEvents.WINDOW_MINIMIZED_RESTORE.factory().onWindowMinimize(GameWindow.this);
+        }
+
+        @Override
+        public void maximized(boolean isMaximized) {
+            if (isMaximized) WindowEvents.WINDOW_MAXIMIZED.factory().onWindowMaximize(GameWindow.this);
+            else WindowEvents.WINDOW_MAXIMIZED_RESTORE.factory().onWindowMaximize(GameWindow.this);
+        }
+
+        @Override
+        public void focusLost() {
+            WindowEvents.WINDOW_LOST_FOCUS.factory().onWindowLostFocus(GameWindow.this);
+        }
+
+        @Override
+        public void focusGained() {
+            WindowEvents.WINDOW_GAINED_FOCUS.factory().onWindowGainedFocus(GameWindow.this);
+        }
+
+        @Override
+        public boolean closeRequested() {
+            return !WindowEvents.WINDOW_CLOSING.factory().onWindowClosing(GameWindow.this).isCanceled();
+        }
+
+        @Override
+        public void filesDropped(String[] files) {
+            WindowEvents.WINDOW_FILES_DROPPED.factory().onWindowFilesDropped(GameWindow.this, files);
+        }
+
+        @Override
+        public void refreshRequested() {
+
         }
     }
 }

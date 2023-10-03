@@ -69,7 +69,6 @@ public final class LoadScreen extends InternalScreen {
     private String curAltMsg = "";
     private long startTime;
     private Thread thread;
-//    private final ModLoader modLoader = new ModLoader(Main.mainClassLoader);
 
     public LoadScreen() {
         instance = this;
@@ -153,6 +152,8 @@ public final class LoadScreen extends InternalScreen {
         GameSettings.nopInit();
         BubbleBlasterConfig.register();
 
+        LifecycleEvents.LOADING.factory().onLoading(this.game, this);
+
         this.progressMain = new ProgressMessenger(this.msgMain, 10);
 
         // Get game directory in Java's File format.
@@ -203,6 +204,8 @@ public final class LoadScreen extends InternalScreen {
 
         LoadScreen.done = true;
 
+        LifecycleEvents.LOADED.factory().onLoaded(this.game, this);
+
         BubbleBlaster.invoke(this.game::finish);
     }
 
@@ -235,6 +238,8 @@ public final class LoadScreen extends InternalScreen {
         this.registerLanguage("zh_cn");
         this.registerLanguage("ja_jp");
 
+        LifecycleEvents.REGISTER_LANGUAGES.factory().onRegisterLanguages(this.game, this, this::registerLanguage);
+
         this.progressAlt = null;
     }
 
@@ -247,10 +252,17 @@ public final class LoadScreen extends InternalScreen {
         LanguageManager.INSTANCE.load(locale, BubbleBlaster.id(code), BubbleBlaster.getInstance().getResourceManager());
     }
 
+    private void registerLanguage(Identifier code) {
+        String[] s = code.path().split("_", 2);
+        if (s.length == 0) throw new IllegalArgumentException("Language requires a non-empty string.");
+        if (s.length == 1) throw new IllegalArgumentException("Language code needs to include country.");
+        Locale locale = new Locale(s[0], s[1]);
+        LanguageManager.INSTANCE.register(locale, code);
+        LanguageManager.INSTANCE.load(locale, code, BubbleBlaster.getInstance().getResourceManager());
+    }
+
     private void loadFonts() {
-        BubbleBlaster.invokeAndWait(() -> {
-            this.game().loadFonts();
-        });
+        BubbleBlaster.invokeAndWait(() -> this.game().loadFonts());
         this.progressAlt = null;
     }
 
@@ -285,16 +297,14 @@ public final class LoadScreen extends InternalScreen {
                     resource = TextureManager.DEFAULT_TEX_RESOURCE;
                 }
                 Resource finalResource = resource;
-                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
-                    return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
-                }));
+                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
             });
         }
 
         this.addModIcon("java", BubbleBlaster.id("textures/mods/java.png"));
         this.addModIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
 
-        LifecycleEvents.SETUP.factory().onSetup(this.game);
+        LifecycleEvents.LOADED.factory().onLoaded(this.game, this);
         this.progressAlt = null;
     }
 
@@ -330,9 +340,7 @@ public final class LoadScreen extends InternalScreen {
         Resource resource = this.game.getResourceManager().getResource(path);
         if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
         Resource finalResource = resource;
-        ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> {
-            return new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())));
-        }));
+        ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
     }
 
     private BubbleBlaster game() {

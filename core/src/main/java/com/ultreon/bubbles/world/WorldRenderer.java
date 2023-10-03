@@ -7,6 +7,8 @@ import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.debug.Profiler;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.entity.player.Player;
+import com.ultreon.bubbles.event.v1.RenderEvents;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
@@ -97,7 +99,8 @@ public class WorldRenderer implements Renderable {
         if (world.shuttingDown) return;
         if (!world.isInitialized()) return;
 
-        final HudType hud = HudType.getCurrent();
+        HudType hudOverride = this.getWorld().getGamemode().getHudOverride();
+        final HudType hud = hudOverride != null ? hudOverride : HudType.getCurrent();
 
         this.profiler.section("Render BG", () -> this.renderBackground(renderer, world, hud));
         this.profiler.section("Render Entities", () -> this.renderEntities(renderer, world));
@@ -118,7 +121,11 @@ public class WorldRenderer implements Renderable {
     private void renderEntities(Renderer renderer, World world) {
         for (Entity entity : world.getEntities()) {
             if (entity.isVisible()) {
+                if (entity instanceof Player player) RenderEvents.RENDER_PLAYER_BEFORE.factory().onRenderPlayerBefore(player, renderer);
+                RenderEvents.RENDER_ENTITY_BEFORE.factory().onRenderEntityBefore(entity, renderer);
                 entity.render(renderer);
+                RenderEvents.RENDER_ENTITY_AFTER.factory().onRenderEntityAfter(entity, renderer);
+                if (entity instanceof Player player) RenderEvents.RENDER_PLAYER_AFTER.factory().onRenderPlayerAfter(player, renderer);
             }
             if (this.game.isCollisionShapesShown()) {
                 Shape2D shape = entity.getShape();

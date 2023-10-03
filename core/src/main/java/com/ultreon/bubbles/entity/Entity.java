@@ -15,6 +15,7 @@ import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.event.v1.EffectEvents;
 import com.ultreon.bubbles.init.BubbleTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.random.JavaRandom;
@@ -510,29 +511,34 @@ public abstract class Entity extends GameObject implements StateHolder {
 
     /**
      * Add an effect to the entity.
-     * @param appliedEffect the applied effect to add.
+     * @param instance the applied effect to add.
      */
-    public void addEffect(StatusEffectInstance appliedEffect) {
-        for (StatusEffectInstance appliedEffect1 : this.statusEffects) {
-            if (appliedEffect1.getType() == appliedEffect.getType()) {
-                if (appliedEffect1.getRemainingTime().toMillis() < appliedEffect.getRemainingTime().toMillis()) {
-                    appliedEffect1.setRemainingTime(appliedEffect.getRemainingTime());
+    public void addEffect(StatusEffectInstance instance) {
+        for (StatusEffectInstance effectInstance : this.statusEffects) {
+            if (effectInstance.getType() == instance.getType()) {
+                if (effectInstance.getRemainingTime().toMillis() < instance.getRemainingTime().toMillis()) {
+                    EffectEvents.UPDATE.factory().onUpdate(effectInstance);
+                    effectInstance.setRemainingTime(instance.getRemainingTime());
                 }
                 return;
             }
         }
-        this.statusEffects.add(appliedEffect);
-        appliedEffect.start(this);
+        if (EffectEvents.GAIN.factory().onGain(instance).isCanceled()) return;
+        this.statusEffects.add(instance);
+        instance.start(this);
     }
 
     /**
      * Remove a status effect from the entity.
-     * @param appliedEffect the applied status effect.
+     * @param instance the applied status effect.
      */
-    public void removeEffect(StatusEffectInstance appliedEffect) {
-        this.statusEffects.remove(appliedEffect);
-        if (appliedEffect.isActive()) {
-            appliedEffect.stop(this);
+    public void removeEffect(StatusEffectInstance instance) {
+        if (this.statusEffects.contains(instance)) {
+            if (EffectEvents.LOSE.factory().onLose(instance).isCanceled()) return;
+            this.statusEffects.remove(instance);
+            if (instance.isActive()) {
+                instance.stop(this);
+            }
         }
     }
 

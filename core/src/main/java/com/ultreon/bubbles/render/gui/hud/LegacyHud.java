@@ -105,15 +105,15 @@ public class LegacyHud extends HudType {
         Color valueColor = Color.CYAN;
 
         // As long the player isn't game over.
-        if (!world.isGameOver()) {
-            // As long the player exists.
-            // Draw player components.
-            this.drawStatusEffects(renderer, player);
-            this.drawScoreText(renderer, player, titleColor, valueColor);
-            this.drawLevelText(renderer, player, titleColor, valueColor);
-            this.drawSpeedText(renderer, player, titleColor, valueColor);
-            this.drawLivesText(renderer, player, titleColor, valueColor);
-        }
+        if (world.isGameOver()) return;
+
+        // As long the player exists.
+        // Draw player components.
+        this.drawStatusEffects(renderer, player);
+        this.drawScoreText(renderer, player, titleColor, valueColor);
+        this.drawLevelText(renderer, player, titleColor, valueColor);
+        this.drawSpeedText(renderer, player, titleColor, valueColor);
+        this.drawLivesText(renderer, player, titleColor, valueColor);
     }
 
     /**
@@ -187,17 +187,19 @@ public class LegacyHud extends HudType {
             int i = 0;
             for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
                 // Renderer 2D
-                renderer.subInstance(320 + i * 196, 16, 192, 38, render -> {
+                int x = 320 + i * 196;
+                int y = 16;
+                renderer.scissored(x, y, 192, 38, () -> {
                     // Format duration to string.
                     String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
 
                     // EffectInstance bar.
-                    render.blit(0, 0, 192, 38);
+                    renderer.blit(x, y, 192, 38);
 
                     // EffectInstance icon.
-                    render.setTexture(appliedEffect.getType().getIconId());
-                    render.blit(5, 3, 32, 32);
-                    render.setColor(Color.rgba(255, 255, 255, 192));
+                    renderer.setTexture(appliedEffect.getType().getIconId());
+                    renderer.blit(x + 5, y + 3, 32, 32);
+                    renderer.setColor(Color.rgba(255, 255, 255, 192));
 
                     renderer.drawTextLeft(this.font, time, 56, 19.5f, Color.WHITE.withAlpha(0xC0));
                 });

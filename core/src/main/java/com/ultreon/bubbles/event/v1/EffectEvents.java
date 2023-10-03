@@ -7,17 +7,17 @@ import com.ultreon.libs.events.v1.EventResult;
 public class EffectEvents {
     public static final Event<Gain> GAIN = Event.withResult();
     public static final Event<Update> UPDATE = Event.withResult();
-    public static final Event<Lose> LOSE = Event.create();
+    public static final Event<Lose> LOSE = Event.withResult();
 
     public interface Gain {
         EventResult onGain(StatusEffectInstance effect);
     }
 
     public interface Update {
-        EventResult onLose(StatusEffectInstance from, StatusEffectInstance to);
+        EventResult onUpdate(StatusEffectInstance from);
     }
 
     public interface Lose {
-        void onLose(StatusEffectInstance effect);
+        EventResult onLose(StatusEffectInstance effect);
     }
 }

@@ -5,13 +5,21 @@ import com.ultreon.libs.events.v1.Event;
 import com.ultreon.libs.events.v1.EventResult;
 
 public class WindowEvents {
+    public static final Event<WindowCreated> WINDOW_CREATED = Event.create();
     public static final Event<WindowClosing> WINDOW_CLOSING = Event.withResult();
-    public static final Event<WindowClosed> WINDOW_CLOSED = Event.create();
     public static final Event<WindowGainedFocus> WINDOW_GAINED_FOCUS = Event.create();
     public static final Event<WindowLostFocus> WINDOW_LOST_FOCUS = Event.create();
-    public static final Event<WindowMinimized> WINDOW_MINIMIZED = Event.create();
-    public static final Event<WindowRestored> WINDOW_RESTORED = Event.create();
+    public static final Event<WindowMinimize> WINDOW_MINIMIZED = Event.create();
+    public static final Event<WindowMinimize> WINDOW_MINIMIZED_RESTORE = Event.create();
+    public static final Event<WindowMaximize> WINDOW_MAXIMIZED = Event.create();
+    public static final Event<WindowMaximize> WINDOW_MAXIMIZED_RESTORE = Event.create();
+    public static final Event<WindowFilesDropped> WINDOW_FILES_DROPPED = Event.create();
     public static final Event<WindowFullscreen> WINDOW_FULLSCREEN = Event.withResult();
+
+    @FunctionalInterface
+    public interface WindowCreated {
+        void onWindowCreated(GameWindow window);
+    }
 
     @FunctionalInterface
     public interface WindowClosing {
@@ -34,13 +42,18 @@ public class WindowEvents {
     }
 
     @FunctionalInterface
-    public interface WindowMinimized {
-        void onWindowMinimized(GameWindow window);
+    public interface WindowMinimize {
+        void onWindowMinimize(GameWindow window);
     }
 
     @FunctionalInterface
-    public interface WindowRestored {
-        void onWindowRestored(GameWindow window);
+    public interface WindowMaximize {
+        void onWindowMaximize(GameWindow window);
+    }
+
+    @FunctionalInterface
+    public interface WindowFilesDropped {
+        void onWindowFilesDropped(GameWindow window, String[] files);
     }
 
     @FunctionalInterface

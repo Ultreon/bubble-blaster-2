@@ -15,6 +15,7 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.types.EntityType;
+import com.ultreon.bubbles.event.v1.PlayerEvents;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.item.collection.PlayerItemCollection;
@@ -589,6 +590,7 @@ public class Player extends LivingEntity implements InputController {
      * Level-up the player.
      */
     public void levelUp() {
+        PlayerEvents.LEVEL_UP.factory().onLevelUp(this, this.level + 1);
         this.level++;
         this.successRate += 5;
     }
@@ -597,6 +599,7 @@ public class Player extends LivingEntity implements InputController {
      * Decrement the player's level.
      */
     public void levelDown() {
+        PlayerEvents.LEVEL_DOWN.factory().onLevelDown(this, this.level - 1);
         this.setLevel(this.getLevel() - 1);
         this.successRate -= 5;
     }
@@ -607,6 +610,10 @@ public class Player extends LivingEntity implements InputController {
      * @param level the level to set.
      */
     public void setLevel(int level) {
+        if (level < this.level) PlayerEvents.LEVEL_DOWN.factory().onLevelDown(this, level);
+        else if (level > this.level) PlayerEvents.LEVEL_UP.factory().onLevelUp(this, level);
+        else return;
+
         this.successRate += (level - this.level) * 5;
         this.level = Math.max(level, 1);
     }

@@ -5,6 +5,7 @@ import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v1.GameEvents;
+import com.ultreon.bubbles.gamemode.TimedMode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
@@ -13,6 +14,7 @@ import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.libs.text.v1.TextObject;
 import com.ultreon.libs.translations.v1.Language;
@@ -194,5 +196,13 @@ public class PauseScreen extends Screen {
 
         // Description
         renderer.drawWrappedText(Fonts.SANS_ITALIC_16.get(), Language.translate(this.bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), this.middleX - 470, 512, 940, DETAIL_VALUE_COLOR);
+    }
+
+    @Override
+    public boolean doesPauseGame() {
+        World world = this.game.world;
+        if (world != null && world.getGamemode() instanceof TimedMode) return false;
+
+        return super.doesPauseGame();
     }
 }

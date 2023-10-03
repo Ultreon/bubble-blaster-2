@@ -20,9 +20,9 @@ class AutoSaver implements Controllable {
     }
 
     private void run() {
-        if (!this.loadedGame.getWorld().isGameOver() && this.enabled) {
-            this.onAutoSave();
-        }
+        if (this.loadedGame.getWorld().isGameOver() || !this.enabled) return;
+
+        this.onAutoSave();
     }
 
     private void onAutoSave() {

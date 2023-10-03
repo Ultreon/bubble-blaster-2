@@ -7,9 +7,6 @@ public class InputEvents {
     public static final Event<MouseRelease> MOUSE_RELEASE = Event.create();
     public static final Event<MouseClick> MOUSE_CLICK = Event.create();
     public static final Event<MouseMove> MOUSE_MOVE = Event.create();
-    public static final Event<MouseDrag> MOUSE_DRAG = Event.create();
-    public static final Event<MouseEnterWindow> MOUSE_ENTER_WINDOW = Event.create();
-    public static final Event<MouseExitWindow> MOUSE_EXIT_WINDOW = Event.create();
     public static final Event<MouseScroll> MOUSE_SCROLL = Event.create();
 
     public static final Event<KeyPress> KEY_PRESS = Event.create();

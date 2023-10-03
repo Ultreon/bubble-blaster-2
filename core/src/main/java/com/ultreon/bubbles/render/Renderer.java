@@ -21,7 +21,6 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.debug.Debug;
 import com.ultreon.bubbles.render.gui.border.Border;
-import com.ultreon.bubbles.util.GraphicsUtils;
 import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -36,8 +35,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.*;
@@ -97,6 +94,7 @@ public class Renderer {
     private FrameBuffer fbo;
     private boolean depthEnabled;
     private boolean blurring;
+    private final GlyphLayout layout = new GlyphLayout();
 
     @ApiStatus.Internal
     public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -161,7 +159,7 @@ public class Renderer {
             throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still applying effects.");
 
         if (this.blurring)
-            throw new IllegalStateException("Can´t end renderer while blurring statis is still enabled.");
+            throw new IllegalStateException("Can´t end renderer while blurring mode is still enabled.");
 
         this.camera.combined.set(this.backupMatrix);
 
@@ -349,19 +347,6 @@ public class Renderer {
         this.blurring = true;
 
         this.batch.begin();
-
-//        Gdx.gl20.glClearColor(0f, 0f, 0f, 1f);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-//
-//        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
-//            Gdx.gl20.glEnable(GL20.GL_BLEND);
-//            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        }
-//
-//        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
-//            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-//            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
-//        }
     }
 
     @ApiStatus.Experimental
@@ -931,37 +916,91 @@ public class Renderer {
     public void drawTextCenter(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), font, color);
+        this.layout.setText(font, text);
+
+        // Determine the X coordinate for the text
+        x -= this.layout.width / 2;
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, text, x, y, color);
     }
 
     public void drawTextCenter(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawCenteredString(this, text, new Vector2(x, y), font, color);
-    }
+        String string = text.getText();
 
-    public void drawTextLeft(BitmapFont font, TextObject text, float x, float y, Color color) {
-        if (!this.rendering) return;
+        this.layout.setText(font, string);
 
-        GraphicsUtils.drawLeftAnchoredString(this, text.getText(), new Vector2(x, y), font, color);
+        // Determine the X coordinate for the text
+        x -= this.layout.width / 2;
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, string, x, y, color);
     }
 
     public void drawTextLeft(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawLeftAnchoredString(this, text, new Vector2(x, y), font, color);
+        this.layout.setText(font, text);
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, text, x, y, color);
+    }
+
+    public void drawTextLeft(BitmapFont font, TextObject text, float x, float y, Color color) {
+        if (!this.rendering) return;
+
+        String string = text.getText();
+
+        this.layout.setText(font, string);
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, string, x, y, color);
     }
 
     public void drawTextRight(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawRightAnchoredString(this, text, new Vector2(x, y), font, color);
+        this.layout.setText(font, text);
+
+        // Determine the X coordinate for the text
+        x -= this.layout.width;
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, text, x, y, color);
     }
 
     public void drawTextRight(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        GraphicsUtils.drawRightAnchoredString(this, text.getText(), new Vector2(x, y), font, color);
+        String string = text.getText();
+
+        this.layout.setText(font, string);
+
+        // Determine the X coordinate for the text
+        x -= this.layout.width;
+
+        // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
+        y -= (this.layout.height + font.getDescent()) / 2;
+
+        // Draw the String
+        this.drawText(font, string, x, y, color);
     }
 
     public void clear() {
@@ -1031,23 +1070,6 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.editMatrix(matrix -> matrix.scale(width, height, 0));
-    }
-
-    @Deprecated
-    public void subInstance(int x, int y, int width, int height, Consumer<Renderer> consumer) {
-        if (!this.rendering) return;
-
-//        this.pushMatrix();
-//        this.translate(x, y);
-        this.scissored(x, y, width, height, () -> {
-            if (BubbleBlasterConfig.DEBUG_LOG_EMPTY_SCISSORS.getOrDefault()) {
-                String formatted = "Empty Scissor @ %d, %d".formatted(x, y);
-                BubbleBlaster.LOGGER.warn(formatted);
-                Debug.notifyOnce(UUID.fromString("b3d5760c-fbf6-4d61-b64c-0c0ef9d7f1a3"), "Scissor Debug", formatted);
-            }
-        });
-//        consumer.accept(this);
-//        this.popMatrix();
     }
 
     @CheckReturnValue
@@ -1239,15 +1261,8 @@ public class Renderer {
     public void drawRoundEffectBox(float x, float y, float width, float height, float radius, int lineWidth, float speed) {
         if (!this.rendering) return;
 
-//        Border border = new Border(new Insets(lineWidth));
-//        border.setRenderType(Border.RenderType.EFFECT);
-//        border.setEffectSpeed(speed);
-//        border.drawBorder(this, x, y, width, height);
-
         this.setLineThickness(lineWidth);
-        this.withEffect(() -> {
-            this.roundRect(x, y, width, height, radius);
-        });
+        this.withEffect(() -> this.roundRect(x, y, width, height, radius));
     }
 
     public void drawErrorEffectBox(Rectangle bounds) {

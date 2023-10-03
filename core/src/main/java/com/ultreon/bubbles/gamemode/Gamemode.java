@@ -122,9 +122,16 @@ public abstract class Gamemode implements Controllable {
 
     @Override
     public void begin() {
-        this.hud = HudType.getCurrent();
+        var hudOverride = this.getHudOverride();
+        this.hud = hudOverride != null ? hudOverride : HudType.getCurrent();
         this.hud.begin();
+
         this.active = true;
+    }
+
+    @Nullable
+    public HudType getHudOverride() {
+        return null;
     }
 
     public void end() {

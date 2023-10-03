@@ -38,7 +38,7 @@ public class RenderEvents {
 
     @FunctionalInterface
     public interface RenderEntityAfter {
-        void onRenderAfter(Entity entity, Renderer renderer);
+        void onRenderEntityAfter(Entity entity, Renderer renderer);
     }
 
     @FunctionalInterface
@@ -69,10 +69,5 @@ public class RenderEvents {
     @FunctionalInterface
     public interface RenderScreenAfter {
         void onRenderScreenAfter(Screen screen, Renderer renderer);
-    }
-
-    @FunctionalInterface
-    public interface Filter {
-        void onFilter(VfxEffectBuilder builder);
     }
 }

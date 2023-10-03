@@ -105,9 +105,11 @@ public class TitleScreen extends Screen {
         renderer.drawTextCenter(Fonts.DONGLE_140.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
 
         renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 40, 40, Color.WHITE);
-        renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 40, 52, Color.WHITE);
-        renderer.drawText(this.monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 40, 64, Color.WHITE);
-        renderer.drawText(this.monospaced, "High Score: " + (int)game.getGlobalData().getHighScore(), 40, 76, Color.WHITE);
+        renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion().getFriendlyString(), 40, 52, Color.WHITE);
+        renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 40, 64, Color.WHITE);
+        renderer.drawText(this.monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 40, 76, Color.WHITE);
+        renderer.drawTextRight(Fonts.SANS_BOLD_32.get(), "High Score", this.width - 40, 40, Color.WHITE);
+        renderer.drawTextRight(Fonts.SANS_REGULAR_16.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }

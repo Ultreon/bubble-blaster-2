@@ -15,6 +15,8 @@ import java.io.IOException;
 public class GameOverScreen extends Screen {
     private static final Color GAME_OVER_COLOR_NORMAL = Color.argb(0x7fff3243);
     private static final Color GAME_OVER_COLOR_FLASH = Color.argb(0x7fff8432);
+    public static final TextObject TITLE = TextObject.translation("bubbleblaster.screen.gameOver.");
+    private static final TextObject HIGH_SCORE = TextObject.translation("bubbleblaster.screen.gameOver.highScore");
     private final boolean isHighScore;
     private final long score;
     private long gameOverTime;
@@ -22,6 +24,11 @@ public class GameOverScreen extends Screen {
     private final BitmapFont gameOverDescriptionFont = Fonts.SANS_BOLD_14.get();
 
     public GameOverScreen(long score) {
+        this(score, TITLE);
+    }
+
+    public GameOverScreen(long score, TextObject title) {
+        super(title);
         this.score = score;
 
         GlobalSaveData globalData = GlobalSaveData.instance();
@@ -64,19 +71,17 @@ public class GameOverScreen extends Screen {
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 
-        if (this.isHighScore) {
-            renderer.drawTextCenter(this.gameOverTitleFont, "Congratulations!", this.width / 2f, 152, Color.WHITE);
-            renderer.drawTextCenter(this.gameOverDescriptionFont, "You beat your high-score!", this.width / 2f, 216, Color.WHITE);
-        } else {
-            long cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
-            int phase = (int) (Math.floorDiv(cycled, 1000));
-            switch (phase) {
-                case 4, 3, 2 -> renderer.setColor(GAME_OVER_COLOR_NORMAL);
-                case 1 -> renderer.setColor(GAME_OVER_COLOR_FLASH);
-                case 0 -> MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
-            }
-            renderer.drawTextCenter(this.gameOverTitleFont, "Game Over", this.width / 2f, 152, MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
+        long cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
+        int phase = (int) (Math.floorDiv(cycled, 1000));
+        switch (phase) {
+            case 4, 3, 2 -> renderer.setColor(GAME_OVER_COLOR_NORMAL);
+            case 1 -> renderer.setColor(GAME_OVER_COLOR_FLASH);
+            case 0 -> MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
         }
+        renderer.drawTextCenter(this.gameOverTitleFont, this.title, this.width / 2f, 152, MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
+
+        if (this.isHighScore)
+            renderer.drawTextCenter(this.gameOverDescriptionFont, HIGH_SCORE, this.width / 2f, 216, Color.WHITE);
 
         renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
     }
