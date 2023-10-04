@@ -32,7 +32,7 @@ public final class GameSettings implements Serializable {
 
     public Keybind keybindRotateLeft = new Keybind(Input.Keys.LEFT);
     public Keybind keybindRotateRight = new Keybind(Input.Keys.RIGHT);
-    public int maxBubbles = 200;
+    public int maxBubbles = 500;
     private String language = "en";
 
     public Identifier gamemode = Gamemodes.NORMAL.id();

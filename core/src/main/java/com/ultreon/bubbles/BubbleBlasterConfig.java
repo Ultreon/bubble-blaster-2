@@ -31,6 +31,7 @@ public class BubbleBlasterConfig {
     public static final Config.IntEntry BOOST_DURATION;
     public static final Config.DoubleEntry BUBBLE_SCORE_REDUCTION;
     public static final Config.DoubleEntry BUBBLE_SCORE_REDUCTION_SELF;
+    public static final Config.IntEntry MAX_BUBBLES;
     public static final Config.EnumEntry<DifficultyEffectType> DIFFICULTY_EFFECT_TYPE;
     public static final Config.IntEntry TIME_LIMIT;
 
@@ -53,6 +54,7 @@ public class BubbleBlasterConfig {
     static final Config CONFIG;
 
 
+
     static {
         Config.Builder builder = new Config.Builder(FILE);
 
@@ -71,6 +73,7 @@ public class BubbleBlasterConfig {
         BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.001, 0.04, 16.0);
         BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.001, 0.1, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
+        MAX_BUBBLES = builder.entry("gameplay.maxBubbles").comment("The maximum amount of bubbles.").withinRange(200, 2000, 500);
         BLOOD_MOON_STOP_LOW = builder.entry("gameplay.bloodMoon.deactivateLow").comment("The lower point of deactivation time (in seconds) for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 10);
         BLOOD_MOON_STOP_HIGH = builder.entry("gameplay.bloodMoon.deactivateHigh").comment("The higher point of deactivation time (in seconds) for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 25);
         BLOOD_MOON_TRIGGER_LOW = builder.entry("gameplay.bloodMoon.triggerLow").comment("The lower point of trigger time (in seconds) between blood moon events. (Random between lower and higher)").withinRange(30, 900, 240);

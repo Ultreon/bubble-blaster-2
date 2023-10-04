@@ -159,7 +159,7 @@ public final class World implements CrashFiller, Closeable {
     public void firstInit(Messenger messenger) {
         WorldEvents.WORLD_STARTING.factory().onWorldStarting(this);
 
-        int maxBubbles = GameSettings.instance().maxBubbles;
+        int maxBubbles = BubbleBlasterConfig.MAX_BUBBLES.get();
 
         try {
             // Spawn bubbles
@@ -762,7 +762,7 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private void tickSpawning() {
-        if (this.entitiesById.values().stream().filter(Bubble.class::isInstance).count() < GameSettings.instance().maxBubbles) {
+        if (this.entitiesById.values().stream().filter(Bubble.class::isInstance).count() < BubbleBlasterConfig.MAX_BUBBLES.get()) {
             long idx = this.entitySeedIdx++;
             RandomSource random = new JavaRandom(this.seed ^ idx);
             var variant = Bubble.getRandomVariant(this, random.nextRandom());
