@@ -112,16 +112,6 @@ dependencies {
 allprojects {
     apply plugin: "maven-publish"
 
-    ext {
-        app_name = "Bubble Blaster Closed Beta"
-        gdx_version = '1.11.0'
-        robo_vm_version = '2.3.16'
-        box_2d_lights_version = '1.5'
-        ashley_version = '1.7.4'
-        ai_version = '1.8.2'
-        gdx_controllers_version = '2.2.3'
-    }
-
     publishing {
         publications {
 
