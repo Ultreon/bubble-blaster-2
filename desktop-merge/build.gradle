@@ -276,6 +276,7 @@ jpackage {
         macPackageIdentifier = project_id
         macPackageName = project_name
         appVersion = packageVersion
+        javaOptions = javaOptions + [ "-XstartOnFirstThread" ]
     }
 
     linux {
@@ -334,6 +335,7 @@ tasks.register('jpackageAlt', JPackageTask) {
         macPackageIdentifier = project_id
         macPackageName = project_name
         appVersion = packageVersion
+        javaOptions = javaOptions + [ "-XstartOnFirstThread" ]
         type = ImageType.PKG
     }
 
