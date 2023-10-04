@@ -237,12 +237,6 @@ public final class World implements CrashFiller, Closeable {
         if (!this.saveLock.tryLock()) return false;
         if (WorldEvents.WORLD_SAVING.factory().onWorldSaving(this, save, messenger).isCanceled()) return false;
 
-        Notification notification = Notification.builder("Saving", "The game is being saved...")
-                .subText("Auto Save Feature")
-                .sticky()
-                .build();
-        this.game.notifications.notify(notification);
-
         // Gamemode implementation for saving data.
         this.gamemode.onSave(this, save, messenger);
 
@@ -254,7 +248,6 @@ public final class World implements CrashFiller, Closeable {
         save.dump("gameplay", this.gameplayStorage.save());
 
         this.saveLock.unlock();
-        notification.set("Saved", "The game has been saved!");
         WorldEvents.WORLD_SAVED.factory().onWorldSaved(this, save, messenger);
         return true;
     }
