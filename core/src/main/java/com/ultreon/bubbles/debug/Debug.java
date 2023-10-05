@@ -1,8 +1,8 @@
 package com.ultreon.bubbles.debug;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.GamePlatform;
+import com.ultreon.bubbles.notification.Notification;
 import org.slf4j.Logger;
 import org.slf4j.MarkerFactory;
 

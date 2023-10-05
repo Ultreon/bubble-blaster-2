@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.util;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Vector3;
 import com.ultreon.libs.commons.v0.vector.Vec3d;
 

@@ -6,7 +6,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.OptionsNumberInput;
-import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.libs.translations.v1.Language;
 

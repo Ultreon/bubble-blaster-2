@@ -1,15 +1,11 @@
 package com.ultreon.bubbles;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.init.HudTypes;
-import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.gui.hud.HudType;
-import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;

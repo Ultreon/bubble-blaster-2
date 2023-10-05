@@ -3,7 +3,6 @@ package com.ultreon.bubbles.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.bubble.BubbleProperties;

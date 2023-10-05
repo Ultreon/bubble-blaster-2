@@ -7,7 +7,6 @@ import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.gamemode.TimedMode;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;

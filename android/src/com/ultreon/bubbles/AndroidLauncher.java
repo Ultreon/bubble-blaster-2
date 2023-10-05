@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.backends.android.surfaceview.FillResolutionStrategy;
-import com.badlogic.gdx.backends.android.surfaceview.ResolutionStrategy;
 import com.ultreon.bubbles.platform.android.AndroidPlatform;
 import com.ultreon.bubbles.platform.android.AndroidUtils;
 import org.jetbrains.annotations.Nullable;

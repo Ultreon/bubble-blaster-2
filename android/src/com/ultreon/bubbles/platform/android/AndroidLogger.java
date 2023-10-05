@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.platform.android;
 
 import android.util.Log;
-
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 

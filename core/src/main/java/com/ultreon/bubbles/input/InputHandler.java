@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.controllers.Controller;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;

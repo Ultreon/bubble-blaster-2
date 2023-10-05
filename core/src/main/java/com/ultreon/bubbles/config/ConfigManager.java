@@ -2,9 +2,9 @@ package com.ultreon.bubbles.config;
 
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.notification.Notification;
-import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.commons.exceptions.DuplicateElementException;
 import com.ultreon.libs.commons.v0.UtilityClass;
 

@@ -11,7 +11,6 @@ import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.io.filefilters.DirectoryFileFilter;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

@@ -1,9 +1,5 @@
 package com.ultreon.bubbles.render.gui.cursor;
 
-import com.badlogic.gdx.math.Polygon;
-import com.ultreon.bubbles.render.Color;
-import com.ultreon.bubbles.render.Renderer;
-
 public class DefaultCursorRenderer {
     public DefaultCursorRenderer() {
         super();

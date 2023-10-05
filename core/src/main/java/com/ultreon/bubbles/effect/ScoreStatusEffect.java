@@ -2,7 +2,6 @@ package com.ultreon.bubbles.effect;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeModifier;
 import com.ultreon.commons.exceptions.InvalidValueException;

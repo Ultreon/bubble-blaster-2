@@ -3,8 +3,6 @@ package com.ultreon.bubbles.common;
 import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.BubbleBlaster;
 
-import java.io.File;
-
 public class GameFolders {
     // Dirs
     public static final FileHandle DATA_DIR = BubbleBlaster.getDataDir();

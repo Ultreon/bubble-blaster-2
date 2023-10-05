@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.TitleScreenBackground;

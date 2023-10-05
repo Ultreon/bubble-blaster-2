@@ -33,7 +33,6 @@ import com.ultreon.bubbles.init.GameplayEvents;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;

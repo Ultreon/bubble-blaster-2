@@ -7,7 +7,6 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.random.RandomSource;
-import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.render.gui.hud.ModernHud;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.world.World;

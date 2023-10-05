@@ -3,19 +3,14 @@ package com.ultreon.bubbles.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerMapping;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.entity.player.Player;
-import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.Mth;
-import com.ultreon.libs.commons.v0.vector.Vec3f;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 

@@ -1,7 +1,5 @@
 package com.ultreon.bubbles.input;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.input.KeyBinding.Type;
