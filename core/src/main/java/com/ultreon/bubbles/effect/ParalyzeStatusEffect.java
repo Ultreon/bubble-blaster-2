@@ -27,9 +27,4 @@ public class ParalyzeStatusEffect extends StatusEffect {
             entity.canMove = true;
         }
     }
-
-    @Override
-    protected void updateStrength() {
-        // Do nothing.
-    }
 }

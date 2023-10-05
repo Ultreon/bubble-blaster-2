@@ -7,6 +7,8 @@ import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
 
+import java.time.Duration;
+
 public class BlindnessBubble extends BubbleType {
     public BlindnessBubble() {
         this.setColors("000000,202020,404040,606060,808080");
@@ -22,6 +24,6 @@ public class BlindnessBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.BLINDNESS, source.getRadius() / 4, (byte) ((byte) source.getRadius() / 12 + 1));
+        return new StatusEffectInstance(StatusEffects.BLINDNESS, Duration.ofSeconds((long) (source.getRadius() / 4)), (byte) ((byte) source.getRadius() / 24 + 1));
     }
 }

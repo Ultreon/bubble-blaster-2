@@ -243,7 +243,7 @@ public class LegacyHud extends HudType {
 
     @Override
     public boolean renderBackground(Renderer renderer, Color origColorTop, Color origColorBottom) {
-        renderer.fill(0, 0, this.width, this.height, BACKGROUND_COLOR);
+        renderer.fill(0, 0, this.width(), this.height(), BACKGROUND_COLOR);
         return true;
     }
 }

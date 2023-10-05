@@ -11,4 +11,5 @@ public class Constants {
     // Auto Save
     public static final long AUTO_SAVE_RATE = 30;
     public static final TimeUnit AUTO_SAVE_RATE_UNIT = TimeUnit.SECONDS;
+    public static final int RENDER_SAMPLES = 16;
 }

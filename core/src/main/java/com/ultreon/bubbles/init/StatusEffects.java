@@ -26,9 +26,10 @@ public class StatusEffects {
     public static final ResistanceStatusEffect RESISTANCE = StatusEffects.register("resistance", new ResistanceStatusEffect());
 
     public static final AttackBoostStatusEffect ATTACK_BOOST = StatusEffects.register("attack", new AttackBoostStatusEffect());
-    public static final ScoreStatusEffect SCORE = StatusEffects.register("multi_score", new ScoreStatusEffect());
+    public static final ScoreStatusEffect SCORE = StatusEffects.register("score", new ScoreStatusEffect());
     public static final SwiftnessStatusEffect SWIFTNESS = StatusEffects.register("swiftness", new SwiftnessStatusEffect());
     public static final BlindnessStatusEffect BLINDNESS = StatusEffects.register("blindness", new BlindnessStatusEffect());
+    public static final BubbleFreezeEffect BUBBLE_FREEZE = StatusEffects.register("bubble_freeze", new BubbleFreezeEffect());
     public static final ParalyzeStatusEffect PARALYZE = StatusEffects.register("paralyze", new ParalyzeStatusEffect());
     public static final PoisonStatusEffect POISON = StatusEffects.register("poison", new PoisonStatusEffect());
     public static final LuckStatusEffect LUCK = StatusEffects.register("luck", new LuckStatusEffect());

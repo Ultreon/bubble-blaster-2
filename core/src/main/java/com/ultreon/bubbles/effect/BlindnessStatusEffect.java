@@ -26,17 +26,6 @@ public class BlindnessStatusEffect extends StatusEffect {
         this.startTime = System.currentTimeMillis();
     }
 
-    @SuppressWarnings("EmptyMethod")
-    @Override
-    public void onStop(Entity entity) {
-        // Do nothing
-    }
-
-    @Override
-    protected void updateStrength() {
-        // Do nothing
-    }
-
     @Override
     protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
         return false;

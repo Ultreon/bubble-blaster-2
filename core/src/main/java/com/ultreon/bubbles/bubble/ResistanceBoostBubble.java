@@ -7,6 +7,8 @@ import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
 
+import java.time.Duration;
+
 public class ResistanceBoostBubble extends BubbleType {
     public ResistanceBoostBubble() {
         this.setColors("00ffc0,40ffd0,80ffe0,c0fff0,ffffff");
@@ -22,6 +24,6 @@ public class ResistanceBoostBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.RESISTANCE, source.getRadius() / 4, (byte) ((byte) source.getRadius() / 12 + 1));
+        return new StatusEffectInstance(StatusEffects.RESISTANCE, Duration.ofSeconds((long) (source.getRadius() / 4)), (byte) ((byte) source.getRadius() / 12 + 1));
     }
 }

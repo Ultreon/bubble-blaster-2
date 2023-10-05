@@ -9,7 +9,6 @@ import com.ultreon.bubbles.event.v1.WindowEvents;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -122,8 +121,6 @@ public interface GameWindow {
      * Other operating systems are unknown for this behavior.
      */
     void requestUserAttention();
-
-    void showError(@NotNull String title, @Nullable String description);
 
     default void setTitle(@NotNull String title) {
         Gdx.graphics.setTitle(title);

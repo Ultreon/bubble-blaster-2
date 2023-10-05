@@ -60,7 +60,7 @@ public class BubbleBlasterConfig {
         FULLSCREEN = builder.entry("generic.fullscreen").comment("Play the game in fullscreen mode.").value(false);
 
         // Gameplay
-        LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 100_000, 10_000);
+        LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 2_000, 1_000);
         BASE_BUBBLE_SPEED = builder.entry("gameplay.baseBubbleSpeed").comment("Speed of bubbles at level 1. (Will still increase after each level)").withinRange(0.1, 50.0, 2.0);
         SHOOT_COOLDOWN = builder.entry("gameplay.shootCooldown").comment("How much time to wait until the player can shoot a bullet again. (In milliseconds)").withinRange(50, 2_000, 500);
         BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240_000, 120_000);

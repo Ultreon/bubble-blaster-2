@@ -9,7 +9,7 @@ import com.ultreon.bubbles.util.RandomValueSource;
 public class AccelerateBubble extends BubbleType {
     public AccelerateBubble() {
         this.setColors("#00003f,#00007f,#0000af,#0000ff");
-        this.setPriority(2440000);
+        this.setPriority(170_000);
         this.setRadius(RandomValueSource.random(25, 54));
         this.setSpeed(RandomValueSource.random(6.0, 28.0));
         this.setDefense(RandomValueSource.random(0.8, 1.2));

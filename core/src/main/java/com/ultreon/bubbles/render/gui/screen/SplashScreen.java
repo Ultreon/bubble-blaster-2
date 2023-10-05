@@ -52,6 +52,8 @@ public final class SplashScreen extends InternalScreen {
             sound.play(0.4f);
         }
 
+        renderer.hideCursor();
+
         final long timeDiff = System.currentTimeMillis() - this.startTime;
         float zoom = (float) SplashScreen.interpolate(FROM_ZOOM, TO_ZOOM, MathHelper.clamp(timeDiff / DURATION, 0f, 1f));
         Vector2 thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);

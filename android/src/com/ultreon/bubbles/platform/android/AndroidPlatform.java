@@ -9,6 +9,8 @@ import com.ultreon.commons.os.OperatingSystem;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.crash.v0.CrashLog;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,5 +82,10 @@ public class AndroidPlatform extends GamePlatform {
 
     public AndroidLauncher getLauncher() {
         return this.launcher;
+    }
+
+    @Override
+    public void showError(@NotNull String title, @Nullable String description) {
+        this.launcher.showMessage(title, description);
     }
 }

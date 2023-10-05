@@ -12,10 +12,10 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.util.RomanNumber;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
-import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 import org.jetbrains.annotations.NotNull;
@@ -167,16 +167,14 @@ public class ModernHud extends HudType {
         int x = this.game.getWidth() - 320;
         int y = 20;
 
-        for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
-            Identifier id = appliedEffect.getType().getId();
-
+        for (StatusEffectInstance effectInstance : player.getActiveEffects()) {
             renderer.fill(x, y, 300, 50, Color.BLACK.withAlpha(0x80));
 
             // Format duration to string.
-            String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
+            String time = TimeUtils.formatDuration(effectInstance.getRemainingTime());
 
             try {
-                renderer.blit(appliedEffect.getType().getIcon(), x + 5, y + 5, 40, 40);
+                renderer.blit(effectInstance.getType().getIcon(), x + 5, y + 5, 40, 40);
             } catch (Exception e) {
                 this.game.notifications.notifyOnce(
                         UUID.fromString("ca1d5b52-1877-40fe-8c17-077dc637d9e2"),
@@ -188,11 +186,16 @@ public class ModernHud extends HudType {
                 renderer.fill(x + 5, y + 5, 40, 40, Color.WHITE.withAlpha(0x80));
             }
 
-            renderer.drawTextLeft(Fonts.SANS_BOLD_20.get(), TextObject.translation(id.location() + ".statusEffect." + id.path()).getText(), x + 70, y + 15, Color.WHITE);
+            int finalY = y;
+            renderer.scissored(x + 50, y + 2, 248, 46, () -> {
+                MutableText translation = effectInstance.getType().getTranslation();
+                translation.append(" " + RomanNumber.toRoman(effectInstance.getStrength()));
+                renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), translation, x + 70, finalY + 15, Color.WHITE);
 
-            var color = Color.WHITE.withAlpha(0x80);
-            if (appliedEffect.getRemainingTime().toSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
-            renderer.drawTextLeft(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time).getText(), x + 70, y + 40, color);
+                var color = Color.WHITE.withAlpha(0x80);
+                if (effectInstance.getRemainingTime().getSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
+                renderer.drawTextLeft(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time), x + 70, finalY + 35, color);
+            });
 
             y += 60;
         }

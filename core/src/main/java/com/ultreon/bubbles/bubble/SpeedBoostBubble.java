@@ -3,7 +3,10 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.RandomValueSource;
+
+import java.time.Duration;
 
 public class SpeedBoostBubble extends BubbleType {
     public SpeedBoostBubble() {
@@ -20,7 +23,6 @@ public class SpeedBoostBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-//        return new AppliedEffect(Effects.SPEED_BOOST.get(), source.getRadius() / 8, (byte) (source.getSpeed() / 3.2d));
-        return null;
+        return new StatusEffectInstance(StatusEffects.SWIFTNESS, Duration.ofSeconds((long) (source.getRadius() / 8)), (byte) (source.getSpeed() / 3.2d));
     }
 }

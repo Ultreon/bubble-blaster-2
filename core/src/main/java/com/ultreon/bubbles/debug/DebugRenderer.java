@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
@@ -79,6 +80,7 @@ public class DebugRenderer {
 
     public void render(Renderer renderer) {
         if (this.game.isLoading()) return;
+        if (!GamePlatform.get().isDebugGuiOpen()) return;
 
         this.reset();
 
@@ -92,12 +94,15 @@ public class DebugRenderer {
         this.left(renderer, "Scaled Size", new FloatSize(this.game.getScaledWidth(), this.game.getScaledHeight()));
         this.left(renderer, "Window Size", new FloatSize(this.game.getGameWindow().getWidth(), this.game.getGameWindow().getHeight()));
         this.left(renderer, "Canvas Size", new FloatSize(this.game.getWidth(), this.game.getHeight()));
+        this.left(renderer, "Free FBOs", renderer.getFreeFrameBuffers());
+        this.left(renderer, "Managed FBOs", renderer.getManagedFrameBuffers());
         World world = this.game.world;
         if (world != null) {
             GameplayEvent curGe = world.getCurrentGameEvent();
             this.left(renderer, "Entity Count", world.getEntities().size());
-            this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Entity::isVisible).count());
-            this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Entity::willBeDeleted).count());
+            this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::isVisible).count());
+            this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::willBeDeleted).count());
+            this.left(renderer, "Null Entity Count", world.getEntities().stream().filter(Objects::isNull).count());
             this.left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
             this.left(renderer, "Is Initialized", world.isInitialized());
             this.left(renderer, "Difficulty", world.getDifficulty().name());
@@ -198,6 +203,8 @@ public class DebugRenderer {
     }
 
     private void keyPress(int keyCode) {
+        if (!GamePlatform.get().isDebugGuiOpen()) return;
+
         if (keyCode == Input.Keys.ENTER) {
             System.out.println("selectInput = " + this.selectInput);
             if (this.selectInput.isEmpty()) return;

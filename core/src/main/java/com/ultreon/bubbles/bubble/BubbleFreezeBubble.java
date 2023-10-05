@@ -1,10 +1,12 @@
 package com.ultreon.bubbles.bubble;
 
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
+import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.RandomValueSource;
 
-import static com.ultreon.bubbles.BubbleBlaster.TPS;
+import java.time.Duration;
 
 public class BubbleFreezeBubble extends BubbleType {
     public BubbleFreezeBubble() {
@@ -17,6 +19,6 @@ public class BubbleFreezeBubble extends BubbleType {
 
     @Override
     public void onCollision(Bubble source, Entity target) {
-        source.getWorld().freezeBubbles((int) (source.getRadius() * 1.6f) * TPS / 2);
+        target.addEffect(new StatusEffectInstance(StatusEffects.BUBBLE_FREEZE, Duration.ofSeconds((long) (source.getRadius() / 8)), 1));
     }
 }

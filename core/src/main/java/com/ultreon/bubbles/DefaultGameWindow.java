@@ -5,10 +5,6 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 public class DefaultGameWindow implements GameWindow {
     private final Properties properties;
@@ -105,11 +101,6 @@ public class DefaultGameWindow implements GameWindow {
     @Override
     public void requestUserAttention() {
 
-    }
-
-    @Override
-    public void showError(@NotNull String title, @Nullable String description) {
-        JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
     }
 
     public Properties getProperties() {

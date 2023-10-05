@@ -76,7 +76,7 @@ public class DesktopGameWindow implements GameWindow {
     }
 
     public void dispose() {
-        Gdx.app.exit();
+        this.game().shutdown();
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {

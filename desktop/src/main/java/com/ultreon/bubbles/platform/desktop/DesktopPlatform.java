@@ -28,9 +28,12 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.fabricmc.loader.impl.util.Arguments;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -251,6 +254,11 @@ public class DesktopPlatform extends GamePlatform {
     }
 
     @Override
+    public boolean isDebugGuiOpen() {
+        return ImGuiRenderer.DEBUG_GUI_OPEN.get();
+    }
+
+    @Override
     public boolean isCollisionShapesShown() {
         return ImGuiRenderer.SHOW_COLLISIONS_SHAPES.get();
     }
@@ -263,6 +271,11 @@ public class DesktopPlatform extends GamePlatform {
     @Override
     public boolean isDesktop() {
         return true;
+    }
+
+    @Override
+    public void showError(@NotNull String title, @Nullable String description) {
+        JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

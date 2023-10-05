@@ -10,11 +10,14 @@ import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Duration;
 import java.util.Objects;
+
+import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 @SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
@@ -22,12 +25,13 @@ import java.util.Objects;
 @MethodsReturnNonnullByDefault
 public class StatusEffectInstance implements TagHolder {
     private final StatusEffect type;
+    private final long originalTicks;
+    private long remainingTicks;
     private int strength;
     private long endTime;
 
     private boolean active;
     private MapType tag = new MapType();
-    private long baseDuration;
 
     /**
      * @throws ClassCastException when effect couldn't be recognized.
@@ -41,23 +45,25 @@ public class StatusEffectInstance implements TagHolder {
             var type = Registries.EFFECTS.getValue(id);
             this.type = type == null ? StatusEffects.NONE : type;
         }
-        this.setRemainingTime(Duration.ofMillis(document.getLong("duration")));
-        this.baseDuration = document.getLong("baseDuration");
+        
+        this.remainingTicks = document.getLong("duration");
+        this.originalTicks = document.getLong("baseDuration");
         this.strength = document.getInt("strength");
     }
 
-    public StatusEffectInstance(StatusEffect type, double seconds, int strength) throws InvalidValueException {
-        this(type, Duration.ofMillis((long) (seconds / 1000f)), strength);
+    public StatusEffectInstance(StatusEffect type, Duration duration, int strength) throws InvalidValueException {
+        this(type, (long) (duration.toMillis() / 1000.0 * TPS), strength);
     }
 
-    public StatusEffectInstance(StatusEffect type, Duration duration, int strength) throws InvalidValueException {
+    public StatusEffectInstance(StatusEffect type, long ticks, int strength) throws InvalidValueException {
         if (strength < 1) {
             throw new InvalidValueException("Cannot create effect instance with strength < 1");
         }
 
         this.type = type;
         this.strength = strength;
-        this.setRemainingTime(duration);
+        this.remainingTicks = ticks;
+        this.originalTicks = ticks;
     }
 
     public static @NotNull StatusEffectInstance load(MapType activeEffectData) {
@@ -67,8 +73,8 @@ public class StatusEffectInstance implements TagHolder {
     public @NotNull MapType save() {
         MapType tag = new MapType();
         tag.put("Tag", this.tag);
-        tag.putLong("baseDuration", this.getBaseDuration());
-        tag.putLong("duration", this.getRemainingTime().toMillis());
+        tag.putLong("baseDuration", this.originalTicks);
+        tag.putLong("duration", this.remainingTicks);
         tag.putInt("strength", this.getStrength());
 
         Identifier key = Registries.EFFECTS.getKey(this.getType());
@@ -98,13 +104,13 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public void tick(Entity entity) {
-        if (this.getRemainingTime().isZero() || this.getRemainingTime().isNegative()) {
-            this.active = false;
-            this.stop(entity);
+        if (--this.remainingTicks == 0) {
             entity.removeEffect(this);
-        } else {
-            this.type.tick(entity, this);
+            this.active = false;
+            return;
         }
+
+        this.type.tick(entity, this);
     }
 
     public void onStart(Entity entity) {
@@ -115,11 +121,13 @@ public class StatusEffectInstance implements TagHolder {
         this.type.onStop(entity);
     }
 
+    @Deprecated
     @SuppressWarnings("EmptyMethod")
     protected void updateStrength(float old, float _new) {
 
     }
 
+    @Deprecated
     public void addStrength() {
         float old = this.getStrength();
         byte output = (byte) (this.strength + 1);
@@ -127,6 +135,7 @@ public class StatusEffectInstance implements TagHolder {
         this.updateStrength(old, this.getStrength());
     }
 
+    @Deprecated
     public void addStrength(byte amount) {
         float old = this.getStrength();
         byte output = (byte) (this.strength + amount);
@@ -134,6 +143,7 @@ public class StatusEffectInstance implements TagHolder {
         this.updateStrength(old, this.getStrength());
     }
 
+    @Deprecated
     public void removeStrength() {
         float old = this.getStrength();
         byte output = (byte) (this.strength - 1);
@@ -141,6 +151,7 @@ public class StatusEffectInstance implements TagHolder {
         this.updateStrength(old, this.getStrength());
     }
 
+    @Deprecated
     public void removeStrength(byte amount) {
         float old = this.getStrength();
         byte output = (byte) (this.strength - amount);
@@ -152,14 +163,15 @@ public class StatusEffectInstance implements TagHolder {
         return this.strength;
     }
 
+    @ApiStatus.Experimental
     public void setStrength(int strength) throws InvalidValueException {
-        float old = this.getStrength();
+        int old = this.getStrength();
         if (strength < 1) {
             throw new InvalidValueException("Tried to set strength less than 1.");
         }
 
         this.strength = strength;
-        this.updateStrength(old, this.getStrength());
+        this.type.onStrengthUpdate(old, this.getStrength());
     }
 
     public final long getEndTime() {
@@ -171,7 +183,7 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public Duration getRemainingTime() {
-        return Duration.ofMillis(this.endTime - System.currentTimeMillis());
+        return Duration.ofMillis((long) (this.remainingTicks / (double) TPS * 1000.0));
     }
 
     public void setRemainingTime(Duration time) {
@@ -209,14 +221,14 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public long getStartTime() {
-        return this.getEndTime() - this.baseDuration;
+        return this.getEndTime() - this.originalTicks;
     }
 
     public long getTimeActive() {
         return System.currentTimeMillis() - this.getStartTime();
     }
 
-    public long getBaseDuration() {
-        return this.baseDuration;
+    public long getOriginalTicks() {
+        return this.originalTicks;
     }
 }

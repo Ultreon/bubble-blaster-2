@@ -96,6 +96,8 @@ public final class LoadScreen extends InternalScreen {
             this.startTime = System.currentTimeMillis();
         }
 
+        renderer.hideCursor();
+
         this.renderBackground(renderer);
 
         int i = 0;

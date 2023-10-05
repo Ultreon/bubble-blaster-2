@@ -57,6 +57,7 @@ public class DesktopLauncher {
         config.setForegroundFPS(60);
         config.setIdleFPS(5);
         config.setInitialVisible(false);
+        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL32, 3, 2);
         config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         config.setTitle("Bubble Blaster 2");
         config.setWindowIcon(icons.toArray(new String[]{}));

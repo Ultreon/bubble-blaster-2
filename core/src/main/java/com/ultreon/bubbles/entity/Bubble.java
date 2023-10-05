@@ -20,6 +20,7 @@ import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.init.BubbleTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.init.SoundEvents;
+import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Renderer;
@@ -93,7 +94,11 @@ public class Bubble extends AbstractBubbleEntity {
         super.preSpawn(information);
 
         if (information.getReason() instanceof NaturalSpawnReason reason) {
-            this.bubbleType = BubbleSystem.random(random, world);
+            BubbleType bubbleType = BubbleSystem.random(random, world);
+            if (!bubbleType.canSpawn(information.getWorld())) {
+                bubbleType = information.getWorld().getGamemode().getDefaultBubble();
+            }
+            this.bubbleType = bubbleType;
 
             // Get random properties
             BubbleRandomizer randomizer = world.getBubbleRandomizer();
@@ -249,7 +254,12 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (this.willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, this.bubbleType);
+        Player player = this.world.getPlayer();
+        if (player != null && player.getActiveEffect(StatusEffects.BLINDNESS) != null) {
+            WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, BubbleTypes.NORMAL);
+        } else {
+            WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, this.bubbleType);
+        }
     }
 
     public boolean isBeingDestroyed() {

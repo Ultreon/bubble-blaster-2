@@ -50,15 +50,4 @@ public class PoisonStatusEffect extends StatusEffect {
         tag.putLong("nextDamage", System.currentTimeMillis() + 2000);
         tag.putLong("startTime", System.currentTimeMillis());
     }
-
-    @SuppressWarnings("EmptyMethod")
-    @Override
-    public void onStop(Entity entity) {
-        // Do nothing
-    }
-
-    @Override
-    protected void updateStrength() {
-        // Do nothing
-    }
 }

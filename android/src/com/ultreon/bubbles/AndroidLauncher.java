@@ -47,8 +47,8 @@ public class AndroidLauncher extends AndroidApplication {
 		params.leftMargin = 24;
 		params.rightMargin = 24;
 		System.out.println(Build.VERSION.SDK_INT);
-        textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_HIGH_QUALITY);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+		textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_HIGH_QUALITY);
+		// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
 		textView.setInputType(InputType.TYPE_CLASS_TEXT);
 		builder.setView(textView);
 

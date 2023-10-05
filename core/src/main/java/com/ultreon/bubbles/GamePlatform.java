@@ -9,6 +9,7 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.crash.v0.CrashLog;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -134,4 +135,6 @@ public abstract class GamePlatform {
     public boolean isDesktop() {
         return false;
     }
+
+    public abstract void showError(@NotNull String title, @Nullable String description);
 }

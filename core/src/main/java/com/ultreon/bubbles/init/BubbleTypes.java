@@ -7,6 +7,8 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.time.Duration;
+
 /**
  * Bubble Initialization
  * Bubble init, used for initialize bubbles.
@@ -44,7 +46,7 @@ public class BubbleTypes {
             .radius(21, 55)
             .speed(4.0, 10.8)
             .score(2)
-            .effect((source, target) -> new StatusEffectInstance(StatusEffects.SCORE, source.getRadius() / 8, 2))
+            .effect((source, target) -> new StatusEffectInstance(StatusEffects.SCORE, Duration.ofSeconds((long) (source.getRadius() / 6)), 2))
             .build());
     public static final BubbleType TRIPLE_STATE = BubbleTypes.register("triple_state", BubbleType.builder()
             .colors("#00ffff,#00ffff,#00000000,#00ffff,#00000000,#00ffff")
@@ -53,6 +55,7 @@ public class BubbleTypes {
             .speed(4.1, 10.4)
             .defense(0.3f, 0.4f)
             .score(3)
+            .effect((source, target) -> new StatusEffectInstance(StatusEffects.SCORE, Duration.ofSeconds((long) (source.getRadius() / 8)), 3))
             .hardness(1)
             .build()
     );
@@ -71,7 +74,7 @@ public class BubbleTypes {
             .radius(28, 87)
             .speed(1.5, 3)
             .score(0.2, 0.4)
-            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.PARALYZE, source.getRadius() / 8, (byte) 1)))
+            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.PARALYZE, Duration.ofSeconds((long) (source.getRadius() / 8)), (byte) 1)))
             .colors("#ffff00,#ffff5f,#ffffdf,#ffffff")
             .difficulty(10)
             .build());

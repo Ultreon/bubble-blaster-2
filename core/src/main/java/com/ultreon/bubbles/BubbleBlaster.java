@@ -227,9 +227,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public final ControllerHandler controllerHandler;
 
     private BubbleBlaster() {
-        if (instance != null) {
-            throw new Error("The game should not open twice");
-        }
+        if (instance != null)
+            throw new UnsupportedOperationException("Can't open the game twice.");
+
+        if (Gdx.gl31 == null)
+            throw new UnsupportedOperationException("Bubble Blaster requires GL 3.1, which your device doesn't support.");
 
         this.arrowCursor = this.createCursor("textures/cursor/arrow.png", 0, 0);
         this.handCursor = this.createCursor("textures/cursor/pointer.png", 10, 10);
@@ -1800,7 +1802,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         }
         this.stopping = true;
         this.running = false;
-        this.window.dispose();
+        Gdx.app.exit();
     }
 
     public static void crash(ApplicationCrash crash) {
@@ -1809,10 +1811,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
             CrashLog crashLog = crash.getCrashLog();
             GamePlatform.get().handleCrash(crashLog);
-            if (GamePlatform.get().isDesktop()) Gdx.app.exit();
+            if (GamePlatform.get().isDesktop()) instance.shutdown();
         } catch (Throwable t) {
             LOGGER.error(FATAL_ERROR_MSG, t);
-            Gdx.app.exit();
+            instance.shutdown();
         }
     }
 

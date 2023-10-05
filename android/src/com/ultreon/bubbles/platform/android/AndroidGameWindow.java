@@ -5,14 +5,16 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
-import com.ultreon.bubbles.*;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.Constants;
+import com.ultreon.bubbles.GameWindow;
 import com.ultreon.bubbles.event.v1.WindowEvents;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -73,7 +75,7 @@ public class AndroidGameWindow implements GameWindow {
     }
 
     public void dispose() {
-        Gdx.app.exit();
+        this.game().shutdown();
     }
 
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
@@ -147,12 +149,6 @@ public class AndroidGameWindow implements GameWindow {
      */
     public void requestUserAttention() {
 
-    }
-
-    public void showError(@NotNull String title, @Nullable String description) {
-        AndroidPlatform platform = (AndroidPlatform) GamePlatform.get();
-        AndroidLauncher launcher = platform.getLauncher();
-        launcher.showMessage(title, description);
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

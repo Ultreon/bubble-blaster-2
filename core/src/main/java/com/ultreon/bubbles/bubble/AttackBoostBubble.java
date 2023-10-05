@@ -7,6 +7,8 @@ import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
 
+import java.time.Duration;
+
 public class AttackBoostBubble extends BubbleType {
     public AttackBoostBubble() {
         this.setColors("804020,a07e5c,c0bc98,e0d8d0,ffffff");
@@ -22,6 +24,6 @@ public class AttackBoostBubble extends BubbleType {
 
     @Override
     public StatusEffectInstance getEffect(Bubble source, Entity target) {
-        return new StatusEffectInstance(StatusEffects.ATTACK_BOOST, source.getRadius() / 8.0, (int) (source.getRadius() / 12 + 1));
+        return new StatusEffectInstance(StatusEffects.ATTACK_BOOST, Duration.ofSeconds((long) (source.getRadius() / 8)), (int) (source.getRadius() / 12 + 1));
     }
 }

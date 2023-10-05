@@ -9,12 +9,13 @@ import com.ultreon.bubbles.render.TextureManager;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.registries.v0.exception.RegistryException;
 import com.ultreon.libs.resources.v0.Resource;
+import com.ultreon.libs.text.v1.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 
-public abstract class StatusEffect {
+public abstract class StatusEffect implements Translatable {
     // Empty Image.
     private static final Texture FALLBACK_TEXTURE;
 
@@ -78,12 +79,17 @@ public abstract class StatusEffect {
 
     }
 
-    @SuppressWarnings("EmptyMethod")
-    protected void updateStrength() {
+    protected void onStrengthUpdate(int oldValue, int newValue) {
 
     }
 
     public Identifier getId() {
         return Registries.EFFECTS.getKey(this);
+    }
+
+    @Override
+    public String getTranslationPath() {
+        Identifier id = this.getId();
+        return id.location() + ".statusEffect." + id.path().replaceAll("/", ".");
     }
 }

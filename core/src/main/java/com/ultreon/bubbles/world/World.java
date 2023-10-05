@@ -19,6 +19,7 @@ import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
+import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.entity.types.EntityType;
@@ -415,6 +416,10 @@ public final class World implements CrashFiller, Closeable {
         return this.bubblesFrozen ? 0 : this.globalBubbleSpeedModifier;
     }
 
+    public void setBubblesFrozen(boolean bubblesFrozen) {
+        this.bubblesFrozen = bubblesFrozen;
+    }
+
     public boolean isBubblesFrozen() {
         return this.bubblesFrozen;
     }
@@ -596,6 +601,11 @@ public final class World implements CrashFiller, Closeable {
                 return;
             }
 
+            if (information.getReason() instanceof NaturalSpawnReason reason
+                    && reason.getUsage() == SpawnUsage.BUBBLE_SPAWN && this.bubblesFrozen) {
+                return;
+            }
+
             // Prepare entity with spawn information,
             entity.preSpawn(information);
 
@@ -637,11 +647,6 @@ public final class World implements CrashFiller, Closeable {
      */
     @ApiStatus.Internal
     public void tick() {
-        if (this.bubblesFrozen && this.bubblesFrozenTicks-- <= 0) {
-            this.bubblesFrozenTicks = 0;
-            this.bubblesFrozen = false;
-        }
-
         if (this.initialized) {
             entities: {
                 if (!this.entitiesLock.tryLock()) break entities;

@@ -1,11 +1,14 @@
 package com.ultreon.bubbles.render.gui.hud;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.common.Controllable;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;
 
 /**
@@ -15,8 +18,10 @@ import com.ultreon.bubbles.world.World;
  * @see ClassicHud
  * @see Gamemode
  */
-public abstract class HudType extends Screen implements Controllable {
+public abstract class HudType implements Controllable {
     private static HudType current;
+    protected BubbleBlaster game = BubbleBlaster.getInstance();
+    protected BitmapFont font = Fonts.DEFAULT.get();
 
     public static HudType getCurrent() {
         return current;
@@ -26,17 +31,8 @@ public abstract class HudType extends Screen implements Controllable {
         HudType.current = current;
     }
 
-    @Override
     public final void init() {
 
-    }
-
-    @Override
-    public final void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        World world = this.game.world;
-        if (world != null) {
-            this.renderHudOverlay(renderer, world, world.getGamemode(), deltaTime);
-        }
     }
 
     public void renderHudOverlay(Renderer renderer, World world, Gamemode gamemode, float deltaTime) {
@@ -70,5 +66,13 @@ public abstract class HudType extends Screen implements Controllable {
 
     public void end() {
         
+    }
+
+    protected float width() {
+        return Gdx.graphics.getWidth();
+    }
+
+    protected int height() {
+        return Gdx.graphics.getHeight();
     }
 }

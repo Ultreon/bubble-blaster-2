@@ -3,19 +3,23 @@ package com.ultreon.bubbles.world;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Shape2D;
+import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.debug.Profiler;
+import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.event.v1.RenderEvents;
+import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.libs.commons.v0.Mth;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.List;
 public class WorldRenderer implements Renderable {
     public static final Color BG_TOP = Color.argb(0xff008EDA);
     public static final Color BG_BOTTOM = Color.argb(0xff004BA1);
+    private static VfxFrameBuffer worldFbo;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = this.game.profiler;
 
@@ -158,6 +163,10 @@ public class WorldRenderer implements Renderable {
         return new Circle(x, y, r - i * 2f);
     }
 
+    public static VfxFrameBuffer getWorldFbo() {
+        return worldFbo;
+    }
+
     @Nullable
     public World getWorld() {
         if (BubbleBlaster.getInstance() == null) return null;
@@ -173,10 +182,19 @@ public class WorldRenderer implements Renderable {
         if (!world.isInitialized()) return;
 
         HudType hudOverride = this.getWorld().getGamemode().getHudOverride();
-        final HudType hud = hudOverride != null ? hudOverride : HudType.getCurrent();
+        HudType hud = hudOverride != null ? hudOverride : HudType.getCurrent();
 
         this.profiler.section("Render BG", () -> this.renderBackground(renderer, world, hud));
         this.profiler.section("Render Entities", () -> this.renderEntities(renderer, world));
+
+        Player player = world.getPlayer();
+        StatusEffectInstance blindness = player.getActiveEffect(StatusEffects.BLINDNESS);
+        if (blindness != null) {
+            int strength = blindness.getStrength();
+            int alpha = Mth.clamp((strength + 1) * 0x10 + 0x60, 0, 255);
+            renderer.fill(0, 0, this.game.getWidth(), this.game.getHeight(), Color.BLACK.withAlpha(alpha));
+        }
+
         this.profiler.section("Render HUD", () -> hud.renderHudOverlay(renderer, world, world.getGamemode(), deltaTime));
     }
 

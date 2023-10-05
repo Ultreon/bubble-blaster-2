@@ -11,10 +11,14 @@ import java.util.*;
 
 import static java.text.AttributedCharacterIterator.Attribute;
 
-public abstract class MutableText extends TextObject {
+public abstract class MutableText extends TextObject implements Cloneable {
     final List<TextObject> extras = new ArrayList<>();
     private final Map<Attribute, Object> attrs = new HashMap<>();
     private Color color;
+
+    protected MutableText() {
+
+    }
 
     @Override
     public AttributedString getAttrString() {
@@ -134,17 +138,25 @@ public abstract class MutableText extends TextObject {
     }
 
     public MutableText append(TextObject textObject) {
-        this.extras.add(textObject);
-        return this;
+        try {
+            MutableText clone = this.clone();
+            clone.extras.add(textObject);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public MutableText append(String text) {
-        this.extras.add(TextObject.nullToEmpty(text));
-        return this;
+        return this.append(TextObject.nullToEmpty(text));
     }
 
     public MutableText append(Object o) {
-        this.extras.add(TextObject.nullToEmpty(String.valueOf(o)));
-        return this;
+        return this.append(TextObject.nullToEmpty(String.valueOf(o)));
+    }
+
+    @Override
+    protected MutableText clone() throws CloneNotSupportedException {
+        return (MutableText) super.clone();
     }
 }

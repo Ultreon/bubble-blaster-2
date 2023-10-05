@@ -105,7 +105,6 @@ public class Player extends LivingEntity implements InputController {
     private int successRate;
     private boolean brake;
     private float currentSpeed;
-    private Float angleTo = null;
 
     /**
      * Player entity.
@@ -249,7 +248,7 @@ public class Player extends LivingEntity implements InputController {
 
         if (this.boostAccelTimer > 0) {
             this.boostAccelTimer--;
-            this.accelerate(15f);
+            this.accelerate(15f, true);
         } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
             this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
         }
@@ -267,8 +266,8 @@ public class Player extends LivingEntity implements InputController {
         this.moving = Mth.clamp(this.moving, -1, 1);
         this.rotating = Mth.clamp(this.rotating, -1, 1);
 
-        if (this.moving != 0) motion += this.getSpeed() * this.moving;
-        if (this.rotating != 0) rotate += this.rotationSpeed * this.rotating;
+        if (this.moving != 0 && this.canMove) motion += this.getSpeed() * this.moving;
+        if (this.rotating != 0 && this.canMove) rotate += this.rotationSpeed * this.rotating;
 
         // Update X, and Y.
         if (this.canMove) {
@@ -344,9 +343,7 @@ public class Player extends LivingEntity implements InputController {
 
         this.prevPos.set(this.pos);
 
-        if (this.canMove) {
-            this.pos.add((this.accel.x + this.velocity.x) / TPS, (this.accel.y + this.velocity.y) / TPS);
-        }
+        this.pos.add((this.accel.x + this.velocity.x) / TPS, (this.accel.y + this.velocity.y) / TPS);
 
         double minX = bounds.x + this.radius();
         double minY = bounds.y + this.radius();
@@ -766,9 +763,5 @@ public class Player extends LivingEntity implements InputController {
      */
     public float getCurrentSpeed() {
         return this.currentSpeed;
-    }
-
-    public void rotateTo(Vector2 mousePos) {
-        this.angleTo = this.getAngleTo(mousePos);
     }
 }

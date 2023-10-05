@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GameObject;
 import com.ultreon.bubbles.common.interfaces.StateHolder;
+import com.ultreon.bubbles.effect.StatusEffect;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.attribute.Attribute;
@@ -91,7 +92,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     private final HashMap<AbilityType<?>, MapType> abilities = new HashMap<>();
     private boolean willBeDeleted;
     private final RandomSource random = new JavaRandom();
-    private final BubbleBlaster game = BubbleBlaster.getInstance();
+    protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private Entity target;
     @Nullable
     protected AiTask currentAiTask;
@@ -285,7 +286,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - this.pos.y, source.getX() - this.pos.x)), velocity, delta);
     }
 
-    public void accelerate(float amount) {
+    public void accelerate(float amount, boolean useVelocity) {
         // Calculate Velocity X and Y.
         float accelerateX = 0;
         float accelerateY = 0;
@@ -295,8 +296,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         }
 
         // Set velocity X and Y.
-        this.setAccelerateX(this.getAccelerateX() + accelerateX);
-        this.setAccelerateY(this.getAccelerateY() + accelerateY);
+        (useVelocity ? this.velocity : this.accel).add(accelerateX, accelerateY);
     }
     
     /**
@@ -475,6 +475,10 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.velocity.set(velocity);
     }
 
+    public void setVelocity(float x, float y) {
+        this.velocity.set(x, y);
+    }
+
     public void velocity(float x, float y) {
         this.velocity.set(x, y);
     }
@@ -524,8 +528,8 @@ public abstract class Entity extends GameObject implements StateHolder {
             }
         }
         if (EffectEvents.GAIN.factory().onGain(instance).isCanceled()) return;
-        this.statusEffects.add(instance);
         instance.start(this);
+        this.statusEffects.add(instance);
     }
 
     /**
@@ -649,9 +653,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     private void clearEffects() {
-        for (StatusEffectInstance activeEffect : new HashSet<>(this.statusEffects)) {
-            this.removeEffect(activeEffect);
-        }
+
     }
 
     /**
@@ -967,5 +969,10 @@ public abstract class Entity extends GameObject implements StateHolder {
         return "Entity[" + this.getKey() +
                 "]#" + this.id +
                 "@" + this.uuid;
+    }
+
+    @Nullable
+    public StatusEffectInstance getActiveEffect(StatusEffect type) {
+        return this.statusEffects.stream().filter(statusEffectInstance -> statusEffectInstance.getType() == type).findAny().orElse(null);
     }
 }
