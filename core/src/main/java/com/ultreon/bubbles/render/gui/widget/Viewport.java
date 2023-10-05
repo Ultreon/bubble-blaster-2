@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.commons.v0.size.IntSize;
 
 
@@ -66,7 +66,7 @@ public class Viewport extends Container {
         float width = this.getBounds().width;
         float viewportWidth = this.viewportRect.width;
         if (viewportWidth > width) {
-            this.viewportRect.x = (int) (this.xScroll = MathHelper.clamp(xScroll, 0, viewportWidth - this.height));
+            this.viewportRect.x = (int) (this.xScroll = Mth.clamp(xScroll, 0, viewportWidth - this.height));
         }
     }
 
@@ -74,7 +74,7 @@ public class Viewport extends Container {
         float height = this.getBounds().height;
         float viewportHeight = this.viewportRect.height;
         if (viewportHeight > height) {
-            this.viewportRect.y = (int) (this.yScroll = MathHelper.clamp(yScroll, 0, viewportHeight - height));
+            this.viewportRect.y = (int) (this.yScroll = Mth.clamp(yScroll, 0, viewportHeight - height));
         }
     }
 
@@ -107,10 +107,10 @@ public class Viewport extends Container {
     }
 
     public void setXPercent(float percent) {
-        this.xScroll = MathHelper.clamp(percent * (this.viewportRect.width - this.width), 0, this.viewportRect.width - this.width);
+        this.xScroll = Mth.clamp(percent * (this.viewportRect.width - this.width), 0, this.viewportRect.width - this.width);
     }
 
     public void setYPercent(float percent) {
-        this.yScroll = MathHelper.clamp(percent * (this.viewportRect.height - this.height), 0, this.viewportRect.height - this.height);
+        this.yScroll = Mth.clamp(percent * (this.viewportRect.height - this.height), 0, this.viewportRect.height - this.height);
     }
 }

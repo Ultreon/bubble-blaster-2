@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.util;
+package com.ultreon.bubbles;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;

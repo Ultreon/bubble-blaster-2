@@ -1,10 +1,9 @@
 package com.ultreon.bubbles.util;
 
-public class CompareUtils {
-    public CompareUtils() {
-        throw ExceptionUtils.utilityClass();
-    }
+import java.util.Collection;
+import java.util.Iterator;
 
+public class Comparison {
     public static <T> boolean isGreater(Comparable<T> obj, T than) {
         return obj.compareTo(than) > 0;
     }
@@ -23,5 +22,21 @@ public class CompareUtils {
 
     public static <T> boolean isLess(Comparable<T> obj, T than) {
         return obj.compareTo(than) < 0;
+    }
+
+    public static <T extends Comparable<T>> T max(Collection<T> coll, T def) {
+        Iterator<? extends T> i = coll.iterator();
+        if (!i.hasNext()) {
+            return def;
+        }
+
+        T candidate = i.next();
+
+        while (i.hasNext()) {
+            T next = i.next();
+            if (next.compareTo(candidate) > 0)
+                candidate = next;
+        }
+        return candidate;
     }
 }

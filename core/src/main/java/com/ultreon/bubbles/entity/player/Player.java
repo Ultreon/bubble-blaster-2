@@ -23,7 +23,6 @@ import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.TimeUtils;
@@ -160,8 +159,8 @@ public class Player extends LivingEntity implements InputController {
         super.preSpawn(information);
         BubbleBlaster game = this.world.game();
         Rectangle gameBounds = game.getGameBounds();
-        this.pos.x = MathHelper.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
-        this.pos.y = MathHelper.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
+        this.pos.x = Mth.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
+        this.pos.y = Mth.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
         this.make();
     }
 
@@ -360,8 +359,8 @@ public class Player extends LivingEntity implements InputController {
         if (this.pos.y > maxY && this.accel.y > 0) this.accel.y = 0;
         if (this.pos.y < minY && this.accel.y < 0) this.accel.y = 0;
 
-        this.pos.x = (float) MathHelper.clamp(this.pos.x, minX, maxX);
-        this.pos.y = (float) MathHelper.clamp(this.pos.y, minY, maxY);
+        this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
+        this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
 
         float pixelsPerTick = this.prevPos.dst(this.pos);
         this.currentSpeed = pixelsPerTick * TPS;

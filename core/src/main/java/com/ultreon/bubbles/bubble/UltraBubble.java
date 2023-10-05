@@ -5,8 +5,8 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.StatusEffects;
-import com.ultreon.bubbles.util.ConstantValueSource;
-import com.ultreon.bubbles.util.RandomValueSource;
+import com.ultreon.bubbles.random.valuesource.ConstantValueSource;
+import com.ultreon.bubbles.random.valuesource.RandomValueSource;
 
 import java.util.ArrayList;
 

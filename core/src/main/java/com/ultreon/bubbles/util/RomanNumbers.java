@@ -3,8 +3,7 @@ package com.ultreon.bubbles.util;
 import java.math.BigInteger;
 import java.util.TreeMap;
 
-@SuppressWarnings("unused")
-public class RomanNumber {
+public class RomanNumbers {
     private static final TreeMap<Integer, String> map = new TreeMap<>();
 
     public static String toRoman(int number) {
@@ -20,23 +19,23 @@ public class RomanNumber {
         if (number == l) {
             return map.get(number);
         }
-        return map.get(l) + RomanNumber.toRoman(number - l);
+        return map.get(l) + RomanNumbers.toRoman(number - l);
     }
 
     public static String toRoman(long number) {
-        return toRoman((int) number);
+        return RomanNumbers.toRoman((int) number);
     }
 
     public static String toRoman(short number) {
-        return toRoman((int) number);
+        return RomanNumbers.toRoman((int) number);
     }
 
     public static String toRoman(byte number) {
-        return toRoman((int) number);
+        return RomanNumbers.toRoman((int) number);
     }
 
     public static String toRoman(BigInteger number) {
-        return toRoman(number.longValue());
+        return RomanNumbers.toRoman(number.longValue());
     }
 
     static {

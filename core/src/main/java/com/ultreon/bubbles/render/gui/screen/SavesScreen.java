@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.Either;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
@@ -10,7 +11,6 @@ import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.save.GameSaveInfo;
 import com.ultreon.bubbles.save.SaveLoader;
-import com.ultreon.bubbles.util.Either;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.libs.text.v1.TextObject;

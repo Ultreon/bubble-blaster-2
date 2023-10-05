@@ -3,8 +3,8 @@ package com.ultreon.bubbles.bubble;
 import com.ultreon.bubbles.entity.ai.AiAttack;
 import com.ultreon.bubbles.entity.ai.AiTarget;
 import com.ultreon.bubbles.init.Entities;
-import com.ultreon.bubbles.util.ConstantValueSource;
-import com.ultreon.bubbles.util.RandomValueSource;
+import com.ultreon.bubbles.random.valuesource.ConstantValueSource;
+import com.ultreon.bubbles.random.valuesource.RandomValueSource;
 
 public class PoisonBubble extends BubbleType {
     public PoisonBubble() {

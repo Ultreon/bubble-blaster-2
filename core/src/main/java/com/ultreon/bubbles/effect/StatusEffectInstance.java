@@ -4,12 +4,12 @@ import com.ultreon.bubbles.common.TagHolder;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.commons.v0.Mth;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,7 +131,7 @@ public class StatusEffectInstance implements TagHolder {
     public void addStrength() {
         float old = this.getStrength();
         byte output = (byte) (this.strength + 1);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
 
@@ -139,7 +139,7 @@ public class StatusEffectInstance implements TagHolder {
     public void addStrength(byte amount) {
         float old = this.getStrength();
         byte output = (byte) (this.strength + amount);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
 
@@ -147,7 +147,7 @@ public class StatusEffectInstance implements TagHolder {
     public void removeStrength() {
         float old = this.getStrength();
         byte output = (byte) (this.strength - 1);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
 
@@ -155,7 +155,7 @@ public class StatusEffectInstance implements TagHolder {
     public void removeStrength(byte amount) {
         float old = this.getStrength();
         byte output = (byte) (this.strength - amount);
-        this.strength = MathHelper.clamp(output, 1, 255);
+        this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
 

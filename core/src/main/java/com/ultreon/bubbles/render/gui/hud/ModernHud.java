@@ -12,10 +12,10 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.RomanNumber;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.bubbles.util.RomanNumbers;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 import org.jetbrains.annotations.NotNull;
@@ -94,7 +94,7 @@ public class ModernHud extends HudType {
         MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append(" / ").append((int) Math.floor(player.getMaxHealth()));
 
         double maxHealth = player.getMaxHealth();
-        double health = MathHelper.clamp(player.getHealth(), 0, maxHealth);
+        double health = Mth.clamp(player.getHealth(), 0, maxHealth);
         if (maxHealth != 0) {
             double ratio = health / maxHealth;
 
@@ -189,7 +189,7 @@ public class ModernHud extends HudType {
             int finalY = y;
             renderer.scissored(x + 50, y + 2, 248, 46, () -> {
                 MutableText translation = effectInstance.getType().getTranslation();
-                translation.append(" " + RomanNumber.toRoman(effectInstance.getStrength()));
+                translation.append(" " + RomanNumbers.toRoman(effectInstance.getStrength()));
                 renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), translation, x + 70, finalY + 15, Color.WHITE);
 
                 var color = Color.WHITE.withAlpha(0x80);

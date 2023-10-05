@@ -10,7 +10,7 @@ import com.ultreon.bubbles.entity.player.ability.Ability;
 import com.ultreon.bubbles.entity.player.ability.AbilityTrigger;
 import com.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
 import com.ultreon.bubbles.init.Abilities;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.libs.commons.v0.Mth;
 
 import java.awt.event.KeyEvent;
 import java.util.Objects;
@@ -59,7 +59,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
             player.getTag().remove("TeleportAbilityStartTime");
 
             long deltaTime = System.currentTimeMillis() - startTime;
-            deltaTime = MathHelper.clamp(deltaTime, 0, 2500);  // 0 to 2.5 seconds.
+            deltaTime = Mth.clamp(deltaTime, 0, 2500);  // 0 to 2.5 seconds.
 
             // Motion.
             float deltaMotion = (float) deltaTime / 100 * ((float) deltaTime / 100);

@@ -12,10 +12,10 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.text.Translations;
-import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.world.WorldRenderer;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.text.v1.TextObject;
 import com.ultreon.libs.translations.v1.Language;
 
@@ -71,12 +71,12 @@ public class PauseScreen extends Screen {
     }
 
     private void previousPage() {
-        helpIndex = MathHelper.clamp(helpIndex - 1, 0, this.registeredBubbles - 1);
+        helpIndex = Mth.clamp(helpIndex - 1, 0, this.registeredBubbles - 1);
         this.tickPage();
     }
 
     private void nextPage() {
-        helpIndex = MathHelper.clamp(helpIndex + 1, 0, this.registeredBubbles - 1);
+        helpIndex = Mth.clamp(helpIndex + 1, 0, this.registeredBubbles - 1);
         this.tickPage();
     }
 
@@ -115,13 +115,10 @@ public class PauseScreen extends Screen {
         if (!this.game.isInGame()) {
             return;
         }
-
-        Utils.showCursor();
     }
 
     @Override
     public boolean close(Screen to) {
-        if (to == null) Utils.hideCursor();
         return super.close(to);
     }
 

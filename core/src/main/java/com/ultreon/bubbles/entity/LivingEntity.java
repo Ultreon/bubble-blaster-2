@@ -5,9 +5,9 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.event.v1.EntityEvents;
-import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.events.v1.ValueEventResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public abstract class LivingEntity extends Entity {
     }
 
     public void setHealth(double health) {
-        this.health = MathHelper.clamp(health, 0.0, this.getMaxHealth());
+        this.health = Mth.clamp(health, 0.0, this.getMaxHealth());
     }
 
     public double getMaxHealth() {
@@ -85,7 +85,7 @@ public abstract class LivingEntity extends Entity {
 
     public void restoreDamage(float value) {
         this.health += value;
-        this.health = MathHelper.clamp(this.health, 0f, this.attributes.getBase(Attribute.MAX_HEALTH));
+        this.health = Mth.clamp(this.health, 0f, this.attributes.getBase(Attribute.MAX_HEALTH));
     }
 
     protected void checkHealth() {

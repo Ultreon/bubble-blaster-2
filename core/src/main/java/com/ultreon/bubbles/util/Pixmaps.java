@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 
 import java.nio.ByteBuffer;
 
-public class PixmapUtils {
+public class Pixmaps {
     public static Pixmap createFromFrameBuffer (int x, int y, int w, int h) {
         Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
 

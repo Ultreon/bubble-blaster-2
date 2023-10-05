@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.util;
+package com.ultreon.bubbles.random.valuesource;
 
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.util.helpers.MathHelper;

@@ -10,49 +10,58 @@ import java.math.RoundingMode;
  * Math helper, for all your math needs.
  */
 public class MathHelper {
-
+    @Deprecated(forRemoval = true)
     public static byte clamp(byte value, int min, int max) {
         if (value < min) return (byte) min;
         else return (byte) Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static short clamp(short value, int min, int max) {
         if (value < min) return (short) min;
         else return (short) Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static int clamp(int value, int min, int max) {
         if (value < min) return min;
         else return Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static long clamp(long value, long min, long max) {
         if (value < min) return min;
         else return Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static float clamp(float value, float min, float max) {
         if (value < min) return min;
         else return Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static double clamp(double value, double min, double max) {
         if (value < min) return min;
         else return Math.min(value, max);
     }
 
+    @Deprecated(forRemoval = true)
     public static BigInteger clamp(BigInteger value, BigInteger min, BigInteger max) {
         return value.max(min).min(max);
     }
 
+    @Deprecated(forRemoval = true)
     public static BigDecimal clamp(BigDecimal value, BigDecimal min, BigDecimal max) {
         return value.max(min).min(max);
     }
 
+    @Deprecated(forRemoval = true)
     public static double root(int value, int root) {
         return Math.pow(value, 1.0d / root);
     }
 
+    @Deprecated(forRemoval = true)
     public static double round(double value, int places) {
         if (((Double) value).isNaN() || ((Float) (float) value).isNaN()) {
             return value;
@@ -68,6 +77,7 @@ public class MathHelper {
         return bd.doubleValue();
     }
 
+    @Deprecated(forRemoval = true)
     public static double lerp(double min, double max, double percentage) {
         return min + percentage * (max - min);
     }
@@ -81,26 +91,32 @@ public class MathHelper {
         return Color.rgba(redPart, greenPart, bluePart, alphaPart);
     }
 
+    @Deprecated(forRemoval = true)
     public static byte diff(byte from, byte to) {
         return (byte) (Math.max(from, to) - Math.min (from, to));
     }
 
+    @Deprecated(forRemoval = true)
     public static short diff(short from, short to) {
         return (short) (Math.max(from, to) - Math.min (from, to));
     }
 
+    @Deprecated(forRemoval = true)
     public static int diff(int from, int to) {
         return Math.max(from, to) - Math.min (from, to);
     }
 
+    @Deprecated(forRemoval = true)
     public static long diff(long from, long to) {
         return Math.max(from, to) - Math.min (from, to);
     }
 
+    @Deprecated(forRemoval = true)
     public static float diff(float from, float to) {
         return Math.max(from, to) - Math.min (from, to);
     }
 
+    @Deprecated(forRemoval = true)
     public static double diff(double from, double to) {
         return Math.max(from, to) - Math.min (from, to);
     }

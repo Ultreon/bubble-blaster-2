@@ -10,7 +10,7 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.init.SoundEvents;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.FunctionUtils;
+import com.ultreon.bubbles.util.Functions;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import org.checkerframework.common.value.qual.IntRange;
 
@@ -28,7 +28,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected final GlyphLayout layout = new GlyphLayout();
 
     protected BitmapFont font = Fonts.DEFAULT.get();
-    public final BitmapFont monospaced = FunctionUtils.tryCall(Fonts.MONOSPACED_14);
+    public final BitmapFont monospaced = Functions.tryGet(Fonts.MONOSPACED_14).getLeftOrNull();
 
     protected volatile int x;
     protected volatile int y;

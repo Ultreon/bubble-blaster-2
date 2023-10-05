@@ -18,7 +18,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.hud.HudType;
-import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.libs.commons.v0.Mth;
 
 import javax.annotation.Nullable;
@@ -95,7 +94,7 @@ public class WorldRenderer implements Renderable {
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, List<Color> colors, Texture insideTexture) {
         // Define ellipse-depth (pixels).
         float i = 0f;
-        var destroyFrame0 = MathHelper.clamp(destroyFrame, 0, 10);
+        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
@@ -128,7 +127,7 @@ public class WorldRenderer implements Renderable {
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, BubbleType type) {
         // Define ellipse-depth (pixels).
         float i = 0f;
-        var destroyFrame0 = MathHelper.clamp(destroyFrame, 0, 10);
+        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 

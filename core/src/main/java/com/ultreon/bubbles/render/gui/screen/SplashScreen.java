@@ -8,8 +8,7 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.Resizer;
-import com.ultreon.bubbles.util.Utils;
-import com.ultreon.bubbles.util.helpers.MathHelper;
+import com.ultreon.libs.commons.v0.Mth;
 
 public final class SplashScreen extends InternalScreen {
     private static final float DURATION = 6000f;
@@ -38,7 +37,6 @@ public final class SplashScreen extends InternalScreen {
         this.logoTexture = new Texture("assets/bubbleblaster/logo.png");
 
         BubbleBlaster.getInstance().startLoading();
-        Utils.hideCursor();
 
         this.resizer = new Resizer(TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
@@ -55,7 +53,7 @@ public final class SplashScreen extends InternalScreen {
         renderer.hideCursor();
 
         final long timeDiff = System.currentTimeMillis() - this.startTime;
-        float zoom = (float) SplashScreen.interpolate(FROM_ZOOM, TO_ZOOM, MathHelper.clamp(timeDiff / DURATION, 0f, 1f));
+        float zoom = (float) SplashScreen.interpolate(FROM_ZOOM, TO_ZOOM, Mth.clamp(timeDiff / DURATION, 0f, 1f));
         Vector2 thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);
         this.zoom = zoom;
 
@@ -68,14 +66,13 @@ public final class SplashScreen extends InternalScreen {
         renderer.blit(this.logoTexture, (int) drawX, (int) drawY, (int) drawWidth, (int) drawHeight, LoadScreen.BACKGROUND);
 
         if (timeDiff >= DURATION - FADE_OUT) {
-            int clamp = (int) MathHelper.clamp(255 * (timeDiff - DURATION + FADE_OUT) / FADE_OUT, 0, 255);
+            int clamp = (int) Mth.clamp(255 * (timeDiff - DURATION + FADE_OUT) / FADE_OUT, 0, 255);
             Color color = Color.rgba(0, 0, 0, clamp);
             renderer.fill(0, 0, this.width, this.height, color);
         }
 
         if (timeDiff >= DURATION) {
             this.ended = true;
-            Utils.showCursor();
             game.showScreen(new LoadScreen(), true);
             game.fadeIn(1000f);
         }

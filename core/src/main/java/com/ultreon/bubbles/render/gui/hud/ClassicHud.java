@@ -11,9 +11,9 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.TimeUtils;
+import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.translations.v1.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -160,15 +160,15 @@ public class ClassicHud extends HudType {
         double playerDamage = player.getHealth();
 
         // Calculate colors based on damage and max damage.
-        playerDamage = MathHelper.clamp(playerDamage, 0, player.getMaxHealth());
+        playerDamage = Mth.clamp(playerDamage, 0, player.getMaxHealth());
         double max = playerMaxDamage / 2;
         if (playerDamage > playerMaxDamage / 2) {
             redValue = (int) ((max - (((playerDamage) - max))) * 255 / max);
-            redValue = (int) MathHelper.clamp((double) redValue, 0, 255);
+            redValue = (int) Mth.clamp((double) redValue, 0, 255);
             greenValue = 255;
         } else {
             greenValue = (int) ((playerDamage) * 255 / (max / 2));
-            greenValue = (int) MathHelper.clamp((double) greenValue, 0, 255);
+            greenValue = (int) Mth.clamp((double) greenValue, 0, 255);
             redValue = 255;
         }
 

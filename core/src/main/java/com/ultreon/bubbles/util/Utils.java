@@ -16,16 +16,8 @@ public class Utils {
         return object;
     }
 
+    @Deprecated(forRemoval = true)
     public static Vec3d toCoreLibs(Vector3 vector) {
         return new Vec3d(vector.x, vector.y, vector.z);
-    }
-
-    public static void hideCursor() {
-
-//        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
-    }
-
-    public static void showCursor() {
-//        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 }

@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.util;
 
-public final class TextUtils {
-    private TextUtils() {
+public final class Strings {
+    private Strings() {
         throw new UnsupportedOperationException("Tried to initialize utility class");
     }
 

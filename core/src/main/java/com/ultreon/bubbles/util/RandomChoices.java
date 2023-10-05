@@ -7,9 +7,9 @@ import com.ultreon.libs.commons.v0.Identifier;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class RngUtils {
+public class RandomChoices {
     public static <T> List<T> choices(Collection<T> values, int count) {
-        return RngUtils.choices(values, new Random(), count);
+        return RandomChoices.choices(values, new Random(), count);
     }
 
     public static <T> List<T> choices(Collection<T> values, Random random, int count) {
@@ -19,7 +19,7 @@ public class RngUtils {
     }
 
     public static <T> T choose(List<T> values) {
-        return RngUtils.choose(values, BubbleBlaster.RANDOM);
+        return RandomChoices.choose(values, BubbleBlaster.RANDOM);
     }
 
     public static <T> T choose(List<T> values, Random random) {
@@ -28,19 +28,19 @@ public class RngUtils {
     }
 
     public static Random create(Random random, String seed) {
-        return new Random(random.nextLong() ^ Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RngUtils.hash(seed)));
+        return new Random(random.nextLong() ^ Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RandomChoices.hash(seed)));
     }
 
     public static Random create(String seed) {
-        return new Random(Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RngUtils.hash(seed)));
+        return new Random(Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RandomChoices.hash(seed)));
     }
 
     public static Random create(Random random, Identifier seed) {
-        return new Random(random.nextLong() ^ RngUtils.hash(seed));
+        return new Random(random.nextLong() ^ RandomChoices.hash(seed));
     }
 
     public static Random create(Identifier seed) {
-        return new Random(RngUtils.hash(seed));
+        return new Random(RandomChoices.hash(seed));
     }
 
     public static long hash(String seed) {
@@ -67,7 +67,7 @@ public class RngUtils {
     }
 
     public static long hash(Identifier idSeed) {
-        return RngUtils.hash(idSeed.toArray());
+        return RandomChoices.hash(idSeed.toArray());
     }
 
     public static boolean chance(int chance) {

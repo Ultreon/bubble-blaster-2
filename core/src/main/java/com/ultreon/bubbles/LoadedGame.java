@@ -14,7 +14,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.CollisionUtil;
 
@@ -60,8 +59,6 @@ public class LoadedGame implements Controllable {
     //     Show and Hide     //
     ///////////////////////////
     public void begin() {
-        Utils.hideCursor();
-
         this.gamemode.begin();
         this.autoSaver.begin();
         this.running = true;
@@ -79,9 +76,6 @@ public class LoadedGame implements Controllable {
 
         this.world.close();
         this.schedulerService.shutdownNow();
-
-        // Hide cursor.
-        Utils.showCursor();
 
         System.gc();
     }

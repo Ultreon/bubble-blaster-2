@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.entity.attribute;
 
-import com.ultreon.bubbles.util.EnumUtils;
+import com.ultreon.bubbles.util.Enums;
 import com.ultreon.data.types.MapType;
 
 import java.util.Objects;
@@ -28,7 +28,7 @@ public final class AttributeModifier {
 
     public static AttributeModifier deserialize(MapType tag) {
         UUID id = tag.getUUID("id");
-        Type type = EnumUtils.byName(tag.getString("type"), Type.ADD);
+        Type type = Enums.byName(tag.getString("type"), Type.ADD);
         double value = tag.getDouble("value");
 
         return new AttributeModifier(id, type, value);

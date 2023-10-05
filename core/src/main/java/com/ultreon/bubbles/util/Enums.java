@@ -3,8 +3,8 @@ package com.ultreon.bubbles.util;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public final class EnumUtils {
-    private EnumUtils() {
+public final class Enums {
+    private Enums() {
         throw new IllegalAccessError("Utility class");
     }
 

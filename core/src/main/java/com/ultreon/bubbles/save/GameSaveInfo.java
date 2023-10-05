@@ -4,7 +4,7 @@ import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.registry.Registries;
-import com.ultreon.bubbles.util.EnumUtils;
+import com.ultreon.bubbles.util.Enums;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 
@@ -19,7 +19,7 @@ public class GameSaveInfo {
         this.name = tag.getString("name", "null");
         this.savedTime = tag.getLong("savedTime", 0L);
         this.seed = tag.getLong("seed",  0L);
-        this.difficulty = EnumUtils.byName(tag.getString("difficulty"), Difficulty.NORMAL);
+        this.difficulty = Enums.byName(tag.getString("difficulty"), Difficulty.NORMAL);
         this.gamemode = Registries.GAMEMODES.getValue(Identifier.tryParse(tag.getString("gamemode", Gamemodes.NORMAL.id().toString())));
     }
 

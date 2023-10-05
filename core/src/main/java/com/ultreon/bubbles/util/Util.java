@@ -2,7 +2,6 @@ package com.ultreon.bubbles.util;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
-import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.save.GameSave;
@@ -18,23 +17,26 @@ import java.util.function.Supplier;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
+@Deprecated(forRemoval = true)
 public class Util {
-
+    @Deprecated(forRemoval = true)
     public static BubbleBlaster getGame() {
         return BubbleBlaster.getInstance();
     }
 
+    @Deprecated(forRemoval = true)
     public static void setCursor(Cursor cursor) {
         // Set the cursor to the Game Window.
         BubbleBlaster.getInstance().getGameWindow().setCursor(cursor);
     }
 
+    @Deprecated(forRemoval = true)
     public static void setCursor(Cursor.SystemCursor cursor) {
         // Set the cursor to the Game Window.
         BubbleBlaster.getInstance().getGameWindow().setCursor(cursor);
     }
 
-    @Beta
+    @Deprecated(forRemoval = true)
     public static ArrayList<GameSave> getSaves() {
         ArrayList<GameSave> saves = new ArrayList<>();
         FileHandle savesDir = GameFolders.SAVES_DIR;
@@ -50,10 +52,12 @@ public class Util {
         return saves;
     }
 
+    @Deprecated(forRemoval = true)
     public static <T> T make(Supplier<T> supplier) {
         return supplier.get();
     }
 
+    @Deprecated(forRemoval = true)
     public static <T> T make(T object, Consumer<T> consumer) {
         consumer.accept(object);
         return object;

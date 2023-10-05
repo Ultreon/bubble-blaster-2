@@ -5,9 +5,9 @@ import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.init.BubbleTypes;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
+import com.ultreon.bubbles.random.valuesource.ValueSource;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.util.ValueSource;
 import com.ultreon.bubbles.world.WorldRenderer;
 
 import java.util.ArrayList;

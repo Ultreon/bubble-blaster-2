@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.util;
+package com.ultreon.bubbles.random.valuesource;
 
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;

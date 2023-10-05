@@ -19,8 +19,6 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.util.Util;
-import com.ultreon.bubbles.util.Utils;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.MessengerImpl;
@@ -72,8 +70,6 @@ public final class LoadScreen extends InternalScreen {
 
     @Override
     public void init() {
-        Utils.hideCursor();
-
         if (this.thread == null) {
             this.thread = new Thread(this::doLoading, "Loading-Thread");
             this.thread.start();
@@ -84,7 +80,6 @@ public final class LoadScreen extends InternalScreen {
     public boolean close(Screen to) {
         boolean done = LoadScreen.isDone();
         if (done) {
-            Utils.showCursor();
             return super.close(to);
         }
         return true;
@@ -311,7 +306,7 @@ public final class LoadScreen extends InternalScreen {
     }
 
     public void setupCommandsAndGlobalData() {
-        BubbleBlaster main = Util.getGame();
+        BubbleBlaster main = this.game;
 
         // Commands
         CommandConstructor.add("tp", new TeleportCommand());

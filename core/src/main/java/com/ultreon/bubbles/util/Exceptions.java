@@ -3,21 +3,18 @@ package com.ultreon.bubbles.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class ExceptionUtils {
-    private ExceptionUtils() {
-        throw ExceptionUtils.utilityClass();
-    }
-
+public class Exceptions {
+    @Deprecated(forRemoval = true)
     public static IllegalAccessError utilityClass() {
         return new IllegalAccessError("Tried to initialize utility class.");
     }
 
     public static String getStackTrace() {
-        return ExceptionUtils.getStackTrace(new RuntimeException());
+        return Exceptions.getStackTrace(new RuntimeException());
     }
 
     public static String getStackTrace(String message) {
-        return ExceptionUtils.getStackTrace(new RuntimeException(message));
+        return Exceptions.getStackTrace(new RuntimeException(message));
     }
 
     public static String getStackTrace(Throwable throwable) {

@@ -37,8 +37,8 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.util.CollectionsUtils;
-import com.ultreon.bubbles.util.RngUtils;
+import com.ultreon.bubbles.util.Comparison;
+import com.ultreon.bubbles.util.RandomChoices;
 import com.ultreon.data.types.ListType;
 import com.ultreon.data.types.LongType;
 import com.ultreon.data.types.MapType;
@@ -198,7 +198,7 @@ public final class World implements CrashFiller, Closeable {
             int retry = 0;
 
             long idx = this.entitySeedIdx++;
-            RandomSource random = new JavaRandom(this.getSeed() ^ idx).nextRandom(RngUtils.hash(retry));
+            RandomSource random = new JavaRandom(this.getSeed() ^ idx).nextRandom(RandomChoices.hash(retry));
             var bubble = new Bubble(this, Bubble.getRandomVariant(this, random));
             this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_INIT_SPAWN, retry, this));
 
@@ -393,7 +393,7 @@ public final class World implements CrashFiller, Closeable {
             return value;
         }
 
-        this.stateDifficultyModifier = CollectionsUtils.max(new ArrayList<>(this.stateDifficultyModifiers.values()), 1f);
+        this.stateDifficultyModifier = Comparison.max(new ArrayList<>(this.stateDifficultyModifiers.values()), 1f);
         if (this.getPlayer() == null) return value * this.stateDifficultyModifier;
 
         int i = (this.getPlayer().getLevel() - 1) * 5 + 1;
@@ -696,7 +696,7 @@ public final class World implements CrashFiller, Closeable {
                 }
 
                 this.onlyTickEvery(5, () -> {
-                    List<GameplayEvent> choices = RngUtils.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
+                    List<GameplayEvent> choices = RandomChoices.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
                     for (GameplayEvent gameplayEvent : choices) {
                         if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
                             if (!WorldEvents.GAMEPLAY_EVENT_TRIGGERED.factory().onGameplayEventTriggered(this, gameplayEvent).isCanceled()) {
