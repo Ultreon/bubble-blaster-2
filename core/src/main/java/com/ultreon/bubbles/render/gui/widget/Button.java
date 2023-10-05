@@ -1,11 +1,14 @@
 package com.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.libs.text.v1.TextObject;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
 @SuppressWarnings("unused")
 public class Button extends AbstractButton implements GuiStateListener {
@@ -32,6 +35,7 @@ public class Button extends AbstractButton implements GuiStateListener {
         private TextObject text = TextObject.EMPTY;
         private Runnable command = () -> {
         };
+        private BitmapFont font = Fonts.DEFAULT.get();
 
         public Builder() {
         }
@@ -41,6 +45,7 @@ public class Button extends AbstractButton implements GuiStateListener {
 
             button.setText(this.text);
             button.setCommand(this.command);
+            button.setFont(this.font);
             return button;
         }
 
@@ -68,6 +73,11 @@ public class Button extends AbstractButton implements GuiStateListener {
             this.command = command;
             return this;
         }
+
+        public @This Builder font(BitmapFont font) {
+            this.font = font;
+            return this;
+        }
     }
 
     protected Button(int x, int y, int width, int height) {
@@ -84,8 +94,10 @@ public class Button extends AbstractButton implements GuiStateListener {
         if (this.enabled)
             renderer.fill(this.getBounds(), this.backgroundColor);
 
-        if (this.isHovered() && this.enabled)
+        if (this.isHovered() && this.enabled) {
+            renderer.hovered();
             renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
+        }
 
         AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.text, this.font);
     }

@@ -1,7 +1,9 @@
 package com.ultreon.bubbles.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.bubble.BubbleProperties;
@@ -14,6 +16,7 @@ import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
+import com.ultreon.bubbles.entity.spawning.SpawnUsage;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.init.BubbleTypes;
 import com.ultreon.bubbles.init.Entities;
@@ -88,6 +91,8 @@ public class Bubble extends AbstractBubbleEntity {
         World world = information.getWorld();
         RandomSource random = information.getRandom();
 
+        super.preSpawn(information);
+
         if (information.getReason() instanceof NaturalSpawnReason reason) {
             this.bubbleType = BubbleSystem.random(random, world);
 
@@ -114,13 +119,15 @@ public class Bubble extends AbstractBubbleEntity {
             this.attributes.setBase(Attribute.DEFENSE, 0.5f);
 
             this.rotation = 180;
+
+            if (reason.getUsage() == SpawnUsage.BUBBLE_INIT_SPAWN) {
+                this.pos.set(random.nextFloat(-this.radius, Gdx.graphics.getWidth() + this.radius), random.nextFloat(-this.radius, Gdx.graphics.getHeight() + this.radius));
+            }
         }
-        
+
         this.markAsAttackable(Entities.PLAYER);
         this.markAsCollidable(Entities.BULLET);
         this.markAsCollidable(Entities.PLAYER);
-
-        super.preSpawn(information);
 
         this.make();
     }
@@ -243,7 +250,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (this.willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, this.bubbleType.getColors());
+        WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, this.bubbleType);
     }
 
     public boolean isBeingDestroyed() {

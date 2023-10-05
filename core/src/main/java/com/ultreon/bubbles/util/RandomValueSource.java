@@ -1,25 +1,26 @@
 package com.ultreon.bubbles.util;
 
+import com.ultreon.bubbles.random.JavaRandom;
+import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 
 import java.util.Objects;
-import java.util.Random;
 
 public class RandomValueSource implements ValueSource {
-    private final Random random;
+    private final RandomSource random;
     private final double min;
     private final double max;
 
     private RandomValueSource(double min, double max) {
-        this.random = new Random();
+        this.random = new JavaRandom();
         this.min = min;
         this.max = max;
     }
 
     private RandomValueSource(long seed, double min, double max) {
-        this.random = new Random(seed);
+        this.random = new JavaRandom(seed);
         this.min = min;
         this.max = max;
     }

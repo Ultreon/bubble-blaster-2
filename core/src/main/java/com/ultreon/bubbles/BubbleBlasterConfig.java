@@ -1,6 +1,7 @@
 package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
@@ -9,14 +10,12 @@ import com.ultreon.bubbles.init.HudTypes;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.libs.commons.v0.Identifier;
-import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.io.File;
 import java.util.Objects;
 
 public class BubbleBlasterConfig {
-    public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "bubble_blaster.toml");
+    public static final FileHandle FILE = BubbleBlaster.getConfigDir().child("bubble_blaster.toml");
 
     // Generic
     public static final Config.BooleanEntry ENABLE_ANNOYING_EASTER_EGGS;
@@ -56,7 +55,7 @@ public class BubbleBlasterConfig {
 
 
     static {
-        Config.Builder builder = new Config.Builder(FILE);
+        Config.Builder builder = new Config.Builder(FILE.file());
 
         // Generic
         ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that can be annoying in some way.").value(false);
@@ -106,21 +105,14 @@ public class BubbleBlasterConfig {
     }
 
     public static void onReload() {
-        int fps = MAX_FRAMERATE.get();
-        Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
 
-        try {
-            Identifier hudId = Identifier.tryParse(GAME_HUD.getOrDefault());
-            if (hudId != null) {
-                HudType hud = Registries.HUD.getValue(hudId);
-                HudType.setCurrent(hud);
-            }
-        } catch (RuntimeException ignored) {
-
-        }
     }
 
     public static void save() {
         CONFIG.save();
+    }
+
+    public static void reload() {
+        CONFIG.reload();
     }
 }

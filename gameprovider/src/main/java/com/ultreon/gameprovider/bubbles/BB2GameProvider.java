@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -107,9 +108,9 @@ public class BB2GameProvider implements GameProvider {
     public Path getLaunchDirectory() {
         Path path;
 
-        if (OS.isWindows()) path = Path.of(System.getenv("APPDATA"), "BubbleBlaster");
-        else if (OS.isMacintosh()) path = Path.of(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
-        else if (OS.isLinux()) path = Path.of(System.getProperty("user.home"), ".config/BubbleBlaster");
+        if (OS.isWindows()) path = Paths.get(System.getenv("APPDATA"), "BubbleBlaster");
+        else if (OS.isMacintosh()) path = Paths.get(System.getProperty("user.home"), "Library/Application Support/BubbleBlaster");
+        else if (OS.isLinux()) path = Paths.get(System.getProperty("user.home"), ".config/BubbleBlaster");
         else throw new FormattedException("Unsupported Platform", "Platform unsupported: " + System.getProperty("os.name"));
 
         try {

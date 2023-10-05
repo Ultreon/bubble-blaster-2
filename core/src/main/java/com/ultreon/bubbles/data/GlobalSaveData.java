@@ -1,10 +1,13 @@
 package com.ultreon.bubbles.data;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.GameFolders;
+import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.data.types.MapType;
 
-import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 
 @SuppressWarnings("unused")
 public final class GlobalSaveData extends GameData {
@@ -12,7 +15,7 @@ public final class GlobalSaveData extends GameData {
     private double highScore = 0.0;
     private long highScoreTime = 0L;
 
-    public static final File FILE = new File(GameFolders.DATA_DIR, "global.ubo");
+    public static final FileHandle FILE = GameFolders.DATA_DIR.child("global.ubo");
 
     public static GlobalSaveData instance() {
         return instance;
@@ -53,15 +56,30 @@ public final class GlobalSaveData extends GameData {
         return this.highScoreTime;
     }
 
-    public void setHighScore(double highScore, long time) {
+    public void setHighScore(double highScore, Instant time) {
+        this.highScore = highScore;
+        this.highScoreTime = time.toEpochMilli();
+
+        try {
+            this.dump();
+        } catch (IOException e) {
+            BubbleBlaster.LOGGER.error("Failed to save high score:", e);
+            Notification.Builder builder = Notification.builder("Error!", "Saving highscore failed!");
+            builder.subText("Global Save Data");
+        }
+    }
+
+    public void updateHighScore(double highScore, Instant time) {
         if (this.highScore < highScore) {
             this.highScore = highScore;
-            this.highScoreTime = time;
+            this.highScoreTime = time.toEpochMilli();
 
             try {
                 this.dump();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BubbleBlaster.LOGGER.error("Failed to save high score:", e);
+                Notification.Builder builder = Notification.builder("Error!", "Saving highscore failed!");
+                builder.subText("Global Save Data");
             }
         }
     }

@@ -4,9 +4,8 @@ import it.unimi.dsi.fastutil.chars.CharArrayList;
 import it.unimi.dsi.fastutil.chars.CharList;
 import it.unimi.dsi.fastutil.chars.CharLists;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -16,21 +15,20 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedirectPrintStream extends PrintStream {
-    public RedirectPrintStream(Level level, Logger logger) {
-        super(new WriterOutputStream(new RedirectWriter(level, logger), StandardCharsets.UTF_8), true, StandardCharsets.UTF_8);
+    @SuppressWarnings("NewApi")
+    public RedirectPrintStream(Logger logger) {
+        super(new WriterOutputStream(new RedirectWriter(logger), StandardCharsets.UTF_8), true, StandardCharsets.UTF_8);
     }
 
     private static class RedirectWriter extends Writer {
         private final CharList chars = CharLists.synchronize(new CharArrayList());
         private final List<String > lines = new CopyOnWriteArrayList<>();
         private String cache = null;
-        private final Level level;
         private final Logger logger;
         private boolean carriageReturn;
         private final Object lock = new Object();
 
-        public RedirectWriter(Level level, Logger logger) {
-            this.level = level;
+        public RedirectWriter(Logger logger) {
             this.logger = logger;
         }
 
@@ -73,14 +71,14 @@ public class RedirectPrintStream extends PrintStream {
         public void flush() {
             synchronized (this.lock) {
                 for (var line : this.lines) {
-                    this.logger.log(this.level, line);
+                    this.logger.info(line);
                 }
                 this.lines.clear();
             }
         }
 
         @Override
-        public void close() throws IOException {
+        public void close() {
             synchronized (this.lock) {
                 this.flush();
                 this.chars.clear();

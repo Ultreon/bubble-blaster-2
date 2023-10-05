@@ -16,13 +16,13 @@ import java.util.Objects;
 
 public abstract class StatusEffect {
     // Empty Image.
-    private static final com.badlogic.gdx.graphics.Texture FALLBACK_TEXTURE;
+    private static final Texture FALLBACK_TEXTURE;
 
     static {
         FALLBACK_TEXTURE = TextureManager.DEFAULT_TEX;
     }
 
-    private com.badlogic.gdx.graphics.Texture cachedTexture = null;
+    private Texture cachedTexture = null;
 
     public StatusEffect() {
 
@@ -49,7 +49,7 @@ public abstract class StatusEffect {
         }
 
         BubbleBlaster game = BubbleBlaster.getInstance();
-        com.badlogic.gdx.graphics.Texture texture = game.getTextureManager().getOrLoadTexture(this.getIconId());
+        Texture texture = game.getTextureManager().getOrLoadTexture(this.getIconId());
         return this.cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 

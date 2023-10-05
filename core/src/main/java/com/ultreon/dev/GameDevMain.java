@@ -1,7 +1,7 @@
 package com.ultreon.dev;
 
+import com.ultreon.bubbles.GamePlatform;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Properties;
 
 @SuppressWarnings("ALL")
 public class GameDevMain {
-    private static final Logger LOGGER = LoggerFactory.getLogger("GameDevMain");
+    private static final Logger LOGGER = GamePlatform.get().getLogger("GameDevMain");
     private static DevClassPath classPath;
     private static boolean isRanFromHere = false;
 

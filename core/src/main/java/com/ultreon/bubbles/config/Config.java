@@ -9,7 +9,6 @@ import com.electronwill.nightconfig.toml.TomlWriter;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.notification.Notification;
-import org.apache.logging.log4j.core.util.FileWatcher;
 
 import java.io.File;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ public class Config {
     private final File file;
     private final CommentedConfig config;
     private final Map<String, ConfigEntry<?>> entries;
-    private final FileWatcher watcher;
 
 
     public Config(Builder builder) {
@@ -35,17 +33,16 @@ public class Config {
         this.config = builder.config;
         this.entries = builder.entries;
         this.entries.forEach((s, configEntry) -> configEntry.set0(configEntry.getDefaultValue()));
-        this.watcher = this::fileModified;
 
         this.watch();
     }
 
     private void watch() {
-        BubbleBlaster.getWatcher().watchFile(this.file, this.watcher);
+//        BubbleBlaster.getWatcher().watchFile(this.file, this.watcher);
     }
 
     private void unwatch() {
-        BubbleBlaster.getWatcher().unwatchFile(this.file);
+//        BubbleBlaster.getWatcher().unwatchFile(this.file);
     }
 
     public synchronized void reload() {

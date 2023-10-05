@@ -160,7 +160,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public void preSpawn(SpawnInformation information) {
         @Nullable Vector2 spawnPos = this.pos;
         if (information.getReason() instanceof NaturalSpawnReason reason)
-            spawnPos.set(this.world.getGamemode().getSpawnPos(this, this.pos, reason.getUsage(), information.getRandom(), reason.getRetry()));
+            spawnPos.set(this.world.getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry()));
 
         if (information.getPos() != null)
             spawnPos = information.getPos();
@@ -931,6 +931,15 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public float getAngleTo(Entity target) {
         return (float) Math.toDegrees(Math.atan2(target.pos.y - this.pos.y, target.pos.x - this.pos.x));
+    }
+
+    /**
+     * Get the angle (in degrees) towards another entity.
+     * @param target the other entity.
+     * @return the angle towards the given entity.
+     */
+    public float getAngleTo(Vector2 target) {
+        return (float) Math.toDegrees(Math.atan2(target.y - this.pos.y, target.x - this.pos.x));
     }
 
     /**

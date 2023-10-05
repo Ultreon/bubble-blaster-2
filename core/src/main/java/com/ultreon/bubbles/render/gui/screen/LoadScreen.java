@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.command.*;
@@ -10,15 +10,15 @@ import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.event.v1.GameEvents;
 import com.ultreon.bubbles.event.v1.LifecycleEvents;
-import com.ultreon.bubbles.mod.ModDataManager;
+import com.ultreon.bubbles.GamePlatform;
+import com.ultreon.bubbles.init.HudTypes;
 import com.ultreon.bubbles.registry.RegisterHandler;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.TextureCollection;
-import com.ultreon.bubbles.render.TextureManager;
+import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.settings.GameSettings;
-import com.ultreon.bubbles.util.FileHandles;
 import com.ultreon.bubbles.util.Util;
 import com.ultreon.bubbles.util.Utils;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -28,23 +28,15 @@ import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.registries.v0.Registry;
 import com.ultreon.libs.registries.v0.event.RegistryEvents;
-import com.ultreon.libs.resources.v0.Resource;
 import com.ultreon.libs.translations.v1.LanguageManager;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.fabricmc.loader.api.metadata.ModOrigin;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public final class LoadScreen extends InternalScreen {
@@ -53,7 +45,7 @@ public final class LoadScreen extends InternalScreen {
     public static final Color PROGRESSBAR_BG = Color.rgb(0x808080);
     public static final float PROGRESS_BAR_WIDTH = 500f;
 
-    private static final Logger LOGGER = LogManager.getLogger("Game-Loader");
+    private static final Logger LOGGER = GamePlatform.get().getLogger("Game-Loader");
     private static final float FADE_IN = 1000f;
     private static LoadScreen instance = null;
     private final List<Pair<String, Long>> messages = new CopyOnWriteArrayList<>();
@@ -157,22 +149,23 @@ public final class LoadScreen extends InternalScreen {
         this.progressMain = new ProgressMessenger(this.msgMain, 10);
 
         // Get game directory in Java's File format.
-        File gameDir = BubbleBlaster.getGameDir();
+        FileHandle dataDir = GamePlatform.get().getDataDirectory();
 
         // Check game directory exists, if not, create it!
-        if (!gameDir.exists()) {
-            if (!gameDir.mkdirs()) {
-                throw new IllegalStateException("Game Directory isn't created!");
-            }
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
         }
 
         LOGGER.info("Loading resources...");
         this.progressMain.sendNext("Loading resources...");
-        Collection<ModContainer> allMods = this.loadResources();
+        var progressAltAtomic = new AtomicReference<>(this.progressAlt);
+        GamePlatform.get().loadGameResources(progressAltAtomic, this.msgAlt);
+        GamePlatform.get().loadModResources(progressAltAtomic, this.msgAlt);
+        this.progressAlt = progressAltAtomic.get();
 
         LOGGER.info("Setting up mods...");
         this.progressMain.sendNext("Setting up mods...");
-        this.setupMods(allMods);
+        GamePlatform.get().setupMods();
 
         // Set up components in registry.
         this.progressMain.sendNext("Registering components...");
@@ -200,7 +193,28 @@ public final class LoadScreen extends InternalScreen {
         this.game.finalizeSetup();
 
         Registry.dump();
+
         ConfigEvents.RELOAD_ALL.factory().onReloadAll();
+
+        BubbleBlasterConfig.reload();
+
+        int fps = BubbleBlasterConfig.MAX_FRAMERATE.get();
+        Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
+
+        try {
+            Identifier hudId = Identifier.tryParse(BubbleBlasterConfig.GAME_HUD.getOrDefault());
+            if (hudId != null) {
+                HudType hud = Registries.HUD.getValue(hudId);
+                HudType.setCurrent(hud);
+            } else {
+                HudType.setCurrent(HudTypes.MODERN.get());
+                Identifier id = HudTypes.MODERN.id();
+                BubbleBlasterConfig.GAME_HUD.set(id.toString());
+                BubbleBlasterConfig.save();
+            }
+        } catch (RuntimeException ignored) {
+
+        }
 
         LoadScreen.done = true;
 
@@ -282,65 +296,8 @@ public final class LoadScreen extends InternalScreen {
         this.progressAlt = null;
     }
 
-    private void setupMods(Collection<ModContainer> allMods) {
-        for (ModContainer container : allMods) {
-            ModMetadata metadata = container.getMetadata();
-            metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
-                try {
-                    return new Texture(new Pixmap(FileHandles.imageBytes(path1.toUri().toURL())));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            })), () -> {
-                Resource resource = this.game.getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
-                if (resource == null) {
-                    resource = TextureManager.DEFAULT_TEX_RESOURCE;
-                }
-                Resource finalResource = resource;
-                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
-            });
-        }
-
-        this.addModIcon("java", BubbleBlaster.id("textures/mods/java.png"));
-        this.addModIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
-
-        LifecycleEvents.LOADED.factory().onLoaded(this.game, this);
-        this.progressAlt = null;
-    }
-
-    @NotNull
-    private Collection<ModContainer> loadResources() {
-        try {
-            this.game().getResourceManager().importPackage(this.game.getGameFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Collection<ModContainer> allMods = FabricLoader.getInstance().getAllMods();
-        this.progressAlt = new ProgressMessenger(this.msgAlt, allMods.size());
-        for (ModContainer container : allMods) {
-            this.progressAlt.sendNext(container.getMetadata().getName());
-            ModOrigin origin = container.getOrigin();
-            if (origin.getKind() == ModOrigin.Kind.PATH) {
-                List<Path> paths = origin.getPaths();
-                for (Path path : paths) {
-                    try {
-                        this.game().getResourceManager().importPackage(path);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-        this.progressAlt = null;
-        return allMods;
-    }
-
     private void addModIcon(String modId, Identifier path) {
-        Resource resource = this.game.getResourceManager().getResource(path);
-        if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
-        Resource finalResource = resource;
-        ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
+        GamePlatform.get().addModIcon(modId, path);
     }
 
     private BubbleBlaster game() {

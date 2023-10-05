@@ -13,12 +13,13 @@ import java.nio.file.StandardOpenOption;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WriteDownloadJsonTask extends BaseTask {
     public WriteDownloadJsonTask() {
         super("writeDownloadJson", "bubbles");
 
-        List<String> collect = this.getProject().getSubprojects().stream().map(Project::getName).toList();
+        List<String> collect = this.getProject().getSubprojects().stream().map(Project::getName).collect(Collectors.toList());
         this.dependsOn("retrieveUrls");
         for (String project : collect) {
             this.dependsOn(project + ":retrieveUrls");

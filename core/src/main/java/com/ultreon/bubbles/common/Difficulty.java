@@ -45,12 +45,67 @@ public enum Difficulty implements Translatable {
         ADD, MULTIPLY, MULTIPLY_TOTAL
     }
 
-    public record Modifier(ModifierAction action, float value) {
-    }
+    public static final class Modifier {
+        private final ModifierAction action;
+        private final float value;
 
-    public record ModifierToken() {
+        public Modifier(ModifierAction action, float value) {
+            this.action = action;
+            this.value = value;
+        }
 
-    }
+        public ModifierAction action() {
+            return action;
+        }
+
+        public float value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (Modifier) obj;
+            return Objects.equals(this.action, that.action) &&
+                    Float.floatToIntBits(this.value) == Float.floatToIntBits(that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(action, value);
+        }
+
+        @Override
+        public String toString() {
+            return "Modifier[" +
+                    "action=" + action + ", " +
+                    "value=" + value + ']';
+        }
+
+        }
+
+    public static final class ModifierToken {
+        public ModifierToken() {
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj == this || obj != null && obj.getClass() == this.getClass();
+        }
+
+        @Override
+        public int hashCode() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return "ModifierToken[]";
+        }
+
+
+        }
 
     public static class ModifierMap {
         private final Map<ModifierToken, Modifier> modifiers = new HashMap<>();

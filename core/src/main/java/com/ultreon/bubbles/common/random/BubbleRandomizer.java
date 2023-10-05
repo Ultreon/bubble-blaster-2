@@ -4,13 +4,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
+import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
 import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
 
 /**
  * Random properties generator for bubbles.
@@ -34,7 +34,7 @@ public class BubbleRandomizer extends EntityRandomizer<Bubble> {
      */
     @Override
     public BubbleProperties randomProperties(Rectangle bounds, RandomSource random, int retry, World world, Bubble bubble) {
-        Random rng = new Random(random.nextLong() ^ retry);
+        JavaRandom rng = new JavaRandom(random.nextLong() ^ retry);
 
         BubbleType type = bubble.getBubbleType();
 

@@ -1,9 +1,10 @@
 package com.ultreon.bubbles.entity.attribute;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-public record Attribute(String name) {
+public final class Attribute {
     private static final HashMap<String, Attribute> attributeMap = new HashMap<>();
 
     public static final Attribute MAX_HEALTH = new Attribute("generic.max_health");
@@ -13,8 +14,10 @@ public record Attribute(String name) {
     public static final Attribute SCORE_MODIFIER = new Attribute("player.score_modifier");
     public static final Attribute SCORE = new Attribute("bubble.score");
     public static final Attribute LUCK = new Attribute("player.luck");
+    private final String name;
 
-    public Attribute {
+
+    public Attribute(String name) {
         if (!Pattern.matches("[a-z_]{3,}(\\.[a-z_]{3,})+", name)) {
             throw new IllegalArgumentException("Invalid attribute name: " + name);
         }
@@ -24,9 +27,34 @@ public record Attribute(String name) {
         }
 
         Attribute.attributeMap.put(name, this);
+        this.name = name;
     }
 
     public static Attribute fromName(String name) {
         return Attribute.attributeMap.get(name);
     }
+
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Attribute) obj;
+        return Objects.equals(this.name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Attribute[" +
+                "name=" + name + ']';
+    }
+
 }

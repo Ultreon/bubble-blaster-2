@@ -59,6 +59,7 @@
   "bubbleblaster.screen.title.options": "Options",
   "bubbleblaster.screen.title.language": "Language",
   "bubbleblaster.screen.title.quit": "Quit Game",
+  "bubbleblaster.screen.title.resetHighScore": "Reset Highscore",
   "bubbleblaster.screen.options.language": "Language",
   "bubbleblaster.screen.saves.create.title": "Create a New Save",
   "bubbleblaster.screen.saves.create.seed": "Seed:",

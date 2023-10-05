@@ -2,12 +2,14 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Cursor;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.CrashFiller;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
@@ -15,7 +17,7 @@ import org.checkerframework.common.value.qual.IntRange;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
-public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Container implements CrashFiller {
+public abstract class Screen extends Container implements CrashFiller {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private GuiComponent focused;
     @IntRange(from = 0)
@@ -83,6 +85,7 @@ public abstract class Screen extends com.ultreon.bubbles.render.gui.widget.Conta
      * @return true to cancel change screen.
      * @author XyperCode
      */
+    @CanIgnoreReturnValue
     public boolean close(Screen to) {
         for (GuiComponent child : this.children)
             child.dispose();

@@ -1,0 +1,88 @@
+package com.ultreon.bubbles.platform.android;
+
+import android.content.Intent;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.ultreon.bubbles.AndroidLauncher;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BuildConfig;
+import com.ultreon.bubbles.CrashActivity;
+import com.ultreon.bubbles.GamePlatform;
+import com.ultreon.bubbles.render.gui.screen.Screen;
+import com.ultreon.commons.os.OperatingSystem;
+import com.ultreon.libs.commons.v0.Messenger;
+import com.ultreon.libs.commons.v0.ProgressMessenger;
+import com.ultreon.libs.crash.v0.CrashLog;
+import org.slf4j.Logger;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class AndroidPlatform extends GamePlatform {
+    private final ConcurrentMap<String, Logger> loggers = new ConcurrentHashMap<>();
+    private final AndroidLauncher launcher;
+
+    public AndroidPlatform(AndroidLauncher launcher) {
+        super();
+        this.launcher = launcher;
+    }
+
+    @Override
+    public FileHandle data(String path) {
+        return Gdx.files.local(path);
+    }
+
+    @Override
+    public Logger getLogger(String name) {
+        return this.loggers.computeIfAbsent(name, s -> new AndroidLogger(name));
+    }
+
+    @Override
+    public OperatingSystem getOperatingSystem() {
+        return OperatingSystem.Android;
+    }
+
+    @Override
+    public void handleCrash(CrashLog crashLog) {
+        super.handleCrash(crashLog);
+
+        Intent intent = new Intent(this.launcher, CrashActivity.class);
+        intent.putExtra("CrashLog", crashLog.toString());
+        this.launcher.startActivity(intent);
+    }
+
+    @Override
+    public FileHandle getDataDirectory() {
+        return Gdx.files.external(".");
+    }
+
+    @Override
+    public void loadGameResources(AtomicReference<ProgressMessenger> progressAlt, Messenger msgAlt) {
+        this.game().getResourceManager().importDeferredPackage(BubbleBlaster.class);
+    }
+
+    @Override
+    public String getGameVersion() {
+        return BuildConfig.VERSION_NAME;
+    }
+
+    @Override
+    public boolean isDevelopmentEnvironment() {
+        return BuildConfig.DEBUG;
+    }
+
+    @Override
+    public Screen openModListScreen() {
+        return null;
+    }
+
+    @Override
+    public void loadModResources(AtomicReference<ProgressMessenger> progressAlt, Messenger msgAlt) {
+
+    }
+
+    public AndroidLauncher getLauncher() {
+        return this.launcher;
+    }
+}

@@ -34,5 +34,27 @@
         "url": "https://fonts.google.com/noto/specimen/Noto+Sans"
       }
     }
+  ],
+  "images": [
+    {
+      "author": {
+        "url": "https://www.flaticon.com/authors/fathema-khanom",
+        "name": "Fathema Khanom"
+      },
+      "source": {
+        "name": "Password icons created by Fathema Khanom - Flaticon",
+        "url": "https://www.flaticon.com/free-icons/password"
+      }
+    },
+    {
+      "author": {
+        "url": "https://www.flaticon.com/authors/ilham-fitrotul-hayat",
+        "name": "Ilham Fitrotul Hayat"
+      },
+      "source": {
+        "name": "Left click icons created by Ilham Fitrotul Hayat - Flaticon",
+        "url": "https://www.flaticon.com/free-icons/left-click"
+      }
+    }
   ]
 }

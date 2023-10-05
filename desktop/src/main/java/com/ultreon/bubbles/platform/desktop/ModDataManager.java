@@ -1,4 +1,4 @@
-package com.ultreon.bubbles.mod;
+package com.ultreon.bubbles.platform.desktop;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.google.common.collect.Maps;

@@ -1,11 +1,14 @@
 package com.ultreon.bubbles.bubble;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.util.ConstantValueSource;
 import com.ultreon.bubbles.util.RandomValueSource;
 import com.ultreon.bubbles.world.World;
+import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,5 +65,10 @@ public class LevelUpBubble extends BubbleType {
 //        // Return flag for ‘if the maximum level for score is greater than the player's current level’
 //        return maxLevelUp > world.getPlayer().getLevel();
         return false;
+    }
+
+    @Override
+    public Texture getInsideTexture() {
+        return BubbleBlaster.getInstance().getTextureManager().getOrLoadTexture(new Identifier("bubble/key"));
     }
 }

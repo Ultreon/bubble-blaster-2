@@ -65,6 +65,8 @@ public class NormalMode extends Gamemode {
 
     @Override
     public @NotNull Vector2 getSpawnPos(Entity entity, @Nullable Vector2 pos, SpawnUsage usage, RandomSource random, int retry) {
+        if (pos != null) return pos;
+
         RandomSource spawnRng = random.nextRandom(usage);
 
         Rectangle bounds = this.getGameBounds();

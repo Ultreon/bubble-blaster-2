@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -12,7 +13,7 @@ public final class OutOfMemoryScreen extends Screen {
         super(TextObject.EMPTY);
 
         if (this.game.isInGame() || this.game.world != null) {
-            this.game.crash(new Error(this.getClass().getSimpleName() + " name violation, should only be used when outside of the game."));
+            BubbleBlaster.crash(new Error(this.getClass().getSimpleName() + " name violation, should only be used when outside of the game."));
         }
     }
 

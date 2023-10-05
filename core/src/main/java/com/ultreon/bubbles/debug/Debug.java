@@ -2,14 +2,14 @@ package com.ultreon.bubbles.debug;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.notification.Notification;
+import com.ultreon.bubbles.GamePlatform;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
 import java.util.UUID;
 
 public class Debug {
-    private static final Logger logger = LoggerFactory.getLogger("Debugger");
+    private static final Logger logger = GamePlatform.get().getLogger("Debugger");
 
     public static void notify(String name, String detail) {
         BubbleBlaster game = BubbleBlaster.getInstance();

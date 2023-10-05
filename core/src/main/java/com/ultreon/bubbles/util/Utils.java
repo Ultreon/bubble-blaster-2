@@ -24,10 +24,10 @@ public class Utils {
 
     public static void hideCursor() {
 
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
+//        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
     }
 
     public static void showCursor() {
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+//        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 }

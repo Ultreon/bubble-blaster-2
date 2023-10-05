@@ -14,6 +14,7 @@ import com.ultreon.bubbles.entity.flags.EntityFlag;
 import com.ultreon.bubbles.entity.player.ability.AbilityType;
 import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.gamemode.Gamemode;
+import com.ultreon.bubbles.input.KeyBinding;
 import com.ultreon.bubbles.item.ItemType;
 import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.bubbles.render.gui.hud.HudType;
@@ -39,4 +40,5 @@ public class Registries {
     public static final Registry<MusicEvent> MUSIC = Registry.create(new Identifier("music"));
     public static final Registry<EntityFlag> ENTITY_FLAGS = Registry.create(new Identifier("entity_flag"));
     public static final Registry<HudType> HUD = Registry.create(new Identifier("hud"));
+    public static final Registry<KeyBinding> KEY_BINDINGS = Registry.create(new Identifier("key_binding"));
 }

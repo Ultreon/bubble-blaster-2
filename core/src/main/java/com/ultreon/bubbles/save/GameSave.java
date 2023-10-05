@@ -1,9 +1,10 @@
 package com.ultreon.bubbles.save;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.commons.util.FileUtils;
 import com.ultreon.data.DataIo;
 import com.ultreon.data.types.MapType;
 import org.slf4j.Marker;
@@ -11,6 +12,7 @@ import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Random;
 
@@ -19,15 +21,16 @@ public class GameSave {
     public static final Marker MARKER = MarkerFactory.getMarker("GameSaves");
     private final String path;
     protected final File gameInfoFile;
-    private final File directory;
+    private final FileHandle handle;
 
+    @Deprecated
     protected GameSave(String path) {
-        this(new File(path));
+        this(Gdx.files.absolute(path));
     }
 
-    protected GameSave(File directory) {
-        this.path = directory.getPath();
-        this.directory = directory;
+    protected GameSave(FileHandle handle) {
+        this.path = handle.path();
+        this.handle = handle;
         this.gameInfoFile = new File(this.path, "info.ubo");
     }
 
@@ -35,14 +38,16 @@ public class GameSave {
         return new GameSaveInfo(this.loadInfoData());
     }
 
-    public static GameSave fromFile(File file) {
+    public static GameSave fromFile(FileHandle file) {
         return new GameSave(file);
     }
 
+    @Deprecated
     public static GameSave fromPath(Path file) {
-        return new GameSave(file.toFile());
+        return new GameSave(file.toAbsolutePath().toString());
     }
 
+    @Deprecated
     public static GameSave fromStringPath(String file) {
         return new GameSave(file);
     }
@@ -79,44 +84,43 @@ public class GameSave {
     }
 
     public void dump(String name, MapType data, boolean compressed) throws IOException {
-        this.dump(new File(this.path, name + ".ubo"), data, compressed);
+        this.dump(this.handle.child(name + ".ubo"), data, compressed);
     }
 
-    private void dump(File file, MapType data, boolean compressed) throws IOException {
+    private void dump(FileHandle file, MapType data, boolean compressed) throws IOException {
         if (compressed) {
-            DataIo.writeCompressed(data, file);
+            try (OutputStream output = file.write(false)) {
+                DataIo.writeCompressed(data, output);
+            }
             return;
         }
-        DataIo.write(data, file);
+        try (OutputStream output = file.write(false)) {
+            DataIo.write(data, output);
+        }
     }
 
-    public File getDirectory() {
-        return this.directory;
+    public FileHandle getHandle() {
+        return this.handle;
     }
 
     public boolean hasMainState() {
         return this.hasDataFile("game");
     }
 
-    private boolean hasDataFile(String name) {
-        return this.hasDataFile(new File(this.path, name + ".bson"));
-    }
-
-    private boolean hasDataFile(File file) {
-        return file.exists() && file.getAbsolutePath().startsWith(this.directory.getAbsolutePath());
+    public boolean hasDataFile(String name) {
+        return this.handle.child(name + ".bson").exists();
     }
 
     @CanIgnoreReturnValue
     public void delete() throws IOException {
-        FileUtils.deleteDir(this.directory);
+        if (this.handle.isDirectory()) this.handle.deleteDirectory();
+        else this.handle.delete();
     }
 
     public void createFolders(String relPath) throws IOException {
-        File file = new File(this.directory.getPath(), relPath);
-        if (!file.mkdirs()) {
-            if (!file.exists()) {
-                throw new IOException("Failed to create directories " + Path.of(this.directory.getPath(), relPath).toFile().getAbsolutePath());
-            }
+        FileHandle file = this.handle.child(relPath);
+        if (!file.exists()) {
+            file.mkdirs();
         }
     }
 

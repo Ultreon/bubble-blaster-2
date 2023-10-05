@@ -7,6 +7,7 @@ import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
+import com.ultreon.bubbles.gamemode.TimedMode;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
 import com.ultreon.bubbles.render.Renderer;
@@ -45,6 +46,16 @@ public class Bullet extends Entity {
 
         this.markAsCollidable(Entities.BUBBLE);
         this.markAsAttackable(Entities.BUBBLE);
+
+        this.popsRemaining = world.getGamemode().getBulletPops();;
+    }
+
+    public int getPopsRemaining() {
+        return this.popsRemaining;
+    }
+
+    public void setPopsRemaining(int popsRemaining) {
+        this.popsRemaining = popsRemaining;
     }
 
     public @Nullable Player getOwner() {
@@ -91,8 +102,7 @@ public class Bullet extends Entity {
             var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             this.owner.awardScore(score);
         }
-        this.popsRemaining--;
-        if (this.popsRemaining <= 0) {
+        if (--this.popsRemaining <= 0) {
             this.delete();
         }
     }

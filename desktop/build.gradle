@@ -182,6 +182,13 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
 
+    // ImGui
+    implementation "io.github.spair:imgui-java-binding:$imgui_version"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
+    implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
+
     // fabric-loader dependencies
     implementation "org.ow2.asm:asm:${project.asm_version}"
     implementation "org.ow2.asm:asm-analysis:${project.asm_version}"

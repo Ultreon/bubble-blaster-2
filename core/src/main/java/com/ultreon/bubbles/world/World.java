@@ -3,10 +3,7 @@ package com.ultreon.bubbles.world;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.BubbleBlasterConfig;
-import com.ultreon.bubbles.CrashFiller;
-import com.ultreon.bubbles.LoadedGame;
+import com.ultreon.bubbles.*;
 import com.ultreon.bubbles.audio.MusicEvent;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
@@ -15,7 +12,6 @@ import com.ultreon.bubbles.common.gamestate.GameplayContext;
 import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.common.random.GameRandom;
-import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.data.DataKeys;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
@@ -34,7 +30,6 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.gameplay.GameplayStorage;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.init.GameplayEvents;
-import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.registry.Registries;
@@ -42,7 +37,6 @@ import com.ultreon.bubbles.render.ValueAnimator;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.bubbles.util.CollectionsUtils;
 import com.ultreon.bubbles.util.RngUtils;
 import com.ultreon.data.types.ListType;
@@ -76,6 +70,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
@@ -89,7 +84,6 @@ public final class World implements CrashFiller, Closeable {
     // Flags.
     private volatile boolean gameOver = false;
     private boolean bubblesFrozen = false;
-    private boolean bloodMoonTriggered;
 
     // Enums.
     private Difficulty difficulty;
@@ -98,18 +92,12 @@ public final class World implements CrashFiller, Closeable {
     private final Map<GameplayEvent, Float> stateDifficultyModifiers = new ConcurrentHashMap<>();
 
     // Animations:
-    private ValueAnimator bloodMoonValueAnimator = null;
-    private ValueAnimator bloodMoonValueAnimator1;
 
     // Modifiers
     private float globalBubbleSpeedModifier = 1;
     private float stateDifficultyModifier = 1;
     private final HashSet<GameplayEvent> gameplayEventActive = new HashSet<>();
-    private final Rng bloodMoonRng;
     private final GameSave gameSave;
-
-    // Checks:
-    private long nextBloodMoonCheck;
 
     // Values:
     private long resultScore;
@@ -139,6 +127,8 @@ public final class World implements CrashFiller, Closeable {
     private Instant gameOverTime = null;
     private long nextEntityId = 0;
     private final MusicEvent music = null;
+    private final RandomSource randomSource;
+    private int nextBloodMoon;
 
     /// Constructors.
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, int seed) {
@@ -152,14 +142,20 @@ public final class World implements CrashFiller, Closeable {
         this.bubbleRng = this.gamemode.createBubbleRandomizer();
         this.seed = seed;
         this.gameSave = save;
+        this.randomSource = new JavaRandom(seed ^ 0x58fa2bd933ec8ed3L);
 
-        this.bloodMoonRng = new Rng(random, 69, 0);
+        this.updateNextBloodMoon();
     }
 
     public void firstInit(Messenger messenger) {
         WorldEvents.WORLD_STARTING.factory().onWorldStarting(this);
 
         int maxBubbles = BubbleBlasterConfig.MAX_BUBBLES.get();
+        if (maxBubbles < 100) throw new IllegalArgumentException("Hello, your amount of bubbles are too low for the game to run.");
+
+        if (GamePlatform.get().isMobile() && maxBubbles > 200) maxBubbles = 200;
+        BubbleBlasterConfig.MAX_BUBBLES.set(maxBubbles);
+        BubbleBlasterConfig.save();
 
         try {
             // Spawn bubbles
@@ -175,7 +171,7 @@ public final class World implements CrashFiller, Closeable {
             // Spawn player
             messenger.send("Spawning player...");
             Vector2 pos = new Vector2(this.game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f);
-            this.game.laodPlayerIntoWorld();
+            this.game.loadPlayerIntoWorld();
             this.spawn(this.game.player, SpawnInformation.playerSpawn(pos, this, new JavaRandom()));
         } catch (Exception e) {
             CrashLog crashLog = new CrashLog("Could not initialize world.", e);
@@ -188,9 +184,11 @@ public final class World implements CrashFiller, Closeable {
         this.player = this.game.player;
         this.initialized = true;
 
-        GameplayEvents.BLOOD_MOON_EVENT.resetNext();
-
         WorldEvents.WORLD_STARTED.factory().onWorldStarted(this);
+    }
+
+    public void updateNextBloodMoon() {
+        this.nextBloodMoon = this.randomSource.nextInt(BubbleBlasterConfig.BLOOD_MOON_TRIGGER_LOW.get(), BubbleBlasterConfig.BLOOD_MOON_TRIGGER_HIGH.get()) * TPS;
     }
 
     private void firstInit(Messenger messenger, int maxBubbles) {
@@ -199,12 +197,10 @@ public final class World implements CrashFiller, Closeable {
         for (int i = 0; i < maxBubbles; i++) {
             int retry = 0;
 
-
             long idx = this.entitySeedIdx++;
             RandomSource random = new JavaRandom(this.getSeed() ^ idx).nextRandom(RngUtils.hash(retry));
-            var pos = new Vector2(random.nextInt(0, BubbleBlaster.getInstance().getWidth()), random.nextInt(0, BubbleBlaster.getInstance().getWidth()));
             var bubble = new Bubble(this, Bubble.getRandomVariant(this, random));
-            this.spawn(bubble, SpawnInformation.naturalSpawn(pos, random, SpawnUsage.BUBBLE_INIT_SPAWN, retry, this));
+            this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_INIT_SPAWN, retry, this));
 
             messenger.send("Spawning bubble " + i + "/" + maxBubbles);
         }
@@ -420,11 +416,6 @@ public final class World implements CrashFiller, Closeable {
         return this.bubblesFrozen ? 0 : this.globalBubbleSpeedModifier;
     }
 
-    @Deprecated
-    public void setBubblesFrozen(boolean b) {
-        this.bubblesFrozen = b;
-    }
-
     public boolean isBubblesFrozen() {
         return this.bubblesFrozen;
     }
@@ -461,53 +452,13 @@ public final class World implements CrashFiller, Closeable {
             return;
         }
 
-        if (!this.bloodMoonTriggered) {
-            if (this.nextBloodMoonCheck == 0) {
-                this.nextBloodMoonCheck = System.currentTimeMillis() + 10000;
-            }
-
-            if (this.nextBloodMoonCheck < System.currentTimeMillis()) {
-                if (this.bloodMoonRng.getNumber(0, 720, this.getTicks()) == 0) {
-                    this.triggerBloodMoon();
-                } else {
-                    this.nextBloodMoonCheck = System.currentTimeMillis() + 10000;
-                }
-            }
-        } else {
-            if (this.bloodMoonValueAnimator != null) {
-                this.setGlobalBubbleSpeedModifier((float) this.bloodMoonValueAnimator.animate());
-                if (this.bloodMoonValueAnimator.isEnded()) {
-                    GameplayEvents.BLOOD_MOON_EVENT.activate();
-                    this.setCurrentGameEvent(GameplayEvents.BLOOD_MOON_EVENT);
-                    this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
-
-                    if (this.music != null) {
-                        this.music.stop();
-                    }
-                    this.bloodMoonValueAnimator = null;
-                    this.bloodMoonValueAnimator1 = new ValueAnimator(8d, 1d, 1000d);
-                }
-            } else if (this.bloodMoonValueAnimator1 != null) {
-                this.setGlobalBubbleSpeedModifier((float) this.bloodMoonValueAnimator1.animate());
-                if (this.bloodMoonValueAnimator1.isEnded()) {
-                    this.bloodMoonValueAnimator1 = null;
-                }
-            } else {
-                this.setGlobalBubbleSpeedModifier(1);
-            }
+        if (--this.nextBloodMoon <= 0) {
+            this.triggerBloodMoon();
         }
     }
 
     public void triggerBloodMoon() {
-        if (!this.bloodMoonTriggered) {
-            BubbleBlaster.getLogger().info("Triggered blood moon.");
-            this.bloodMoonTriggered = true;
-            this.bloodMoonValueAnimator = new ValueAnimator(1d, 8d, 10000d);
-        } else {
-            BubbleBlaster.getLogger().info("Blood moon already triggered!");
-        }
-
-        BubbleBlaster.getInstance().getRenderSettings().disableAntialiasing();
+        this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
     }
 
     public void stopBloodMoon() {
@@ -518,7 +469,6 @@ public final class World implements CrashFiller, Closeable {
 
         if (this.isBloodMoonActive()) {
             this.gameplayStorage.get(BubbleBlaster.NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
-            this.bloodMoonTriggered = false;
             GameplayEvents.BLOOD_MOON_EVENT.deactivate();
             BubbleBlaster.getInstance().gameplayMusic.next();
         }
@@ -793,7 +743,7 @@ public final class World implements CrashFiller, Closeable {
         synchronized (this.entitiesLock) {
             return this.entitiesById.values().stream()
                     .filter(entity -> bubbleEntityClass.isAssignableFrom(entity.getClass()))
-                    .map(bubbleEntityClass::cast).toList();
+                    .map(bubbleEntityClass::cast).collect(Collectors.toList());
         }
     }
 
@@ -936,5 +886,9 @@ public final class World implements CrashFiller, Closeable {
 
     public MusicEvent getMusic() {
         return this.music;
+    }
+
+    public int getNextBloodMoon() {
+        return this.nextBloodMoon;
     }
 }

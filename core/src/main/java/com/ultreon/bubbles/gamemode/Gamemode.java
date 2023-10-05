@@ -277,4 +277,8 @@ public abstract class Gamemode implements Controllable {
     public boolean firstInit(Messenger messenger, int maxBubbles) {
         return false;
     }
+
+    public int getBulletPops() {
+        return 1;
+    }
 }

@@ -9,8 +9,6 @@ import com.ultreon.bubbles.render.gui.widget.CrashButton;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.text.v1.TextObject;
 
-import java.io.File;
-
 public class CrashScreen extends Screen {
     private final CrashLog crashLog;
     private final String fileName;
@@ -21,7 +19,7 @@ public class CrashScreen extends Screen {
         this.crashLog = crashLog;
         this.fileName = crashLog.getDefaultFileName();
 
-        this.crashLog.writeToFile(new File(BubbleBlaster.getDataDir(), this.fileName));
+        this.crashLog.writeToFile(BubbleBlaster.getDataDir().child(this.fileName).file());
     }
 
     @Override

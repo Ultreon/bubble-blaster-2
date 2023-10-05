@@ -2,7 +2,17 @@ package com.ultreon.bubbles.api.event.keyboard;
 
 import java.util.Objects;
 
-public record KeyboardModifiers(boolean shift, boolean ctrl, boolean alt) implements Cloneable {
+public final class KeyboardModifiers implements Cloneable {
+    private final boolean shift;
+    private final boolean ctrl;
+    private final boolean alt;
+
+    public KeyboardModifiers(boolean shift, boolean ctrl, boolean alt) {
+        this.shift = shift;
+        this.ctrl = ctrl;
+        this.alt = alt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -33,4 +43,17 @@ public record KeyboardModifiers(boolean shift, boolean ctrl, boolean alt) implem
             throw new InternalError("Should be cloneable because object implements cloneable interface.");
         }
     }
+
+    public boolean shift() {
+        return shift;
+    }
+
+    public boolean ctrl() {
+        return ctrl;
+    }
+
+    public boolean alt() {
+        return alt;
+    }
+
 }

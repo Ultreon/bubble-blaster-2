@@ -15,7 +15,7 @@ import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.input.GameInput;
+import com.ultreon.bubbles.input.KeyboardInput;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -104,8 +104,8 @@ public class DebugRenderer {
             this.left(renderer, "Local Difficulty", world.getLocalDifficulty());
             this.left(renderer, "Seed", world.getSeed());
 
-            if (GameInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
-                GridPoint2 pos = GameInput.getPosGrid();
+            if (KeyboardInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
+                GridPoint2 pos = KeyboardInput.getMousePoint();
                 Entity entityAt = world.getEntityAt(new Vec2i(pos.x, pos.y));
                 if (entityAt != null) {
                     this.left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
@@ -131,7 +131,7 @@ public class DebugRenderer {
                 this.left(renderer, "Temp Velocity", player.tempVel);
                 this.left(renderer, "BoostAccelTimer", player.boostAccelTimer);
                 this.left(renderer, "BoostRefillTimer", player.boostRefillTimer);
-                this.left(renderer, "DstToMouseCursor", player.distanceTo(GameInput.getPos()));
+                this.left(renderer, "DstToMouseCursor", player.distanceTo(KeyboardInput.getMousePos()));
             }
         }
         Screen screen = this.game.getCurrentScreen();

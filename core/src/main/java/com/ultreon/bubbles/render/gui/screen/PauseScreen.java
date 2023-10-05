@@ -151,7 +151,7 @@ public class PauseScreen extends Screen {
         renderer.drawTextLeft(Fonts.SANS_BOLD_32.get(), this.bubble.getTranslation(), this.middleX - 470, 322, DETAIL_NAME_COLOR);
 
         // Bubble icon.
-        WorldRenderer.drawBubble(renderer, this.middleX - 409, 411, 122, this.bubble.getColors());
+        WorldRenderer.drawBubble(renderer, this.middleX - 409, 411, 122, 0, this.bubble);
 
         //********************//
         //     Info Names     //

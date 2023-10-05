@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.util;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -90,7 +91,65 @@ public class Either<L, R> {
         else if (this.right != null) onRight.accept(this.right.value);
     }
 
-    private record Left<L>(L value) { }
+    private static final class Left<L> {
+        private final L value;
 
-    private record Right<R>(R value) { }
+        private Left(L value) {
+            this.value = value;
+        }
+
+        public L value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (Left) obj;
+            return Objects.equals(this.value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
+        }
+
+        @Override
+        public String toString() {
+            return "Left[" +
+                    "value=" + value + ']';
+        }
+    }
+
+    private static final class Right<R> {
+        private final R value;
+
+        private Right(R value) {
+            this.value = value;
+        }
+
+        public R value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (Right) obj;
+            return Objects.equals(this.value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
+        }
+
+        @Override
+        public String toString() {
+            return "Right[" +
+                    "value=" + value + ']';
+        }
+    }
 }

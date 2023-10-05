@@ -95,6 +95,8 @@ public class Renderer {
     private boolean depthEnabled;
     private boolean blurring;
     private final GlyphLayout layout = new GlyphLayout();
+    private boolean hovering;
+    private boolean hideCursor;
 
     @ApiStatus.Internal
     public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -110,7 +112,12 @@ public class Renderer {
         this.sides = new DefaultSideEstimator(20, 4000, 3600f);
 
         // Projection matrix.
-        this.matrixStack.onEdit = camera.combined::set;
+        this.matrixStack.onEdit = m -> {
+            this.shapes.setTransformMatrix(m);
+            this.batch.setTransformMatrix(m);
+        };
+
+        this.shapes.setAutoShapeType(true);
 
         // Visual Effects setup.
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
@@ -126,8 +133,11 @@ public class Renderer {
         if (this.rendering)
             throw new IllegalStateException("Renderer is already rendering");
 
-        this.backupMatrix.set(this.camera.combined);
-        this.matrixStack.stack.addLast(this.camera.combined);
+        this.hovering = false;
+        this.hideCursor = false;
+
+        this.backupMatrix.set(this.shapes.getTransformMatrix());
+        this.matrixStack.stack.addLast(this.shapes.getTransformMatrix());
 
         if (this.triggerScissorLog) {
             this.triggerScissorLog = false;
@@ -161,7 +171,8 @@ public class Renderer {
         if (this.blurring)
             throw new IllegalStateException("Can´t end renderer while blurring mode is still enabled.");
 
-        this.camera.combined.set(this.backupMatrix);
+        this.shapes.setTransformMatrix(this.backupMatrix);
+        this.batch.setTransformMatrix(this.backupMatrix);
 
         if (!this.matrixStack.isClear())
             this.clearMatrixStack();
@@ -183,6 +194,13 @@ public class Renderer {
         if (this.triggeredScissorLog) {
             this.triggeredScissorLog = false;
             this.loggingScissors = false;
+        }
+
+        if (this.hideCursor) {
+            Gdx.input.setCursorCatched(true);
+        } else {
+            Gdx.input.setCursorCatched(false);
+            Gdx.graphics.setCursor(this.hovering ? this.game.handCursor : this.game.arrowCursor);
         }
 
         this.rendering = false;
@@ -1349,13 +1367,17 @@ public class Renderer {
     public void blit(int x, int y) {
         if (!this.rendering) return;
 
-        this.batch.draw(this.texture, x, y);
+        Texture tex = this.texture;
+
+        this.toBatch();
+        this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
 
     public void blit(int x, int y, int width, int height) {
         if (!this.rendering) return;
 
-        this.batch.draw(this.texture, x, y, width, height);
+        this.toBatch();
+        this.batch.draw(this.texture, x, y + height, width, -height);
     }
 
     public void setTexture(Identifier texture) {
@@ -1381,7 +1403,7 @@ public class Renderer {
 
     @ApiStatus.Experimental
     public Matrix4 getTransform() {
-        return this.camera.combined;
+        return this.shapes.getTransformMatrix();
     }
 
     @ApiStatus.Experimental
@@ -1606,6 +1628,14 @@ public class Renderer {
 
         this.shapes.begin();
         this.state = State.SHAPES;
+    }
+
+    public void hovered() {
+        this.hovering = true;
+    }
+
+    public void hideCursor() {
+        this.hideCursor = true;
     }
 
     public enum State {

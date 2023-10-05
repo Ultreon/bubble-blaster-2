@@ -2,6 +2,7 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.ultreon.bubbles.platform.desktop.DesktopPlatform;
 import com.ultreon.libs.crash.v0.CrashLog;
 import net.fabricmc.loader.impl.util.Arguments;
 import org.jetbrains.annotations.NotNull;
@@ -20,15 +21,16 @@ public class DesktopLauncher {
     public static void main(String[] argv) {
         var config = DesktopLauncher.createConfig();
 
+
         var arguments = new Arguments();
         arguments.parse(argv);
+        DesktopPlatform platform = new DesktopPlatform(arguments);
 
-        BubbleBlaster game;
+        GameLibGDXWrapper game;
         try {
-            game = BubbleBlaster.launch(arguments);
+            game = new GameLibGDXWrapper(platform);
         } catch (Throwable t) {
             BubbleBlaster.crash(new CrashLog("Launch failure", t).createCrash());
-            Runtime.getRuntime().halt(1);
             return;
         }
 
@@ -36,8 +38,9 @@ public class DesktopLauncher {
             new Lwjgl3Application(game, config);
         } catch (Throwable t) {
             BubbleBlaster.crash(new CrashLog("Game crashed :(", t).createCrash());
-            Runtime.getRuntime().halt(1);
         }
+
+        Runtime.getRuntime().exit(0);
     }
 
     @NotNull

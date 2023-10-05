@@ -25,8 +25,6 @@ public class StatusEffects {
 
     public static final ResistanceStatusEffect RESISTANCE = StatusEffects.register("resistance", new ResistanceStatusEffect());
 
-    public static final BubbleFreezeStatusEffect BUBBLE_FREEZE = StatusEffects.register("bubble_freeze", new BubbleFreezeStatusEffect());
-
     public static final AttackBoostStatusEffect ATTACK_BOOST = StatusEffects.register("attack", new AttackBoostStatusEffect());
     public static final ScoreStatusEffect SCORE = StatusEffects.register("multi_score", new ScoreStatusEffect());
     public static final SwiftnessStatusEffect SWIFTNESS = StatusEffects.register("swiftness", new SwiftnessStatusEffect());

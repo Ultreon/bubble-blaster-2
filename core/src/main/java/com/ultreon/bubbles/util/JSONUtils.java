@@ -3,6 +3,7 @@ package com.ultreon.bubbles.util;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -306,7 +307,7 @@ public class JSONUtils {
      * Gets a human-readable description create the given JsonElement's type.  For example: "a number (4)"
      */
     public static String toString(JsonElement json) {
-        String s = org.apache.commons.lang3.StringUtils.abbreviateMiddle(String.valueOf(json), "...", 10);
+        String s = StringUtils.abbreviateMiddle(String.valueOf(json), "...", 10);
         if (json == null) {
             return "null (missing)";
         } else if (json.isJsonNull()) {

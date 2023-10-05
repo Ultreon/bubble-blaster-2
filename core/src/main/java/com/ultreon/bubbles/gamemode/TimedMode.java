@@ -59,6 +59,11 @@ public class TimedMode extends NormalMode {
         return data;
     }
 
+    @Override
+    public int getBulletPops() {
+        return 4;
+    }
+
     public long getTimeRemaining() {
         return this.getEndTime() - System.currentTimeMillis();
     }

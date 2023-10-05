@@ -27,7 +27,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     protected final GlyphLayout layout = new GlyphLayout();
 
-    public final BitmapFont font = Fonts.DEFAULT.get();
+    protected BitmapFont font = Fonts.DEFAULT.get();
     public final BitmapFont monospaced = FunctionUtils.tryCall(Fonts.MONOSPACED_14);
 
     protected volatile int x;
@@ -389,5 +389,13 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
 
     protected void playMenuEvent() {
         SoundEvents.MENU_EVENT.play(0.2f);
+    }
+
+    public BitmapFont getFont() {
+        return this.font;
+    }
+
+    public void setFont(BitmapFont font) {
+        this.font = font;
     }
 }

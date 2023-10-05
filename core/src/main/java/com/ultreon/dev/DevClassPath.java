@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DevClassPath extends HashMap<String, List<String>> {
@@ -13,7 +14,7 @@ public class DevClassPath extends HashMap<String, List<String>> {
     }
 
     private List<File> parse(String s) {
-        return Stream.of(s.split(System.getProperty("path.separator"))).map(File::new).toList();
+        return Stream.of(s.split(System.getProperty("path.separator"))).map(File::new).collect(Collectors.toList());
     }
 
     @Deprecated

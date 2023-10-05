@@ -74,11 +74,6 @@ public class CreateSaveScreen extends Screen {
     }
 
     @Override
-    public boolean keyPress(int keyCode) {
-        return super.keyPress(keyCode);
-    }
-
-    @Override
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 

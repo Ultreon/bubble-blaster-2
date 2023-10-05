@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.settings;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ultreon.bubbles.BubbleBlaster;
@@ -14,12 +15,7 @@ import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.translations.v1.LanguageManager;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 
 public final class GameSettings implements Serializable {
@@ -46,7 +42,7 @@ public final class GameSettings implements Serializable {
             BubbleBlaster.getLogger().error("Failed to load settings.");
         }
 
-        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE, file -> GameSettings.reload());
+//        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE.file(), file -> GameSettings.reload());
     }
 
     private GameSettings() {
@@ -62,7 +58,7 @@ public final class GameSettings implements Serializable {
         }
 
         try {
-            String json = Files.readString(GameFolders.SETTINGS_FILE.toPath());
+            String json = GameFolders.SETTINGS_FILE.readString();
             var instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.NORMAL.id();
@@ -71,7 +67,7 @@ public final class GameSettings implements Serializable {
             GameSettings.instance = instance;
             LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.toPath() + ":", e);
+            BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.path() + ":", e);
             return GameSettings.save();
         }
 
@@ -79,12 +75,12 @@ public final class GameSettings implements Serializable {
     }
 
     public synchronized static boolean save() {
-        File settingsFile = GameFolders.SETTINGS_FILE;
+        FileHandle settingsFile = GameFolders.SETTINGS_FILE;
 
         String json = GSON.toJson(instance);
         try {
-            Files.writeString(settingsFile.toPath(), json, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
+            settingsFile.writeString(json, false, "UTF-8");
+        } catch (Exception e) {
             BubbleBlaster.getLogger().error("Failed to save settings to " + settingsFile + ":", e);
             return false;
         }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
-import com.ultreon.bubbles.input.GameInput;
+import com.ultreon.bubbles.input.KeyboardInput;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
@@ -49,6 +49,6 @@ public class GamemodeScreen extends Screen {
     }
 
     private boolean isKey() {
-        return GameInput.areKeysDown(Keys.CONTROL_LEFT, Keys.SHIFT_LEFT);
+        return KeyboardInput.areKeysDown(Keys.CONTROL_LEFT, Keys.SHIFT_LEFT);
     }
 }

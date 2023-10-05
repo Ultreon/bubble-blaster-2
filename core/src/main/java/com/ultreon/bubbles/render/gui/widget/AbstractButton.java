@@ -26,7 +26,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        if (this.isHovered() && button == Buttons.LEFT && this.enabled && this.visible) {
+        if (button == Buttons.LEFT && this.enabled && this.visible) {
             this.pressed = true;
             return true;
         }
@@ -35,7 +35,7 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        if (this.isHovered() && button == Buttons.LEFT && this.enabled && this.visible && this.pressed) {
+        if (button == Buttons.LEFT && this.enabled && this.visible && this.pressed) {
             this.pressed = false;
             this.playMenuEvent();
             this.command.run();

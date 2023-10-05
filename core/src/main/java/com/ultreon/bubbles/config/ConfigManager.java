@@ -4,9 +4,9 @@ import com.electronwill.nightconfig.core.io.ParsingException;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.notification.Notification;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.commons.exceptions.DuplicateElementException;
 import com.ultreon.libs.commons.v0.UtilityClass;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class ConfigManager extends UtilityClass {
     }
 
     public static void registerConfig(String namespace, Config config) {
-        boolean modLoaded = FabricLoader.getInstance().isModLoaded(namespace);
+        boolean modLoaded = GamePlatform.get().isModLoaded(namespace);
         if (!modLoaded) return;
 
         if (CONFIGS.containsKey(namespace)) {

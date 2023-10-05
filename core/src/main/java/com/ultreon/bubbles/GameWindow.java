@@ -2,23 +2,15 @@ package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.backends.lwjgl3.*;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.event.v1.WindowEvents;
-import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.commons.v0.size.IntSize;
-import com.ultreon.libs.commons.v0.vector.Vec2i;
-import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
-import javax.swing.*;
 import java.util.Objects;
 
 /**
@@ -27,100 +19,62 @@ import java.util.Objects;
  * @author XyperCode
  */
 @SuppressWarnings("unused")
-public class GameWindow {
-    private static final Marker MARKER = MarkerFactory.getMarker("GameWindow");
-
-    private boolean initialized = false;
-
-    @IntRange(from = 0)
-    private int fps;
-    private Thread mainThread;
-    private boolean visible;
-
+public interface GameWindow {
     /**
      * Window constructor.
      */
-    public GameWindow(Properties properties) {
-        this.setSize(new IntSize(properties.width, properties.height));
+    static GameWindow create(Properties properties) {
+        GameWindow window = GamePlatform.get().createWindow(properties);
+        window.setSize(properties.width, properties.height);
         Gdx.graphics.setResizable(false);
+        return window;
     }
 
-    public IntSize getSize() {
-        var width = Gdx.graphics.getWidth();
-        var height = Gdx.graphics.getHeight();
-        return new IntSize(width, height);
+    default Vector2 getSize() {
+        return new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
-    public void setSize(IntSize size) {
-        Gdx.graphics.setWindowedMode(size.width(), size.height());
+    default void setSize(int width, int height) {
+        Gdx.graphics.setWindowedMode(width, height);
     }
 
-    public int getWidth() {
-        return Gdx.graphics.getWidth();
-    }
+    int getWidth();
 
-    public void setWidth(int width) {
-        Gdx.graphics.setWindowedMode(width, this.getSize().height());
-    }
+    void setWidth(int width);
 
-    public int getHeight() {
-        return Gdx.graphics.getHeight();
-    }
+    int getHeight();
 
-    public void setHeight(int height) {
-        Gdx.graphics.setWindowedMode(this.getSize().width(), height);
-    }
+    void setHeight(int height);
 
     /**
      * Initialized window.
      */
-    public synchronized void init() {
-        this.getLwjglWindow().setWindowListener(new GameWindowAdapter());
+    void init();
 
-        if (this.initialized) {
-            throw new OneTimeUseException("The game window is already initialized.");
-        }
-        this.initialized = true;
+    void dispose();
 
-        BubbleBlaster.getLogger().info(MARKER, "Initialized game window");
+    Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier);
 
-        this.game().windowLoaded();
-    }
-
-    void dispose() {
-        Gdx.app.exit();
-    }
-
-    public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
-        return Gdx.graphics.newCursor(new Pixmap(BubbleBlaster.resource(identifier.mapPath(s -> "textures/cursor/" + s + ".png"))), hotSpotX, hotSpotY);
-    }
-
-    private BubbleBlaster game() {
+    default BubbleBlaster game() {
         return BubbleBlaster.getInstance();
     }
 
-    public void finalSetup() {
-        // TODO: Use final setup in game window.
-    }
+    void finalSetup();
 
-    public void toggleFullscreen() {
+    default void toggleFullscreen() {
         this.setFullscreen(!this.isFullscreen());
     }
 
-    public void setFullscreen(boolean enable) {
+    default void setFullscreen(boolean enable) {
         if (this.isFullscreen() && !enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
-                this.setVisible(true);
                 Gdx.graphics.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
-                this.requestFocus();
             }
         } else if (!this.isFullscreen() && enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
-                this.setVisible(true);
                 Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
                 Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
                 this.game().resize(mode.width, mode.height);
-                this.requestFocus();
             }
         }
 
@@ -128,87 +82,60 @@ public class GameWindow {
         BubbleBlasterConfig.save();
     }
 
-    public boolean isFullscreen() {
+    default boolean isFullscreen() {
         return Gdx.graphics.isFullscreen();
     }
 
-    public void setVisible(boolean visible) {
-        Lwjgl3Window window = this.getLwjglWindow();
-        window.setVisible(visible);
-        this.visible = visible;
+    void setVisible(boolean visible);
 
-        if (visible) window.focusWindow();
+    boolean isVisible();
+
+    boolean isInitialized();
+
+    default Rectangle getBounds() {
+        return new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
-    private Lwjgl3Window getLwjglWindow() {
-        return ((Lwjgl3Graphics) Gdx.graphics).getWindow();
+    int getX();
+
+    int getY();
+
+    default Vector2 getMousePosition() {
+        return new Vector2(Gdx.input.getX(), Gdx.input.getY());
     }
 
-    public boolean isVisible() {
-        return this.visible;
+    default void setCursor(Cursor cursor) {
+//        Gdx.graphics.setCursor(cursor);
     }
 
-    public boolean isInitialized() {
-        return this.initialized;
+    default void setCursor(Cursor.SystemCursor cursor) {
+//        Gdx.graphics.setSystemCursor(cursor);
+//
     }
 
-    public Rectangle getBounds() {
-        return new Rectangle(0, 0, this.getWidth(), this.getHeight());
-    }
+    void requestFocus();
 
-    public int getX() {
-        return 0;
-    }
-
-    public int getY() {
-        return 0;
-    }
-
-    @Nullable
-    public Vec2i getMousePosition() {
-        return new Vec2i(Gdx.input.getX(), Gdx.input.getY());
-    }
-
-    public void setCursor(Cursor cursor) {
-        Gdx.graphics.setCursor(cursor);
-    }
-
-    public void setCursor(Cursor.SystemCursor cursor) {
-        Gdx.graphics.setSystemCursor(cursor);
-
-    }
-
-    public void requestFocus() {
-        this.getLwjglWindow().focusWindow();
-    }
-
-    public boolean isFocused() {
-        return this.game().isFocused();
-    }
+    boolean isFocused();
 
     /**
      * Taskbar feature, flashes the taskbar icon on Windows.
      * Other operating systems are unknown for this behavior.
      */
-    public void requestUserAttention() {
-        this.getLwjglWindow().flash();
-    }
+    void requestUserAttention();
 
-    public void showError(@NotNull String title, @Nullable String description) {
-        JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
-    }
+    void showError(@NotNull String title, @Nullable String description);
 
-    public void setTitle(@NotNull String title) {
+    default void setTitle(@NotNull String title) {
         Gdx.graphics.setTitle(title);
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    public static class Properties {
-        private final int width;
-        private final int height;
-        private final String title;
-        private boolean fullscreen;
-        private Runnable onClose = () -> {};
+    class Properties {
+        public final int width;
+        public final int height;
+        public final String title;
+        public boolean fullscreen;
+        public Runnable onClose = () -> {};
 
         public Properties(@NotNull String title, int width, int height) {
             if (width < 0) throw new IllegalArgumentException("Width is negative");
@@ -229,50 +156,6 @@ public class GameWindow {
         public Properties close(Runnable onClose) {
             this.onClose = onClose;
             return this;
-        }
-    }
-
-    private class GameWindowAdapter implements Lwjgl3WindowListener {
-        @Override
-        public void created(Lwjgl3Window window) {
-            WindowEvents.WINDOW_CREATED.factory().onWindowCreated(GameWindow.this);
-        }
-
-        @Override
-        public void iconified(boolean isIconified) {
-            if (isIconified) WindowEvents.WINDOW_MINIMIZED.factory().onWindowMinimize(GameWindow.this);
-            else WindowEvents.WINDOW_MINIMIZED_RESTORE.factory().onWindowMinimize(GameWindow.this);
-        }
-
-        @Override
-        public void maximized(boolean isMaximized) {
-            if (isMaximized) WindowEvents.WINDOW_MAXIMIZED.factory().onWindowMaximize(GameWindow.this);
-            else WindowEvents.WINDOW_MAXIMIZED_RESTORE.factory().onWindowMaximize(GameWindow.this);
-        }
-
-        @Override
-        public void focusLost() {
-            WindowEvents.WINDOW_LOST_FOCUS.factory().onWindowLostFocus(GameWindow.this);
-        }
-
-        @Override
-        public void focusGained() {
-            WindowEvents.WINDOW_GAINED_FOCUS.factory().onWindowGainedFocus(GameWindow.this);
-        }
-
-        @Override
-        public boolean closeRequested() {
-            return !WindowEvents.WINDOW_CLOSING.factory().onWindowClosing(GameWindow.this).isCanceled();
-        }
-
-        @Override
-        public void filesDropped(String[] files) {
-            WindowEvents.WINDOW_FILES_DROPPED.factory().onWindowFilesDropped(GameWindow.this, files);
-        }
-
-        @Override
-        public void refreshRequested() {
-
         }
     }
 }

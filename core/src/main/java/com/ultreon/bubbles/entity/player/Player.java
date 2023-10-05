@@ -28,6 +28,7 @@ import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.data.types.MapType;
+import com.ultreon.libs.commons.v0.Mth;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,10 +77,8 @@ public class Player extends LivingEntity implements InputController {
     private AmmoType currentAmmo = AmmoTypes.BASIC;
 
     // Motion (Arrow Keys).
-    private boolean forward = false;
-    private boolean backward = false;
-    private boolean left = false;
-    private boolean right = false;
+    private float moving = 0f;
+    private float rotating = 0f;
 
     /**
      * Amount of degrees to rotate in a second.
@@ -88,10 +87,6 @@ public class Player extends LivingEntity implements InputController {
 
     // Delta velocity.
     private float velocityDelta = 0f;
-
-    // Motion (XInput).
-    private float joyStickX;
-    private float joyStickY;
 
     // Normal values/
     private double score = 0.0;
@@ -108,6 +103,9 @@ public class Player extends LivingEntity implements InputController {
     public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
     public long boostAccelTimer = 0;
     private int successRate;
+    private boolean brake;
+    private float currentSpeed;
+    private Float angleTo = null;
 
     /**
      * Player entity.
@@ -266,12 +264,11 @@ public class Player extends LivingEntity implements InputController {
         float rotate = 0.0f;
 
         // Check each direction, to create velocity
-        if (this.forward) motion += this.getSpeed();
-        if (this.backward) motion -= this.getSpeed();
-        if (this.left) rotate -= this.rotationSpeed;
-        if (this.right) rotate += this.rotationSpeed;
-        if (this.joyStickY != 0) motion = (float) (this.joyStickY * this.attributes.getBase(Attribute.SPEED));
-        if (this.joyStickX != 0) rotate = this.joyStickX * this.rotationSpeed;
+        this.moving = Mth.clamp(this.moving, -1, 1);
+        this.rotating = Mth.clamp(this.rotating, -1, 1);
+
+        if (this.moving != 0) motion += this.getSpeed() * this.moving;
+        if (this.rotating != 0) rotate += this.rotationSpeed * this.rotating;
 
         // Update X, and Y.
         if (this.canMove) {
@@ -342,8 +339,8 @@ public class Player extends LivingEntity implements InputController {
 
         this.statusEffects.removeIf((effect -> effect.getRemainingTime().isNegative()));
 
-        this.accel.x *= DRAG / TPS * 40;
-        this.accel.y *= DRAG / TPS * 40;
+        this.accel.x *= (this.brake ? DRAG / 1.1f : DRAG) / TPS * 40;
+        this.accel.y *= (this.brake ? DRAG / 1.1f : DRAG) / TPS * 40;
 
         this.prevPos.set(this.pos);
 
@@ -368,6 +365,9 @@ public class Player extends LivingEntity implements InputController {
 
         this.pos.x = (float) MathHelper.clamp(this.pos.x, minX, maxX);
         this.pos.y = (float) MathHelper.clamp(this.pos.y, minY, maxY);
+
+        float pixelsPerTick = this.prevPos.dst(this.pos);
+        this.currentSpeed = pixelsPerTick * TPS;
     }
 
     @Override
@@ -653,37 +653,21 @@ public class Player extends LivingEntity implements InputController {
     /**
      * Deactivate / activate the forwards motion.
      *
-     * @param bool true to activate, false to deactivate.
+     * @param val amount to move forward/backward,
      */
-    public void forward(boolean bool) {
-        this.forward = bool;
-    }
-
-    /**
-     * Deactivate / activate the backwards motion.
-     *
-     * @param bool true to activate, false to deactivate.
-     */
-    public void backward(boolean bool) {
-        this.backward = bool;
+    @Override
+    public void moving(float val) {
+        this.moving = val;
     }
 
     /**
      * Deactivate / activate the left rotation.
      *
-     * @param bool true to activate, false to deactivate.
+     * @param val the amount to rotate left/right.
      */
-    public void rotateLeft(boolean bool) {
-        this.left = bool;
-    }
-
-    /**
-     * Deactivate / activate the right rotation.
-     *
-     * @param bool true to activate, false to deactivate.
-     */
-    public void rotateRight(boolean bool) {
-        this.right = bool;
+    @Override
+    public void rotating(float val) {
+        this.rotating = val;
     }
 
     public float getVelocityDelta() {
@@ -700,22 +684,6 @@ public class Player extends LivingEntity implements InputController {
 
     public void setAbilityEnergy(long abilityEnergy) {
         this.abilityEnergy = abilityEnergy;
-    }
-
-    public float getJoyStickX() {
-        return this.joyStickX;
-    }
-
-    public void setJoyStickX(float joyStickX) {
-        this.joyStickX = joyStickX;
-    }
-
-    public float getJoyStickY() {
-        return this.joyStickY;
-    }
-
-    public void setJoyStickY(float joyStickY) {
-        this.joyStickY = joyStickY;
     }
 
     @Override
@@ -783,5 +751,24 @@ public class Player extends LivingEntity implements InputController {
 
     public int getSuccessRate() {
         return this.successRate;
+    }
+
+    public void setBrake(boolean brake) {
+        this.brake = brake;
+    }
+
+    public boolean isBrake() {
+        return this.brake;
+    }
+
+    /**
+     * @return the current speed in pixels per second. (px/s)
+     */
+    public float getCurrentSpeed() {
+        return this.currentSpeed;
+    }
+
+    public void rotateTo(Vector2 mousePos) {
+        this.angleTo = this.getAngleTo(mousePos);
     }
 }

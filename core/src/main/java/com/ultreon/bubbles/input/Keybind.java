@@ -17,7 +17,7 @@ public class Keybind {
     }
 
     public boolean isDown() {
-        return GameInput.isKeyDown(this.keyCode);
+        return KeyboardInput.isKeyDown(this.keyCode);
     }
 
     public int getKeyCode() {

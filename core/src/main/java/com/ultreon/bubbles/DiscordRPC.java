@@ -30,7 +30,7 @@ public class DiscordRPC {
             return activity;
         });
 
-        this.gameVersion = BubbleBlaster.getGameVersion().getFriendlyString();
+        this.gameVersion = BubbleBlaster.getGameVersion();
 
         this.thread = new Thread(this::run, "DiscordRPC");
         this.thread.setDaemon(true);

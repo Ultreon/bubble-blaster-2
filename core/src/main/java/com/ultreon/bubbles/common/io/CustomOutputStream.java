@@ -1,8 +1,7 @@
 package com.ultreon.bubbles.common.io;
 
+import com.ultreon.bubbles.GamePlatform;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -10,12 +9,10 @@ import java.util.List;
 
 public class CustomOutputStream extends OutputStream {
     private final String name;
-    private final Level level;
     private final List<Character> characters = new ArrayList<>();
 
-    public CustomOutputStream(String name, Level level) {
+    public CustomOutputStream(String name) {
         this.name = name;
-        this.level = level;
     }
 
     public synchronized final void write(int b) {
@@ -49,6 +46,6 @@ public class CustomOutputStream extends OutputStream {
                 .replaceAll("\r", "\n"), "\n");
 
         // Log the output.
-        LogManager.getLogger(this.name).log(this.level, string);
+        GamePlatform.get().getLogger(this.name).info(string);
     }
 }

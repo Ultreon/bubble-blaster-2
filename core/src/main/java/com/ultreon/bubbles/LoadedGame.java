@@ -1,5 +1,6 @@
 package com.ultreon.bubbles;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.common.Controllable;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.LivingEntity;
@@ -17,7 +18,6 @@ import com.ultreon.bubbles.util.Utils;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.CollisionUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -35,7 +35,7 @@ public class LoadedGame implements Controllable {
     public final ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
 
     // Files / folders.
-    private final File saveDir;
+    private final FileHandle saveHandle;
 
     // Active messages.
     private final ArrayList<String> activeMessages = new ArrayList<>();
@@ -53,7 +53,7 @@ public class LoadedGame implements Controllable {
         this.gameSave = gameSave;
         this.gamemode = world.getGamemode();
         this.world = world;
-        this.saveDir = gameSave.getDirectory();
+        this.saveHandle = gameSave.getHandle();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,8 +144,8 @@ public class LoadedGame implements Controllable {
         return this.running;
     }
 
-    public File getSaveDir() {
-        return this.saveDir;
+    public FileHandle getSaveHandle() {
+        return this.saveHandle;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

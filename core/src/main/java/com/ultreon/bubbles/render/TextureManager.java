@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class TextureManager {
     private static final TextureManager instance = new TextureManager();
     public static final Resource DEFAULT_TEX_RESOURCE;
-    public static final com.badlogic.gdx.graphics.Texture DEFAULT_TEX;
+    public static final Texture DEFAULT_TEX;
 
     static {
         DEFAULT_TEX_RESOURCE = new Resource(() -> {
@@ -38,7 +38,7 @@ public final class TextureManager {
             return byteArrayInputStream;
         }); // TODO: Replace with mem:// url.
 
-        DEFAULT_TEX = new com.badlogic.gdx.graphics.Texture(new ByteArrayFileHandle(".png", DEFAULT_TEX_RESOURCE.loadOrGet()));
+        DEFAULT_TEX = new Texture(new ByteArrayFileHandle(".png", DEFAULT_TEX_RESOURCE.loadOrGet()));
     }
     private final Map<Identifier, Texture> textureMap = new ConcurrentHashMap<>();
 

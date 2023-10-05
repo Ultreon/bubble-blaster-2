@@ -11,11 +11,12 @@ import com.ultreon.bubbles.util.helpers.MathHelper;
 import com.ultreon.libs.text.v1.TextObject;
 
 import java.io.IOException;
+import java.time.Instant;
 
 public class GameOverScreen extends Screen {
     private static final Color GAME_OVER_COLOR_NORMAL = Color.argb(0x7fff3243);
     private static final Color GAME_OVER_COLOR_FLASH = Color.argb(0x7fff8432);
-    public static final TextObject TITLE = TextObject.translation("bubbleblaster.screen.gameOver.");
+    public static final TextObject TITLE = TextObject.translation("bubbleblaster.screen.gameOver");
     private static final TextObject HIGH_SCORE = TextObject.translation("bubbleblaster.screen.gameOver.highScore");
     private final boolean isHighScore;
     private final long score;
@@ -36,7 +37,7 @@ public class GameOverScreen extends Screen {
         this.isHighScore = globalData.getHighScore() < score;
 
         if (this.isHighScore) {
-            globalData.setHighScore(score, System.currentTimeMillis());
+            globalData.updateHighScore(score, Instant.now());
             try {
                 globalData.dump();
             } catch (IOException e) {

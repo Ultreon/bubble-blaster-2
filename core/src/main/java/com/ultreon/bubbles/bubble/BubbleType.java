@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.bubble;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.random.Rng;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
@@ -21,6 +22,7 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.text.v1.Translatable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -172,6 +174,11 @@ public abstract class BubbleType implements Serializable, Translatable {
 
     public Identifier getId() {
         return Registries.BUBBLES.getKey(this);
+    }
+
+    @Nullable
+    public Texture getInsideTexture() {
+        return null;
     }
 
     @FunctionalInterface

@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.render.gui.screen;
 
-import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
@@ -27,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -52,7 +52,7 @@ public class SavesScreen extends Screen {
 
         this.loader = SaveLoader.instance();
         this.loader.refresh();
-        this.saves = Lists.newArrayList(this.loader.getSaves().stream().map(Supplier::get).toList());
+        this.saves = this.loader.getSaves().stream().map(Supplier::get).collect(Collectors.toList());
     }
 
     @SuppressWarnings("EmptyMethod")
@@ -82,7 +82,7 @@ public class SavesScreen extends Screen {
                 try {
                     selected.value.delete();
                 } catch (IOException e) {
-                    BubbleBlaster.getLogger().error("Failed to delete save " + selected.value.getDirectory().getName() + ":", e);
+                    BubbleBlaster.getLogger().error("Failed to delete save " + selected.value.getHandle().name() + ":", e);
                 }
                 this.refresh();
             }
@@ -96,7 +96,7 @@ public class SavesScreen extends Screen {
     private void refresh() {
         this.loader.refresh();
         this.saves.clear();
-        this.saves.addAll(this.loader.getSaves().stream().map(Supplier::get).toList());
+        this.saves.addAll(this.loader.getSaves().stream().map(Supplier::get).collect(Collectors.toList()));
         this.game.showScreen(this);
     }
 
@@ -135,14 +135,14 @@ public class SavesScreen extends Screen {
                 this.cache.put(save, cachedInfo);
             }
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getDirectory().getName() + ":", e);
+            BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getHandle().name() + ":", e);
             cachedInfo = Either.right(e);
             this.cache.put(save, cachedInfo);
         }
 
         if (cachedInfo.isRightPresent()) {
             var name = "Loading Error";
-            var description = "Save filename: %s".formatted(save.getDirectory().getName());
+            var description = String.format("Save filename: %s", save.getHandle().name());
 
             renderer.fill(0, 0, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
             if (selected) {

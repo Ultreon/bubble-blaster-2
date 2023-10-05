@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class GarbageCollector {
+class GarbageCollector {
     private static final Marker MARKER = MarkerFactory.getMarker("GC");
     private final ScheduledExecutorService service = Executors.newScheduledThreadPool(3, r -> {
         Thread thread = new Thread(r);

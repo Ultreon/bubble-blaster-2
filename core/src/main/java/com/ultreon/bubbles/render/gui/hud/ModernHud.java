@@ -87,6 +87,7 @@ public class ModernHud extends HudType {
         renderer.setColor(0xffffffff);
         renderer.drawText(this.playerDetailsNameFont, name, x + 5, y + 5, Color.WHITE);
         renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Score: ").append(Math.round(player.getScore())).append("    Level: ").append(player.getLevel()), x + 5, y + 25, Color.WHITE.withAlpha(0xa0));
+        renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Speed: ").append(Math.round(player.getCurrentSpeed())).append(" px/s"), x + 5, y + 40, Color.WHITE.withAlpha(0xa0));
 
         renderer.line(x + 5, y + 75, x + 295, y + 75, Color.WHITE.withAlpha(0x40));
 

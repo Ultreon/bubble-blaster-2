@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.util;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
 import com.google.common.annotations.Beta;
 import com.ultreon.bubbles.BubbleBlaster;
@@ -37,11 +38,11 @@ public class Util {
     @Beta
     public static ArrayList<GameSave> getSaves() {
         ArrayList<GameSave> saves = new ArrayList<>();
-        File savesDir = GameFolders.SAVES_DIR;
+        FileHandle savesDir = GameFolders.SAVES_DIR;
 
-        File[] files = savesDir.listFiles(new DirectoryFileFilter());
-        if (files == null) files = new File[]{};
-        for (File save : files) {
+        FileHandle[] files = savesDir.list(new DirectoryFileFilter());
+        if (files == null) files = new FileHandle[]{};
+        for (FileHandle save : files) {
             if (save.isDirectory()) {
                 saves.add(GameSave.fromFile(save));
             }

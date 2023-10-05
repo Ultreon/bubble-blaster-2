@@ -6,7 +6,17 @@ import com.ultreon.data.types.MapType;
 import java.util.Objects;
 import java.util.UUID;
 
-public record AttributeModifier(UUID id, Type type, double value) {
+public final class AttributeModifier {
+    private final UUID id;
+    private final Type type;
+    private final double value;
+
+    public AttributeModifier(UUID id, Type type, double value) {
+        this.id = id;
+        this.type = type;
+        this.value = value;
+    }
+
     public MapType serialize() {
         MapType nbt = new MapType();
         nbt.putUUID("id", this.id);
@@ -40,4 +50,25 @@ public record AttributeModifier(UUID id, Type type, double value) {
     public int hashCode() {
         return Objects.hash(this.id);
     }
+
+    public UUID id() {
+        return id;
+    }
+
+    public Type type() {
+        return type;
+    }
+
+    public double value() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return "AttributeModifier[" +
+                "id=" + id + ", " +
+                "type=" + type + ", " +
+                "value=" + value + ']';
+    }
+
 }

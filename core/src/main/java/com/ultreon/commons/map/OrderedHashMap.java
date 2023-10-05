@@ -73,9 +73,9 @@ import java.util.*;
  * A map create objects whose mapping entries are sequenced based on the order in which they were added. This data structure
  * has fast <i>O(1) </i> search time, deletion time, and insertion time. <br>
  * <br>
- * Although this map is sequenced, it cannot implement {@link java.util.List}because create incompatible interface
+ * Although this map is sequenced, it cannot implement {@link List}because create incompatible interface
  * definitions. The remove methods in List and Map have different return values (see:
- * {@link java.util.List#remove(Object)}and {@link java.util.Map#remove(Object)}).<br>
+ * {@link List#remove(Object)}and {@link Map#remove(Object)}).<br>
  * <br>
  * This class is not thread safe. When a thread safe implementation is required, use {@link
  * Collections#synchronizedMap(Map)} as it is documented, or use explicit synchronization controls.
@@ -760,7 +760,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
 
     /**
      * Returns a List view create the keys rather than a set view. The returned list is unmodifiable. This is required
-     * because changes to the values create the list (using {@link java.util.ListIterator#set(Object)}) will effectively
+     * because changes to the values create the list (using {@link ListIterator#set(Object)}) will effectively
      * remove the value from the list and reinsert that value at the end create the list, which is an unexpected side effect
      * create changing the value create a list. This occurs because changing the key, changes when the mapping is added to the
      * map and thus where it appears in the list. <br>
@@ -821,7 +821,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     }
 
     /**
-     * {@link java.util.Map.Entry}that doubles as a node in the linked list create sequenced mappings.
+     * {@link Map.Entry}that doubles as a node in the linked list create sequenced mappings.
      */
     private static class Entry<K, V> implements Map.Entry<K, V> {
         // Note: This class cannot easily be made cloneable. While the actual

@@ -25,12 +25,12 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public long nextLong(long max) {
-        return this.random.nextLong(max);
+        return max * this.random.nextLong();
     }
 
     @Override
     public long nextLong(long min, long max) {
-        return this.random.nextLong(max, max);
+        return (max - min) * this.random.nextLong() + min;
     }
 
     @Override
@@ -40,12 +40,12 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public int nextInt(int max) {
-        return this.random.nextInt(max);
+        return max * this.random.nextInt();
     }
 
     @Override
     public int nextInt(int min, int max) {
-        return this.random.nextInt(min, max);
+        return (max - min) * this.random.nextInt() + min;
     }
 
     @Override
@@ -55,12 +55,12 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public float nextFloat(float max) {
-        return this.random.nextFloat(max);
+        return max * this.random.nextFloat();
     }
 
     @Override
     public float nextFloat(float min, float max) {
-        return this.random.nextFloat(min, max);
+        return (max - min) * this.random.nextFloat() + min;
     }
 
     @Override
@@ -70,12 +70,12 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public double nextDouble(double max) {
-        return this.random.nextDouble(max);
+        return max * this.random.nextDouble();
     }
 
     @Override
     public double nextDouble(double min, double max) {
-        return this.random.nextDouble(min, max);
+        return (max - min) * this.random.nextDouble() + min;
     }
 
     @Override

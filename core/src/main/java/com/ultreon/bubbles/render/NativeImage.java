@@ -21,15 +21,20 @@ public class NativeImage extends Texture {
     }
 
     public NativeImage(InputStream stream) throws IOException {
-        super(new Pixmap(NativeImage.read(stream)));
+        super(NativeImage.setupPixmap(new Pixmap(NativeImage.read(stream))));
+    }
+
+    private static Pixmap setupPixmap(Pixmap pixmap) {
+        pixmap.setFilter(Pixmap.Filter.BiLinear);
+        return pixmap;
     }
 
     public NativeImage(URL url) throws IOException {
-        super(new Pixmap(NativeImage.readAndClose(url.openStream())));
+        super(NativeImage.setupPixmap(new Pixmap(NativeImage.readAndClose(url.openStream()))));
     }
 
     public NativeImage(File file) throws IOException {
-        super(new Pixmap(NativeImage.readAndClose(new FileInputStream(file))));
+        super(NativeImage.setupPixmap(new Pixmap(NativeImage.readAndClose(new FileInputStream(file)))));
     }
 
     private static ByteBuffer readAndClose(InputStream inputStream) throws IOException {

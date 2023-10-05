@@ -1,13 +1,16 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.init.Fonts;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.TitleScreenBackground;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.libs.text.v1.TextObject;
-import net.fabricmc.loader.api.FabricLoader;
+
+import java.time.Instant;
 
 public class TitleScreen extends Screen {
 
@@ -22,7 +25,12 @@ public class TitleScreen extends Screen {
     }
 
     private void openModList() {
-        this.game.showScreen(new ModListScreen());
+        Screen screen = GamePlatform.get().openModListScreen();
+        if (screen == null) {
+            this.game.notifications.unavailable("Mods on " + GamePlatform.get().getOperatingSystem().toString());
+            return;
+        }
+        this.game.showScreen(screen);
     }
 
     private void openLanguageSettings() {
@@ -55,32 +63,49 @@ public class TitleScreen extends Screen {
                 .bounds(this.width / 2 - 200, 220, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.start"))
                 .command(this::startGame)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
         this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 300, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.saves"))
                 .command(this::openSavesSelection)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
         this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.mods"))
                 .command(this::openModList)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
         this.add(new Button.Builder()
                 .bounds(this.width / 2 + 10, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.options"))
                 .command(this::openOptions)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
         this.add(new Button.Builder()
                 .bounds(this.width / 2 - 200, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.language"))
                 .command(this::openLanguageSettings)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
         this.add(new Button.Builder()
                 .bounds(this.width / 2 + 10, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.quit"))
                 .command(this.game::shutdown)
+                .font(Fonts.SANS_REGULAR_20.get())
                 .build());
+        this.add(new Button.Builder()
+                .bounds(this.width - 40 - 180, 100, 180, 40)
+                .text(TextObject.translation("bubbleblaster.screen.title.resetHighScore"))
+                .command(this::resetHighScore)
+                .font(Fonts.SANS_REGULAR_20.get())
+                .build());
+    }
+
+    private void resetHighScore() {
+        GlobalSaveData globalData = this.game.getGlobalData();
+        globalData.setHighScore(0.0, Instant.EPOCH);
     }
 
     @Override
@@ -104,10 +129,14 @@ public class TitleScreen extends Screen {
 
         renderer.drawTextCenter(Fonts.DONGLE_140.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
 
-        renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion().getFriendlyString(), 40, 40, Color.WHITE);
-        renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion().getFriendlyString(), 40, 52, Color.WHITE);
-        renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion().getFriendlyString(), 40, 64, Color.WHITE);
-        renderer.drawText(this.monospaced, "Mods Loaded: " + FabricLoader.getInstance().getAllMods().size(), 40, 76, Color.WHITE);
+        renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion(), 40, 40, Color.WHITE);
+        renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion(), 40, 52, Color.WHITE);
+
+        if (GamePlatform.get().allowsMods()) {
+            renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion(), 40, 64, Color.WHITE);
+            renderer.drawText(this.monospaced, "Mods Loaded: " + GamePlatform.get().getModsCount(), 40, 76, Color.WHITE);
+        }
+
         renderer.drawTextRight(Fonts.SANS_BOLD_32.get(), "High Score", this.width - 40, 40, Color.WHITE);
         renderer.drawTextRight(Fonts.SANS_REGULAR_16.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
 
@@ -117,5 +146,16 @@ public class TitleScreen extends Screen {
     @Override
     public boolean mousePress(int x, int y, int button) {
         return super.mousePress(x, y, button);
+    }
+
+    @Override
+    public boolean close(Screen to) {
+        if (to instanceof TitleScreen) return true;
+        return super.close(to);
+    }
+
+    @Override
+    public boolean keyPress(int keyCode) {
+        return false;
     }
 }

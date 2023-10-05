@@ -1,11 +1,10 @@
 package com.ultreon.bubbles.save;
 
-import com.ultreon.bubbles.BubbleBlaster;
+import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.common.GameFolders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -21,9 +20,8 @@ public class SaveLoader {
     private static final SaveLoader instance = new SaveLoader();
 
     // Non-static.
-    private final File savesDir;
+    private final FileHandle savesDir;
     private final HashMap<String, Supplier<GameSave>> saves = new HashMap<>();
-    private final BubbleBlaster game = BubbleBlaster.getInstance();
 
     /**
      * Get the {@link SaveLoader save laoder} instance.
@@ -43,12 +41,12 @@ public class SaveLoader {
     }
 
     /**
-     * Get the saves directory.
+     * Get the save files directory.
      *
-     * @return The saves directory.
+     * @return The save files directory.
      */
     @NotNull
-    public File getSavesDir() {
+    public FileHandle getSavesDir() {
         return this.savesDir;
     }
 
@@ -56,15 +54,15 @@ public class SaveLoader {
      * Refresh saves index.
      */
     public void refresh() {
-        if (!this.savesDir.exists() && !this.savesDir.mkdirs())
-            throw new IllegalStateException("Saves directory wasn't created.");
+        if (!this.savesDir.exists())
+            this.savesDir.mkdirs();
 
-        File[] dirs = this.savesDir.listFiles();
+        FileHandle[] dirs = this.savesDir.list();
         this.saves.clear();
 
-        for (File dir : Objects.requireNonNull(dirs)) {
+        for (FileHandle dir : Objects.requireNonNull(dirs)) {
             Supplier<GameSave> saveSupplier = () -> GameSave.fromFile(dir);
-            this.saves.put(dir.getName(), saveSupplier);
+            this.saves.put(dir.name(), saveSupplier);
         }
     }
 

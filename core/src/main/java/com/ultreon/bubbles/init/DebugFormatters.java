@@ -15,7 +15,6 @@ import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.commons.v0.vector.*;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
-import net.fabricmc.api.EnvType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -210,9 +209,9 @@ public final class DebugFormatters {
             context.hex("0".repeat(8 - s.length()) + s);
         }
     });
-    public static final Formatter<com.ultreon.libs.commons.v0.Color> COLOR = FormatterRegistry.register(new Formatter<>(com.ultreon.libs.commons.v0.Color.class, new Identifier("color")) {
+    public static final Formatter<Color> COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
         @Override
-        public void format(com.ultreon.libs.commons.v0.Color obj, IFormatterContext context) {
+        public void format(Color obj, IFormatterContext context) {
             String s = Integer.toHexString(obj.getRgb());
 
             context.operator("#");
@@ -394,13 +393,7 @@ public final class DebugFormatters {
                     .other(obj.getKey());
         }
     });
-    public static final Formatter<EnvType> ENV_TYPE = FormatterRegistry.register(new Formatter<>(EnvType.class, new Identifier("env_type")) {
-        @Override
-        public void format(EnvType obj, IFormatterContext context) {
-            context.enumConstant(obj);
-        }
-    });
-    
+
     public static void initClass() {
 
     }

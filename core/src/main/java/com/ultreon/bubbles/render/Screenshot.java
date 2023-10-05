@@ -10,11 +10,18 @@ import com.ultreon.bubbles.BubbleBlaster;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.zip.Deflater;
 
 import static com.badlogic.gdx.Gdx.graphics;
 
-public record Screenshot(FileHandle fileHandle) {
+public final class Screenshot {
+    private final FileHandle fileHandle;
+
+    public Screenshot(FileHandle fileHandle) {
+        this.fileHandle = fileHandle;
+    }
+
     public static Screenshot take() {
         int width = graphics.getWidth();
         int height = graphics.getHeight();
@@ -30,4 +37,28 @@ public record Screenshot(FileHandle fileHandle) {
         pixmap.dispose();
         return new Screenshot(fileHandle);
     }
+
+    public FileHandle fileHandle() {
+        return fileHandle;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Screenshot) obj;
+        return Objects.equals(this.fileHandle, that.fileHandle);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileHandle);
+    }
+
+    @Override
+    public String toString() {
+        return "Screenshot[" +
+                "fileHandle=" + fileHandle + ']';
+    }
+
 }

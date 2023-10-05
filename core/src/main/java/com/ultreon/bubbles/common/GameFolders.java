@@ -1,23 +1,24 @@
 package com.ultreon.bubbles.common;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.BubbleBlaster;
 
 import java.io.File;
-import java.io.IOException;
 
 public class GameFolders {
     // Dirs
-    public static final File DATA_DIR = BubbleBlaster.getDataDir();
-    public static final File LOGS_DIR = new File(DATA_DIR, "logs");
-    public static final File SAVES_DIR = new File(DATA_DIR, "saves");
+    public static final FileHandle DATA_DIR = BubbleBlaster.getDataDir();
+    public static final FileHandle LOGS_DIR = DATA_DIR.child("logs");
+    public static final FileHandle SAVES_DIR = DATA_DIR.child("saves");
+    public static final FileHandle CONFIG_DIR = DATA_DIR.child("config");
 
     // Files
-    public static final File SETTINGS_FILE = new File(DATA_DIR, "settings.json");
-    public static final File CRASH_REPORTS = new File(DATA_DIR, "game-crashes");
+    public static final FileHandle SETTINGS_FILE = DATA_DIR.child("settings.json");
+    public static final FileHandle CRASH_REPORTS = DATA_DIR.child("game-crashes");
 
     static {
-        if (!LOGS_DIR.exists() && !LOGS_DIR.mkdirs()) {
-            throw new RuntimeException(new IOException("Couldn't make directories. " + LOGS_DIR.getAbsolutePath()));
+        if (!LOGS_DIR.exists()) {
+            LOGS_DIR.mkdirs();
         }
     }
 }

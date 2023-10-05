@@ -1,14 +1,14 @@
-package com.ultreon.bubbles.render.gui.screen;
+package com.ultreon.bubbles.platform.desktop;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.mod.ModDataManager;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import net.fabricmc.loader.api.FabricLoader;
@@ -18,11 +18,12 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class ModListScreen extends Screen {
     private static final int GAP = 2;
     private static final int ENTRY_HEIGHT = 110;
-    private final List<ModContainer> entries = Lists.newArrayList(FabricLoader.getInstance().getAllMods().stream().filter(modContainer -> modContainer.getContainingMod().isEmpty()).toList());
+    private final List<ModContainer> entries = Lists.newArrayList(FabricLoader.getInstance().getAllMods().stream().filter(modContainer -> modContainer.getContainingMod().isEmpty()).collect(Collectors.toList()));
     private ObjectList<ModContainer> modList;
     private GuiComponent detailsPane;
 

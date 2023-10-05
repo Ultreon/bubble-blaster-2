@@ -25,6 +25,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.ultreon.bubbles.BubbleBlaster.NAMESPACE;
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
 @SuppressWarnings("unused")
@@ -52,7 +53,9 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
         this.deactivateTicks = (long) this.randomSource.nextInt(BubbleBlasterConfig.BLOOD_MOON_STOP_LOW.get(), BubbleBlasterConfig.BLOOD_MOON_STOP_HIGH.get()) * TPS;
 
-        world.getDifficultyModifiers().set(MODIFIER_TOKEN, new Difficulty.Modifier(Difficulty.ModifierAction.ADD, 2));
+        world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
+
+        world.getDifficultyModifiers().set(MODIFIER_TOKEN, new Difficulty.Modifier(Difficulty.ModifierAction.MULTIPLY, 8));
         BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs)");
     }
 
@@ -66,14 +69,9 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public void end(World world) {
         super.end(world);
 
-        this.resetNext();
-
+        world.updateNextBloodMoon();
         world.getDifficultyModifiers().remove(MODIFIER_TOKEN);
         BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs) left.");
-    }
-
-    public void resetNext() {
-        this.nextActivate = Instant.now().plusSeconds((long) this.randomSource.nextInt(BubbleBlasterConfig.BLOOD_MOON_TRIGGER_LOW.get(), BubbleBlasterConfig.BLOOD_MOON_TRIGGER_HIGH.get()) * TPS);
     }
 
     @Override
@@ -90,10 +88,8 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         if (Date.current().equalsIgnoreYear(this.date)) return true;
         if (Time.current().isBetween(this.timeLo, this.timeHi)) return true;
 
-        if (Instant.now().isAfter(this.nextActivate)) return true;
-
         MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
-        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE);
+        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
     }
 
     @Override
