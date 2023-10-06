@@ -15,13 +15,13 @@ public class TeleportCommand implements CommandExecutor {
                 try {
                     x = Long.parseLong(args[0]);
                 } catch (NumberFormatException exception1) {
-                    player.sendMessage("Invalid number for x!");
+                    player.sendSystemMessage("Invalid number for x!");
                     return false;
                 }
                 try {
                     y = Long.parseLong(args[1]);
                 } catch (NumberFormatException exception1) {
-                    player.sendMessage("Invalid number for y!");
+                    player.sendSystemMessage("Invalid number for y!");
                     return false;
                 }
             }

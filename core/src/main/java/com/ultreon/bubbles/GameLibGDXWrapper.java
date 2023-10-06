@@ -15,6 +15,7 @@ public class GameLibGDXWrapper implements ApplicationListener {
 
     @Override
     public void create() {
+        this.platform.create();
         Gdx.graphics.setForegroundFPS(120);
         try {
             this.game = BubbleBlaster.launch(this.platform);

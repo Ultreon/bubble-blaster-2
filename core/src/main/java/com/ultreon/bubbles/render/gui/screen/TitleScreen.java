@@ -59,43 +59,43 @@ public class TitleScreen extends Screen {
             this.game.menuMusic.play();
         }
 
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 220, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.start"))
                 .command(this::startGame)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 300, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.saves"))
                 .command(this::openSavesSelection)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.mods"))
                 .command(this::openModList)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 + 10, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.options"))
                 .command(this::openOptions)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.language"))
                 .command(this::openLanguageSettings)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width / 2 + 10, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.quit"))
                 .command(this.game::shutdown)
                 .font(Fonts.SANS_REGULAR_20.get())
                 .build());
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds(this.width - 40 - 180, 100, 180, 40)
                 .text(TextObject.translation("bubbleblaster.screen.title.resetHighScore"))
                 .command(this::resetHighScore)
@@ -112,7 +112,7 @@ public class TitleScreen extends Screen {
     public void tick() {
         super.tick();
 
-        var background = this.background;
+        TitleScreenBackground background = this.background;
         if (background != null) {
             background.tick();
         }
@@ -141,6 +141,11 @@ public class TitleScreen extends Screen {
         renderer.drawTextRight(Fonts.SANS_REGULAR_16.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
+    }
+
+    @Override
+    public void renderCloseButton(Renderer renderer, int mouseX, int mouseY) {
+
     }
 
     @Override

@@ -41,7 +41,7 @@ import java.util.Objects;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@SuppressWarnings({"unused", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted", "RedundantThrows", "UnnecessaryLocalVariable"})
+@SuppressWarnings({"UnusedReturnValue", "BooleanMethodIsAlwaysInverted", "RedundantThrows", "UnnecessaryLocalVariable"})
 public abstract class Gamemode implements Controllable {
     // Types.
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
@@ -122,7 +122,7 @@ public abstract class Gamemode implements Controllable {
 
     @Override
     public void begin() {
-        var hudOverride = this.getHudOverride();
+        HudType hudOverride = this.getHudOverride();
         this.hud = hudOverride != null ? hudOverride : HudType.getCurrent();
         this.hud.begin();
 
@@ -280,5 +280,9 @@ public abstract class Gamemode implements Controllable {
 
     public int getBulletPops() {
         return 1;
+    }
+
+    public boolean canBePaused() {
+        return true;
     }
 }

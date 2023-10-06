@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
-@SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -42,7 +41,7 @@ public class StatusEffectInstance implements TagHolder {
         if (id == null) {
             this.type = StatusEffects.NONE;
         } else {
-            var type = Registries.EFFECTS.getValue(id);
+            StatusEffect type = Registries.EFFECTS.getValue(id);
             this.type = type == null ? StatusEffects.NONE : type;
         }
         

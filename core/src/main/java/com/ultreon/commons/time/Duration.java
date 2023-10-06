@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 public class Duration implements Comparable<Duration>, Serializable {
     private final double duration;
 

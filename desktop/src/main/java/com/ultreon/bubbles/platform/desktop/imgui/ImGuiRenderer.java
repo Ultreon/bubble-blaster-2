@@ -2,6 +2,7 @@ package com.ultreon.bubbles.platform.desktop.imgui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -114,7 +115,7 @@ public class ImGuiRenderer {
         if (screen != null) exactWidgetAt = screen.getExactWidgetAt(Gdx.input.getX(), Gdx.input.getY());
 
         if (exactWidgetAt != null) {
-            var bounds = exactWidgetAt.getBounds();
+            Rectangle bounds = exactWidgetAt.getBounds();
             renderer.box(bounds.x, bounds.y, bounds.width, bounds.height, Color.RED);
         }
 

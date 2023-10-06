@@ -53,7 +53,8 @@ public class TeleportAbility extends Ability<TeleportAbility> {
         Entity entity = trigger.getEntity();
 
         // Check for player entity.
-        if (entity instanceof Player player) {
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
             // Calculate delta time
             long startTime = player.getTag().getLong("TeleportAbilityStartTime");
             player.getTag().remove("TeleportAbilityStartTime");
@@ -84,7 +85,8 @@ public class TeleportAbility extends Ability<TeleportAbility> {
     public void onKeyTrigger(AbilityKeyTrigger trigger) {
         Entity entity = trigger.getEntity();
 
-        if (entity instanceof Player player) {
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
             player.getTag().putLong("TeleportAbilityStartTime", System.currentTimeMillis());
         }
     }

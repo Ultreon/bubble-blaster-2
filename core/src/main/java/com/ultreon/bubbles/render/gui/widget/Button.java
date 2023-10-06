@@ -10,7 +10,6 @@ import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.returnsreceiver.qual.This;
 
-@SuppressWarnings("unused")
 public class Button extends AbstractButton implements GuiStateListener {
     protected TextObject text;
 
@@ -31,13 +30,13 @@ public class Button extends AbstractButton implements GuiStateListener {
     }
 
     public static class Builder {
-        private Rectangle bounds = new Rectangle(10, 10, 96, 48);
-        private TextObject text = TextObject.EMPTY;
-        private Runnable command = () -> {
+        protected Rectangle bounds = new Rectangle(10, 10, 96, 48);
+        protected TextObject text = TextObject.EMPTY;
+        protected Runnable command = () -> {
         };
-        private BitmapFont font = Fonts.DEFAULT.get();
+        protected BitmapFont font = Fonts.DEFAULT.get();
 
-        public Builder() {
+        protected Builder() {
         }
 
         public Button build() {
@@ -99,6 +98,10 @@ public class Button extends AbstractButton implements GuiStateListener {
             renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
         }
 
-        AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.text, this.font);
+        this.drawText(renderer);
+    }
+
+    protected void drawText(Renderer renderer) {
+        AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.getText(), this.getFont());
     }
 }

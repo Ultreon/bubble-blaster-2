@@ -3,7 +3,7 @@ package com.ultreon.bubbles.render.gui.hud;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
-import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
@@ -40,7 +40,7 @@ public class ModernHud extends HudType {
     private int level;
     private String levelUpText;
     private final GlyphLayout levelUpLayout = new GlyphLayout();
-    private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_14.get();
+    private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_24.get();
     private final BitmapFont playerDetailsNameFont = Fonts.SANS_BOLD_20.get();
     private final BitmapFont playerDetailsInfoFont = Fonts.SANS_REGULAR_14.get();
     private Instant gameOverTime;
@@ -59,9 +59,18 @@ public class ModernHud extends HudType {
             this.game.profiler.section("Draw Status Effects", () -> this.drawStatusEffects(renderer, player));
         }
 
-        this.game.profiler.section("Draw Messages", () -> this.drawMessages(renderer, this.game));
-
+        this.game.profiler.section("Draw Messages", () -> this.drawMessages(renderer));
         this.game.profiler.section("Draw Level Up Message", () -> this.drawLevelUpMessage(renderer, gamemode));
+        if (GamePlatform.get().isMobile()) {
+            this.game.profiler.section("Draw Mobile Overlay", () -> this.drawMobileOverlay(renderer, world));
+        }
+    }
+
+    private void drawMobileOverlay(Renderer renderer, World world) {
+        renderer.fill(this.game.mobileInput.getShootBtnRegion(), Color.BLACK.withAlpha(0x80));
+        if (!this.game.hasScreenOpen()) {
+            renderer.fill(this.game.mobileInput.getPauseBtnRegion(), Color.BLACK.withAlpha(0x80));
+        }
     }
 
     private void drawBadge(Renderer renderer, Player player) {
@@ -108,13 +117,6 @@ public class ModernHud extends HudType {
         } else {
             renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.CRIMSON);
             renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, Color.CRIMSON);
-        }
-    }
-
-    private void drawMessages(Renderer renderer, BubbleBlaster game) {
-        LoadedGame loadedGame = game.getLoadedGame();
-        if (loadedGame != null) {
-            loadedGame.drawMessages(game, renderer);
         }
     }
 
@@ -192,7 +194,7 @@ public class ModernHud extends HudType {
                 translation.append(" " + RomanNumbers.toRoman(effectInstance.getStrength()));
                 renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), translation, x + 70, finalY + 15, Color.WHITE);
 
-                var color = Color.WHITE.withAlpha(0x80);
+                Color color = Color.WHITE.withAlpha(0x80);
                 if (effectInstance.getRemainingTime().getSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
                 renderer.drawTextLeft(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time), x + 70, finalY + 35, color);
             });

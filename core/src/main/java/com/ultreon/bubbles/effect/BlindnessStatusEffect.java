@@ -31,7 +31,6 @@ public class BlindnessStatusEffect extends StatusEffect {
         return false;
     }
 
-    @SuppressWarnings("unused")
     public long getStartTime() {
         return this.startTime;
     }

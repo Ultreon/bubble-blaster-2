@@ -11,6 +11,7 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
+import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
@@ -23,6 +24,7 @@ import com.ultreon.bubbles.player.InputController;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.CommandScreen;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.TimeUtils;
@@ -141,11 +143,15 @@ public class Player extends LivingEntity implements InputController {
     /**
      * @param s the message.
      */
-    public void sendMessage(String s) {
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
-        if (loadedGame != null) {
-            loadedGame.receiveMessage(s);
-        }
+    public void sendSystemMessage(String s) {
+        CommandScreen.addMessage(s, true);
+    }
+
+    /**
+     * @param s the message.
+     */
+    public void sendChatMessage(String s) {
+        LoadedGame.addMessage(s);
     }
 
     /**
@@ -215,7 +221,6 @@ public class Player extends LivingEntity implements InputController {
     /**
      * @return the center position.
      */
-    @SuppressWarnings("unused")
     public Vector2 getCenter() {
         return this.pos.cpy();
     }
@@ -400,23 +405,24 @@ public class Player extends LivingEntity implements InputController {
         }
 
         // Modifiers
-        if (other instanceof Bubble bubble && !bubble.isInvincible()) {
-            var bubbleAttrs = bubble.getAttributes();
-            var bubbleScore = bubbleAttrs.get(Attribute.SCORE);
-            var bubbleDefense = bubbleAttrs.get(Attribute.DEFENSE);
-            var scoreModifier = this.attributes.get(Attribute.SCORE_MODIFIER);
+        if (other instanceof Bubble && !((Bubble) other).isInvincible()) {
+            Bubble bubble = (Bubble) other;
+            AttributeContainer bubbleAttrs = bubble.getAttributes();
+            double bubbleScore = bubbleAttrs.get(Attribute.SCORE);
+            double bubbleDefense = bubbleAttrs.get(Attribute.DEFENSE);
+            double scoreModifier = this.attributes.get(Attribute.SCORE_MODIFIER);
 
             // Attributes
-            var props = bubble.getRadius() * (bubble.getSpeed() + 1);
-            var attrs = props * bubbleDefense * bubbleScore * bubbleScore * scoreModifier;
+            float props = bubble.getRadius() * (bubble.getSpeed() + 1);
+            double attrs = props * bubbleDefense * bubbleScore * bubbleScore * scoreModifier;
 
             // Calculate score value.
-            var award = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
+            double award = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
 
             // Add score.
             this.awardScore(award);
         } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
-            var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             this.awardScore(score);
         }
     }

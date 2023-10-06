@@ -13,7 +13,6 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.backends.android.surfaceview.FillResolutionStrategy;
 import com.ultreon.bubbles.platform.android.AndroidPlatform;
-import com.ultreon.bubbles.platform.android.AndroidUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class AndroidLauncher extends AndroidApplication {
@@ -58,7 +57,7 @@ public class AndroidLauncher extends AndroidApplication {
 		builder.setPositiveButton("OK", (dialog, which) -> dialog.cancel());
 
 		AlertDialog dialog = builder.show();
-		AndroidUtils.doKeepDialog(dialog);
+		dialog.show();
 	}
 
 }

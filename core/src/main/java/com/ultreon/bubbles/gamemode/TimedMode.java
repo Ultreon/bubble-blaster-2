@@ -32,7 +32,7 @@ public class TimedMode extends NormalMode {
         super.begin();
 
         World world = this.game.world;
-        if (world == null) throw new IllegalStateException("The game world isn't loaded in.");
+        if (world == null) throw new IllegalStateException("The world isn't loaded in.");
         this.world = world;
 
         this.gameplayStorage = this.world.getGameplayStorage();
@@ -62,6 +62,11 @@ public class TimedMode extends NormalMode {
     @Override
     public int getBulletPops() {
         return 4;
+    }
+
+    @Override
+    public boolean canBePaused() {
+        return false;
     }
 
     public long getTimeRemaining() {

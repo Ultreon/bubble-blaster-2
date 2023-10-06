@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.entity.spawning;
 
-import com.ultreon.bubbles.util.RandomChoices;
+import com.ultreon.bubbles.util.Randomizer;
 
 public final class SpawnUsage implements Hashable {
     private static int currentIdx;
@@ -21,6 +21,6 @@ public final class SpawnUsage implements Hashable {
 
     @Override
     public long hash() {
-        return RandomChoices.hash(this.index);
+        return Randomizer.hash(this.index);
     }
 }

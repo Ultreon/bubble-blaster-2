@@ -45,15 +45,15 @@ public final class KeyboardModifiers implements Cloneable {
     }
 
     public boolean shift() {
-        return shift;
+        return this.shift;
     }
 
     public boolean ctrl() {
-        return ctrl;
+        return this.ctrl;
     }
 
     public boolean alt() {
-        return alt;
+        return this.alt;
     }
 
 }

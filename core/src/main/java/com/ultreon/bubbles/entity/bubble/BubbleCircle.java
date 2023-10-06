@@ -15,32 +15,32 @@ public final class BubbleCircle {
     }
 
     public int index() {
-        return index;
+        return this.index;
     }
 
     public Color color() {
-        return color;
+        return this.color;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (BubbleCircle) obj;
+        BubbleCircle that = (BubbleCircle) obj;
         return this.index == that.index &&
                 Objects.equals(this.color, that.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(index, color);
+        return Objects.hash(this.index, this.color);
     }
 
     @Override
     public String toString() {
         return "BubbleCircle[" +
-                "index=" + index + ", " +
-                "color=" + color + ']';
+                "index=" + this.index + ", " +
+                "color=" + this.color + ']';
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 public class BubbleSystem {
     protected static HashMap<BubbleType, List<Long>> bubblePriorities = new HashMap<>();
     protected static long maxPriority = 0L;

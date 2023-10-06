@@ -1,6 +1,6 @@
 package com.ultreon.bubbles.random;
 
-import com.ultreon.bubbles.util.RandomChoices;
+import com.ultreon.bubbles.util.Randomizer;
 import com.ultreon.libs.commons.v0.Identifier;
 
 import java.util.Random;
@@ -15,22 +15,12 @@ public class JavaRandom implements SeededRandomSource {
     }
 
     public JavaRandom() {
-        this(RandomChoices.hash(System.nanoTime()));
+        this(Randomizer.hash(System.nanoTime()));
     }
 
     @Override
     public long nextLong() {
         return this.random.nextLong();
-    }
-
-    @Override
-    public long nextLong(long max) {
-        return max * this.random.nextLong();
-    }
-
-    @Override
-    public long nextLong(long min, long max) {
-        return (max - min) * this.random.nextLong() + min;
     }
 
     @Override
@@ -45,7 +35,7 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public int nextInt(int min, int max) {
-        return (max - min) * this.random.nextInt() + min;
+        return this.random.nextInt(max - min) + min;
     }
 
     @Override
@@ -90,12 +80,12 @@ public class JavaRandom implements SeededRandomSource {
 
     @Override
     public RandomSource nextRandom(String seed) {
-        return new JavaRandom(this.random.nextLong() ^ RandomChoices.hash(seed));
+        return new JavaRandom(this.random.nextLong() ^ Randomizer.hash(seed));
     }
 
     @Override
     public RandomSource nextRandom(Identifier seed) {
-        return new JavaRandom(this.random.nextLong() ^ RandomChoices.hash(seed));
+        return new JavaRandom(this.random.nextLong() ^ Randomizer.hash(seed));
     }
 
     public long getSeed() {

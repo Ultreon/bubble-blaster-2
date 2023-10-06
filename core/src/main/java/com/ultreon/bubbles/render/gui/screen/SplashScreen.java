@@ -5,7 +5,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.Resizer;
 import com.ultreon.libs.commons.v0.Mth;
@@ -65,16 +64,17 @@ public final class SplashScreen extends InternalScreen {
 
         renderer.blit(this.logoTexture, (int) drawX, (int) drawY, (int) drawWidth, (int) drawHeight, LoadScreen.BACKGROUND);
 
-        if (timeDiff >= DURATION - FADE_OUT) {
-            int clamp = (int) Mth.clamp(255 * (timeDiff - DURATION + FADE_OUT) / FADE_OUT, 0, 255);
-            Color color = Color.rgba(0, 0, 0, clamp);
-            renderer.fill(0, 0, this.width, this.height, color);
-        }
+        // Todo: fix fading
+//        if (timeDiff >= DURATION - FADE_OUT) {
+//            int clamp = (int) Mth.clamp(255 * (timeDiff - DURATION + FADE_OUT) / FADE_OUT, 0, 255);
+//            Color color = Color.rgba(0, 0, 0, clamp);
+//            renderer.fill(0, 0, this.width, this.height, color);
+//        }
 
         if (timeDiff >= DURATION) {
             this.ended = true;
             game.showScreen(new LoadScreen(), true);
-            game.fadeIn(1000f);
+//            game.fadeIn(1000f);
         }
     }
 

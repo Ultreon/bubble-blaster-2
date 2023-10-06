@@ -17,7 +17,6 @@ import java.util.Objects;
  *
  * @author XyperCode
  */
-@SuppressWarnings("unused")
 public interface GameWindow {
     /**
      * Window constructor.
@@ -60,25 +59,24 @@ public interface GameWindow {
 
     void finalSetup();
 
-    default void toggleFullscreen() {
-        this.setFullscreen(!this.isFullscreen());
+    default boolean toggleFullscreen() {
+        return this.setFullscreen(!this.isFullscreen());
     }
 
-    default void setFullscreen(boolean enable) {
-        if (this.isFullscreen() && !enable) {
-            if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
-                Gdx.graphics.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
-            }
-        } else if (!this.isFullscreen() && enable) {
-            if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
-                this.game().resize(mode.width, mode.height);
-            }
+    default boolean setFullscreen(boolean enable) {
+        if (this.isFullscreen() && !enable && !WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
+            Gdx.graphics.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
+        } else if (!this.isFullscreen() && enable && !WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+            Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
+            this.game().resize(mode.width, mode.height);
+        } else {
+            return false;
         }
 
         BubbleBlasterConfig.FULLSCREEN.set(enable);
         BubbleBlasterConfig.save();
+        return true;
     }
 
     default boolean isFullscreen() {
@@ -98,10 +96,6 @@ public interface GameWindow {
     int getX();
 
     int getY();
-
-    default Vector2 getMousePosition() {
-        return new Vector2(Gdx.input.getX(), Gdx.input.getY());
-    }
 
     default void setCursor(Cursor cursor) {
 //        Gdx.graphics.setCursor(cursor);

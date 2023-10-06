@@ -3,7 +3,7 @@ package com.ultreon.bubbles.ability.triggers;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.ability.AbilityTrigger;
 import com.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
-import com.ultreon.bubbles.input.KeyboardInput;
+import com.ultreon.bubbles.input.DesktopInput;
 
 import java.util.HashMap;
 
@@ -42,30 +42,20 @@ public class AbilityKeyTrigger extends AbilityTrigger {
         return this.modifiers;
     }
 
-    public boolean isShiftPressed() {
-        return KeyboardInput.isShiftDown();
-    }
-
     public boolean isCtrlPressed() {
-        return KeyboardInput.isCtrlDown();
-    }
-
-    @Deprecated(forRemoval = true)
-    public boolean isMetaPressed() {
-        return KeyboardInput.isMetaDown();
+        return DesktopInput.isCtrlDown();
     }
 
     public boolean isAltPressed() {
-        return KeyboardInput.isAltDown();
+        return DesktopInput.isAltDown();
     }
 
-    @Deprecated(forRemoval = true)
-    public boolean isAltGraphPressed() {
-        return KeyboardInput.isAltGraphDown();
+    public boolean isShiftPressed() {
+        return DesktopInput.isShiftDown();
     }
 
     public boolean isDown(int keyCode) {
-        return KeyboardInput.isKeyDown(keyCode);
+        return DesktopInput.isKeyDown(keyCode);
     }
 
     @Deprecated

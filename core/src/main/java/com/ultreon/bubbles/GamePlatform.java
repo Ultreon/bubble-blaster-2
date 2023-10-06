@@ -31,10 +31,13 @@ public abstract class GamePlatform {
     public abstract FileHandle data(String path);
 
     public boolean isMobile() {
-        return switch (this.getOperatingSystem()) {
-            case Android, IOS -> true;
-            default -> false;
-        };
+        switch (this.getOperatingSystem()) {
+            case Android:
+            case IOS:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public abstract Logger getLogger(String name);
@@ -137,4 +140,12 @@ public abstract class GamePlatform {
     }
 
     public abstract void showError(@NotNull String title, @Nullable String description);
+
+    public void create() {
+
+    }
+
+    public int getRecommendedFPS() {
+        return 60;
+    }
 }

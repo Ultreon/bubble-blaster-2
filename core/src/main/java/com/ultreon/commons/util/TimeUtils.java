@@ -7,7 +7,6 @@ import java.time.Duration;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
-@SuppressWarnings("unused")
 public class TimeUtils extends UtilityClass {
     private static final long MSPT = 1000 / TPS;
 

@@ -16,7 +16,7 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Random;
 
-@SuppressWarnings({"unused", "SameParameterValue"})
+@SuppressWarnings({"SameParameterValue"})
 public class GameSave {
     public static final Marker MARKER = MarkerFactory.getMarker("GameSaves");
     private final String path;

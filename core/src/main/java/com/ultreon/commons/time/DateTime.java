@@ -8,7 +8,6 @@ import java.time.ZoneOffset;
 import java.time.chrono.IsoChronology;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 public class DateTime implements Comparable<DateTime>, Serializable {
     private static final Duration DURATION = new Duration(0.0d);
     private int hour;

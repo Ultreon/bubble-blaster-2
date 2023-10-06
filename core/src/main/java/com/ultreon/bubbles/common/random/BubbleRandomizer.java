@@ -18,7 +18,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @author XyperCode
  * @see Bubble
  */
-@SuppressWarnings("unused")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault

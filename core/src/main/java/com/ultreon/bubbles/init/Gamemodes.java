@@ -17,7 +17,6 @@ import java.util.function.Supplier;
  * @see Gamemode
  * @since 0.0.0
  */
-@SuppressWarnings("unused")
 public class Gamemodes {
     private static final DelayedRegister<Gamemode> REGISTER = DelayedRegister.create(BubbleBlaster.NAMESPACE, Registries.GAMEMODES);
     public static final RegistrySupplier<NormalMode> NORMAL = Gamemodes.register("normal", NormalMode::new);

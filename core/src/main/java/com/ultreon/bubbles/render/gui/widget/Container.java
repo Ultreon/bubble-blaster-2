@@ -13,10 +13,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Container extends GuiComponent {
     protected final List<GuiComponent> children = new CopyOnWriteArrayList<>();
     protected final List<RenderableListener> statics = new CopyOnWriteArrayList<>();
-    protected GuiComponent hoveredInteractable;
     int innerXOffset;
     int innerYOffset;
-    private GuiComponent pressingWidget;
+    protected GuiComponent hovered;
+    protected GuiComponent pressed;
+    protected GuiComponent focused;
 
     public Container(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         super(x, y, width, height);
@@ -41,7 +42,8 @@ public abstract class Container extends GuiComponent {
     @Nullable
     public GuiComponent getExactWidgetAt(int x, int y) {
         GuiComponent widgetAt = this.getWidgetAt(x, y);
-        if (widgetAt instanceof Container container) {
+        if (widgetAt instanceof Container) {
+            Container container = (Container) widgetAt;
             return container.getExactWidgetAt(x, y);
         }
         return widgetAt;
@@ -84,59 +86,52 @@ public abstract class Container extends GuiComponent {
     @Override
     public boolean mousePress(int x, int y, int button) {
         GuiComponent widgetAt = this.getWidgetAt(x, y);
-        x -= this.x + this.innerXOffset;
-        y -= this.y + this.innerYOffset;
-        this.pressingWidget = widgetAt;
-        return widgetAt != null && widgetAt.mousePress(x - widgetAt.getX(), y - widgetAt.getY(), button);
+
+        // Pressing widget.
+        this.pressed = widgetAt;
+
+        // Focus
+        boolean widgetChanged = false;
+
+        if (this.focused != null && !this.focused.isWithinBounds(x, y))
+            this.focused.onFocusLost();
+
+        if (widgetAt != this.focused)
+            widgetChanged = true;
+
+        this.focused = widgetAt;
+
+        if (this.focused != null && widgetChanged)
+            this.focused.onFocusGained();
+
+        // Widget handling.
+        return widgetAt != null && widgetAt.mousePress(x, y, button);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        GuiComponent widgetAt = this.pressingWidget;
+        GuiComponent widgetAt = this.pressed;
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
-        return widgetAt != null && widgetAt.mouseRelease(x - widgetAt.getX(), y - widgetAt.getY(), button);
-    }
-
-    @Override
-    public void mouseMove(int x, int y) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
-        boolean widgetChanged = false;
-        if (this.hoveredInteractable != null && !this.hoveredInteractable.isWithinBounds(x, y)) {
-            this.hoveredInteractable.mouseExit();
-        }
-
-        if (widgetAt != this.hoveredInteractable) widgetChanged = true;
-        this.hoveredInteractable = widgetAt;
-
-        if (this.hoveredInteractable != null) {
-            x -= this.x + this.innerXOffset;
-            y -= this.y + this.innerYOffset;
-            this.hoveredInteractable.mouseMove(x - widgetAt.getX(), y - widgetAt.getY());
-
-            if (widgetChanged) {
-                this.hoveredInteractable.mouseEnter(x - widgetAt.getX(), y - widgetAt.getY());
-            }
-        }
-        super.mouseMove(x, y);
+        return widgetAt != null && widgetAt.mouseRelease(x, y, button);
     }
 
     @Override
     public void mouseEnter(int x, int y) {
         GuiComponent widgetAt = this.getWidgetAt(x, y);
         boolean widgetChanged = false;
-        if (this.hoveredInteractable != null && !this.hoveredInteractable.isWithinBounds(x, y)) {
-            this.hoveredInteractable.mouseExit();
+        if (this.hovered != null && !this.hovered.isWithinBounds(x, y)) {
+            this.hovered.mouseExit();
         }
 
-        if (widgetAt != this.hoveredInteractable) widgetChanged = true;
-        this.hoveredInteractable = widgetAt;
+        if (widgetAt != this.hovered) widgetChanged = true;
+        this.hovered = widgetAt;
 
-        if (this.hoveredInteractable != null) {
+        if (this.hovered != null) {
             x -= this.x + this.innerXOffset;
             y -= this.y + this.innerYOffset;
             if (widgetChanged) {
-                this.hoveredInteractable.mouseEnter(x - widgetAt.getX(), y - widgetAt.getY());
+                this.hovered.mouseEnter(x - widgetAt.getX(), y - widgetAt.getY());
             }
         }
         super.mouseMove(x, y);
@@ -154,9 +149,9 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseExit() {
-        if (this.hoveredInteractable != null) {
-            this.hoveredInteractable.mouseExit();
-            this.hoveredInteractable = null;
+        if (this.hovered != null) {
+            this.hovered.mouseExit();
+            this.hovered = null;
         }
     }
 
@@ -176,6 +171,6 @@ public abstract class Container extends GuiComponent {
     }
 
     public GuiComponent getHoveredWidget() {
-        return this.hoveredInteractable;
+        return this.hovered;
     }
 }

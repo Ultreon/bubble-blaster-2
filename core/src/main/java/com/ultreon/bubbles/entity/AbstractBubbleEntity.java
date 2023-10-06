@@ -11,7 +11,6 @@ import com.ultreon.data.types.MapType;
  *
  * @see Entity
  */
-@SuppressWarnings("unused")
 public abstract class AbstractBubbleEntity extends LivingEntity {
     // Constructor
     public AbstractBubbleEntity(EntityType<?> type, World world) {

@@ -59,29 +59,35 @@ public class Either<L, R> {
     }
 
     public L getLeftOrNull() {
+        if (this.left == null) return null;
         return this.left.value;
     }
 
     public R getRightOrNull() {
+        if (this.right == null) return null;
         return this.right.value;
     }
 
-    public L getLeftOrNullOr(L other) {
+    public L getLeftOr(L other) {
+        if (this.left == null) return other;
         L value = this.left.value;
         return value == null ? other : value;
     }
 
-    public R getRightOrNullOr(R other) {
+    public R getRightOr(R other) {
+        if (this.right == null) return other;
         R value = this.right.value;
         return value == null ? other : value;
     }
 
-    public L getLeftOrNullOrGet(Supplier<? extends L> other) {
+    public L getLeftOrGet(Supplier<? extends L> other) {
+        if (this.left == null) return other.get();
         L value = this.left.value;
         return value == null ? other.get() : value;
     }
 
-    public R getRightOrNullOr(Supplier<? extends R> other) {
+    public R getRightOrGet(Supplier<? extends R> other) {
+        if (this.right == null) return other.get();
         R value = this.right.value;
         return value == null ? other.get() : value;
     }
@@ -99,26 +105,26 @@ public class Either<L, R> {
         }
 
         public L value() {
-            return value;
+            return this.value;
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (Left) obj;
+            Left that = (Left) obj;
             return Objects.equals(this.value, that.value);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(value);
+            return Objects.hash(this.value);
         }
 
         @Override
         public String toString() {
             return "Left[" +
-                    "value=" + value + ']';
+                    "value=" + this.value + ']';
         }
     }
 
@@ -130,26 +136,26 @@ public class Either<L, R> {
         }
 
         public R value() {
-            return value;
+            return this.value;
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (Right) obj;
+            Right that = (Right) obj;
             return Objects.equals(this.value, that.value);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(value);
+            return Objects.hash(this.value);
         }
 
         @Override
         public String toString() {
             return "Right[" +
-                    "value=" + value + ']';
+                    "value=" + this.value + ']';
         }
     }
 }

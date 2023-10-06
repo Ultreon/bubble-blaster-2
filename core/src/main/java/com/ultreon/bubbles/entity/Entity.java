@@ -46,7 +46,6 @@ import static com.ultreon.bubbles.BubbleBlaster.TPS;
  * @see AbstractBubbleEntity
  * @since 0.0.0
  */
-@SuppressWarnings("unused")
 public abstract class Entity extends GameObject implements StateHolder {
     public static final Entity UNDEFINED = Entities.UNDEFINED_TYPE.create(null);
 
@@ -160,8 +159,10 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public void preSpawn(SpawnInformation information) {
         @Nullable Vector2 spawnPos = this.pos;
-        if (information.getReason() instanceof NaturalSpawnReason reason)
-            spawnPos.set(this.world.getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry()));
+        if (information.getReason() instanceof NaturalSpawnReason) {
+            NaturalSpawnReason reason = (NaturalSpawnReason) information.getReason();
+            spawnPos.set(information.getWorld().getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry()));
+        }
 
         if (information.getPos() != null)
             spawnPos = information.getPos();
@@ -283,7 +284,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public void bounceOff(Entity source, float velocity, float delta) {
         if (velocity == 0) return;
-        this.applyForceDir((float) Math.toDegrees(Math.atan2(source.getY() - this.pos.y, source.getX() - this.pos.x)), velocity, delta);
+        this.applyForceDir(source.getAngleTo(this), velocity, delta);
     }
 
     public void accelerate(float amount, boolean useVelocity) {
@@ -594,7 +595,7 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
         this.clearEffects();
-        for (var activeEffectData : activeEffectsData) {
+        for (MapType activeEffectData : activeEffectsData) {
             this.statusEffects.add(StatusEffectInstance.load(activeEffectData));
         }
 
@@ -612,30 +613,30 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Override
     public @NotNull MapType save() {
         // Save components.
-        var data = new MapType();
+        MapType data = new MapType();
         data.put("Tag", this.tag);
         data.put("Attributes", this.attributes.save());
         data.put("AttributesModifiers", this.attributes.saveModifiers());
 
         // Save position.
-        var positionTag = new MapType();
+        MapType positionTag = new MapType();
         positionTag.putFloat("x", this.pos.x);
         positionTag.putFloat("y", this.pos.y);
         data.put("Position", positionTag);
 
-        var previousTag = new MapType();
+        MapType previousTag = new MapType();
         previousTag.putDouble("x", this.prevPos.x);
         previousTag.putDouble("y", this.prevPos.y);
         data.put("PrevPosition", previousTag);
 
         // Velocity.
-        var velocityTag = new MapType();
+        MapType velocityTag = new MapType();
         velocityTag.putDouble("x", this.velocity.x);
         velocityTag.putDouble("y", this.velocity.y);
         data.put("Velocity", velocityTag);
 
-        var activeEffectsTag = new ListType<MapType>();
-        for (var instance : this.statusEffects)
+        ListType<MapType> activeEffectsTag = new ListType<>();
+        for (StatusEffectInstance instance : this.statusEffects)
             activeEffectsTag.add(instance.save());
         data.put("ActiveEffects", activeEffectsTag);
 
@@ -647,7 +648,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         data.putDouble("scale", this.scale);
         data.putFloat("rotation", this.rotation);
 
-        var key = Registries.ENTITIES.getKey(this.type);
+        Identifier key = Registries.ENTITIES.getKey(this.type);
         data.putString("type", (key == null ? BubbleTypes.NORMAL.getId() : key).toString());
         return data;
     }

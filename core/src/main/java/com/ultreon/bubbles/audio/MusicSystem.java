@@ -3,7 +3,7 @@ package com.ultreon.bubbles.audio;
 import com.badlogic.gdx.utils.Disposable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.random.valuesource.ValueSource;
-import com.ultreon.bubbles.util.RandomChoices;
+import com.ultreon.bubbles.util.Randomizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
         this.delay = delay;
         this.timeBetween = timeBetween;
         this.musicList = musicList;
-        this.nextMusic = RandomChoices.choose(this.musicList);
+        this.nextMusic = Randomizer.choose(this.musicList);
     }
 
     public void play() {
@@ -69,7 +69,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
         if (this.music != null) {
             this.music.stop();
         }
-        var old = this.music;
+        MusicEvent old = this.music;
         this.music = this.nextMusic;
         this.nextMusic = this.choose(old);
         this.music.play();
@@ -79,10 +79,10 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
 
     @NotNull
     private MusicEvent choose(MusicEvent old) {
-        var reties = 3;
-        var chosen = this.nextMusic;
+        int reties = 3;
+        MusicEvent chosen = this.nextMusic;
         while (reties > 0) {
-            chosen = RandomChoices.choose(this.musicList);
+            chosen = Randomizer.choose(this.musicList);
             if (chosen != old || this.musicList.size() == 1) return chosen;
 
             reties--;

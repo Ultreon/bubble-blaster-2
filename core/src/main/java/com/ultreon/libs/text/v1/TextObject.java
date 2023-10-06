@@ -1,5 +1,7 @@
 package com.ultreon.libs.text.v1;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.text.AttributedString;
 
 public abstract class TextObject {
@@ -31,8 +33,8 @@ public abstract class TextObject {
         return new TranslationText(path, args);
     }
 
-    public static TextObject nullToEmpty(String text) {
-        if (text.isEmpty()) {
+    public static TextObject nullToEmpty(@Nullable String text) {
+        if (text == null || text.isEmpty()) {
             return EMPTY;
         }
         return TextObject.literal(text);

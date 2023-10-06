@@ -29,7 +29,7 @@ public class ControllerInput extends ControllerAdapter implements InputObject {
 
         ControllerMapping mapping = controller.getMapping();
 
-        Vector2 cursorPos = KeyboardInput.getMousePos();
+        Vector2 cursorPos = DesktopInput.getMousePos();
         if (buttonIndex == mapping.buttonL1) this.game.mousePress((int) cursorPos.x, (int) cursorPos.y, 0, Input.Buttons.LEFT);
         if (buttonIndex == mapping.buttonL2) this.game.mousePress((int) cursorPos.x, (int) cursorPos.y, 0, Input.Buttons.RIGHT);
 
@@ -49,7 +49,7 @@ public class ControllerInput extends ControllerAdapter implements InputObject {
 
         ControllerMapping mapping = controller.getMapping();
 
-        Vector2 cursorPos = KeyboardInput.getMousePos();
+        Vector2 cursorPos = DesktopInput.getMousePos();
         if (buttonIndex == mapping.buttonL1) this.game.mouseRelease((int) cursorPos.x, (int) cursorPos.y, 0, Input.Buttons.LEFT);
         if (buttonIndex == mapping.buttonL2) this.game.mouseRelease((int) cursorPos.x, (int) cursorPos.y, 0, Input.Buttons.RIGHT);
 

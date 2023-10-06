@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Deprecated
-@SuppressWarnings("unused")
 public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
     private final int version;
     private final int subversion;
@@ -32,11 +31,20 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
             this.subversion = Integer.parseInt(m.group(2));
 
             switch (m.group(3)) {
-                case "alpha" -> this.type = Type.ALPHA;
-                case "beta" -> this.type = Type.BETA;
-                case "pre" -> this.type = Type.PRE;
-                case "release" -> this.type = Type.RELEASE;
-                default -> throw new InternalError("Regex has invalid output.");
+                case "alpha":
+                    this.type = Type.ALPHA;
+                    break;
+                case "beta":
+                    this.type = Type.BETA;
+                    break;
+                case "pre":
+                    this.type = Type.PRE;
+                    break;
+                case "release":
+                    this.type = Type.RELEASE;
+                    break;
+                default:
+                    throw new InternalError("Regex has invalid output.");
             }
 
             this.release = Integer.parseInt(m.group(4));

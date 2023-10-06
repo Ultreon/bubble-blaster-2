@@ -6,9 +6,11 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.CrashFiller;
+import com.ultreon.bubbles.input.MobileInput;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
+import com.ultreon.bubbles.render.gui.widget.Circle;
 import com.ultreon.bubbles.render.gui.widget.Container;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.text.v1.TextObject;
@@ -16,7 +18,6 @@ import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@SuppressWarnings("unused")
 public abstract class Screen extends Container implements CrashFiller {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private GuiComponent focused;
@@ -202,11 +203,30 @@ public abstract class Screen extends Container implements CrashFiller {
      * @see BubbleBlaster#isPaused()
      */
     public boolean doesPauseGame() {
-        return true;
+        return false;
     }
 
     @Override
     public void fillInCrash(CrashLog crashLog) {
 
+    }
+
+    @Override
+    public boolean mouseRelease(int x, int y, int button) {
+        Circle circle = new Circle(this.width - 100, 100, 50);
+        if (circle.contains(x, y)) {
+            this.playMenuEvent();
+            this.game.showScreen(this.backScreen);
+            return true;
+        }
+        return super.mouseRelease(x, y, button);
+    }
+
+    public void renderCloseButton(Renderer renderer, int mouseX, int mouseY) {
+        Circle circle = new Circle(this.width - 100, 100, 50);
+        renderer.fillCircle(this.width - 100, 100, 100, Color.WHITE.withAlpha(circle.contains(mouseX, mouseY) ? MobileInput.isTouchDown() ? 0x80 : 0x60 : 0x40));
+        renderer.setLineThickness(3);
+        renderer.line(this.width - 125, 75, this.width - 75, 125, Color.WHITE);
+        renderer.line(this.width - 125, 125, this.width - 75, 75, Color.WHITE);
     }
 }

@@ -229,42 +229,44 @@ public class FormatterContext implements IFormatterContext {
 
         for (char c : text.toCharArray()) {
             switch (c) {
-                case '\b' -> {
+                case '\b':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\b");
                     current = new StringBuilder();
-                }
-                case '\t' -> {
+                    break;
+                case '\t':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\t");
                     current = new StringBuilder();
-                }
-                case '\n' -> {
+                    break;
+                case '\n':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\n");
                     current = new StringBuilder();
-                }
-                case '\f' -> {
+                    break;
+                case '\f':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\f");
                     current = new StringBuilder();
-                }
-                case '\r' -> {
+                    break;
+                case '\r':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\r");
                     current = new StringBuilder();
-                }
-                case '\"' -> {
+                    break;
+                case '\"':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\\"");
                     current = new StringBuilder();
-                }
-                case '\\' -> {
+                    break;
+                case '\\':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\\\");
                     current = new StringBuilder();
-                }
-                default -> current.append(c);
+                    break;
+                default:
+                    current.append(c);
+                    break;
             }
         }
 
@@ -278,42 +280,44 @@ public class FormatterContext implements IFormatterContext {
 
         for (char c : text.toCharArray()) {
             switch (c) {
-                case '\b' -> {
+                case '\b':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\b");
                     current = new StringBuilder();
-                }
-                case '\t' -> {
+                    break;
+                case '\t':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\t");
                     current = new StringBuilder();
-                }
-                case '\n' -> {
+                    break;
+                case '\n':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\n");
                     current = new StringBuilder();
-                }
-                case '\f' -> {
+                    break;
+                case '\f':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\f");
                     current = new StringBuilder();
-                }
-                case '\r' -> {
+                    break;
+                case '\r':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\r");
                     current = new StringBuilder();
-                }
-                case '\'' -> {
+                    break;
+                case '\'':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\'");
                     current = new StringBuilder();
-                }
-                case '\\' -> {
+                    break;
+                case '\\':
                     this.colored(current.toString(), STRING_COLOR);
                     this.stringEscape("\\\\");
                     current = new StringBuilder();
-                }
-                default -> current.append(c);
+                    break;
+                default:
+                    current.append(c);
+                    break;
             }
         }
         return this;

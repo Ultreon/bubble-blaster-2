@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
+import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
@@ -46,7 +47,7 @@ public class Bullet extends Entity {
         this.markAsCollidable(Entities.BUBBLE);
         this.markAsAttackable(Entities.BUBBLE);
 
-        this.popsRemaining = world.getGamemode().getBulletPops();;
+        this.popsRemaining = world.getGamemode().getBulletPops();
     }
 
     public int getPopsRemaining() {
@@ -72,33 +73,37 @@ public class Bullet extends Entity {
     @Override
     public void onCollision(Entity other, double deltaTime) {
         if (this.owner == null) return;
-        if (other instanceof LivingEntity livingEntity && livingEntity.isInvincible()) return;
+        if (other instanceof LivingEntity && ((LivingEntity) other).isInvincible()) {
+            LivingEntity livingEntity = (LivingEntity) other;
+            return;
+        }
 
         this.ammoType.onCollision(this, other, deltaTime);
 
 
         // Modifiers
-        if (other instanceof AbstractBubbleEntity bubble) {
+        if (other instanceof AbstractBubbleEntity) {
+            AbstractBubbleEntity bubble = (AbstractBubbleEntity) other;
             // Attributes
-            var attributeMap = bubble.getAttributes();
-            var bubScore = attributeMap.getBase(Attribute.SCORE);
-            var attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
-            var defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
-            var scoreModifier = this.owner.getAttributes().getBase(Attribute.SCORE_MODIFIER);
+            AttributeContainer attributeMap = bubble.getAttributes();
+            double bubScore = attributeMap.getBase(Attribute.SCORE);
+            double attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
+            double defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
+            double scoreModifier = this.owner.getAttributes().getBase(Attribute.SCORE_MODIFIER);
 
             // Properties
-            var radius = bubble.getRadius();
-            var speed = bubble.getSpeed();
+            float radius = bubble.getRadius();
+            float speed = bubble.getSpeed();
 
             // Calculate score value.
-            var props = (radius * (speed + 1)) * (attack + defense + 1);
-            var attrs = props * bubScore * bubScore * scoreModifier;
-            var scoreValue = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION.get();
+            double props = (radius * (speed + 1)) * (attack + defense + 1);
+            double attrs = props * bubScore * bubScore * scoreModifier;
+            double scoreValue = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION.get();
 
             // Add score.
             this.owner.awardScore(scoreValue);
         } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
-            var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             this.owner.awardScore(score);
         }
         if (--this.popsRemaining <= 0) {
@@ -140,13 +145,11 @@ public class Bullet extends Entity {
         }
     }
 
-    @SuppressWarnings("unused")
     @Nullable
     public AmmoType getAmmoType() {
         return this.ammoType;
     }
 
-    @SuppressWarnings("unused")
     public void setAmmoType(@NotNull AmmoType ammoType) {
         this.ammoType = ammoType;
         this.attributes.setAll(ammoType.getDefaultAttributes());

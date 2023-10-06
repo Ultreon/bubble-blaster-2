@@ -1,15 +1,16 @@
 package com.ultreon.bubbles.input;
 
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.render.gui.screen.CommandScreen;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;
 
-public class KeyboardHandler extends InputHandler<KeyboardInput> {
-    public KeyboardHandler() {
-        super(KeyboardInput.get(), InputType.KeyboardAndMouse);
+public class DesktopInputHandler extends InputHandler<DesktopInput> {
+    public DesktopInputHandler() {
+        super(DesktopInput.get(), InputType.KeyboardAndMouse);
     }
 
     @Override
@@ -19,6 +20,8 @@ public class KeyboardHandler extends InputHandler<KeyboardInput> {
 
     @Override
     public boolean tickWorld(World world, LoadedGame loadedGame) {
+        if (!GamePlatform.get().isDesktop()) return false;
+
         if (KeyBindings.COMMAND.isJustPressed()) {
             BubbleBlaster.getInstance().showScreen(new CommandScreen());
             return true;
@@ -28,8 +31,10 @@ public class KeyboardHandler extends InputHandler<KeyboardInput> {
 
     @Override
     public boolean tickPlayer(Player player) {
-        var rotating = 0f;
-        var moving = 0f;
+        if (!GamePlatform.get().isDesktop()) return false;
+
+        float rotating = 0f;
+        float moving = 0f;
 
         if (KeyBindings.FORWARD.isPressed()) moving += 1f;
         if (KeyBindings.ROTATE_LEFT.isPressed()) rotating -= 1f;

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.crashinvaders.vfx.VfxManager;
+import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import com.crashinvaders.vfx.effects.GaussianBlurEffect;
 import com.crashinvaders.vfx.effects.NfaaEffect;
 import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
@@ -26,8 +27,8 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
-import com.ultreon.bubbles.Constants;
 import com.ultreon.bubbles.debug.Debug;
+import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.render.gui.border.Border;
 import com.ultreon.commons.util.StringUtils;
 import com.ultreon.libs.commons.v0.Anchor;
@@ -63,7 +64,7 @@ import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.*;
  * @see Polygon
  * @see Rectangle
  */
-@SuppressWarnings({"unused", "FieldCanBeLocal"})
+@SuppressWarnings({"FieldCanBeLocal"})
 public class Renderer {
     private static final Color ANIM_COLOR_1 = Color.rgb(0x00a0ff);
     private static final Color ANIM_COLOR_2 = Color.rgb(0x00ffa0);
@@ -101,7 +102,7 @@ public class Renderer {
     private final Matrix4 globalTransform = new Matrix4();
     private State state;
     private boolean stateChange = true;
-    private boolean blendingEnabled;
+    private boolean blendingEnabled = true;
     private final Stack<VfxFrameBuffer> fboStack = new Stack<>();
     private final FboPool fboPool;
     private boolean depthEnabled;
@@ -112,6 +113,8 @@ public class Renderer {
     private final List<Disposable> toDispose = new ArrayList<>();
     private final VfxFrameBuffer.Renderer shapesAdapter;
     private final VfxFrameBuffer.Renderer batchAdapter;
+    private final FilmGrainEffect vfxNoise;
+    private boolean noising;
 
     @ApiStatus.Internal
     public Renderer(ShapeRenderer shapes, SpriteBatch batch, OrthographicCamera camera) {
@@ -144,6 +147,8 @@ public class Renderer {
         this.vfxBlur.setPasses(10);
 //        this.vfxBlur.setAmount(15);
         this.vfxNfaa = new NfaaEffect(true);
+        this.vfxNoise = new FilmGrainEffect();
+        this.vfxNoise.setNoiseAmount(0.25f);
 
         this.fboPool = new FboPool(Pixmap.Format.RGBA8888, (int) this.getWidth(), (int) this.getHeight(), 10);
         this.fboPool.setTextureParams(TextureWrap.Repeat, TextureWrap.Repeat, TextureFilter.Linear, TextureFilter.Linear);
@@ -257,11 +262,19 @@ public class Renderer {
     }
 
     public void outline(Shape2D shape, Color color) {
-        if (shape instanceof Circle circle) this.outline(circle, color);
-        else if (shape instanceof Rectangle rectangle) this.outline(rectangle, color);
-        else if (shape instanceof Polygon polygon) this.outline(polygon, color);
-        else if (shape instanceof Ellipse ellipse) this.outline(ellipse, color);
-        else throw new UnsupportedOperationException("Shape not supported: " + shape.getClass().getName());
+        if (shape instanceof Circle) {
+            Circle circle = (Circle) shape;
+            this.outline(circle, color);
+        } else if (shape instanceof Rectangle) {
+            Rectangle rectangle = (Rectangle) shape;
+            this.outline(rectangle, color);
+        } else if (shape instanceof Polygon) {
+            Polygon polygon = (Polygon) shape;
+            this.outline(polygon, color);
+        } else if (shape instanceof Ellipse) {
+            Ellipse ellipse = (Ellipse) shape;
+            this.outline(ellipse, color);
+        } else throw new UnsupportedOperationException("Shape not supported: " + shape.getClass().getName());
     }
 
     public void outline(Rectangle rect, Color color) {
@@ -337,11 +350,22 @@ public class Renderer {
     public void fill(Shape2D s, Color color) {
         if (!this.rendering) return;
 
-        if (s instanceof Circle circle) this.fill(circle, color);
-        else if (s instanceof Ellipse ellipse) this.fill(ellipse, color);
-        else if (s instanceof Rectangle rect) this.fill(rect, color);
-        else if (s instanceof Polygon rect) this.fill(rect, color);
-        else if (s instanceof Polyline rect) this.fill(rect, color);
+        if (s instanceof Circle) {
+            Circle circle = (Circle) s;
+            this.fill(circle, color);
+        } else if (s instanceof Ellipse) {
+            Ellipse ellipse = (Ellipse) s;
+            this.fill(ellipse, color);
+        } else if (s instanceof Rectangle) {
+            Rectangle rect = (Rectangle) s;
+            this.fill(rect, color);
+        } else if (s instanceof Polygon) {
+            Polygon rect = (Polygon) s;
+            this.fill(rect, color);
+        } else if (s instanceof Polyline) {
+            Polyline rect = (Polyline) s;
+            this.fill(rect, color);
+        }
     }
 
     private void enableEffect() {
@@ -413,7 +437,62 @@ public class Renderer {
         this.vfxManager.renderToScreen();
 
         // Add blur effect.
-        this.vfxManager.removeEffect(this.vfxBlur);
+        this.vfxManager.removeAllEffects();
+
+        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
+            Gdx.gl20.glEnable(GL20.GL_BLEND);
+            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
+            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        }
+    }
+
+    @ApiStatus.Experimental
+    public void enableNoise() {
+        if (this.noising) {
+            throw new IllegalStateException("Can't enable blur while already enabled!");
+        }
+
+        this.toBatch();
+        this.batch.flush();
+        this.batch.end();
+        this.vfxNoise.setSeed(new JavaRandom().nextFloat(-Float.MAX_VALUE, Float.MAX_VALUE));
+
+        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
+        this.fboStack.push(this.beginCapture());
+        boolean b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
+        this.noising = true;
+
+        this.batch.begin();
+    }
+
+    @ApiStatus.Experimental
+    public void disableNoise() {
+        this.toBatch();
+        this.batch.end();
+
+        this.noising = false;
+        this.popScissor();
+
+        // Add blur effect.
+        this.vfxManager.addEffect(this.vfxNoise);
+
+        this.vfxManager.useAsInput(this.endCapture(this.fboStack.pop()));
+
+        this.batch.begin();
+
+        // Apply the effects chain to the captured frame.
+        // In our case, only one effect (gaussian blur) will be applied.
+        this.vfxManager.applyEffects();
+
+        // Render result to the screen.
+        this.vfxManager.renderToScreen();
+
+        // Add blur effect.
+        this.vfxManager.removeAllEffects();
 
         if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
             Gdx.gl20.glEnable(GL20.GL_BLEND);
@@ -451,7 +530,6 @@ public class Renderer {
     public VfxFrameBuffer beginCapture() {
         VfxFrameBuffer fbo = this.fboPool.obtain();
         fbo.begin();
-        Gdx.gl31.glRenderbufferStorageMultisample(GL20.GL_RENDERBUFFER, Constants.RENDER_SAMPLES, GL30.GL_RGBA8, this.getWidth(), this.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
         return fbo;
     }
@@ -595,8 +673,12 @@ public class Renderer {
         this.toShapes();
         this.setFilled();
         switch (axis) {
-            case HORIZONTAL -> this.shapes.rect(x, y, width, height, color2.toGdx(), color1.toGdx(), color1.toGdx(), color2.toGdx());
-            case VERTICAL -> this.shapes.rect(x, y, width, height, color1.toGdx(), color1.toGdx(), color2.toGdx(), color2.toGdx());
+            case HORIZONTAL:
+                this.shapes.rect(x, y, width, height, color2.toGdx(), color1.toGdx(), color1.toGdx(), color2.toGdx());
+                break;
+            case VERTICAL:
+                this.shapes.rect(x, y, width, height, color1.toGdx(), color1.toGdx(), color2.toGdx(), color2.toGdx());
+                break;
         }
     }
 
@@ -696,7 +778,7 @@ public class Renderer {
         this.toShapes();
         this.shapes.set(Line);
 
-        var endAngle = startAngle + angle;
+        float endAngle = startAngle + angle;
 
         float[] vertices = new float[segments * 2];
 
@@ -725,7 +807,7 @@ public class Renderer {
         height -= this.lineThickness;
         radius -= this.lineThickness / 2;
 
-        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+        float cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
 
         Gdx.gl20.glLineWidth(this.lineThickness);
         this.shapes.line(x + cornerRadius, y, x + width - cornerRadius, y); // Draw top line
@@ -746,7 +828,7 @@ public class Renderer {
         this.setFilled();
         this.shapes.setColor(color.toGdx());
 
-        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+        float cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
 
         // Draw the top-left rounded corner
         this.shapes.arc(x + cornerRadius, y + cornerRadius, cornerRadius, 180f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
@@ -885,8 +967,17 @@ public class Renderer {
 
         this.toShapes();
         this.setLine();
-        this.shapes.setColor(this.color.toGdx());
+        this.shapes.setColor(color.toGdx());
         this.shapes.polyline(p.getTransformedVertices());
+    }
+
+    public void polyline(float[] vertices, Color color) {
+        if (!this.rendering) return;
+
+        this.toShapes();
+        this.setLine();
+        this.shapes.setColor(color.toGdx());
+        this.shapes.polyline(vertices);
     }
 
     public void fillPolyline(Polyline p, Color color) {
@@ -894,7 +985,7 @@ public class Renderer {
 
         this.toShapes();
         this.setFilled();
-        this.shapes.setColor(this.color.toGdx());
+        this.shapes.setColor(color.toGdx());
         this.shapes.polyline(p.getTransformedVertices());
     }
 
@@ -1198,18 +1289,18 @@ public class Renderer {
 
         rect.y = Gdx.graphics.getHeight() - rect.y - rect.height;
 
-        if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
+        if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.get()) {
             this.flush();
             if (!ScissorStack.pushScissors(rect)) {
                 if (this.loggingScissors) {
-                    Debug.log("ScissorDebug", "Scissor [%d]: %s".formatted(this.scissorDepth, rect));
+                    Debug.log("ScissorDebug", String.format("Scissor [%d]: %s", this.scissorDepth, rect));
                 }
                 return false;
             }
 
             if (this.loggingScissors) {
                 this.scissorDepth++;
-                Debug.log("ScissorDebug", "Pushing scissor [%d]: %s".formatted(this.scissorDepth, rect));
+                Debug.log("ScissorDebug", String.format("Pushing scissor [%d]: %s", this.scissorDepth, rect));
             }
             return true;
         }
@@ -1218,8 +1309,12 @@ public class Renderer {
 
     public void flush() {
         switch (this.state) {
-            case BATCH -> this.batch.flush();
-            case SHAPES -> this.shapes.flush();
+            case BATCH:
+                this.batch.flush();
+                break;
+            case SHAPES:
+                this.shapes.flush();
+                break;
         }
 
         Gdx.gl.glFlush();
@@ -1257,7 +1352,7 @@ public class Renderer {
             Rectangle rectangle = ScissorStack.popScissors();
 
             if (this.loggingScissors) {
-                Debug.log("ScissorDebug", "Popping scissor [%d]".formatted(this.scissorDepth));
+                Debug.log("ScissorDebug", String.format("Popping scissor [%d]", this.scissorDepth));
                 this.scissorDepth--;
             }
             return rectangle;
@@ -1431,7 +1526,7 @@ public class Renderer {
     private void fillScrollingGradient(float x, float y, float width, float height, float speed, Color color1, Color color2) {
         float gameWidth = this.getWidth();
         float gameHeight = this.getHeight();
-        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
+        float shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
 
         this.scissored(new Rectangle(x, y, width, height), () -> {
             this.fillGradient(-shiftX, 0, gameWidth, gameHeight, color1, color2, Axis2D.HORIZONTAL);

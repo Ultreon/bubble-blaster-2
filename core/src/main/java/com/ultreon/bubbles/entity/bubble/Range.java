@@ -50,22 +50,22 @@ public final class Range {
     }
 
     public double start() {
-        return start;
+        return this.start;
     }
 
     public double end() {
-        return end;
+        return this.end;
     }
 
     public double step() {
-        return step;
+        return this.step;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (Range) obj;
+        Range that = (Range) obj;
         return Double.doubleToLongBits(this.start) == Double.doubleToLongBits(that.start) &&
                 Double.doubleToLongBits(this.end) == Double.doubleToLongBits(that.end) &&
                 Double.doubleToLongBits(this.step) == Double.doubleToLongBits(that.step);
@@ -73,15 +73,15 @@ public final class Range {
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, end, step);
+        return Objects.hash(this.start, this.end, this.step);
     }
 
     @Override
     public String toString() {
         return "Range[" +
-                "start=" + start + ", " +
-                "end=" + end + ", " +
-                "step=" + step + ']';
+                "start=" + this.start + ", " +
+                "end=" + this.end + ", " +
+                "step=" + this.step + ']';
     }
 
 }

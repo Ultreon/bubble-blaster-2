@@ -5,7 +5,6 @@ import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v1.GameEvents;
-import com.ultreon.bubbles.gamemode.TimedMode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
@@ -49,7 +48,8 @@ public class PauseScreen extends Screen {
 
     static {
         GameEvents.LANGUAGE_CHANGED.listen((from, to) -> {
-            if (BubbleBlaster.getInstance().getCurrentScreen() instanceof PauseScreen pauseScreen) {
+            if (BubbleBlaster.getInstance().getCurrentScreen() instanceof PauseScreen) {
+                PauseScreen pauseScreen = (PauseScreen) BubbleBlaster.getInstance().getCurrentScreen();
                 pauseScreen.changeLanguage();
             }
         });
@@ -62,9 +62,9 @@ public class PauseScreen extends Screen {
 
         this.title = TextObject.translation("bubbleblaster.screen.pause.text");
 
-        this.forfeitButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster.screen.pause.forfeit")).command(this.game::saveAndQuit).build();
-        this.prevButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
-        this.nextButton = new Button.Builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
+        this.forfeitButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster.screen.pause.forfeit")).command(this.game::saveAndQuit).build();
+        this.prevButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
+        this.nextButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
 
         this.registeredBubbles = Registries.BUBBLES.values().size();
         this.tickPage();
@@ -198,8 +198,6 @@ public class PauseScreen extends Screen {
     @Override
     public boolean doesPauseGame() {
         World world = this.game.world;
-        if (world != null && world.getGamemode() instanceof TimedMode) return false;
-
-        return super.doesPauseGame();
+        return world != null && world.getGamemode().canBePaused();
     }
 }

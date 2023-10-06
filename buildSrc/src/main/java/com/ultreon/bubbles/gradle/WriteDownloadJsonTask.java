@@ -30,13 +30,15 @@ public class WriteDownloadJsonTask extends BaseTask {
     private void execute(Task task) {
         Task t = this.getProject().getTasks().getByName("retrieveUrls");
         Task t1 = this.getProject().getTasks().getByName("bubbles");
-        if (!(t instanceof RetrieveUrlsTask retrieveUrls)) {
+        if (!(t instanceof RetrieveUrlsTask)) {
             throw new RuntimeException("The task 'retrieveUrls' is not the internal bubble blaster task for retrieving urls.");
         }
+        RetrieveUrlsTask retrieveUrls = (RetrieveUrlsTask) t;
 
-        if (!(t1 instanceof BubblesTask bubbles)) {
+        if (!(t1 instanceof BubblesTask)) {
             throw new RuntimeException("The task 'bubbles' is not the internal bubble blaster task for retrieving urls.");
         }
+        BubblesTask bubbles = (BubblesTask) t1;
 
         Gson gson = new Gson();
         StringWriter sw = new StringWriter();

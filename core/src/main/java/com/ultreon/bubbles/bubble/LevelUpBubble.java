@@ -38,7 +38,8 @@ public class LevelUpBubble extends BubbleType {
         super.onCollision(source, target);
 
         // Check target is a player/
-        if (target instanceof Player player) {
+        if (target instanceof Player) {
+            Player player = (Player) target;
             // Remove Bubble.
             source.delete();
 

@@ -5,13 +5,12 @@ import com.badlogic.gdx.audio.Sound;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public sealed class SoundInstance permits EmptySoundInstance {
+public class SoundInstance {
     private static final Set<SoundInstance> ALL = new CopyOnWriteArraySet<>();
     private final long id = -1L;
     private final Sound sound;
-    private boolean playing = false;
     private float volume;
-    private float pitch;
+    private float pitch = 1;
     private float pan;
 
     public SoundInstance(SoundEvent soundEvent) {
@@ -19,7 +18,17 @@ public sealed class SoundInstance permits EmptySoundInstance {
     }
 
     public SoundInstance(SoundEvent soundEvent, float volume) {
+        this(soundEvent, volume, soundEvent.getRandomSource().nextFloat(0.95f, 1.05f));
+    }
+
+    public SoundInstance(SoundEvent soundEvent, float volume, float pitch) {
+        this(soundEvent, volume, pitch, 0f);
+    }
+
+    public SoundInstance(SoundEvent soundEvent, float volume, float pitch, float pan) {
         this.volume = volume;
+        this.pan = pan;
+        this.pitch = pitch;
         this.sound = soundEvent.sound;
     }
 
@@ -30,13 +39,11 @@ public sealed class SoundInstance permits EmptySoundInstance {
     public void play() {
         ALL.add(this);
         this.sound.play(this.volume, this.pitch, this.pan);
-        this.playing = true;
     }
 
     public synchronized void stop() {
         ALL.remove(this);
         this.sound.stop(this.id);
-        this.playing = false;
     }
 
     public float getVolume() {
@@ -69,13 +76,5 @@ public sealed class SoundInstance permits EmptySoundInstance {
     public void setPan(float pan, float volume) {
         this.sound.setPan(this.id, pan, volume);
         this.pan = pan;
-    }
-
-    public boolean isStopped() {
-        return !this.playing;
-    }
-
-    public boolean isPlaying() {
-        return this.playing;
     }
 }

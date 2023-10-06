@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@SuppressWarnings({"unused"})
 public class ScrollView extends View {
     @SuppressWarnings("FieldCanBeLocal")
     private final Screen screen;

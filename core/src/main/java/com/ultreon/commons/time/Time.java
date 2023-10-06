@@ -3,7 +3,6 @@ package com.ultreon.commons.time;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@SuppressWarnings("unused")
 public class Time implements Comparable<Time>, Serializable {
     private int hour;
     private int minute;

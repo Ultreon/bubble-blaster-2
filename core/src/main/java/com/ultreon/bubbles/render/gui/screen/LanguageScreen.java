@@ -36,7 +36,7 @@ public final class LanguageScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        var calcWidth = this.calculateWidth();
+        int calcWidth = this.calculateWidth();
 
         this.oldLanguage = GameSettings.instance().getLanguageLocale();
 

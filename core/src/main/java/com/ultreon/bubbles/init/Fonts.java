@@ -36,6 +36,7 @@ public class Fonts {
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_15 = Fonts.register("sans_regular_15", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 15));
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_16 = Fonts.register("sans_regular_16", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 16));
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_20 = Fonts.register("sans_regular_20", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 20));
+    public static final RegistrySupplier<BitmapFont> SANS_REGULAR_24 = Fonts.register("sans_regular_24", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 24));
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_32 = Fonts.register("sans_regular_32", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 32));
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_36 = Fonts.register("sans_regular_36", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 36));
     public static final RegistrySupplier<BitmapFont> SANS_REGULAR_40 = Fonts.register("sans_regular_40", () -> BubbleBlaster.createBitmapFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 40));

@@ -61,6 +61,10 @@ bubbles {
     versionType(VersionType.DEV)
 }
 
+compileJava {
+    sourceCompatibility = "11"
+}
+
 //**********************//
 //     Repositories     //
 //**********************//

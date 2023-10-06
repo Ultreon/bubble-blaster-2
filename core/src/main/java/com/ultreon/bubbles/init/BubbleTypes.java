@@ -16,7 +16,6 @@ import java.time.Duration;
  *
  * @see BubbleType
  */
-@SuppressWarnings("unused")
 public class BubbleTypes {
     // Bubbles
     public static final BubbleType NORMAL = BubbleTypes.register("normal", BubbleType.builder()

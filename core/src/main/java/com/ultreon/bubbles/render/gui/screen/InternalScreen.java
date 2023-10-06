@@ -1,8 +1,9 @@
 package com.ultreon.bubbles.render.gui.screen;
 
+import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.libs.text.v1.TextObject;
 
-public abstract sealed class InternalScreen extends Screen permits LoadScreen, SplashScreen {
+public abstract class InternalScreen extends Screen {
     public InternalScreen() {
         super();
     }
@@ -17,5 +18,10 @@ public abstract sealed class InternalScreen extends Screen permits LoadScreen, S
 
     public InternalScreen(TextObject title, Screen backScreen) {
         super(title, backScreen);
+    }
+
+    @Override
+    public void renderCloseButton(Renderer renderer, int mouseX, int mouseY) {
+        
     }
 }

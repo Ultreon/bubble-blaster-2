@@ -3,7 +3,6 @@ package com.ultreon.bubbles.render.gui.border;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 
-@SuppressWarnings("unused")
 public class OuterBorder extends Border {
     public OuterBorder(Insets insets) {
         super(insets);
@@ -37,24 +36,24 @@ public class OuterBorder extends Border {
         // Draw rectangles around the component, but do not draw
         // in the component area itself.
         switch (this.renderType) {
-            case COLOR -> {
+            case COLOR:
                 renderer.fill(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top, this.color);
                 renderer.fill(x - insets.left, y, insets.left, height, this.color);
                 renderer.fill(x + width, y, insets.right, height, this.color);
                 renderer.fill(x - insets.left, y + height, width + insets.left + insets.right, insets.bottom, this.color);
-            }
-            case EFFECT -> {
+                break;
+            case EFFECT:
                 renderer.fillEffect(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top, this.effectSpeed);
                 renderer.fillEffect(x - insets.left, y, insets.left, height, this.effectSpeed);
                 renderer.fillEffect(x + width, y, insets.right, height, this.effectSpeed);
                 renderer.fillEffect(x - insets.left, y + height, width + insets.left + insets.right, insets.bottom, this.effectSpeed);
-            }
-            case ERROR_EFFECT -> {
+                break;
+            case ERROR_EFFECT:
                 renderer.fillErrorEffect(x - insets.left, y - insets.top, width + insets.left + insets.right, insets.top, this.effectSpeed);
                 renderer.fillErrorEffect(x - insets.left, y, insets.left, height, this.effectSpeed);
                 renderer.fillErrorEffect(x + width, y, insets.right, height, this.effectSpeed);
                 renderer.fillErrorEffect(x - insets.left, y + height, width + insets.left + insets.right, insets.bottom, this.effectSpeed);
-            }
+                break;
         }
     }
 }

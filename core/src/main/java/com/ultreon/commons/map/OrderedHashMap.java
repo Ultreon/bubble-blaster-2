@@ -66,7 +66,10 @@ package com.ultreon.commons.map;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.*;
 
 /**
@@ -86,7 +89,7 @@ import java.util.*;
  * @author <a href="mailto:qboiwastaken@gmail.com">XyperCode</a>
  * @since 2.0
  */
-@SuppressWarnings({"unused", "JavaDoc"})
+@SuppressWarnings({"JavaDoc"})
 @Deprecated
 public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizable {
     // constants to define what the iterator should return on "next"
@@ -100,7 +103,6 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
 
     // add a serial version uid, so that if we change things in the future
     // without changing the format, we can still deserialize properly.
-    @Serial
     private static final long serialVersionUID = 3380552487888102930L;
 
     /**
@@ -499,7 +501,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * Implements {@link Map#keySet()}.
      */
     public @NotNull Set<K> keySet() {
-        return new AbstractSet<K>() {
+        return new AbstractSet<>() {
             // required impls
             public @NotNull Iterator<K> iterator() {
                 return new OrderedIterator<>(KEY);
@@ -534,7 +536,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * Implements {@link Map#values()}.
      */
     public @NotNull Collection<V> values() {
-        return new AbstractCollection<V>() {
+        return new AbstractCollection<>() {
             // required impl
             public @NotNull Iterator<V> iterator() {
                 return new OrderedIterator<>(VALUE);
@@ -587,7 +589,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * @return
      */
     public @NotNull Set<Map.Entry<K, V>> entrySet() {
-        return new AbstractSet<Map.Entry<K, V>>() {
+        return new AbstractSet<>() {
             // helper
             private Entry<K, V> findEntry(Map.Entry<K, V> o) {
                 if (o == null) {

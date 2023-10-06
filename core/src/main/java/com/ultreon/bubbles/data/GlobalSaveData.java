@@ -9,7 +9,6 @@ import com.ultreon.data.types.MapType;
 import java.io.IOException;
 import java.time.Instant;
 
-@SuppressWarnings("unused")
 public final class GlobalSaveData extends GameData {
     private static GlobalSaveData instance = new GlobalSaveData();
     private double highScore = 0.0;

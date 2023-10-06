@@ -21,26 +21,26 @@ public final class GameplayContext {
     }
 
     public Instant time() {
-        return time;
+        return this.time;
     }
 
     public World world() {
-        return world;
+        return this.world;
     }
 
     public Gamemode gamemode() {
-        return gamemode;
+        return this.gamemode;
     }
 
     public GameplayStorage gameplayStorage() {
-        return gameplayStorage;
+        return this.gameplayStorage;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (GameplayContext) obj;
+        GameplayContext that = (GameplayContext) obj;
         return Objects.equals(this.time, that.time) &&
                 Objects.equals(this.world, that.world) &&
                 Objects.equals(this.gamemode, that.gamemode) &&
@@ -49,16 +49,16 @@ public final class GameplayContext {
 
     @Override
     public int hashCode() {
-        return Objects.hash(time, world, gamemode, gameplayStorage);
+        return Objects.hash(this.time, this.world, this.gamemode, this.gameplayStorage);
     }
 
     @Override
     public String toString() {
         return "GameplayContext[" +
-                "time=" + time + ", " +
-                "world=" + world + ", " +
-                "gamemode=" + gamemode + ", " +
-                "gameplayStorage=" + gameplayStorage + ']';
+                "time=" + this.time + ", " +
+                "world=" + this.world + ", " +
+                "gamemode=" + this.gamemode + ", " +
+                "gameplayStorage=" + this.gameplayStorage + ']';
     }
 
 

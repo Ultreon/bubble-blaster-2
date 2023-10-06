@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.render;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,7 +9,6 @@ public class Insets implements Cloneable, Serializable {
     public int bottom;
     public int right;
 
-    @Serial
     private static final long serialVersionUID = 1041450873844924442L;
 
     public Insets() {

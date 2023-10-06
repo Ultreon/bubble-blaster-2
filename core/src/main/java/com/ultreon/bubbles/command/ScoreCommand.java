@@ -16,7 +16,7 @@ public class ScoreCommand implements TabExecutor {
                     try {
                         value = Long.parseLong(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.awardScore(value);
@@ -25,7 +25,7 @@ public class ScoreCommand implements TabExecutor {
                     try {
                         value = Long.parseLong(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.setScore(value);
@@ -34,7 +34,7 @@ public class ScoreCommand implements TabExecutor {
                     try {
                         value = Long.parseLong(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.subtractScore(value);
@@ -42,7 +42,7 @@ public class ScoreCommand implements TabExecutor {
             }
         }
 
-        player.sendMessage("Usage: /score <add|set|subtract> <value>");
+        player.sendSystemMessage("Usage: /score <add|set|subtract> <value>");
 
         return false;
     }

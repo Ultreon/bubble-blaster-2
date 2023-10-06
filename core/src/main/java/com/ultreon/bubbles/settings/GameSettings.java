@@ -59,7 +59,7 @@ public final class GameSettings implements Serializable {
 
         try {
             String json = GameFolders.SETTINGS_FILE.readString();
-            var instance = gson.fromJson(json, GameSettings.class);
+            GameSettings instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.NORMAL.id();
                 GameSettings.save();

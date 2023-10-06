@@ -55,7 +55,7 @@ public class ManualCrashOverlay implements Renderable {
 
         Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
         allStackTraces.forEach((thread, stackTraceElements) -> {
-            var exception = new RuntimeException();
+            RuntimeException exception = new RuntimeException();
             exception.setStackTrace(stackTraceElements);
             crashLog.addCategory(new CrashCategory("Thread #" + thread.getId() + ": " + thread.getName(), exception));
         });

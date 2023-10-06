@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Deprecated
-@SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
 public final class CrashLog extends CrashCategory {
     private final List<CrashCategory> categories = new ArrayList<>();

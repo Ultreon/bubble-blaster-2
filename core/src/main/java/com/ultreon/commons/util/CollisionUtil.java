@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.ultreon.bubbles.entity.Entity;
 
-@SuppressWarnings("unused")
 public class CollisionUtil {
     public static boolean isColliding(Entity a, Entity b) {
         Circle circleA = new Circle(a.getX(), a.getY(), a.radius());

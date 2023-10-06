@@ -11,7 +11,7 @@ import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 public abstract class AbstractButton extends GuiComponent {
-    private Runnable command;
+    protected Runnable command;
     private boolean pressed;
 
     public AbstractButton(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
@@ -20,12 +20,14 @@ public abstract class AbstractButton extends GuiComponent {
 
     protected static void drawText(Renderer renderer, Color color, Vec2i pos, Vec2i size, TextObject text, BitmapFont font) {
         renderer.scissored(pos.x + 4, pos.y + 4, size.x - 8, size.y - 8, () -> {
-            renderer.drawTextCenter(font, text.getText(), pos.x + (size.x - 8) / 2f, pos.y + (size.y - 8) / 2f, color);
+            renderer.drawTextCenter(font, text.getText(), pos.x + (size.x - 8) / 2f, pos.y + size.y / 2f - 4f, color);
         });
     }
 
     @Override
     public boolean mousePress(int x, int y, int button) {
+        if (!this.isWithinBounds(x, y)) return false;
+
         if (button == Buttons.LEFT && this.enabled && this.visible) {
             this.pressed = true;
             return true;
@@ -35,10 +37,11 @@ public abstract class AbstractButton extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
+        if (!this.isWithinBounds(x, y)) return false;
+
         if (button == Buttons.LEFT && this.enabled && this.visible && this.pressed) {
             this.pressed = false;
-            this.playMenuEvent();
-            this.command.run();
+            this.click();
             return true;
         }
         return false;
@@ -97,7 +100,8 @@ public abstract class AbstractButton extends GuiComponent {
         this.command = command;
     }
 
-    protected final void click() {
+    protected void click() {
+        this.playMenuEvent();
         this.getCommand().run();
     }
 }

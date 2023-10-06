@@ -34,7 +34,7 @@ public class Notifications implements Renderable {
 
         this.lock.lock();
         this.notifications.removeIf(Notification::isDead);
-        for (var notification : this.notifications) {
+        for (Notification notification : this.notifications) {
             String title = notification.getTitle();
             String summary = notification.getSummary();
             String subText = notification.getSubText();
@@ -70,7 +70,7 @@ public class Notifications implements Renderable {
     }
 
     public void unavailable(String feature) {
-        this.notify(Notification.builder("Unavailable Feature", "'%s' isn't available yet.".formatted(feature))
+        this.notify(Notification.builder("Unavailable Feature", String.format("'%s' isn't available yet.", feature))
                 .subText("Feature Locker")
                 .duration(Duration.ofSeconds(5))
                 .build()

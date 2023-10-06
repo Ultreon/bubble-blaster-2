@@ -52,23 +52,23 @@ public final class AttributeModifier {
     }
 
     public UUID id() {
-        return id;
+        return this.id;
     }
 
     public Type type() {
-        return type;
+        return this.type;
     }
 
     public double value() {
-        return value;
+        return this.value;
     }
 
     @Override
     public String toString() {
         return "AttributeModifier[" +
-                "id=" + id + ", " +
-                "type=" + type + ", " +
-                "value=" + value + ']';
+                "id=" + this.id + ", " +
+                "type=" + this.type + ", " +
+                "value=" + this.value + ']';
     }
 
 }

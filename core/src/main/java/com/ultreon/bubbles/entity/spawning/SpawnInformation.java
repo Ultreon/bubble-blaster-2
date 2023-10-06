@@ -27,7 +27,7 @@ public class SpawnInformation {
         return this.random;
     }
 
-    private SpawnInformation(SpawnReason reason, MapType tag, @Nullable Vector2 pos, @Nullable Command command, World world, RandomSource random) {
+    private SpawnInformation(SpawnReason reason, MapType tag, @Nullable Vector2 pos, @Nullable Command command, @NotNull World world, RandomSource random) {
         this.pos = pos;
         this.tag = tag;
         this.reason = reason;

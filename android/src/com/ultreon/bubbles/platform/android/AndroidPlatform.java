@@ -1,6 +1,7 @@
 package com.ultreon.bubbles.platform.android;
 
 import android.content.Intent;
+import android.os.Looper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.*;
@@ -24,6 +25,11 @@ public class AndroidPlatform extends GamePlatform {
     public AndroidPlatform(AndroidLauncher launcher) {
         super();
         this.launcher = launcher;
+    }
+
+    @Override
+    public void create() {
+        Looper.prepare();
     }
 
     @Override
@@ -52,7 +58,7 @@ public class AndroidPlatform extends GamePlatform {
 
     @Override
     public FileHandle getDataDirectory() {
-        return Gdx.files.external(".");
+        return Gdx.files.local(".");
     }
 
     @Override

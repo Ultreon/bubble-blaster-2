@@ -11,16 +11,6 @@ public final class EmptySoundInstance extends SoundInstance {
     }
 
     @Override
-    public boolean isPlaying() {
-        return false;
-    }
-
-    @Override
-    public boolean isStopped() {
-        return true;
-    }
-
-    @Override
     public synchronized void stop() {
 
     }

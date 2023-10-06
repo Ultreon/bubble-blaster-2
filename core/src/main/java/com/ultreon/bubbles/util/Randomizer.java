@@ -7,9 +7,9 @@ import com.ultreon.libs.commons.v0.Identifier;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class RandomChoices {
+public class Randomizer {
     public static <T> List<T> choices(Collection<T> values, int count) {
-        return RandomChoices.choices(values, new Random(), count);
+        return Randomizer.choices(values, new Random(), count);
     }
 
     public static <T> List<T> choices(Collection<T> values, Random random, int count) {
@@ -19,7 +19,7 @@ public class RandomChoices {
     }
 
     public static <T> T choose(List<T> values) {
-        return RandomChoices.choose(values, BubbleBlaster.RANDOM);
+        return Randomizer.choose(values, BubbleBlaster.RANDOM);
     }
 
     public static <T> T choose(List<T> values, Random random) {
@@ -28,19 +28,19 @@ public class RandomChoices {
     }
 
     public static Random create(Random random, String seed) {
-        return new Random(random.nextLong() ^ Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RandomChoices.hash(seed)));
+        return new Random(random.nextLong() ^ Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> Randomizer.hash(seed)));
     }
 
     public static Random create(String seed) {
-        return new Random(Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> RandomChoices.hash(seed)));
+        return new Random(Objects.requireNonNullElseGet(Long.getLong(seed, null), () -> Randomizer.hash(seed)));
     }
 
     public static Random create(Random random, Identifier seed) {
-        return new Random(random.nextLong() ^ RandomChoices.hash(seed));
+        return new Random(random.nextLong() ^ Randomizer.hash(seed));
     }
 
     public static Random create(Identifier seed) {
-        return new Random(RandomChoices.hash(seed));
+        return new Random(Randomizer.hash(seed));
     }
 
     public static long hash(String seed) {
@@ -67,7 +67,7 @@ public class RandomChoices {
     }
 
     public static long hash(Identifier idSeed) {
-        return RandomChoices.hash(idSeed.toArray());
+        return Randomizer.hash(idSeed.toArray());
     }
 
     public static boolean chance(int chance) {
@@ -75,7 +75,7 @@ public class RandomChoices {
     }
 
     public static boolean chance(double chance) {
-        return new Random().nextDouble(1.0) <= chance;
+        return new Random().nextDouble() <= chance;
     }
 
     public static boolean chance(Random random, int chance) {
@@ -83,6 +83,6 @@ public class RandomChoices {
     }
 
     public static boolean chance(Random random, double chance) {
-        return random.nextDouble(1.0) <= chance;
+        return random.nextDouble() <= chance;
     }
 }

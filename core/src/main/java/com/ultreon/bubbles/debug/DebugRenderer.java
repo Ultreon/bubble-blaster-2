@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.debug;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Lists;
@@ -16,14 +16,13 @@ import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.input.KeyboardInput;
+import com.ultreon.bubbles.input.DesktopInput;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.size.FloatSize;
-import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.registries.v0.RegistrySupplier;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
@@ -63,7 +62,8 @@ public class DebugRenderer {
     public static void format(Object obj, IFormatterContext context) {
         if (obj == null) {
             context.keyword("null");
-        } else if (obj instanceof Class<?> c) {
+        } else if (obj instanceof Class<?>) {
+            Class<?> c = (Class<?>) obj;
             context.packageName(c.getPackage().getName() + ".");
             context.className(c.getSimpleName());
         } else {
@@ -89,7 +89,7 @@ public class DebugRenderer {
         Rectangle gameBounds = this.game.getGameBounds();
         this.left(renderer, "FPS", this.game.getFps());
         this.left(renderer, "TPS", this.game.getCurrentTps());
-        this.left(renderer, "RPT", this.game.getGameFrameTime());
+        this.left(renderer, "RPT", Gdx.graphics.getDeltaTime());
         this.left(renderer, "Game Bounds", gameBounds);
         this.left(renderer, "Scaled Size", new FloatSize(this.game.getScaledWidth(), this.game.getScaledHeight()));
         this.left(renderer, "Window Size", new FloatSize(this.game.getGameWindow().getWidth(), this.game.getGameWindow().getHeight()));
@@ -98,23 +98,20 @@ public class DebugRenderer {
         this.left(renderer, "Managed FBOs", renderer.getManagedFrameBuffers());
         World world = this.game.world;
         if (world != null) {
-            GameplayEvent curGe = world.getCurrentGameEvent();
+            GameplayEvent curGe = world.getActiveEvent();
             this.left(renderer, "Entity Count", world.getEntities().size());
             this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::isVisible).count());
             this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::willBeDeleted).count());
             this.left(renderer, "Null Entity Count", world.getEntities().stream().filter(Objects::isNull).count());
             this.left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
-            this.left(renderer, "Is Initialized", world.isInitialized());
-            this.left(renderer, "Difficulty", world.getDifficulty().name());
-            this.left(renderer, "Local Difficulty", world.getLocalDifficulty());
-            this.left(renderer, "Seed", world.getSeed());
 
-            if (KeyboardInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
-                GridPoint2 pos = KeyboardInput.getMousePoint();
-                Entity entityAt = world.getEntityAt(new Vec2i(pos.x, pos.y));
+            if (DesktopInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
+                Vector2 pos = DesktopInput.getMousePos();
+                Entity entityAt = world.getEntityAt(pos);
                 if (entityAt != null) {
                     this.left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
-                    if (entityAt instanceof Bubble bubble) {
+                    if (entityAt instanceof Bubble) {
+                        Bubble bubble = (Bubble) entityAt;
                         this.left(renderer, "Bubble Type", Registries.BUBBLES.getKey(bubble.getBubbleType()));
                         this.left(renderer, "Base Speed:", bubble.getAttributes().getBase(Attribute.SPEED));
                         this.left(renderer, "Speed", bubble.getAttributes().get(Attribute.SPEED));
@@ -136,7 +133,7 @@ public class DebugRenderer {
                 this.left(renderer, "Temp Velocity", player.tempVel);
                 this.left(renderer, "BoostAccelTimer", player.boostAccelTimer);
                 this.left(renderer, "BoostRefillTimer", player.boostRefillTimer);
-                this.left(renderer, "DstToMouseCursor", player.distanceTo(KeyboardInput.getMousePos()));
+                this.left(renderer, "DstToMouseCursor", player.distanceTo(DesktopInput.getMousePos()));
             }
         }
         Screen screen = this.game.getCurrentScreen();
@@ -240,7 +237,7 @@ public class DebugRenderer {
 
                 if (number >= entries.size()) return;
 
-                var entry = entries.get(number);
+                Map.Entry<String, Section> entry = entries.get(number);
                 this.sectionStack.push(entry.getValue());
                 this.pathStack.push(entry.getKey());
                 System.out.println("entry = " + entry.getKey());

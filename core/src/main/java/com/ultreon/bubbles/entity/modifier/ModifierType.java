@@ -18,26 +18,26 @@ public final class ModifierType {
     }
 
     public String name() {
-        return name;
+        return this.name;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (ModifierType) obj;
+        ModifierType that = (ModifierType) obj;
         return Objects.equals(this.name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(this.name);
     }
 
     @Override
     public String toString() {
         return "ModifierType[" +
-                "name=" + name + ']';
+                "name=" + this.name + ']';
     }
 
 }

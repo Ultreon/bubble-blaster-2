@@ -29,8 +29,8 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         this.listContent = this.add(new Container(x, y, width, this.getViewport().getHeight()) {
             @Override
             public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-                var y = ObjectList.this.getViewport().innerYOffset;
-                for (var entry : ObjectList.this.entries) {
+                int y = ObjectList.this.getViewport().innerYOffset;
+                for (ListEntry<T, ? extends T> entry : ObjectList.this.entries) {
                     entry.setPos(ObjectList.this.x, y);
                     entry.setSize(this.width, entryHeight);
                     entry.render(renderer, mouseX, mouseY, deltaTime);

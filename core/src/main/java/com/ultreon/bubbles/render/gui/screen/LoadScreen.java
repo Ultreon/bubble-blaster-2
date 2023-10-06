@@ -36,7 +36,6 @@ import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SuppressWarnings("unused")
 public final class LoadScreen extends InternalScreen {
     public static final Color BACKGROUND = Color.rgb(0x484848);
     private static final Color TEXT_COLOR = Color.rgb(0xc0c0c0);
@@ -155,7 +154,7 @@ public final class LoadScreen extends InternalScreen {
 
         LOGGER.info("Loading resources...");
         this.progressMain.sendNext("Loading resources...");
-        var progressAltAtomic = new AtomicReference<>(this.progressAlt);
+        AtomicReference<ProgressMessenger> progressAltAtomic = new AtomicReference<>(this.progressAlt);
         GamePlatform.get().loadGameResources(progressAltAtomic, this.msgAlt);
         GamePlatform.get().loadModResources(progressAltAtomic, this.msgAlt);
         this.progressAlt = progressAltAtomic.get();
@@ -285,8 +284,10 @@ public final class LoadScreen extends InternalScreen {
             this.progressAlt.increment();
             RegistryEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
             registry.entries().forEach(e -> {
-                 if (e.getValue() instanceof RegisterHandler handler)
+                 if (e.getValue() instanceof RegisterHandler) {
+                     RegisterHandler handler = (RegisterHandler) e.getValue();
                      handler.onRegister(e.getKey());
+                 }
             });
         }
         Registry.freeze();
@@ -320,6 +321,8 @@ public final class LoadScreen extends InternalScreen {
         CommandConstructor.add("teleport", new TeleportCommand());
         CommandConstructor.add("game-over", new GameOverCommand());
         CommandConstructor.add("blood-moon", new BloodMoonCommand());
+        CommandConstructor.add("gameplay", new GameplayCommand());
+        CommandConstructor.add("echo", new EchoCommand());
 
         try {
             GlobalSaveData.instance().load();

@@ -138,12 +138,21 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
         JarEntry jarEntry = inputStream.getNextJarEntry();
         while (jarEntry != null) {
             outputStream.putNextEntry(jarEntry);
-            outputStream.write(inputStream.readAllBytes());
+            outputStream.write(ExtraModuleInfoTransform.readAllBytes(inputStream));
             outputStream.closeEntry();
             jarEntry = inputStream.getNextJarEntry();
         }
     }
 
+    public static byte[] readAllBytes(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = is.read(buffer)) != -1) {
+            baos.write(buffer, 0, bytesRead);
+        }
+        return baos.toByteArray();
+    }
     private static byte[] addModuleInfo(ModuleInfo moduleInfo) {
         ClassWriter classWriter = new ClassWriter(0);
         classWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, "module-info", null, null, null);

@@ -119,11 +119,6 @@ public class ScrollableView extends Container {
     }
 
     @Override
-    public void mouseMove(int x, int y) {
-        super.mouseMove(x, y);
-    }
-
-    @Override
     public boolean keyPress(int keyCode) {
         return super.keyPress(keyCode);
     }

@@ -29,8 +29,8 @@ public final class CommandConstructor {
         try {
             handler.execute(player, args);
         } catch (Throwable throwable) {
-            player.sendMessage("Error occurred when executing the command.");
-            player.sendMessage("  See the log for more information.");
+            player.sendSystemMessage("Error occurred when executing the command.");
+            player.sendSystemMessage("  See the log for more information.");
             throwable.printStackTrace();
             return false;
         }

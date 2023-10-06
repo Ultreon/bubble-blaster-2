@@ -14,7 +14,6 @@ import com.ultreon.libs.registries.v0.DelayedRegister;
  * @see StatusEffect
  * @see DelayedRegister<StatusEffect>
  */
-@SuppressWarnings("unused")
 public class StatusEffects {
     public static final StatusEffect NONE = StatusEffects.register("none", new StatusEffect() {
         @Override

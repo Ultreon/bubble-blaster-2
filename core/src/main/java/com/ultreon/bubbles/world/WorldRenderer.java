@@ -94,7 +94,7 @@ public class WorldRenderer implements Renderable {
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, List<Color> colors, Texture insideTexture) {
         // Define ellipse-depth (pixels).
         float i = 0f;
-        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
+        int destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
@@ -127,7 +127,7 @@ public class WorldRenderer implements Renderable {
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, BubbleType type) {
         // Define ellipse-depth (pixels).
         float i = 0f;
-        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
+        int destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
@@ -183,6 +183,8 @@ public class WorldRenderer implements Renderable {
         HudType hudOverride = this.getWorld().getGamemode().getHudOverride();
         HudType hud = hudOverride != null ? hudOverride : HudType.getCurrent();
 
+//        renderer.enableNoise();
+
         this.profiler.section("Render BG", () -> this.renderBackground(renderer, world, hud));
         this.profiler.section("Render Entities", () -> this.renderEntities(renderer, world));
 
@@ -195,10 +197,12 @@ public class WorldRenderer implements Renderable {
         }
 
         this.profiler.section("Render HUD", () -> hud.renderHudOverlay(renderer, world, world.getGamemode(), deltaTime));
+
+//        renderer.disableNoise();
     }
 
     private void renderBackground(Renderer renderer, World world, HudType hud) {
-        GameplayEvent currentGameplayEvent = world.getCurrentGameEvent();
+        GameplayEvent currentGameplayEvent = world.getActiveEvent();
         if (currentGameplayEvent != null) {
             currentGameplayEvent.renderBackground(this.getWorld(), renderer);
         } else {
@@ -211,11 +215,17 @@ public class WorldRenderer implements Renderable {
     private void renderEntities(Renderer renderer, World world) {
         for (Entity entity : world.getEntities()) {
             if (entity.isVisible()) {
-                if (entity instanceof Player player) RenderEvents.RENDER_PLAYER_BEFORE.factory().onRenderPlayerBefore(player, renderer);
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
+                    RenderEvents.RENDER_PLAYER_BEFORE.factory().onRenderPlayerBefore(player, renderer);
+                }
                 RenderEvents.RENDER_ENTITY_BEFORE.factory().onRenderEntityBefore(entity, renderer);
                 entity.render(renderer);
                 RenderEvents.RENDER_ENTITY_AFTER.factory().onRenderEntityAfter(entity, renderer);
-                if (entity instanceof Player player) RenderEvents.RENDER_PLAYER_AFTER.factory().onRenderPlayerAfter(player, renderer);
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
+                    RenderEvents.RENDER_PLAYER_AFTER.factory().onRenderPlayerAfter(player, renderer);
+                }
             }
             if (this.game.isCollisionShapesShown()) {
                 Shape2D shape = entity.getShape();

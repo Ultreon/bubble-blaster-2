@@ -57,6 +57,6 @@ public class Pair<F, S> implements Cloneable {
     @Override
     protected Pair<F, S> clone() throws CloneNotSupportedException {
         super.clone();
-        return new Pair<F, S>(this.getFirst(), this.getSecond());
+        return new Pair<>(this.getFirst(), this.getSecond());
     }
 }

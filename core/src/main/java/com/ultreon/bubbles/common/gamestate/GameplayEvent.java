@@ -8,10 +8,11 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.world.World;
+import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.text.v1.Translatable;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"unused"})
-public abstract class GameplayEvent {
+public abstract class GameplayEvent implements Translatable {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private Color backgroundColor;
 
@@ -53,5 +54,15 @@ public abstract class GameplayEvent {
     @Override
     public String toString() {
         return "GameEvent[" + Registries.GAMEPLAY_EVENTS.getKey(this) + "]";
+    }
+
+    @Override
+    public String getTranslationPath() {
+        Identifier id = this.getId();
+        return id.location() + ".gameplayEvent." + id.path().replaceAll("/", ".");
+    }
+
+    private Identifier getId() {
+        return Registries.GAMEPLAY_EVENTS.getKey(this);
     }
 }

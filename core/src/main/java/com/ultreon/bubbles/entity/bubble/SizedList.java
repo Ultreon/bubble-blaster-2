@@ -16,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @param <T> the type to use for the partition value.
  * @deprecated Use {@link com.ultreon.libs.collections.v0.list.SizedList} from CoreLibs instead.
  */
-@SuppressWarnings("unused")
 @Deprecated
 public class SizedList<T> {
     List<Double> sizes = new CopyOnWriteArrayList<>();

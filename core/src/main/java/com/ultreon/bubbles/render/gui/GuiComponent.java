@@ -5,9 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.init.SoundEvents;
+import com.ultreon.bubbles.input.DesktopInput;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.Functions;
@@ -22,7 +24,6 @@ import java.util.Objects;
  *
  * @author XyperCode
  */
-@SuppressWarnings("unused")
 public abstract class GuiComponent implements GuiStateListener, RenderableListener {
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     protected final GlyphLayout layout = new GlyphLayout();
@@ -43,7 +44,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     private boolean valid;
     private final long hash;
 
-    private boolean hovered = false;
+    private boolean focused = false;
 
     private int lastMouseX;
     private int lastMouseY;
@@ -158,7 +159,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * Called when the mouse exits the widget.
      */
     public void mouseExit() {
-        this.hovered = false;
+
     }
 
     /**
@@ -168,7 +169,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param y y position where it entered.
      */
     public void mouseEnter(int x, int y) {
-        this.hovered = true;
+
     }
 
     public boolean mouseWheel(int x, int y, float rotation) {
@@ -328,7 +329,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @return true if the x and y position given is withing the bounds of the widget
      */
     public boolean isWithinBounds(int x, int y) {
-        return x >= this.getX() && y >= this.getY() && x <= this.getX() + this.getWidth() && y <= this.getY() + this.getHeight();
+        return this.getBounds().contains(x, y);
     }
 
     /**
@@ -337,12 +338,24 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param pos position to check for.
      * @return true if the x and y position given is withing the bounds of the widget
      */
-    public boolean isWithinBounds(Vec2i pos) {
-        return pos.getX() >= this.getX() && pos.getY() >= this.getY() && pos.getX() <= this.getX() + this.getWidth() && pos.getY() <= this.getY() + this.getHeight();
+    public boolean isWithinBounds(Vector2 pos) {
+        return this.getBounds().contains(pos);
     }
 
     public void renderComponent(Renderer renderer) {
 
+    }
+
+    public void onFocusGained() {
+        this.focused = true;
+    }
+
+    public void onFocusLost() {
+        this.focused = false;
+    }
+
+    public boolean isFocused() {
+        return this.focused;
     }
 
     public void tick() {
@@ -360,12 +373,13 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public boolean isValid() {
-        return this.valid;
+        return true;
     }
 
     public boolean isHovered() {
-        return this.hovered;
+        return this.isWithinBounds(DesktopInput.getMousePos());
     }
 
     protected final int getLastMouseX() {

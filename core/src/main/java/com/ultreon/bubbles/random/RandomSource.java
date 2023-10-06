@@ -1,14 +1,12 @@
 package com.ultreon.bubbles.random;
 
 import com.ultreon.bubbles.entity.spawning.Hashable;
-import com.ultreon.bubbles.util.RandomChoices;
+import com.ultreon.bubbles.util.Randomizer;
 import com.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public interface RandomSource {
     long nextLong();
-    long nextLong(long max);
-    long nextLong(long min, long max);
     int nextInt();
     int nextInt(int max);
     int nextInt(int min, int max);
@@ -24,10 +22,10 @@ public interface RandomSource {
     }
     RandomSource nextRandom(long seed);
     default RandomSource nextRandom(String seed) {
-        return this.nextRandom(RandomChoices.hash(seed));
+        return this.nextRandom(Randomizer.hash(seed));
     }
     default RandomSource nextRandom(Identifier seed) {
-        return this.nextRandom(RandomChoices.hash(seed));
+        return this.nextRandom(Randomizer.hash(seed));
     }
 
     default boolean chance(int chance) {

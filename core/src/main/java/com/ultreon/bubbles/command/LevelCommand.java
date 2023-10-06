@@ -12,7 +12,7 @@ public class LevelCommand implements CommandExecutor {
                     try {
                         value = Integer.parseInt(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.setLevel(player.getLevel() + value);
@@ -21,7 +21,7 @@ public class LevelCommand implements CommandExecutor {
                     try {
                         value = Integer.parseInt(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.setLevel(value);
@@ -30,7 +30,7 @@ public class LevelCommand implements CommandExecutor {
                     try {
                         value = Integer.parseInt(args[1]);
                     } catch (NumberFormatException exception) {
-                        player.sendMessage("Invalid number: ‘" + args[1] + "’");
+                        player.sendSystemMessage("Invalid number: ‘" + args[1] + "’");
                         return false;
                     }
                     player.setLevel(player.getLevel() - value);
@@ -47,8 +47,8 @@ public class LevelCommand implements CommandExecutor {
             }
         }
 
-        player.sendMessage("Usage: /level <up|down>");
-        player.sendMessage("Usage: /level <add|set|subtract> <value>");
+        player.sendSystemMessage("Usage: /level <up|down>");
+        player.sendSystemMessage("Usage: /level <add|set|subtract> <value>");
 
         return false;
     }

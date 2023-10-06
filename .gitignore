@@ -110,3 +110,6 @@ Thumbs.db
 /gameprovider/build/
 /run/
 /buildSrc/build/
+
+## Project Specific
+/local/

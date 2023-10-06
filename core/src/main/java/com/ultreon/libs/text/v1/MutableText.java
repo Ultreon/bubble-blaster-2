@@ -1,5 +1,6 @@
 package com.ultreon.libs.text.v1;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -138,6 +139,8 @@ public abstract class MutableText extends TextObject implements Cloneable {
     }
 
     public MutableText append(TextObject textObject) {
+        Preconditions.checkNotNull(textObject, "Appending text object is null.");
+
         try {
             MutableText clone = this.clone();
             clone.extras.add(textObject);

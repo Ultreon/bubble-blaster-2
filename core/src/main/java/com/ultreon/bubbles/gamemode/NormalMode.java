@@ -3,6 +3,7 @@ package com.ultreon.bubbles.gamemode;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.entity.AbstractBubbleEntity;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
@@ -22,7 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@SuppressWarnings({"unused"})
 public class NormalMode extends Gamemode {
     // Threads
     private Thread spawner;
@@ -69,10 +69,17 @@ public class NormalMode extends Gamemode {
         RandomSource spawnRng = random.nextRandom(usage);
 
         Rectangle bounds = this.getGameBounds();
-        float minY = bounds.y - entity.getBounds().height;
-        float maxY = bounds.y + bounds.height + entity.getBounds().height;
-        float y = spawnRng.nextFloat(minY, maxY);
-        return new Vector2(bounds.x + bounds.width + entity.getBounds().width, y);
+        if (entity instanceof AbstractBubbleEntity) {
+            AbstractBubbleEntity bubble = (AbstractBubbleEntity) entity;
+            float radius = bubble.getRadius();
+            float x = usage == SpawnUsage.BUBBLE_INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
+            float y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
+            return new Vector2(x, y);
+        }
+
+        float x = spawnRng.nextFloat(bounds.x, bounds.x + bounds.width);
+        float y = spawnRng.nextFloat(bounds.y, bounds.y + bounds.height);
+        return new Vector2(x, y);
     }
 
     public Thread getSpawner() {

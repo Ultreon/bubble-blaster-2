@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +9,7 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -18,50 +18,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class KeyboardInput implements InputProcessor, InputObject {
+@SuppressWarnings("NewApi")
+public class MobileInput implements InputProcessor, InputObject {
     private static final Set<Integer> KEYS_DOWN = new CopyOnWriteArraySet<>();
     private static final GridPoint2 POS = new GridPoint2(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Map<Integer, Boolean> pressedByPointer = new HashMap<>();
     private final Int2ReferenceArrayMap<GridPoint2> dragStarts = new Int2ReferenceArrayMap<>();
 
-    private static final int SHIFT_MASK = 1;
-    private static final int CTRL_MASK = 1 << 1;
-    private static final int META_MASK = 1 << 2;
-    private static final int ALT_MASK = 1 << 3;
-    private static final int ALT_GRAPH_MASK = 1 << 5;
-    private static KeyboardInput instance;
+    private static MobileInput instance;
 
-    public KeyboardInput() {
+    public MobileInput() {
         if (instance != null) throw new OneTimeUseException("Keyboard input can be created only once.");
 
         instance = this;
     }
 
-    public static boolean isShiftDown() {
-        return KeyboardInput.isAnyKeyDownOf(Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
-    }
-
-    public static boolean isCtrlDown() {
-        return KeyboardInput.isAnyKeyDownOf(Keys.CONTROL_LEFT, Keys.CONTROL_RIGHT);
-    }
-
-    @Deprecated
-    public static boolean isMetaDown() {
-        return false;
-    }
-
-    public static boolean isAltDown() {
-        return KeyboardInput.isAnyKeyDownOf(Keys.ALT_LEFT, Keys.ALT_RIGHT);
-    }
-
-    @Deprecated
-    public static boolean isAltGraphDown() {
-        return KeyboardInput.isCtrlDown() && KeyboardInput.isAltDown();
-    }
-
-    public static Vector2 getMousePos() {
+    public static Vector2 getTouchPos() {
         return new Vector2(Gdx.input.getX(), Gdx.input.getY());
+    }
+
+    public static Vector2 getTouchPos(int pointer) {
+        return new Vector2(Gdx.input.getX(1), Gdx.input.getY(1));
     }
 
     public static Vector2 getMouseDelta() {
@@ -100,6 +78,7 @@ public class KeyboardInput implements InputProcessor, InputObject {
         Gdx.input.vibrate((int) duration.toMillis(), amplitude, fallback);
     }
 
+    @Deprecated
     public static GridPoint2 getMousePoint() {
         return new GridPoint2(POS.x, POS.y);
     }
@@ -109,20 +88,24 @@ public class KeyboardInput implements InputProcessor, InputObject {
     }
 
     public static boolean areKeysDown(int... keys) {
-        return Arrays.stream(keys).allMatch(KeyboardInput::isKeyDown);
+        return Arrays.stream(keys).allMatch(MobileInput::isKeyDown);
     }
 
     public static boolean isAnyKeyDownOf(int... keys) {
-        return Arrays.stream(keys).anyMatch(KeyboardInput::isKeyDown);
+        return Arrays.stream(keys).anyMatch(MobileInput::isKeyDown);
     }
 
-    public static KeyboardInput get() {
+    public static MobileInput get() {
         return instance;
+    }
+
+    public static boolean isTouchDown() {
+        return Gdx.input.isTouched();
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (KeyboardInput.isKeyDown(keycode)) {
+        if (MobileInput.isKeyDown(keycode)) {
             InputEvents.KEY_PRESS.factory().onKeyPress(keycode, true);
             return true;
         }
@@ -185,7 +168,7 @@ public class KeyboardInput implements InputProcessor, InputObject {
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (pointer == 0) POS.set(screenX, screenY);
 
-        for (var entry : this.dragStarts.int2ReferenceEntrySet()) {
+        for (Int2ReferenceMap.Entry<GridPoint2> entry : this.dragStarts.int2ReferenceEntrySet()) {
             GridPoint2 vec = entry.getValue();
             this.game.mouseDragged(vec.x, vec.y, screenX, screenY, pointer, entry.getIntKey());
         }

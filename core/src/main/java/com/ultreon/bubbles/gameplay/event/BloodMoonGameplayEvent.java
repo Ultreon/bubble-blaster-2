@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.gameplay.event;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
@@ -14,6 +15,7 @@ import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.world.World;
+import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.commons.time.Date;
 import com.ultreon.commons.time.DateTime;
 import com.ultreon.commons.time.Time;
@@ -22,17 +24,15 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.util.UUID;
 
 import static com.ultreon.bubbles.BubbleBlaster.NAMESPACE;
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
-@SuppressWarnings("unused")
 public class BloodMoonGameplayEvent extends GameplayEvent {
     private static final UUID NOISE_EFFECT_ID = UUID.fromString("7d6dfafe-bbe6-4795-bc09-8c778af55115");
-    private static final Color UPPER_COLOR = Color.rgb(0xff3000);
-    private static final Color LOWER_COLOR = Color.CRIMSON;
+    private static final Color UPPER_COLOR = Color.rgb(0xff2010);
+    private static final Color LOWER_COLOR = Color.rgb(0x3b00a1);
     private static final Difficulty.ModifierToken MODIFIER_TOKEN = new Difficulty.ModifierToken();
     private static final Marker MARKER = MarkerFactory.getMarker("BloodMoon");
     private final Date date = new Date(31, 10, 0);
@@ -41,7 +41,6 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
     private final RandomSource randomSource = new JavaRandom();
     private long deactivateTicks;
-    private Instant nextActivate;
 
     public BloodMoonGameplayEvent() {
         super();
@@ -60,14 +59,15 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     }
 
     public void tick() {
-        if (this.deactivateTicks-- < 0) {
+        if (this.deactivateTicks-- < 0)
             this.deactivateTicks = -1;
-        }
     }
 
     @Override
     public void end(World world) {
         super.end(world);
+
+        this.deactivateTicks = -1;
 
         world.updateNextBloodMoon();
         world.getDifficultyModifiers().remove(MODIFIER_TOKEN);
@@ -85,8 +85,8 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public final boolean shouldActivate(GameplayContext context) {
         if (!super.shouldActivate(context)) return false;
 
-        if (Date.current().equalsIgnoreYear(this.date)) return true;
-        if (Time.current().isBetween(this.timeLo, this.timeHi)) return true;
+        if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
+        if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
 
         MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
@@ -96,19 +96,22 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public final boolean shouldContinue(GameplayContext context) {
         if (!super.shouldContinue(context)) return false;
 
-        if (Date.current().equalsIgnoreYear(this.date)) return true;
-        if (Time.current().isBetween(this.timeLo, this.timeHi)) return true;
+        if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
+        if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
 
         if (this.deactivateTicks > 0) return true;
 
         MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
-        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE);
+        return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
     }
 
     @Override
     public void renderBackground(World world, Renderer renderer) {
         BubbleBlaster instance = BubbleBlaster.getInstance();
-        renderer.fillGradient(instance.getBounds(), UPPER_COLOR, LOWER_COLOR, Axis2D.VERTICAL);
+        Rectangle bounds = instance.getBounds();
+        renderer.fillGradient(bounds, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM, Axis2D.VERTICAL);
+        bounds.height *= 5f / 4f;
+        renderer.fillGradient(bounds, UPPER_COLOR, Color.TRANSPARENT, Axis2D.VERTICAL);
     }
 
     public final boolean wouldActive(DateTime dateTime) {
@@ -122,9 +125,10 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     }
 
     public void deactivate() {
+        this.deactivateTicks = -1;
     }
 
-    public void activate() {
+    public long getDeactivateTicks() {
+        return this.deactivateTicks;
     }
-
 }

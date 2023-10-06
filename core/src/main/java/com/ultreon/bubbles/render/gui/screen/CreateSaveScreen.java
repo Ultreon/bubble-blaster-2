@@ -9,7 +9,7 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.Label;
 import com.ultreon.bubbles.render.gui.widget.ObjectList;
-import com.ultreon.bubbles.render.gui.widget.OptionsTextEntry;
+import com.ultreon.bubbles.render.gui.widget.TextEntry;
 import com.ultreon.libs.text.v1.TextObject;
 
 import java.util.Collections;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class CreateSaveScreen extends Screen {
     private final List<Gamemode> gamemodes;
-    private OptionsTextEntry seedEntry;
+    private TextEntry seedEntry;
     private ObjectList<Gamemode> gamemodeList;
     private Button createBtn;
 
@@ -37,7 +37,7 @@ public class CreateSaveScreen extends Screen {
         Label label2 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.gamemode"), this.width / 2 - 150, 95, 300, 25));
         label2.setFontSize(20);
 
-        this.seedEntry = this.add(new OptionsTextEntry.Builder()
+        this.seedEntry = this.add(new TextEntry.Builder()
                 .bounds(this.width / 2 - 150, 60, 300, 30)
                 .build());
         this.gamemodeList = this.add(new ObjectList<>(this.gamemodes, 30, 2, this.width / 2 - 150, 60 + 60, 300, 300));
@@ -51,7 +51,7 @@ public class CreateSaveScreen extends Screen {
     }
 
     private void create() {
-        var selected = this.gamemodeList.getSelected();
+        ObjectList.ListEntry<Gamemode, ? extends Gamemode> selected = this.gamemodeList.getSelected();
         if (selected == null) {
             return;
         }
@@ -82,7 +82,7 @@ public class CreateSaveScreen extends Screen {
 //        font.draw(renderer, TextObject.translation("bubbleblaster.saves.create.gamemode"), 36, width / 2f - 20, height / 2f + 55, Thickness.BOLD, Anchor.E);
     }
 
-    public OptionsTextEntry getSeedEntry() {
+    public TextEntry getSeedEntry() {
         return this.seedEntry;
     }
 

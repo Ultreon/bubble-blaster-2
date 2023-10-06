@@ -15,16 +15,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.VfxEffect;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.audio.MusicEvent;
 import com.ultreon.bubbles.audio.MusicSystem;
@@ -86,14 +85,10 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -122,10 +117,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private static long ticks = 0L;
     // Instance
     private static BubbleBlaster instance;
-    private static boolean hasRendered;
 
-    private static final Lock RENDER_CALL_LOCK = new ReentrantLock(true);
-    private static final Deque<Consumer<Renderer>> RENDER_CALLS = Queues.synchronizedDeque(Queues.newArrayDeque());
     private static FileHandle dataDir;
 
     // Public Game Components
@@ -133,11 +125,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public final Profiler profiler = new Profiler();
 
     // Tasks
-    final List<Runnable> tasks = new CopyOnWriteArrayList<>();
     public final Cursor arrowCursor;
     public final Cursor handCursor;
 
     // Fonts.
+    private final BitmapFont font = new BitmapFont();
     private BitmapFont sansFont;
     private final String fontName;
 
@@ -185,7 +177,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     // Threads
     private static Thread renderingThread;
     private static Thread tickingThread;
-    private GarbageCollector garbageCollector;
+    private final GarbageCollector garbageCollector = new GarbageCollector();
     float gameFrameTime;
     private boolean stopping;
     private BitmapFont monospaceFont;
@@ -223,15 +215,29 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public final MusicSystem menuMusic = new MusicSystem(RandomValueSource.random(1.0, 3.0), RandomValueSource.random(5.0, 10.0), this.menuMusicList);
     private final ShapeRenderer shapes;
     private InputType currentInput = InputType.KeyboardAndMouse;
-    private final KeyboardHandler keyboardHandler;
-    public final ControllerHandler controllerHandler;
+    public final DesktopInputHandler desktopInput;
+    public final ControllerInputHandler controllerInput;
+    public final MobileInputHandler mobileInput;
+    public static PollingExecutorService renderExecutor;
+    public static PollingExecutorService tickExecutor;
+    private boolean unsupportedGL = false;
+    private BitmapFont errorFont;
 
     private BubbleBlaster() {
         if (instance != null)
             throw new UnsupportedOperationException("Can't open the game twice.");
 
-        if (Gdx.gl31 == null)
-            throw new UnsupportedOperationException("Bubble Blaster requires GL 3.1, which your device doesn't support.");
+        renderingThread = Thread.currentThread();
+
+        renderExecutor = new PollingExecutorService();
+
+        this.batch = new SpriteBatch();
+        this.shapes = new ShapeRenderer();
+
+        if (Gdx.gl20 == null) {
+            this.errorFont = this.loadFont(new Identifier("roboto/roboto_mono_bold"), 40);
+            this.unsupportedGL = true;
+        }
 
         this.arrowCursor = this.createCursor("textures/cursor/arrow.png", 0, 0);
         this.handCursor = this.createCursor("textures/cursor/pointer.png", 10, 10);
@@ -241,8 +247,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         Gdx.app.setApplicationLogger(new PlatformLogger());
 
-        if (renderingThread == null) renderingThread = Thread.currentThread();
-
         HdpiUtils.setMode(HdpiMode.Logical);
 
         GameFolders.CONFIG_DIR.mkdirs();
@@ -250,11 +254,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         GamePlatform.get().initImGui();
 
         // Set game input processor for LibGDX
-        Gdx.input.setInputProcessor(new KeyboardInput());
+        Gdx.input.setInputProcessor(new DesktopInput());
         Controllers.addListener(new ControllerInput());
 
-        this.keyboardHandler = new KeyboardHandler();
-        this.controllerHandler = new ControllerHandler();
+        this.desktopInput = new DesktopInputHandler();
+        this.mobileInput = new MobileInputHandler();
+        this.controllerInput = new ControllerInputHandler();
 
         // Set HiDpi mode
         HdpiUtils.setMode(HdpiMode.Pixels);
@@ -263,9 +268,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.debugRenderer = new DebugRenderer(this);
         this.camera = new OrthographicCamera();
         this.viewport = new ScreenViewport(this.camera);
-
-        this.batch = new SpriteBatch();
-        this.shapes = new ShapeRenderer();
 
         this.shapes.setAutoShapeType(true);
         this.renderer = new Renderer(this.shapes, this.batch, this.camera);
@@ -292,7 +294,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Prepare for loading.
         this.prepare();
 
-        this.sansFont = this.loadFont(Gdx.files.internal("assets/bubbleblaster/fonts/noto_sans/noto_sans_regular.ttf"), 14);
+        this.sansFont = this.loadFont(Gdx.files.internal("assets/bubbleblaster/fonts/noto_sans/noto_sans_regular.ttf"), 16);
 
         BubbleTypes.register();
         AmmoTypes.register();
@@ -314,7 +316,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.discordRpc = new DiscordRPC();
 
         BubbleBlaster.setActivity(() -> {
-            var activity = new Activity();
+            Activity activity = new Activity();
             activity.setState("Loading game.");
             return activity;
         });
@@ -353,7 +355,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         try {
             this.showScreen(new SplashScreen(), true);
         } catch (Throwable t) {
-            var crashLog = new CrashLog("Oops, game crashed!", t);
+            CrashLog crashLog = new CrashLog("Oops, game crashed!", t);
             BubbleBlaster.crash(t);
         }
 
@@ -371,73 +373,42 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return Gdx.graphics.newCursor(pixmap, hotspotX, hotspotY);
     }
 
-    public static <T> T invokeAndWait(Supplier<T> func) {
-        Thread thread = Thread.currentThread();
-        if (BubbleBlaster.isOnRenderingThread()) return func.get();
-
-        AtomicReference<T> ref = new AtomicReference<>();
-        RENDER_CALLS.addLast(renderer -> {
-            ref.set(func.get());
-            LockSupport.unpark(thread);
-        });
-        LockSupport.park();
-        return ref.get();
+    @CanIgnoreReturnValue
+    public static <T> T invokeAndWait(Callable<@NotNull T> func) {
+        return renderExecutor.submit(func).join();
     }
 
     public static void invokeAndWait(Runnable func) {
-        Thread thread = Thread.currentThread();
-        if (BubbleBlaster.isOnRenderingThread()) {
-            func.run();
-            return;
-        }
-
-        RENDER_CALLS.addLast(renderer -> {
-            func.run();
-            LockSupport.unpark(thread);
-        });
-        LockSupport.park();
+        renderExecutor.submit(func).join();
     }
 
-    public static void invoke(Runnable func) {
-        Thread thread = Thread.currentThread();
-        if (BubbleBlaster.isOnRenderingThread()) {
-            func.run();
-            return;
-        }
-
-        RENDER_CALLS.addLast(renderer -> func.run());
+    @CanIgnoreReturnValue
+    public static @NotNull CompletableFuture<Void> invoke(Runnable func) {
+        return renderExecutor.submit(func);
     }
 
-    public static <T> T invokeTickAndWait(Supplier<T> func) {
-        Thread thread = Thread.currentThread();
-        if (BubbleBlaster.isOnTickingThread()) return func.get();
+    @CanIgnoreReturnValue
+    public static <T> @NotNull CompletableFuture<T> invoke(Callable<T> func) {
+        return renderExecutor.submit(func);
+    }
 
-        AtomicReference<T> ref = new AtomicReference<>();
-        instance.scheduleTick(() -> {
-            ref.set(func.get());
-            LockSupport.unpark(thread);
-        });
-        LockSupport.park();
-        return ref.get();
+    @CanIgnoreReturnValue
+    public static <T> T invokeTickAndWait(Callable<@NotNull T> func) {
+        return tickExecutor.submit(func).join();
     }
 
     public static void invokeTickAndWait(Runnable func) {
-        Thread thread = Thread.currentThread();
-        if (BubbleBlaster.isOnTickingThread()) {
-            func.run();
-            return;
-        }
-
-        instance.scheduleTick(() -> {
-            func.run();
-            LockSupport.unpark(thread);
-        });
-        LockSupport.park();
+        tickExecutor.submit(func).join();
     }
 
-    public static void invokeTick(Runnable task) {
-        if (BubbleBlaster.isOnTickingThread()) task.run();
-        else instance.scheduleTick(task);
+    @CanIgnoreReturnValue
+    public static @NotNull CompletableFuture<Void> invokeTick(Runnable func) {
+        return tickExecutor.submit(func);
+    }
+
+    @CanIgnoreReturnValue
+    public static <T> @NotNull CompletableFuture<T> invokeTick(Callable<T> func) {
+        return tickExecutor.submit(func);
     }
 
     public static Instant getBootTime() {
@@ -446,7 +417,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public static void whenLoaded(UUID id, Runnable func) {
         if (!BubbleBlaster.isOnRenderingThread()) {
-            BubbleBlaster.invokeAndWait(() -> BubbleBlaster.whenLoaded(id, func));
+            BubbleBlaster.invoke(() -> BubbleBlaster.whenLoaded(id, func));
             return;
         }
 
@@ -506,16 +477,19 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         Path filePath;
 
         switch (protocol) {
-            case "jar" -> {
+            case "jar":
                 JarURLConnection jarURLConnection = (JarURLConnection) resource.openConnection();
                 URL fileUrl = jarURLConnection.getJarFileURL();
                 if (!fileUrl.getProtocol().equals("file")) {
                     throw new Error("Jar file isn't local.");
                 }
                 filePath = Paths.get(fileUrl.toURI());
-            }
-            case "file" -> filePath = Paths.get(resource.toURI()).getParent();
-            default -> throw new Error("Illegal protocol: " + resource.getProtocol());
+                break;
+            case "file":
+                filePath = Paths.get(resource.toURI()).getParent();
+                break;
+            default:
+                throw new Error("Illegal protocol: " + resource.getProtocol());
         }
         return filePath;
     }
@@ -546,7 +520,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (glitch != null)
             glitch.resize(width, height);
 
-        var screen = this.screen;
+        Screen screen = this.screen;
         if (screen != null)
             screen.resize(width, height);
     }
@@ -570,6 +544,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.shapes.triangle(0, 0, 100, 100, 200, 0);
         this.shapes.flush();
     }
+
     private void drawMasked() {
         /* Enable RGBA color writing. */
         Gdx.gl.glColorMask(true, true, true, true);
@@ -582,6 +557,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.shapes.circle(100, 100, 100);
         this.shapes.flush();
     }
+
     private void drawContours() {
         /* Disable depth writing. */
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
@@ -595,8 +571,21 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.batch.setColor(Color.GREEN.toGdx());
         this.shapes.circle(100, 100, 100);
     }
+
     @Override
     public void render() {
+        if (this.unsupportedGL) {
+            this.camera.update();
+
+            HdpiUtils.setMode(HdpiMode.Logical);
+            ScreenUtils.clear(Color.CRIMSON.toGdx());
+            this.batch.begin();
+            this.errorFont.setColor(1, 1, 1, 1);
+            this.errorFont.draw(this.batch, "Unsupported GL version!", 50, 50);
+            this.errorFont.draw(this.batch, "This game requires GL 2.0 or higher.", 50, 50 + this.errorFont.getLineHeight());
+            this.batch.end();
+            return;
+        }
         try {
             if (Gdx.graphics.getFrameId() == 2) {
 
@@ -604,9 +593,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
                 this.firstRender();
             }
-            this.tasks.forEach(Runnable::run);
-            this.tasks.clear();
-
             this.camera.update();
 
             this.renderer.begin();
@@ -637,18 +623,15 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             }
 
             try {
-                GridPoint2 mousePos = KeyboardInput.getMousePoint();
-                int mouseX = mousePos.x;
-                int mouseY = mousePos.y;
+                Vector2 mousePos = DesktopInput.getMousePos();
+                int mouseX = (int) mousePos.x;
+                int mouseY = (int) mousePos.y;
 
                 float deltaTime = Gdx.graphics.getDeltaTime();
 
-                int size = RENDER_CALLS.size();
-                for (int counter = 0; counter < size; counter++) {
-                    RENDER_CALLS.removeFirst().accept(this.renderer);
-                }
+                renderExecutor.pollAll();
 
-                var filters = BubbleBlaster.instance.getCurrentFilters();
+                List<VfxEffect> filters = BubbleBlaster.instance.getCurrentFilters();
 
                 this.profiler.section("renderGame", () -> this.renderGame(this.renderer, mouseX, mouseY, this.gameFrameTime));
 
@@ -683,11 +666,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private void firstRender() {
         this.window.setVisible(true);
         this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
+
+        this.mouseMove(Gdx.input.getX(), Gdx.input.getY());
     }
 
+    @SuppressWarnings("ConstantValue")
     @Override
     @ApiStatus.Internal
     public void dispose() {
+        this.running = false;
+
         GamePlatform.get().dispose();
 
         Controllers.clearListeners();
@@ -695,17 +683,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Shut-down game.
         LOGGER.info("Shutting down Bubble Blaster");
 
-        this.discordRpc.stop();
-        this.garbageCollector.shutdown();
+        if (tickingThread != null) {
+            tickingThread.interrupt();
+        }
 
-        tickingThread.interrupt();
-
-        final var loadedGame = this.loadedGame;
+        final LoadedGame loadedGame = this.loadedGame;
         if (loadedGame != null) {
             loadedGame.end();
         }
 
-        final var world = this.world;
+        final World world = this.world;
         if (world != null) {
             world.close();
         }
@@ -713,11 +700,20 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         SoundInstance.stopAll();
 
         try {
-            tickingThread.join(1000);
-            this.discordRpc.join();
+            if (this.garbageCollector != null) {
+                this.garbageCollector.shutdown();
+            }
+            if (this.discordRpc != null) {
+                this.discordRpc.stop();
+                this.discordRpc.join();
+            }
+            if (BubbleBlaster.tickingThread != null) {
+                BubbleBlaster.tickingThread.interrupt();
+                BubbleBlaster.tickingThread.join(1000);
+            }
         } catch (Exception e) {
             LOGGER.warn("Failed to stop threads:", e);
-            BubbleBlaster.annihilate();
+            return;
         }
         this.checkForExitEvents();
     }
@@ -727,7 +723,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public static boolean hasRendered() {
-        return hasRendered;
+        return Gdx.graphics.getFrameId() >= 2;
     }
 
     public static BubbleBlaster getInstance() {
@@ -753,7 +749,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         LanguageManager.INSTANCE.logger = BubbleBlaster.getLogger("LanguageManager");
 
         // Get game-directory.
-        final var defaultGameDir = new File(".");
+        final File defaultGameDir = new File(".");
         dataDir = platform.getDataDirectory();
         debugMode = platform.isDebug();
 
@@ -768,10 +764,18 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         Logger logger = GamePlatform.get().getLogger(name);
         return (level, message, t) -> {
             switch (level) {
-                case ERROR -> logger.error(message, t);
-                case WARN -> logger.warn(message, t);
-                case INFO -> logger.info(message, t);
-                case DEBUG -> logger.debug(message, t);
+                case ERROR:
+                    logger.error(message, t);
+                    break;
+                case WARN:
+                    logger.warn(message, t);
+                    break;
+                case INFO:
+                    logger.info(message, t);
+                    break;
+                case DEBUG:
+                    logger.debug(message, t);
+                    break;
             }
         };
     }
@@ -865,7 +869,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public static boolean isPaused() {
         if (instance.world == null || instance.loadedGame == null || !instance.loaded) return true;
 
-        var screen = instance.getCurrentScreen();
+        Screen screen = instance.getCurrentScreen();
         return screen != null && screen.doesPauseGame();
     }
 
@@ -886,10 +890,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private void onKeyPress(int keyCode, boolean holding) {
-        final var loadedGame = this.loadedGame;
+        final LoadedGame loadedGame = this.loadedGame;
 
         if (loadedGame != null) {
-            final var world = loadedGame.getWorld();
+            final World world = loadedGame.getWorld();
 
             Player player = world.getPlayer();
             if (this.canExecuteDevCommands()) {
@@ -904,38 +908,38 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     private void executeDevCommand(int keyCode, World world, Player player, LoadedGame loadedGame) {
         switch (keyCode) {
-            case Keys.F1 -> {
+            case Keys.F1:
                 LOGGER.warn("Triggering developer command: TRIGGER_BLOOD_MOON");
                 world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
-            }
-            case Keys.F3 -> {
+                break;
+            case Keys.F3:
                 LOGGER.warn("Triggering developer command: SELF_DESTRUCT");
                 player.destroy();
-            }
-            case Keys.F4 -> {
+                break;
+            case Keys.F4:
                 LOGGER.warn("Triggering developer command: LEVEL_UP");
                 player.levelUp();
-            }
-            case Keys.F5 -> {
+                break;
+            case Keys.F5:
                 LOGGER.warn("Triggering developer command: SCORE_1000");
                 player.awardScore(1000);
-            }
-            case Keys.F6 -> {
+                break;
+            case Keys.F6:
                 LOGGER.warn("Triggering developer command: RESET_HP");
                 DevCommands.resetHealth(loadedGame);
-            }
-            case Keys.F7 -> {
+                break;
+            case Keys.F7:
                 LOGGER.warn("Triggering developer command: GLITCH");
                 this.isGlitched = true;
-            }
+                break;
         }
     }
 
     private void onMouseClick(int x, int y, int button, int clicks) {
-        var loadedGame = this.loadedGame;
+        LoadedGame loadedGame = this.loadedGame;
         if (this.canExecuteDevCommands()) {
             if (loadedGame != null && button == Buttons.LEFT) {
-                if (KeyboardInput.isKeyDown(Keys.F1)) {
+                if (DesktopInput.isKeyDown(Keys.F1)) {
                     Objects.requireNonNull(loadedGame.getGamemode().getPlayer()).teleport(x, y);
                 }
             }
@@ -994,26 +998,26 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return this.loadFont(Gdx.files.internal("assets/" + location.location() + "/fonts/" + location.path() + ".ttf"), 14);
     }
 
-     public BitmapFont loadFont(FileHandle handle, int size) {
+    public BitmapFont loadFont(FileHandle handle, int size) {
         if (!BubbleBlaster.isOnRenderingThread()) {
             BitmapFont bitmapFont = BubbleBlaster.invokeAndWait(() -> this.loadFont(handle, size));
             if (bitmapFont == null) throw new FontLoadException("Render call failed");
             return bitmapFont;
         }
-        var generator = new FreeTypeFontGenerator(handle);
-        var parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(handle);
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.flip = true;
         parameter.size = size;
-        var font = generator.generateFont(parameter); // font size 12 pixels
+        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
-        return font;
+        return Objects.requireNonNull(font, "Font failed to generate!");
     }
 
-     public BitmapFont loadFont(Identifier id) {
+    public BitmapFont loadFont(Identifier id) {
         return this.loadFont(id, 12);
     }
 
-     public BitmapFont loadFont(Identifier id, int size) {
+    public BitmapFont loadFont(Identifier id, int size) {
         return this.loadFont(BubbleBlaster.resource(id.mapPath(path -> "fonts/" + path + ".ttf")), size);
     }
 
@@ -1023,7 +1027,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public void loadFonts() {
         try {
-            this.sansFont = this.loadFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 14);
+            this.sansFont = this.loadFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 16);
             this.logoFont = this.loadFont(BubbleBlaster.id("chicle"));
             this.pixelFont = this.loadFont(BubbleBlaster.id("pixel"));
             this.monospaceFont = this.loadFont(BubbleBlaster.id("roboto/roboto_mono_regular"));
@@ -1121,7 +1125,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
      */
     public boolean showScreen(@Nullable Screen screen, boolean force) {
         Screen oldScreen = this.screen;
-        if (oldScreen instanceof InternalScreen internalScreen) {
+        if (oldScreen instanceof InternalScreen) {
             if (oldScreen.close(screen)) return false;
         } else if (!force && oldScreen != null && (oldScreen.close(screen) || ScreenEvents.CLOSE.factory().onClose(oldScreen).isCanceled())) {
             return false;
@@ -1220,9 +1224,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
      */
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void loadGame(GameSave save) throws IOException {
-        var seed = save.getSeed();
-        var gamemode = save.getGamemode();
-        var difficulty = save.getDifficulty();
+        long seed = save.getSeed();
+        Gamemode gamemode = save.getGamemode();
+        Difficulty difficulty = save.getDifficulty();
         this.startGame(seed, gamemode, difficulty, save, false);
     }
 
@@ -1232,12 +1236,12 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     @SuppressWarnings({"ConstantConditions", "PointlessBooleanExpression"})
     public void startGame(long seed, Gamemode gamemode, Difficulty difficulty, GameSave save, boolean create) {
         // Start loading.
-        var screen = new MessengerScreen();
+        MessengerScreen screen = new MessengerScreen();
 
         // Show world loader screen.
         this.showScreen(screen);
         try {
-            var saveHandle = save.getHandle();
+            FileHandle saveHandle = save.getHandle();
             if (create && saveHandle.exists()) {
                 if (saveHandle.isDirectory()) saveHandle.deleteDirectory();
                 else saveHandle.delete();
@@ -1247,7 +1251,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 saveHandle.mkdirs();
             }
 
-            var world = this.world = new World(save, gamemode, difficulty, seed);
+            World world = new World(save, gamemode, difficulty, seed);
 
             if (create) {
                 screen.setDescription("Preparing creation");
@@ -1266,13 +1270,14 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 world.load(save, screen.getMessenger());
             }
 
-            var loadedGame = new LoadedGame(save, this.world);
+            LoadedGame loadedGame = new LoadedGame(save, world);
             loadedGame.start();
 
+            this.world = world;
             this.loadedGame = loadedGame;
         } catch (Throwable t) {
             LOGGER.error("Bubble Blaster failed to launch", t);
-            var crashLog = new CrashLog("Game save being loaded", t);
+            CrashLog crashLog = new CrashLog("Game save being loaded", t);
             crashLog.add("Save Directory", save.getHandle());
             crashLog.add("Current Description", screen.getDescription());
             crashLog.add("Create Flag", create);
@@ -1293,7 +1298,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
      * Quit world and loaded game.
      */
     public void quitLoadedGame() {
-        var loadedGame = this.getLoadedGame();
+        LoadedGame loadedGame = this.getLoadedGame();
         if (loadedGame != null) {
             loadedGame.end();
         }
@@ -1361,7 +1366,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public @Nullable GameSave getCurrentSave() {
-        var loadedGame = this.getLoadedGame();
+        LoadedGame loadedGame = this.getLoadedGame();
         if (loadedGame != null) {
             return loadedGame.getGameSave();
         }
@@ -1448,7 +1453,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     /**
      * Prepares the player.
      */
-    private void preparePlayer() {
+    private void preparePlayer(Player player) {
 
     }
 
@@ -1460,19 +1465,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     /**
-     * Creates a player.
-     *
-     * @return the created player.
-     */
-    private Player createPlayer() {
-        if (this.world != null) {
-            return new Player(this.world);
-        } else {
-            throw new IllegalStateException("Creating a player while world is not loaded.");
-        }
-    }
-
-    /**
      * @return the amount create main loading steps.
      */
     private int getMainLoadingSteps() {
@@ -1481,10 +1473,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @SuppressWarnings("DuplicatedCode")
     private void ticking() {
-        var tickCap = 1000.0 / (double) TPS;
-        var tickTime = 0d;
-        var gameFrameTime = 0d;
-        var ticksPassed = 0;
+        double tickCap = 1000.0 / (double) TPS;
+        double tickTime = 0d;
+        double gameFrameTime = 0d;
+        int ticksPassed = 0;
 
         double time = System.currentTimeMillis();
 
@@ -1493,10 +1485,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         try {
             while (this.running) {
                 try {
-                    var canTick = false;
+                    boolean canTick = false;
 
                     double time2 = System.currentTimeMillis();
-                    var passed = time2 - time;
+                    double passed = time2 - time;
                     gameFrameTime += passed;
                     tickTime += passed;
 
@@ -1513,7 +1505,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                         try {
                             this.gameTick();
                         } catch (Throwable t) {
-                            var crashLog = new CrashLog("Game being ticked.", t);
+                            CrashLog crashLog = new CrashLog("Game being ticked.", t);
                             BubbleBlaster.crash(crashLog.createCrash());
                         }
                     }
@@ -1530,44 +1522,45 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 }
             }
         } catch (Throwable t) {
-            var crashLog = new CrashLog("Running game loop.", t);
+            CrashLog crashLog = new CrashLog("Running game loop.", t);
             BubbleBlaster.crash(crashLog.createCrash());
         }
     }
 
-    /**
-     *
-     */
     private void gameTick() {
+        tickExecutor.pollAll();
+
         if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
             this.glitchRenderer.tick();
             return;
         }
 
-
         // Tick input
         Screen screen = this.screen;
         if (screen != null) {
-            this.controllerHandler.tickScreen(screen);
-            this.keyboardHandler.tickScreen(screen);
+            this.controllerInput.tickScreen(screen);
+            this.desktopInput.tickScreen(screen);
+            this.mobileInput.tickScreen(screen);
         }
-        final var player = this.player;
+        final Player player = this.player;
         if (player != null && screen == null) {
-            this.controllerHandler.tickPlayer(player);
-            this.keyboardHandler.tickPlayer(player);
+            this.controllerInput.tickPlayer(player);
+            this.desktopInput.tickPlayer(player);
+            this.mobileInput.tickPlayer(player);
         }
 
         if (this.isLoaded()) {
             TickEvents.PRE_TICK_GAME.factory().onTickGame(this);
         }
 
-        final var world = this.world;
-        final var loadedGame = this.loadedGame;
+        final World world = this.world;
+        final LoadedGame loadedGame = this.loadedGame;
         if (world != null && loadedGame != null && !BubbleBlaster.isPaused()) {
-            this.controllerHandler.tickWorld(world, loadedGame);
-            this.keyboardHandler.tickWorld(world, loadedGame);
+            this.controllerInput.tickWorld(world, loadedGame);
+            this.desktopInput.tickWorld(world, loadedGame);
+            this.mobileInput.tickWorld(world, loadedGame);
 
-            final var gamemode = world.getGamemode();
+            final Gamemode gamemode = world.getGamemode();
             if (gamemode != null && player != null && player.getLevel() > 255)
                 BubbleBlaster.getInstance().glitch();
 
@@ -1599,16 +1592,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private void tickRichPresence(@Nullable Player player) {
         if (this.isInMainMenus())
             BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
+                Activity activity = new Activity();
                 activity.setState("In the menus");
                 return activity;
             });
         else if (this.isInGame())
             BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
+                Activity activity = new Activity();
                 activity.setState("In-Game");
                 if (player != null) {
-                    var score = player.getScore();
+                    double score = player.getScore();
                     activity.setDetails("Score: " + (int) score);
                 } else {
                     activity.setDetails("?? ERROR ??");
@@ -1617,7 +1610,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             });
         else
             BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
+                Activity activity = new Activity();
                 activity.setState("Is nowhere to be found");
                 return activity;
             });
@@ -1629,11 +1622,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     /**
      * @param renderer the renderer to render the game with.
-     * @param mouseX current mouse X position.
-     * @param mouseY current mouse Y position.
+     * @param mouseX   current mouse X position.
+     * @param mouseY   current mouse Y position.
      */
     private void renderGame(Renderer renderer, int mouseX, int mouseY, float frameTime) {
-        // Call to game world renderering.
+        // Call to world rendering.
         // Get field and set local variable. For multithreaded null-safety.
         @Nullable Screen screen = this.getCurrentScreen();
         @Nullable World world = this.world;
@@ -1666,6 +1659,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             if (screen != null) {
                 RenderEvents.RENDER_SCREEN_BEFORE.factory().onRenderScreenBefore(screen, renderer);
                 screen.render(this, renderer, mouseX, mouseY, frameTime);
+                if (GamePlatform.get().isMobile()) {
+                    screen.renderCloseButton(renderer, mouseX, mouseY);
+                }
                 RenderEvents.RENDER_SCREEN_AFTER.factory().onRenderScreenAfter(screen, renderer);
             }
             if (world != null && worldRenderer != null) {
@@ -1682,10 +1678,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     private void postRender(Renderer renderer) {
         if (this.fadeIn) {
-            final var timeDiff = System.currentTimeMillis() - this.fadeInStart;
+            final long timeDiff = System.currentTimeMillis() - this.fadeInStart;
             if (timeDiff <= this.fadeInDuration) {
-                int clamp = Mth.clamp((int) (255 * (1f - timeDiff / this.fadeInDuration)), 0, 255);
-                renderer.fill(0, 0, this.getWidth(), this.getHeight(), Color.BLACK.withAlpha(clamp));
+                int clamp = (int) Mth.clamp(255 * (1f - ((float) timeDiff) / this.fadeInDuration), 0, 255);
+                Color color = Color.rgba(0, 0, 0, clamp);
+                renderer.fill(0, 0, this.getWidth(), this.getHeight(), color);
             } else {
                 this.fadeIn = false;
             }
@@ -1710,10 +1707,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return this.screen != null;
     }
 
-    public void scheduleTick(Runnable task) {
-        this.tasks.add(task);
-    }
-
     private void log(String text) {
         // Todo: implement
     }
@@ -1729,19 +1722,21 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return new ArrayList<>();
     }
 
-    public void loadPlayerIntoWorld() {
-        var player = this.createPlayer();
+    public Player loadPlayerIntoWorld(@NotNull World world) {
+        Player player = new Player(world);
+
         this.input = player;
         this.player = player;
 
-        this.preparePlayer();
+        this.preparePlayer(player);
+        return player;
     }
 
     /////////////////////
     //     Getters     //
     /////////////////////
     public float getGameFrameTime() {
-        return this.gameFrameTime;
+        return Gdx.graphics.getDeltaTime();
     }
 
     public boolean isAntialiasEnabled() {
@@ -1825,14 +1820,13 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         tickingThread = new Thread(BubbleBlaster.this::ticking, "Ticker");
         tickingThread.start();
-
-        this.garbageCollector = new GarbageCollector();
+        tickExecutor = new PollingExecutorService(tickingThread);
 
         BubbleBlaster.getLogger().info("Game threads started!");
     }
 
     public static void crash(Throwable t) {
-        var crashLog = new CrashLog("Unknown source", t);
+        CrashLog crashLog = new CrashLog("Unknown source", t);
         BubbleBlaster.crash(crashLog.createCrash());
     }
 
@@ -1858,14 +1852,14 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public long serializeSeed(String text) {
-        var seedNr = Long.getLong(text);
+        Long seedNr = Long.getLong(text);
         if (seedNr != null) {
             return seedNr;
         }
 
         long h = 0;
         long length = text.length() >> 1;
-        for (var c : text.toCharArray()) {
+        for (char c : text.toCharArray()) {
             h = 31L * h + c;
         }
         return h;
@@ -1895,6 +1889,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return this.currentRenderer;
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @ApiStatus.Internal
     @CanIgnoreReturnValue
     public boolean keyPress(int keycode) {
@@ -1904,26 +1899,23 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         if (keycode == Keys.F12) {
             GamePlatform.get().toggleDebugGui();
             return true;
-        } else if (keycode == Keys.F11 && this.world == null) {
-            this.window.toggleFullscreen();
-            return true;
-        } else if (keycode == Keys.F2) {
-            Screenshot screenshot = Screenshot.take();
-            this.notifications.notify(
-                    Notification.builder("Screenshot saved!", screenshot.fileHandle().name())
-                            .subText("Screenshot Manager")
-                            .build());
-            return true;
-        } else if (world != null) {
-            if (this.keyPressEnv(world, keycode)) return true;
         }
 
-        if (screen != null) {
-            return screen.keyPress(keycode);
-        } else if (keycode == Keys.ESCAPE && world != null && world.isAlive()) {
-            BubbleBlaster.getInstance().showScreen(new PauseScreen());
+        if (keycode == Keys.F11 && this.window.toggleFullscreen())
             return true;
-        }
+
+        if (keycode == Keys.F2 && Screenshot.take() != null)
+            return true;
+
+        if (screen != null)
+            return screen.keyPress(keycode);
+
+        if (world != null && this.keyPressEnv(world, keycode))
+            return true;
+
+        if (keycode == Keys.ESCAPE && world != null && world.isAlive() && BubbleBlaster.getInstance().showScreen(new PauseScreen()))
+            return true;
+
         return false;
     }
 
@@ -1933,15 +1925,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         Player player = this.player;
         boolean isDev = this.canExecuteDevCommands();
 
-        if (isDev && keycode == Keys.F10) {
-            world.triggerBloodMoon();
+        if (isDev && keycode == Keys.F10 && world.beginEvent(GameplayEvents.BLOOD_MOON_EVENT))
             return true;
-        } else if (keycode == Keys.SLASH && !this.hasScreenOpen()) {
-            BubbleBlaster.getInstance().showScreen(new CommandScreen());
-            return true;
-        }
 
-        return false;
+        return keycode == Keys.SLASH && !this.hasScreenOpen() && BubbleBlaster.getInstance().showScreen(new CommandScreen());
     }
 
     private boolean canExecuteDevCommands() {
@@ -2033,16 +2020,5 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public Matrix4 getTransform() {
         return this.shapes.getTransformMatrix();
-    }
-
-    protected static class BootOptions {
-
-        public BootOptions() {
-
-        }
-
-        public BootOptions tps(int tps) {
-            return this;
-        }
     }
 }

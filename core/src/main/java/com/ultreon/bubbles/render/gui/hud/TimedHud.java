@@ -15,7 +15,8 @@ public class TimedHud extends ModernHud {
     public void renderHudOverlay(Renderer renderer, World world, Gamemode gamemode, float deltaTime) {
         super.renderHudOverlay(renderer, world, gamemode, deltaTime);
 
-        if (!(gamemode instanceof TimedMode timedGamemode)) return;
+        if (!(gamemode instanceof TimedMode)) return;
+        TimedMode timedGamemode = (TimedMode) gamemode;
 
         Duration duration = Duration.ofMillis(timedGamemode.getTimeRemaining());
         int x = 20;

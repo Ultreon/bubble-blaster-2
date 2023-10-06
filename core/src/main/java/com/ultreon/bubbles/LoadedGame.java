@@ -9,15 +9,12 @@ import com.ultreon.bubbles.entity.damage.DamageType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.event.v1.EntityEvents;
 import com.ultreon.bubbles.gamemode.Gamemode;
-import com.ultreon.bubbles.init.Fonts;
-import com.ultreon.bubbles.render.Color;
-import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.CommandScreen;
 import com.ultreon.bubbles.render.gui.screen.MessengerScreen;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.commons.util.CollisionUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,10 +32,6 @@ public class LoadedGame implements Controllable {
 
     // Files / folders.
     private final FileHandle saveHandle;
-
-    // Active messages.
-    private final ArrayList<String> activeMessages = new ArrayList<>();
-    private final ArrayList<Long> activeMsgTimes = new ArrayList<>();
 
     // Flags.
     private boolean running = false;
@@ -65,7 +58,7 @@ public class LoadedGame implements Controllable {
     }
 
     public void end() {
-        GAME.showScreen(new MessengerScreen("Exiting game world."));
+        GAME.showScreen(new MessengerScreen("Exiting world."));
 
         this.running = false;
 
@@ -145,39 +138,8 @@ public class LoadedGame implements Controllable {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     Trigger Methods     //
     /////////////////////////////
-    public void receiveMessage(String s) {
-        this.activeMessages.add(s);
-        this.activeMsgTimes.add(System.currentTimeMillis() + 3000);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //     Render Methods     //
-    ////////////////////////////
-
-    /**
-     * Renders the hud, in this method only the system and chat messages.
-     * Should not being called, for internal use only.
-     *
-     * @param game the game instance.
-     * @param renderer  a 2D graphics instance.
-     */
-    public void drawMessages(@SuppressWarnings({"unused", "RedundantSuppression"}) BubbleBlaster game, Renderer renderer) {
-        int i = 0;
-        for (String s : this.activeMessages) {
-            int y = 71 + (32 * i);
-            renderer.fill(0, y, 1000, 32, Color.BLACK.withAlpha(0x80));
-
-            renderer.drawText(Fonts.MONOSPACED_14.get(), s, 2, y, Color.WHITE);
-            i++;
-        }
-
-        for (i = 0; i < this.activeMessages.size(); i++) {
-            if (this.activeMsgTimes.get(i) < System.currentTimeMillis()) {
-                this.activeMsgTimes.remove(i);
-                this.activeMessages.remove(i);
-                i--;
-            }
-        }
+    public static void addMessage(String message) {
+        CommandScreen.addMessage(message, true);
     }
 
     public void tick() {

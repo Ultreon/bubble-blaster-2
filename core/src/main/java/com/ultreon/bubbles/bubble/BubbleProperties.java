@@ -13,7 +13,6 @@ import com.ultreon.libs.commons.v0.vector.Vec2i;
  * @author XyperCode
  * @see BubbleRandomizer
  */
-@SuppressWarnings("unused")
 public class BubbleProperties extends EntityProperties {
     private final float damageValue;
     private final float speed;

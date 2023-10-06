@@ -7,6 +7,7 @@ import de.jcm.discordgamesdk.GameSDKException;
 import de.jcm.discordgamesdk.Result;
 import de.jcm.discordgamesdk.activity.Activity;
 
+import java.io.File;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -33,6 +34,8 @@ public class DiscordRPC {
         this.gameVersion = BubbleBlaster.getGameVersion();
 
         this.thread = new Thread(this::run, "DiscordRPC");
+        if (!GamePlatform.get().isDesktop()) return;
+
         this.thread.setDaemon(true);
         this.thread.setPriority(3);
         this.thread.start();
@@ -44,12 +47,12 @@ public class DiscordRPC {
         try {
             while (this.running) {
                 // Set parameters for the Core
-                try (var params = new CreateParams()) {
+                try (CreateParams params = new CreateParams()) {
                     params.setClientID(933147296311427144L);
                     params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
 
                     // Create the Core
-                    try (var core = new Core(params)) {
+                    try (Core core = new Core(params)) {
                         if (this.callbackLoop(core)) break;
                     }
                 }
@@ -66,7 +69,7 @@ public class DiscordRPC {
      */
     private boolean download() {
         try {
-            var sdkDownloader = new DiscordSDKDownloader();
+            DiscordSDKDownloader sdkDownloader = new DiscordSDKDownloader();
             sdkDownloader.downloadSync();
 
             if (sdkDownloader.isFailed()) {
@@ -74,7 +77,7 @@ public class DiscordRPC {
                 return false;
             }
 
-            var sdkFile = sdkDownloader.getFile();
+            File sdkFile = sdkDownloader.getFile();
             if (sdkFile == null || !sdkFile.exists()) {
                 System.err.println("Discord SDK file is missing");
                 return false;

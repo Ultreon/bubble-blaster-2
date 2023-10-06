@@ -12,7 +12,6 @@ import java.util.Objects;
 
 import static com.ultreon.commons.time.MeteorologicalSeason.*;
 
-@SuppressWarnings("unused")
 public class Date implements Serializable, Comparable<Date> {
     private int day;
     private Month month;

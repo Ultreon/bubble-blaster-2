@@ -9,14 +9,13 @@ import org.slf4j.Logger;
 
 import java.io.PrintStream;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedirectPrintStream extends PrintStream {
     @SuppressWarnings("NewApi")
     public RedirectPrintStream(Logger logger) {
-        super(new WriterOutputStream(new RedirectWriter(logger), StandardCharsets.UTF_8), true, StandardCharsets.UTF_8);
+        super(new WriterOutputStream(new RedirectWriter(logger), "UTF-8"), true);
     }
 
     private static class RedirectWriter extends Writer {
@@ -38,24 +37,24 @@ public class RedirectPrintStream extends PrintStream {
                 System.arraycopy(cbuf, off, dest, 0, len);
                 for (char c : dest) {
                     switch (c) {
-                        case '\r' -> {
+                        case '\r':
                             if (this.carriageReturn) {
                                 this.carriageReturn = false;
                                 this.newLine();
                             }
                             this.carriageReturn = true;
-                        }
-                        case '\n' -> {
+                            break;
+                        case '\n':
                             this.carriageReturn = false;
                             this.newLine();
-                        }
-                        default -> {
+                            break;
+                        default:
                             if (this.carriageReturn) {
                                 this.carriageReturn = false;
                                 this.newLine();
                             }
                             this.chars.add(c);
-                        }
+                            break;
                     }
                 }
             }
@@ -69,7 +68,7 @@ public class RedirectPrintStream extends PrintStream {
         @Override
         public void flush() {
             synchronized (this.lock) {
-                for (var line : this.lines) {
+                for (String line : this.lines) {
                     this.logger.info(line);
                 }
                 this.lines.clear();

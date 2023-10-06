@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @see EntityType
  */
-@SuppressWarnings({"unused", "SameParameterValue", "SameReturnValue"})
+@SuppressWarnings({"SameParameterValue", "SameReturnValue"})
 public abstract class BubbleType implements Serializable, Translatable {
     private static final ValueSource DEFAULT_SCORE = ConstantValueSource.of(1);
     private static final ValueSource DEFAULT_DEFENSE = ConstantValueSource.of(Float.MIN_NORMAL);
@@ -590,7 +590,10 @@ public abstract class BubbleType implements Serializable, Translatable {
     //     Collision     //
     ///////////////////////
     public void onCollision(Bubble source, Entity target) {
-        if (target instanceof LivingEntity livingEntity && livingEntity.isInvincible()) return;
+        if (target instanceof LivingEntity && ((LivingEntity) target).isInvincible()) {
+            LivingEntity livingEntity = (LivingEntity) target;
+            return;
+        }
 
         StatusEffectInstance appliedEffect = this.getEffect(source, target);
         if (appliedEffect == null) {
@@ -599,7 +602,8 @@ public abstract class BubbleType implements Serializable, Translatable {
 
         if (source.isEffectApplied()) return;
 
-        if (target instanceof Player player) {
+        if (target instanceof Player) {
+            Player player = (Player) target;
             try {
                 source.setEffectApplied(true);
                 player.addEffect(appliedEffect);

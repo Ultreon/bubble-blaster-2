@@ -44,4 +44,8 @@ public final class Enums {
         }
         return false;
     }
+
+    public static <T extends Enum<T>> int size(Class<T> componentType) {
+        return componentType.getEnumConstants().length;
+    }
 }

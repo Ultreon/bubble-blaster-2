@@ -50,17 +50,25 @@ public class KeyBinding {
     }
 
     public boolean isPressed() {
-        return switch (this.type) {
-            case MOUSE -> Gdx.input.isButtonPressed(this.code);
-            case KEYBOARD -> Gdx.input.isKeyPressed(this.code);
-        };
+        switch (this.type) {
+            case MOUSE:
+                return Gdx.input.isButtonPressed(this.code);
+            case KEYBOARD:
+                return Gdx.input.isKeyPressed(this.code);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public boolean isJustPressed() {
-        return switch (this.type) {
-            case MOUSE -> Gdx.input.isButtonJustPressed(this.code);
-            case KEYBOARD -> Gdx.input.isKeyJustPressed(this.code);
-        };
+        switch (this.type) {
+            case MOUSE:
+                return Gdx.input.isButtonJustPressed(this.code);
+            case KEYBOARD:
+                return Gdx.input.isKeyJustPressed(this.code);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public void reset() {

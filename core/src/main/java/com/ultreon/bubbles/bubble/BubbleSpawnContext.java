@@ -37,32 +37,32 @@ public final class BubbleSpawnContext {
     }
 
     public RandomSource randomSource() {
-        return randomSource;
+        return this.randomSource;
     }
 
     public int retry() {
-        return retry;
+        return this.retry;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (BubbleSpawnContext) obj;
+        BubbleSpawnContext that = (BubbleSpawnContext) obj;
         return Objects.equals(this.randomSource, that.randomSource) &&
                 this.retry == that.retry;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(randomSource, retry);
+        return Objects.hash(this.randomSource, this.retry);
     }
 
     @Override
     public String toString() {
         return "BubbleSpawnContext[" +
-                "randomSource=" + randomSource + ", " +
-                "retry=" + retry + ']';
+                "randomSource=" + this.randomSource + ", " +
+                "retry=" + this.retry + ']';
     }
 
 }

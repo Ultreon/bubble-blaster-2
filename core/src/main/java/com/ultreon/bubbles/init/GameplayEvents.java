@@ -9,7 +9,6 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * @see GameplayEvent
  */
-@SuppressWarnings("unused")
 public class GameplayEvents {
     // Bubbles
     public static final BloodMoonGameplayEvent BLOOD_MOON_EVENT = GameplayEvents.register("blood_moon", new BloodMoonGameplayEvent());

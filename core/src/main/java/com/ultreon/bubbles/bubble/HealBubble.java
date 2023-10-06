@@ -26,13 +26,14 @@ public class HealBubble extends BubbleType {
     public void onCollision(Bubble source, Entity target) {
         super.onCollision(source, target);
 
-        if (target instanceof Player player) {
-            var healAmount = source.getWorld().getLocalDifficulty() / 20.0f + 1.8f / 20.0f;
+        if (target instanceof Player) {
+            Player player = (Player) target;
+            float healAmount = source.getWorld().getLocalDifficulty() / 20.0f + 1.8f / 20.0f;
             healAmount /= (float) source.getAttributes().get(Attribute.DEFENSE);
             player.restoreDamage(healAmount);
 
             // Set ra
-            var newRad = source.getRadius() - healAmount * 20f;
+            float newRad = source.getRadius() - healAmount * 20f;
             if (newRad < 2 * this.getColors().size() * BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get()) source.pop();
             else source.setRadius(newRad);
         }

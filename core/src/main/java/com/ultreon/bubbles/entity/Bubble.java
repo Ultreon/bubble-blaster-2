@@ -93,7 +93,8 @@ public class Bubble extends AbstractBubbleEntity {
 
         super.preSpawn(information);
 
-        if (information.getReason() instanceof NaturalSpawnReason reason) {
+        if (information.getReason() instanceof NaturalSpawnReason) {
+            NaturalSpawnReason reason = (NaturalSpawnReason) information.getReason();
             BubbleType bubbleType = BubbleSystem.random(random, world);
             if (!bubbleType.canSpawn(information.getWorld())) {
                 bubbleType = information.getWorld().getGamemode().getDefaultBubble();
@@ -158,7 +159,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.bubbleType.onCollision(this, other);
 
         if (this.bounceAmount > 0) {
-            other.bounceOff(this, this.bounceAmount / 10f, -0.01f);
+            other.bounceOff(this, (float) (this.bounceAmount * deltaTime), -0.1f);
         }
     }
 

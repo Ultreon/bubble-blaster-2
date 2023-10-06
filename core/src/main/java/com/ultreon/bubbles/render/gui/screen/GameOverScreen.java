@@ -52,7 +52,7 @@ public class GameOverScreen extends Screen {
 
         this.gameOverTime = System.currentTimeMillis();
 
-        this.add(new Button.Builder()
+        this.add(Button.builder()
                 .bounds((int) (BubbleBlaster.getMiddleX() - 128), 340, 256, 48)
                 .text(TextObject.translation("bubbleblaster.screen.gameOver.backToTitle")).command(this::goToTitle).build());
     }
@@ -75,9 +75,17 @@ public class GameOverScreen extends Screen {
         long cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
         int phase = (int) (Math.floorDiv(cycled, 1000));
         switch (phase) {
-            case 4, 3, 2 -> renderer.setColor(GAME_OVER_COLOR_NORMAL);
-            case 1 -> renderer.setColor(GAME_OVER_COLOR_FLASH);
-            case 0 -> MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
+            case 4:
+            case 3:
+            case 2:
+                renderer.setColor(GAME_OVER_COLOR_NORMAL);
+                break;
+            case 1:
+                renderer.setColor(GAME_OVER_COLOR_FLASH);
+                break;
+            case 0:
+                MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0);
+                break;
         }
         renderer.drawTextCenter(this.gameOverTitleFont, this.title, this.width / 2f, 152, MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
 
@@ -91,8 +99,4 @@ public class GameOverScreen extends Screen {
         return this.isHighScore;
     }
 
-    @Override
-    public boolean doesPauseGame() {
-        return false;
-    }
 }

@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see Entity
  */
-@SuppressWarnings("unused")
 public abstract class LivingEntity extends Entity {
     protected double health;
     protected boolean invincible;
@@ -62,7 +61,6 @@ public abstract class LivingEntity extends Entity {
      * @param value  the attack value.
      * @param source the damage source.
      */
-    @SuppressWarnings("unused")
     public void damage(double value, EntityDamageSource source) {
         if (this.invincible) return;
 

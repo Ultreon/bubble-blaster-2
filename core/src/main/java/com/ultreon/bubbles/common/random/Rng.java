@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author XyperCode
  */
-@SuppressWarnings({"unused", "ClassCanBeRecord"})
+@SuppressWarnings({"ClassCanBeRecord"})
 public class Rng {
     private final GameRandom random;
     private final int index;

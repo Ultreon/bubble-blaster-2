@@ -37,12 +37,12 @@ public class ModListScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        var calcWidth = this.calculateWidth();
+        int calcWidth = this.calculateWidth();
         this.modList = this.add(new ObjectList<>(this.entries, ENTRY_HEIGHT, GAP, 0, 0, calcWidth, this.height));
         this.modList.setSelectable(true);
         this.modList.setEntryRenderer(this::renderEntry);
 
-        var entryAt = this.modList.getEntryAt(0, 0);
+        ObjectList.ListEntry<ModContainer, ? extends ModContainer> entryAt = this.modList.getEntryAt(0, 0);
         if (entryAt != null) {
             this.modList.setSelected(entryAt);
         }
@@ -70,7 +70,7 @@ public class ModListScreen extends Screen {
     }
 
     private void renderEntry(Renderer renderer, int width, int height, float y, ModContainer entry, boolean selected, boolean hovered) {
-        var metadata = entry.getMetadata();
+        ModMetadata metadata = entry.getMetadata();
 
         renderer.fill(0, y, width, height, Color.argb(hovered ? 0x40ffffff : 0x20ffffff));
         if (selected)
@@ -103,9 +103,9 @@ public class ModListScreen extends Screen {
 
         @Override
         public void renderComponent(Renderer renderer) {
-            var selected = ModListScreen.this.modList.getSelected();
+            ObjectList.ListEntry<ModContainer, ? extends ModContainer> selected = ModListScreen.this.modList.getSelected();
             if (selected == null) return;
-            var metadata = selected.value.getMetadata();
+            ModMetadata metadata = selected.value.getMetadata();
 
             AtomicInteger textX = new AtomicInteger(this.x + 20);
             int textY = this.y + 20;

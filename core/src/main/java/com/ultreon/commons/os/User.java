@@ -2,7 +2,6 @@ package com.ultreon.commons.os;
 
 import java.io.Serializable;
 
-@SuppressWarnings("unused")
 public class User implements Serializable {
     private final String name;
     private final String variant;

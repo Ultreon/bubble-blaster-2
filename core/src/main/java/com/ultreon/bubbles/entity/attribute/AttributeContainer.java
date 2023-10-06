@@ -95,8 +95,12 @@ public class AttributeContainer implements ListDataHolder<MapType> {
             AttributeModifier.Type type = modifier.type();
             final double modify = modifier.value();
             switch (type) {
-                case ADD -> base += modify;
-                case MULTIPLY -> base *= modify;
+                case ADD:
+                    base += modify;
+                    break;
+                case MULTIPLY:
+                    base *= modify;
+                    break;
             }
         }
         return base;

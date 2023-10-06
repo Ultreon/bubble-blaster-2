@@ -15,6 +15,7 @@ public class BubbleBlasterConfig {
 
     // Generic
     public static final Config.BooleanEntry ENABLE_ANNOYING_EASTER_EGGS;
+    public static final Config.BooleanEntry ENABLE_EASTER_EGGS;
     public static final Config.IntEntry AUTO_SAVE_RATE;
     public static final Config.IntEntry MAX_FRAMERATE;
 
@@ -54,9 +55,10 @@ public class BubbleBlasterConfig {
         Config.Builder builder = new Config.Builder(FILE.file());
 
         // Generic
-        ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that can be annoying in some way.").value(false);
+        ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that mess with gameplay a little to hard.").value(false);
+        ENABLE_EASTER_EGGS = builder.entry("generic.enableEasterEggs").comment("Enables hidden easter eggs.").value(true);
         AUTO_SAVE_RATE = builder.entry("generic.autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
-        MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, 120);
+        MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, GamePlatform.get().getRecommendedFPS());
         FULLSCREEN = builder.entry("generic.fullscreen").comment("Play the game in fullscreen mode.").value(false);
 
         // Gameplay
@@ -65,8 +67,8 @@ public class BubbleBlasterConfig {
         SHOOT_COOLDOWN = builder.entry("gameplay.shootCooldown").comment("How much time to wait until the player can shoot a bullet again. (In milliseconds)").withinRange(50, 2_000, 500);
         BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240_000, 120_000);
         BOOST_DURATION = builder.entry("gameplay.boostDuration").comment("The amount of time to accelerate. (In milliseconds)").withinRange(500, 5_000, 1_000);
-        BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.001, 0.04, 16.0);
-        BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.001, 0.1, 16.0);
+        BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.01, 100.0, 16.0);
+        BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.01, 100.0, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);
         MAX_BUBBLES = builder.entry("gameplay.maxBubbles").comment("The maximum amount of bubbles.").withinRange(200, 2000, 500);
         BLOOD_MOON_STOP_LOW = builder.entry("gameplay.bloodMoon.deactivateLow").comment("The lower point of deactivation time (in seconds) for the blood moon event. (Random between lower and higher)").withinRange(10, 60, 10);
@@ -106,6 +108,7 @@ public class BubbleBlasterConfig {
 
     public static void save() {
         CONFIG.save();
+        CONFIG.reload();
     }
 
     public static void reload() {

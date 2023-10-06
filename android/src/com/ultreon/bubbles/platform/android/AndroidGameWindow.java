@@ -86,11 +86,12 @@ public class AndroidGameWindow implements GameWindow {
         // TODO: Use final setup in game window.
     }
 
-    public void toggleFullscreen() {
+    public boolean toggleFullscreen() {
         this.setFullscreen(!this.isFullscreen());
+        return false;
     }
 
-    public void setFullscreen(boolean enable) {
+    public boolean setFullscreen(boolean enable) {
         if (this.isFullscreen() && !enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
                 this.setVisible(true);
@@ -109,6 +110,7 @@ public class AndroidGameWindow implements GameWindow {
 
         BubbleBlasterConfig.FULLSCREEN.set(enable);
         BubbleBlasterConfig.save();
+        return enable;
     }
 
     public void setVisible(boolean visible) {

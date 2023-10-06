@@ -2,7 +2,6 @@ package com.ultreon.commons.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,7 +13,6 @@ import java.util.Objects;
  */
 @Deprecated
 public final class Percentage implements Serializable, Comparable<Percentage> {
-    @Serial
     private static final long serialVersionUID = 0L;
     private final double percentage;
 

@@ -57,32 +57,32 @@ public enum Difficulty implements Translatable {
         }
 
         public ModifierAction action() {
-            return action;
+            return this.action;
         }
 
         public float value() {
-            return value;
+            return this.value;
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (Modifier) obj;
+            Modifier that = (Modifier) obj;
             return Objects.equals(this.action, that.action) &&
                     Float.floatToIntBits(this.value) == Float.floatToIntBits(that.value);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(action, value);
+            return Objects.hash(this.action, this.value);
         }
 
         @Override
         public String toString() {
             return "Modifier[" +
-                    "action=" + action + ", " +
-                    "value=" + value + ']';
+                    "action=" + this.action + ", " +
+                    "value=" + this.value + ']';
         }
 
         }
@@ -136,9 +136,15 @@ public enum Difficulty implements Translatable {
             float modifyTotal = 1;
             for (Modifier modifier : this.modifiers.values()) {
                 switch (modifier.action) {
-                    case ADD -> value += modifier.value;
-                    case MULTIPLY -> value *= modifier.value;
-                    case MULTIPLY_TOTAL -> modifyTotal *= modifier.value;
+                    case ADD:
+                        value += modifier.value;
+                        break;
+                    case MULTIPLY:
+                        value *= modifier.value;
+                        break;
+                    case MULTIPLY_TOTAL:
+                        modifyTotal *= modifier.value;
+                        break;
                 }
             }
 

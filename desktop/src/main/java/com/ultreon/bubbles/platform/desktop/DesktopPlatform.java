@@ -178,7 +178,7 @@ public class DesktopPlatform extends GamePlatform {
     }
 
     private URL getGameFile() {
-        return gameFile;
+        return this.gameFile;
     }
 
     @Override
@@ -276,6 +276,11 @@ public class DesktopPlatform extends GamePlatform {
     @Override
     public void showError(@NotNull String title, @Nullable String description) {
         JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public int getRecommendedFPS() {
+        return 120;
     }
 
     @Override

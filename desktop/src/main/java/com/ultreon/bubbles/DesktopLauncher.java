@@ -19,10 +19,10 @@ public class DesktopLauncher {
     };
 
     public static void main(String[] argv) {
-        var config = DesktopLauncher.createConfig();
+        Lwjgl3ApplicationConfiguration config = DesktopLauncher.createConfig();
 
 
-        var arguments = new Arguments();
+        Arguments arguments = new Arguments();
         arguments.parse(argv);
         DesktopPlatform platform = new DesktopPlatform(arguments);
 
@@ -50,7 +50,7 @@ public class DesktopLauncher {
             icons.add("assets/bubbleblaster/icons/icon" + size + ".png");
         }
 
-        var config = new Lwjgl3ApplicationConfiguration();
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setBackBufferConfig(8, 8, 8, 8, 32, 0, 16);
         config.setResizable(false);
         config.useVsync(true);

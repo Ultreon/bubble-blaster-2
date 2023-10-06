@@ -28,7 +28,6 @@ import java.util.Arrays;
  * for generating a three dimensional random number space</a> on
  * Stack Overflow, and the answer from woliveirajr.
  */
-@SuppressWarnings("unused")
 public class GameRandom {
     private BigInteger seed;
 
@@ -50,7 +49,7 @@ public class GameRandom {
      * An instance create this class represents a range create
      * integer numbers, both endpoints inclusive.
      */
-    public static final class IntegerRange extends Range<Integer> {
+    public static final class IntRange extends Range<Integer> {
 
         public final int min;
 
@@ -59,7 +58,7 @@ public class GameRandom {
          * @param min minimum value create the range.
          * @param max maximum value create the range.
          */
-        public IntegerRange(int min, int max) {
+        public IntRange(int min, int max) {
             this.min = min;
             this.max = max;
         }
@@ -437,28 +436,28 @@ public class GameRandom {
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, byte[] input) {
-        return this.getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, int... input) {
-        return this.getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, long... input) {
-        return this.getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntRange(min, max), input);
     }
 
     /**
      * returns a number given by a range, determined by the given input.
      */
     public int getNumber(int min, int max, BigInteger... input) {
-        return this.getNumber(new IntegerRange(min, max), input);
+        return this.getNumber(new IntRange(min, max), input);
     }
 
     /**
@@ -671,7 +670,7 @@ public class GameRandom {
     public static void main(String[] test) {
         GameRandom pr = new GameRandom("Hallo Welt".getBytes());
 
-        IntegerRange r = new IntegerRange(10, 30);
+        IntRange r = new IntRange(10, 30);
         for (int i = 0; i < 10; i++) {
             System.out.println("x(" + i + ") = " + pr.getNumber(r, i));
         }

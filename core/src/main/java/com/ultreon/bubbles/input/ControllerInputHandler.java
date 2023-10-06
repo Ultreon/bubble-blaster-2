@@ -14,12 +14,12 @@ import com.ultreon.libs.commons.v0.Mth;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
-public class ControllerHandler extends InputHandler<ControllerInput> {
+public class ControllerInputHandler extends InputHandler<ControllerInput> {
     private static final float DEAD_ZONE = 0.2f;
     private static final float MOUSE_SPEED = 200f;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
 
-    public ControllerHandler() {
+    public ControllerInputHandler() {
         super(ControllerInput.get(), InputType.Controller);
     }
 
@@ -37,7 +37,7 @@ public class ControllerHandler extends InputHandler<ControllerInput> {
         if (moveX > -DEAD_ZONE && moveX < DEAD_ZONE) moveX = 0f;
         if (moveY > -DEAD_ZONE && moveY < DEAD_ZONE) moveY = 0f;
 
-        Vector2 cursorPos = KeyboardInput.getMousePos();
+        Vector2 cursorPos = DesktopInput.getMousePos();
         if (moveX > 0 || moveY > 0) {
             cursorPos.add(moveX * MOUSE_SPEED / TPS, moveY * MOUSE_SPEED / TPS);
             cursorPos.x = Mth.clamp(cursorPos.x, 0, Gdx.graphics.getWidth());

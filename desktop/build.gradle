@@ -52,10 +52,10 @@ archivesBaseName = archives_base_name + "-desktop"
 java {
     withSourcesJar()
     withJavadocJar()
+}
 
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+compileJava {
+    sourceCompatibility = "11"
 }
 
 evaluationDependsOn(":core")

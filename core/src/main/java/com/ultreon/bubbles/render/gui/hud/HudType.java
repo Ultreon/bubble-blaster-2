@@ -9,6 +9,7 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.CommandScreen;
 import com.ultreon.bubbles.world.World;
 
 /**
@@ -41,8 +42,8 @@ public abstract class HudType implements Controllable {
 
     public void drawMessages(Renderer renderer) {
         LoadedGame loadedGame = this.game.getLoadedGame();
-        if (loadedGame != null) {
-            loadedGame.drawMessages(this.game, renderer);
+        if (loadedGame != null && !this.game.hasScreenOpen()) {
+            CommandScreen.drawMessages(renderer, this.game.getHeight());
         }
     }
 
