@@ -103,8 +103,6 @@ configurations {
  */
 dependencies {
     // Projects
-//    shadow(project(":core")) { transitive false }
-//    shadow(project(":desktop")) { transitive false }
     implementation(project(":core"))
     implementation(project(":desktop"))
 }

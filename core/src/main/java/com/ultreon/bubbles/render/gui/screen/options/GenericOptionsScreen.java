@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render.gui.screen.options;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.input.MobileInput;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -14,6 +15,7 @@ import com.ultreon.libs.text.v1.TextObject;
 import static com.ultreon.bubbles.BubbleBlasterConfig.*;
 
 public class GenericOptionsScreen extends Screen {
+    private ToggleButton enableTouchPressure;
     private ToggleButton enableAnnoyingEasterEggs;
     private ToggleButton enableEasterEggs;
     private NumberSlider autoSaveRate;
@@ -26,6 +28,7 @@ public class GenericOptionsScreen extends Screen {
     }
 
     public void save() {
+        ENABLE_TOUCH_PRESSURE.set(this.enableTouchPressure.isToggled() && this.enableTouchPressure.enabled);
         ENABLE_ANNOYING_EASTER_EGGS.set(this.enableAnnoyingEasterEggs.isToggled());
         ENABLE_EASTER_EGGS.set(this.enableEasterEggs.isToggled());
         AUTO_SAVE_RATE.set(this.autoSaveRate.getValue());
@@ -37,6 +40,11 @@ public class GenericOptionsScreen extends Screen {
     @Override
     public void init() {
         var entryWidth = 100;
+        this.enableTouchPressure = this.add(ToggleButton.builder()
+                .toggled(ENABLE_TOUCH_PRESSURE)
+                .text(TextObject.translation("bubbleblaster.screen.options.generic.touchPressure"))
+                .bounds(this.middleX + 1, this.middleY + 1, 300, 48).build());
+        this.enableTouchPressure.enabled = MobileInput.isPressureAvailable();
         this.enableAnnoyingEasterEggs = this.add(ToggleButton.builder()
                 .toggled(ENABLE_ANNOYING_EASTER_EGGS)
                 .text(TextObject.translation("bubbleblaster.screen.options.generic.enableAnnoyingEasterEggs"))

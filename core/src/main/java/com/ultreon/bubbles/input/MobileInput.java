@@ -1,11 +1,13 @@
 package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import com.ultreon.libs.datetime.v0.Duration;
@@ -38,7 +40,7 @@ public class MobileInput implements InputProcessor, InputObject {
     }
 
     public static Vector2 getTouchPos(int pointer) {
-        return new Vector2(Gdx.input.getX(1), Gdx.input.getY(1));
+        return new Vector2(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
     }
 
     public static Vector2 getMouseDelta() {
@@ -54,7 +56,12 @@ public class MobileInput implements InputProcessor, InputObject {
     }
 
     public static float getTouchPressure() {
-        return Gdx.input.getPressure();
+        var pressureAvailable = MobileInput.isPressureAvailable() && BubbleBlasterConfig.ENABLE_TOUCH_PRESSURE.get();
+        return pressureAvailable ? Gdx.input.getPressure(0) : Gdx.input.isTouched(0) ? 1f : 0f;
+    }
+
+    public static boolean isPressureAvailable() {
+        return Gdx.input.isPeripheralAvailable(Input.Peripheral.Pressure);
     }
 
     public static float getPitch() {

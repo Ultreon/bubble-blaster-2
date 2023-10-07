@@ -80,6 +80,7 @@
   "bubbleblaster.screen.options.gameplay.scoreReductionIndirect": "Score Reduction Indirect",
   "bubbleblaster.screen.options.gameplay.scoreReductionDirect": "Score Reduction Direct",
   "bubbleblaster.screen.options.generic": "Generic...",
+  "bubbleblaster.screen.options.generic.touchPressure": "Enable Touch Pressure",
   "bubbleblaster.screen.options.generic.enableAnnoyingEasterEggs": "Enable Annoying Easter Eggs",
   "bubbleblaster.screen.options.generic.enableEasterEggs": "Enable Easter Eggs",
   "bubbleblaster.screen.options.generic.autoSaveRate": "Auto-Save Rate (secs)",

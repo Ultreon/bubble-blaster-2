@@ -92,6 +92,8 @@ public class Button extends AbstractButton implements GuiStateListener {
 
         if (this.enabled)
             renderer.fill(this.getBounds(), this.backgroundColor);
+        else
+            renderer.fill(this.getBounds(), Color.WHITE.withAlpha(0x10));
 
         if (this.isHovered() && this.enabled) {
             renderer.hovered();
@@ -102,6 +104,6 @@ public class Button extends AbstractButton implements GuiStateListener {
     }
 
     protected void drawText(Renderer renderer) {
-        AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.getText(), this.getFont());
+        AbstractButton.drawText(renderer, this.enabled ? Color.WHITE : Color.WHITE.withAlpha(0x60), this.getPos(), this.getSize(), this.getText(), this.getFont());
     }
 }

@@ -42,7 +42,7 @@ public class MobileInputHandler extends InputHandler<MobileInput> {
         if (!GamePlatform.get().isMobile()) return false;
 
         var touchPressure = MobileInput.getTouchPressure();
-        if (touchPressure < 0.2) touchPressure = 0;
+        if (touchPressure < 0.1) touchPressure = 0;
         player.moving(Mth.clamp(touchPressure, 0, 1));
         player.setRotation(player.getAngleTo(MobileInput.getTouchPos()));
 

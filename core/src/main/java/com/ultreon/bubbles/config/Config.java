@@ -52,10 +52,10 @@ public class Config {
         try {
             PARSER.parse(this.file, this.config, ParsingMode.REPLACE, FileNotFoundAction.READ_NOTHING);
             this.entries.forEach((s, configEntry) -> {
-                if (configEntry.isSet()) {
-                    configEntry.inherit();
+                var o = this.config.get(configEntry.path);
+                if (o != null && configEntry.setSafe(o))
                     return;
-                }
+
                 configEntry.reset();
             });
         } catch (ParsingException e) {
@@ -434,7 +434,7 @@ public class Config {
         }
 
         @SuppressWarnings("unchecked")
-        private void set0(Object value) {
+        private void setUnsafe(Object value) {
             if (value != null && !this.type.isInstance(value))
                 throw new ClassCastException(value.getClass().getName() + " can't be cast to " + this.type.getName());
             if (value == null)
@@ -442,6 +442,17 @@ public class Config {
 
             this.config.set(this.path, value);
             this.value = (T) value;
+        }
+
+        private boolean setSafe(Object value) {
+            if (value != null && !this.type.isInstance(value))
+                return false;
+            if (value == null)
+                value = this.defaultValue;
+
+            this.config.set(this.path, value);
+            this.value = (T) value;
+            return true;
         }
 
         public String getComment() {
@@ -462,7 +473,8 @@ public class Config {
         }
 
         public void reset() {
-            this.set(this.getDefaultValue());
+            this.value = this.defaultValue;
+            this.config.set(this.path, this.defaultValue);
             this.config.setComment(this.path, this.getComment());
         }
 
