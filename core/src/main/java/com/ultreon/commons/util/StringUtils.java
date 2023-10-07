@@ -155,7 +155,7 @@ public class StringUtils {
             var c = str.charAt(i);
             if (c == '\r') {
                 var newlineLength = 1;
-                if ((i + 1) < len && str.charAt(i + 1) == '\n')
+                if (i + 1 < len && str.charAt(i + 1) == '\n')
                     newlineLength = 2;
                 strings.add(str.substring(lineStart, i));
                 lineStart = i + newlineLength;

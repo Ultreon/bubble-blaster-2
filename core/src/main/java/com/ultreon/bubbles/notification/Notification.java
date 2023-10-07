@@ -21,6 +21,7 @@ public class Notification {
         this.summary = builder.summary;
         this.subText = (builder.subText == null || builder.subText.isBlank() ? "Game Notification" : builder.subText).toUpperCase(Locale.ROOT);
         this.duration = builder.duration.toMillis();
+        this.sticky = builder.sticky;
     }
 
     public static Builder builder(String title, String summary) {
@@ -55,7 +56,7 @@ public class Notification {
         else if (this.getLifetime() < MAX_FADE_IN + this.duration || this.sticky)
             return 0f;
         else if (this.getLifetime() < MAX_FADE_IN + this.duration + MAX_FADE_OUT)
-            return ((float) (this.getLifetime() - MAX_FADE_IN - this.duration) / MAX_FADE_OUT);
+            return (float) (this.getLifetime() - MAX_FADE_IN - this.duration) / MAX_FADE_OUT;
         else
             return 1f;
     }

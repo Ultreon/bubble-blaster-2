@@ -69,7 +69,7 @@ public class CommandScreen extends Screen {
      * Should not being called, for internal use only.
      *
      * @param renderer a 2D graphics instance.
-     * @param y
+     * @param y y offset
      */
     public static void drawMessages(Renderer renderer, int y) {
         CommandScreen.drawMessages(renderer, y, false);
@@ -84,7 +84,7 @@ public class CommandScreen extends Screen {
     public static void drawMessages(Renderer renderer, int y, boolean all) {
         var line = 1;
         for (var message : MESSAGES) {
-            var msgY = y - (22 * line);
+            var msgY = y - 22 * line;
             if (msgY < -20) break;
             if (!all && Instant.now().isAfter(message.created().plusMillis(MESSAGE_DURATION))) continue;
             CommandScreen.drawMessage(renderer, msgY, message);

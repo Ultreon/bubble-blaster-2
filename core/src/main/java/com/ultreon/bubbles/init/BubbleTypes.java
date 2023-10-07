@@ -72,7 +72,7 @@ public class BubbleTypes {
             .radius(28, 87)
             .speed(1.5, 3)
             .score(0.2, 0.4)
-            .effect((source, target) -> (new StatusEffectInstance(StatusEffects.PARALYZE, Duration.ofSeconds((long) (source.getRadius() / 8)), (byte) 1)))
+            .effect((source, target) -> new StatusEffectInstance(StatusEffects.PARALYZE, Duration.ofSeconds((long) (source.getRadius() / 8)), (byte) 1))
             .colors("#ffff00,#ffff5f,#ffffdf,#ffffff")
             .difficulty(10)
             .build());

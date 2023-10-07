@@ -73,7 +73,7 @@ public class GameOverScreen extends Screen {
         super.renderBackground(renderer);
 
         var cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
-        var phase = (int) (Math.floorDiv(cycled, 1000));
+        var phase = (int) Math.floorDiv(cycled, 1000);
         switch (phase) {
             case 4:
             case 3:

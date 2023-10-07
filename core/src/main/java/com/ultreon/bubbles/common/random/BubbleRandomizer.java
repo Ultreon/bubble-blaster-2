@@ -30,7 +30,6 @@ public class BubbleRandomizer extends EntityRandomizer<Bubble> {
         var type = bubble.getBubbleType();
 
         // Properties
-        var hardness = type.getHardness().getValue();
         var speed = (float) type.getSpeed().getValue();
         var radius = (float) type.getRadius().getValue();
 
@@ -43,7 +42,7 @@ public class BubbleRandomizer extends EntityRandomizer<Bubble> {
             y = rng.nextInt((int) bounds.getY(), (int) bounds.getY() + (int) bounds.getHeight());
         }
 
-        var rad = (int) (radius + (type.getColors().size() * 3) + 4);
+        var rad = (int) (radius + type.getColors().size() * 3 + 4);
         var defense = (float) type.getDefense().getValue();
         var attack = (float) type.getAttack().getValue();
         var score = (float) type.getScore().getValue();

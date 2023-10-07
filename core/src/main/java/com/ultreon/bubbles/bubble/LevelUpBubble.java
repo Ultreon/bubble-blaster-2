@@ -58,8 +58,8 @@ public class LevelUpBubble extends BubbleType {
 
         // Check for existing level-up bubble entities.
         if (world.getEntities().stream().
-                filter((entity) -> entity instanceof Bubble) // Filter for bubble entities.
-                .map((entity) -> (Bubble) entity) // Cast to bubble entities.
+                filter(entity -> entity instanceof Bubble) // Filter for bubble entities.
+                .map(entity -> (Bubble) entity) // Cast to bubble entities.
                 .anyMatch(bubbleEntity -> bubbleEntity.getBubbleType() == this)) { // Check for level-up bubbles create the type create this class.
             return false; // Then it can't spawn.
         }

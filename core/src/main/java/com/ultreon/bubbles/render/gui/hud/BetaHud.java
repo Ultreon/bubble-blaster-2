@@ -160,11 +160,11 @@ public class BetaHud extends HudType {
         playerDamage = Mth.clamp(playerDamage, 0, player.getMaxHealth());
         var max = playerMaxDamage / 2;
         if (playerDamage > playerMaxDamage / 2) {
-            redValue = (int) ((max - (((playerDamage) - max))) * 255 / max);
+            redValue = (int) ((max - (playerDamage - max)) * 255 / max);
             redValue = (int) Mth.clamp((double) redValue, 0, 255);
             greenValue = 255;
         } else {
-            greenValue = (int) ((playerDamage) * 255 / (max / 2));
+            greenValue = (int) (playerDamage * 255 / (max / 2));
             greenValue = (int) Mth.clamp((double) greenValue, 0, 255);
             redValue = 255;
         }

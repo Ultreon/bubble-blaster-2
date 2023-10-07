@@ -35,7 +35,7 @@ public class ScrollBar extends GuiComponent {
     }
 
     private Rectangle getThumbBounds() {
-        return new Rectangle(this.x + this.getWidth() / 2f - 2, this.y + (float) (this.percent * (this.getHeight() - this.scale())) + (this.getWidth() / 2f - 2), 3, (float) (this.scale()) - (this.getWidth() / 2f - 2) * 2);
+        return new Rectangle(this.x + this.getWidth() / 2f - 2, this.y + (float) (this.percent * (this.getHeight() - this.scale())) + (this.getWidth() / 2f - 2), 3, (float) this.scale() - (this.getWidth() / 2f - 2) * 2);
     }
 
     private double scale() {

@@ -44,7 +44,7 @@ public class ScrollableView extends Container {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         this.updateXYOffset();
         this.scrollBar.setPercent(this.viewport.getYPercent());
-        this.scrollBar.setScale(1 - (((double) this.viewport.getViewportSize().y - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().y));
+        this.scrollBar.setScale(1 - ((double) this.viewport.getViewportSize().y - (double) this.viewport.getHeight()) / (double) this.viewport.getViewportSize().y);
 
         this.renderComponent(renderer);
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);

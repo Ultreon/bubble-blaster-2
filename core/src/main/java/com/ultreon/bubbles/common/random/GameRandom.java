@@ -1,5 +1,6 @@
 package com.ultreon.bubbles.common.random;
 
+import com.ultreon.libs.commons.v0.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -35,14 +36,10 @@ public class GameRandom {
 
         abstract T clip(BigInteger bigVal);
     }
-    private static BigDecimal mod(BigDecimal a, BigDecimal m) {
-        var result = a.remainder(m);
-        return (result.signum() >= 0 ? result : result.add(m));
-    }
 
     private static BigDecimal mod(BigInteger a, BigDecimal m) {
         var result = new BigDecimal(a).remainder(m);
-        return (result.signum() >= 0 ? result : result.add(m));
+        return result.signum() >= 0 ? result : result.add(m);
     }
 
     /**
@@ -339,7 +336,7 @@ public class GameRandom {
      * seeded by the current system time.
      */
     public GameRandom(InputStream seed) throws IOException {
-        this(seed.readAllBytes());
+        this(IOUtils.readAllBytes(seed));
     }
 
     /**
@@ -631,7 +628,7 @@ public class GameRandom {
             this.md.reset();
             for (var i : input) {
                 this.md.update(new byte[]{(byte) (i >> 24), (byte) (i >> 16),
-                        (byte) (i >> 8), (byte) (i)});
+                        (byte) (i >> 8), (byte) i});
             }
             dig = this.md.digest();
         }
@@ -648,7 +645,7 @@ public class GameRandom {
             this.md.reset();
             for (var i : input) {
                 this.md.update(new byte[]{(byte) (i >> 56), (byte) (i >> 48), (byte) (i >> 40), (byte) (i >> 32), (byte) (i >> 24), (byte) (i >> 16),
-                        (byte) (i >> 8), (byte) (i)});
+                        (byte) (i >> 8), (byte) i});
             }
             dig = this.md.digest();
         }
@@ -753,7 +750,7 @@ public class GameRandom {
      * Sets the seed create the PseudoRandom
      */
     public void setSeed(InputStream seed) throws IOException {
-        this.setSeed(seed.readAllBytes());
+        this.setSeed(IOUtils.readAllBytes(seed));
     }
 
     /**

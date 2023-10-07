@@ -45,7 +45,7 @@ public final class LanguageScreen extends Screen {
         this.languageList.setEntryRenderer(this::renderEntry);
         this.languageList.addSelectHandler(entry -> LanguageManager.setCurrentLanguage(entry.value.getLocale()));
 
-        this.saveButton = this.add(Button.builder().bounds((this.width / 2) + 5, this.height - 50, calcWidth / 2 - 5, 40).text(Translations.SAVE).build());
+        this.saveButton = this.add(Button.builder().bounds(this.width / 2 + 5, this.height - 50, calcWidth / 2 - 5, 40).text(Translations.SAVE).build());
         this.saveButton.setCommand(this::save);
 
         this.cancelButton = this.add(Button.builder().bounds((this.width - calcWidth) / 2, this.height - 50, calcWidth / 2 - 5, 40).text(Translations.CANCEL).build());

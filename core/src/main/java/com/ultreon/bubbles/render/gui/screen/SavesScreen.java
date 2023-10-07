@@ -137,9 +137,9 @@ public class SavesScreen extends Screen {
 
             renderer.fill(x, y, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
             if (selected)
-                renderer.drawErrorEffectBox(x, (int) y, (int) (width), (int) (height), new Insets(1, 1, 4, 1));
+                renderer.drawErrorEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 4, 1));
             else if (hovered)
-                renderer.drawErrorEffectBox(x, (int) (y), (int) (width), (int) (height), new Insets(1, 1, 1, 1));
+                renderer.drawErrorEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
             renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
             renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
@@ -148,13 +148,13 @@ public class SavesScreen extends Screen {
 
         final var info = cachedInfo.getValue();
         final var name = info.getName();
-        final var description = info.getGamemode().getName().getText() + (", " + info.getSavedTimeFormatted());
+        final var description = info.getGamemode().getName().getText() + ", " + info.getSavedTimeFormatted();
 
         renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
         if (selected)
-            renderer.drawEffectBox(x, (int) y, (int) (width), (int) (height), new Insets(1, 1, 4, 1));
+            renderer.drawEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 4, 1));
         else if (hovered)
-            renderer.drawEffectBox(x, (int) (y), (int) (width), (int) (height), new Insets(1, 1, 1, 1));
+            renderer.drawEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
         renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
         renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));

@@ -57,11 +57,11 @@ public class ModernHud extends HudType {
         this.game.profiler.section("Draw Messages", () -> this.drawMessages(renderer));
         this.game.profiler.section("Draw Level Up Message", () -> this.drawLevelUpMessage(renderer, gamemode));
         if (GamePlatform.get().isMobile()) {
-            this.game.profiler.section("Draw Mobile Overlay", () -> this.drawMobileOverlay(renderer, world));
+            this.game.profiler.section("Draw Mobile Overlay", () -> this.drawMobileOverlay(renderer));
         }
     }
 
-    private void drawMobileOverlay(Renderer renderer, World world) {
+    private void drawMobileOverlay(Renderer renderer) {
         renderer.fill(this.game.mobileInput.getShootBtnRegion(), Color.BLACK.withAlpha(0x80));
         if (!this.game.hasScreenOpen()) {
             renderer.fill(this.game.mobileInput.getPauseBtnRegion(), Color.BLACK.withAlpha(0x80));
@@ -108,10 +108,10 @@ public class ModernHud extends HudType {
             else color = Color.CRIMSON;
 
             renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, ratio >= 0.2 ? Color.WHITE.withAlpha(0x50) : color);
-            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, color);
+            renderer.line(x + 5, y + 75, x + (int) (5 + 290 * health / maxHealth), y + 75, color);
         } else {
             renderer.drawText(this.playerDetailsInfoFont, hpText, x + 5, y + 60, Color.CRIMSON);
-            renderer.line(x + 5, y + 75, x + (int) (5 + (290 * health / maxHealth)), y + 75, Color.CRIMSON);
+            renderer.line(x + 5, y + 75, x + (int) (5 + 290 * health / maxHealth), y + 75, Color.CRIMSON);
         }
     }
 

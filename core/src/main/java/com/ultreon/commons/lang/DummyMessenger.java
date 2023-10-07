@@ -8,7 +8,7 @@ package com.ultreon.commons.lang;
 @Deprecated
 public class DummyMessenger extends Messenger {
     public DummyMessenger() {
-        super((s) -> {
+        super(s -> {
         });
     }
 }

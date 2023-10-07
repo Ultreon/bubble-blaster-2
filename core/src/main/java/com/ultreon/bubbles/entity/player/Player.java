@@ -338,7 +338,7 @@ public class Player extends LivingEntity implements InputController {
             appliedEffect.tick(this);
         }
 
-        this.statusEffects.removeIf((effect -> effect.getRemainingTime().isNegative()));
+        this.statusEffects.removeIf(effect -> effect.getRemainingTime().isNegative());
 
         this.accel.x *= (this.brake ? DRAG / 1.1f : DRAG) / TPS * 40;
         this.accel.y *= (this.brake ? DRAG / 1.1f : DRAG) / TPS * 40;

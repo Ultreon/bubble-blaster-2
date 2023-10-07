@@ -18,14 +18,11 @@ public class BubbleSystem {
     protected static long maxPriority = 0L;
     private static final SizedList<BubbleType> defaults = new SizedList<>();
     private static final SizedList<BubbleType> priorities = new SizedList<>();
-    private static boolean active;
 
     public static void begin() {
-        active = true;
     }
 
     public static void end() {
-        active = false;
     }
 
     public static double getDefaultPriority(BubbleType bubble) {
@@ -98,7 +95,7 @@ public class BubbleSystem {
      */
     public static BubbleType random(RandomSource random, World world) {
         double localDifficulty = world.getLocalDifficulty();
-        priorities.editLengths((bubbleType2) -> bubbleType2.getModifiedPriority(localDifficulty));
+        priorities.editLengths(bubbleType2 -> bubbleType2.getModifiedPriority(localDifficulty));
 
         var index = random.nextDouble(0, priorities.getTotalSize());
         return priorities.getValue(index);

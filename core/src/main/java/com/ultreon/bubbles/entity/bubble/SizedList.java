@@ -130,7 +130,7 @@ public class SizedList<T> {
      * @return the value.
      */
     public T getValue(double drIndex) {
-        if (!((0d <= drIndex) && (this.totalSize > drIndex))) {
+        if (!(0d <= drIndex && this.totalSize > drIndex)) {
             throw new OutOfRangeException(drIndex, 0, this.totalSize);
         }
 
@@ -138,7 +138,7 @@ public class SizedList<T> {
         double currentSize = -1;
         for (var i = 0; i < this.sizes.size(); i++) {
             var newSize = currentSize + this.sizes.get(i);
-            if ((currentSize < drIndex) && (newSize >= drIndex)) {
+            if (currentSize < drIndex && newSize >= drIndex) {
                 value = this.values.get(i);
             }
 

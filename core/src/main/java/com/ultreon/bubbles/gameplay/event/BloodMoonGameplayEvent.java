@@ -30,7 +30,6 @@ import static com.ultreon.bubbles.BubbleBlaster.TPS;
 public class BloodMoonGameplayEvent extends GameplayEvent {
     private static final UUID NOISE_EFFECT_ID = UUID.fromString("7d6dfafe-bbe6-4795-bc09-8c778af55115");
     private static final Color UPPER_COLOR = Color.rgb(0xff2010);
-    private static final Color LOWER_COLOR = Color.rgb(0x3b00a1);
     private static final Difficulty.ModifierToken MODIFIER_TOKEN = new Difficulty.ModifierToken();
     private static final Marker MARKER = MarkerFactory.getMarker("BloodMoon");
     private final Date date = new Date(31, 10, 0);
@@ -53,7 +52,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
 
         world.getDifficultyModifiers().set(MODIFIER_TOKEN, new Difficulty.Modifier(Difficulty.ModifierAction.MULTIPLY, 8));
-        BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs)");
+        BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for " + this.deactivateTicks + " ticks (" + this.deactivateTicks / TPS + " secs)");
     }
 
     @Override
@@ -70,7 +69,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
         world.updateNextBloodMoon();
         world.getDifficultyModifiers().remove(MODIFIER_TOKEN);
-        BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs) left.");
+        BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, " + this.deactivateTicks + " ticks (" + this.deactivateTicks / TPS + " secs) left.");
     }
 
     @Override
@@ -120,7 +119,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         var flag3 = dateTime.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;  // Friday
         var flag4 = dateTime.getDate().getDay() == 13;  // 13th
 
-        return (flag1 && flag2) || (flag3 && flag4);  // Every October 31st in devil's hour. Or Friday 13th.
+        return flag1 && flag2 || flag3 && flag4;  // Every October 31st in devil's hour. Or Friday 13th.
     }
 
     public void deactivate() {

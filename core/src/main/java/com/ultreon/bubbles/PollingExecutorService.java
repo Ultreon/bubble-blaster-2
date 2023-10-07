@@ -132,7 +132,7 @@ public class PollingExecutorService implements ExecutorService {
 
         try {
             return CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0]))
-                    .thenApply(o -> ((T)o))
+                    .thenApply(o -> (T)o)
                     .get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

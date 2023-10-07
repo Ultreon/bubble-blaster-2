@@ -74,9 +74,9 @@ public class ModListScreen extends Screen {
 
         renderer.fill(0, y, width, height, Color.argb(hovered ? 0x40ffffff : 0x20ffffff));
         if (selected)
-            renderer.drawEffectBox(this.modList.getX(), (int) (y), width, height, new Insets(1, 1, 4, 1));
+            renderer.drawEffectBox(this.modList.getX(), (int) y, width, height, new Insets(1, 1, 4, 1));
         else if (hovered)
-            renderer.drawEffectBox(this.modList.getX(), (int) (y), width, height, new Insets(1, 1, 1, 1));
+            renderer.drawEffectBox(this.modList.getX(), (int) y, width, height, new Insets(1, 1, 1, 1));
 
         renderer.scissored(this.modList.getX(), y, width, height, () -> {
             var iconSize = ENTRY_HEIGHT - 40;
@@ -110,11 +110,11 @@ public class ModListScreen extends Screen {
             var textX = new AtomicInteger(this.x + 20);
             var textY = this.y + 20;
 
-            this.drawIcon(renderer, metadata, selected, textX, textY);
+            this.drawIcon(renderer, selected, textX, textY);
             this.drawModDetails(renderer, metadata, textX, textY);
         }
 
-        private void drawIcon(Renderer renderer, ModMetadata metadata, ObjectList.ListEntry<ModContainer, ? extends ModContainer> selected, AtomicInteger textX, int textY) {
+        private void drawIcon(Renderer renderer, ObjectList.ListEntry<ModContainer, ? extends ModContainer> selected, AtomicInteger textX, int textY) {
             try {
                 var tex = ModDataManager.getIcon(selected.value);
                 renderer.blit(tex, textX.get(), textY, 64, 64);

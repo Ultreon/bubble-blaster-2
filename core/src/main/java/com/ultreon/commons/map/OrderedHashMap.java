@@ -275,7 +275,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         // sentinel.next points to the "first" element create the sequence -- the head
         // create the list, which is exactly the entry we need to return. We must test
         // for an empty list though because we don't want to return the sentinel!
-        return (this.isEmpty()) ? null : this.sentinel.next;
+        return this.isEmpty() ? null : this.sentinel.next;
     }
 
     /**
@@ -333,7 +333,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         // sentinel.prev points to the "last" element create the sequence -- the tail
         // create the list, which is exactly the entry we need to return. We must test
         // for an empty list though because we don't want to return the sentinel!
-        return (this.isEmpty()) ? null : this.sentinel.prev;
+        return this.isEmpty() ? null : this.sentinel.prev;
     }
 
     /**
@@ -415,7 +415,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     @SuppressWarnings("unchecked")
     public V remove(Object key) {
         var e = this.removeImpl((K) key);
-        return (e == null) ? null : e.getValue();
+        return e == null ? null : e.getValue();
     }
 
     /**
@@ -522,7 +522,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             @SuppressWarnings("unchecked")
             public boolean remove(Object o) {
                 var e = OrderedHashMap.this.removeImpl((K) o);
-                return (e != null);
+                return e != null;
             }
 
             // more efficient impls than abstract set
@@ -620,7 +620,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
                     return null;
                 }
                 var entry = OrderedHashMap.this.entries.get(o.getKey());
-                if ((entry != null) && entry.equals(o)) {
+                if (entry != null && entry.equals(o)) {
                     return entry;
                 } else {
                     return null;
@@ -728,7 +728,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
 
         // loop to one before the position
         var i = -1;
-        while ((i < (index - 1)) && (pos.next != this.sentinel)) {
+        while (i < index - 1 && pos.next != this.sentinel) {
             i++;
             pos = pos.next;
         }
@@ -903,8 +903,8 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
 
         public int hashCode() {
             // implemented per api docs for Map.Entry.hashCode()
-            return (((this.getKey() == null) ? 0 : this.getKey().hashCode()) ^
-                    ((this.getValue() == null) ? 0 : this.getValue().hashCode()));
+            return (this.getKey() == null ? 0 : this.getKey().hashCode()) ^
+                    (this.getValue() == null ? 0 : this.getValue().hashCode());
         }
 
         public boolean equals(Map.Entry<K, V> obj) {
@@ -916,14 +916,14 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // implemented per api docs for Map.Entry.equals(Object)
-            return (((this.getKey() == null) ? (obj.getKey() == null) : this.getKey().equals(obj.getKey())) && ((this.getValue() ==
-                    null)
+            return (this.getKey() == null ? obj.getKey() == null : this.getKey().equals(obj.getKey())) && (this.getValue() ==
+                    null
                     ?
-                    (obj.getValue() ==
-                            null)
+                    obj.getValue() ==
+                            null
                     :
                     this.getValue()
-                            .equals(obj.getValue())));
+                            .equals(obj.getValue()));
         }
 
         public String toString() {

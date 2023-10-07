@@ -98,7 +98,7 @@ public class DebugRenderer {
             this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::isVisible).count());
             this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::willBeDeleted).count());
             this.left(renderer, "Null Entity Count", world.getEntities().stream().filter(Objects::isNull).count());
-            this.left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
+            this.left(renderer, "Cur. Game Event", curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null);
 
             if (DesktopInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
                 var pos = DesktopInput.getMousePos();
@@ -132,7 +132,7 @@ public class DebugRenderer {
             }
         }
         var screen = this.game.getCurrentScreen();
-        this.left(renderer, "Screen", (screen == null ? null : screen.getClass()));
+        this.left(renderer, "Screen", screen == null ? null : screen.getClass());
 
         this.lastProfile = BubbleBlaster.getLastProfile();
         if (this.selectedThread == null) {

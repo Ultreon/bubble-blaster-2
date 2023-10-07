@@ -26,7 +26,7 @@ public final class Range {
     }
 
     public boolean contains(double value) {
-        return (this.start <= value) && (this.end > value);
+        return this.start <= value && this.end > value;
     }
 
     public @NotNull DoubleIterator iterator() {
