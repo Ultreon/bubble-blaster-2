@@ -43,7 +43,7 @@ public class TitleScreen extends Screen {
     }
 
     private void startGame() {
-        this.game.showScreen(new StartOptionsScreen(this));
+        this.game.showScreen(new NewGameScreen());
     }
 
     @Override
@@ -64,43 +64,44 @@ public class TitleScreen extends Screen {
                 .bounds(this.width / 2 - 200, 220, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.start"))
                 .command(this::startGame)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
-        this.add(Button.builder()
+        var savesBtn = this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 300, 400, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.saves"))
                 .command(this::openSavesSelection)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
+        savesBtn.enabled = GamePlatform.get().isDevelopmentEnvironment();
         this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.mods"))
                 .command(this::openModList)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
                 .bounds(this.width / 2 + 10, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.options"))
                 .command(this::openOptions)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
                 .bounds(this.width / 2 - 200, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.language"))
                 .command(this::openLanguageSettings)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
                 .bounds(this.width / 2 + 10, 460, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.quit"))
                 .command(this.game::shutdown)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
                 .bounds(this.width - 40 - 180, 100, 180, 40)
                 .text(TextObject.translation("bubbleblaster.screen.title.resetHighScore"))
                 .command(this::resetHighScore)
-                .font(Fonts.SANS_REGULAR_20.get())
+                .font(Fonts.SANS_BIG.get())
                 .build());
     }
 
@@ -128,7 +129,7 @@ public class TitleScreen extends Screen {
         renderer.fillEffect(0, 175, this.width, 3);
         renderer.fillGradient(0, 178, this.width, 20, Color.argb(0x20000000), Color.TRANSPARENT);
 
-        renderer.drawTextCenter(Fonts.DONGLE_140.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
+        renderer.drawTextCenter(Fonts.DONGLE_TITLE.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
 
         renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion(), 40, 40, Color.WHITE);
         renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion(), 40, 52, Color.WHITE);
@@ -138,8 +139,8 @@ public class TitleScreen extends Screen {
             renderer.drawText(this.monospaced, "Mods Loaded: " + GamePlatform.get().getModsCount(), 40, 76, Color.WHITE);
         }
 
-        renderer.drawTextRight(Fonts.SANS_BOLD_32.get(), "High Score", this.width - 40, 40, Color.WHITE);
-        renderer.drawTextRight(Fonts.SANS_REGULAR_16.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
+        renderer.drawTextRight(Fonts.SANS_HEADER_1.get(), "High Score", this.width - 40, 40, Color.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }

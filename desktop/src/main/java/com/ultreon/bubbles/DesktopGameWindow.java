@@ -163,7 +163,7 @@ public class DesktopGameWindow implements GameWindow {
 
     @Override
     public boolean isFocused() {
-        return this.game().isFocused();
+        return this.getLwjglWindow().isFocused();
     }
 
     /**

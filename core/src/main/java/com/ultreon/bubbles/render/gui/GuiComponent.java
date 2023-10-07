@@ -29,7 +29,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected final GlyphLayout layout = new GlyphLayout();
 
     protected BitmapFont font = Fonts.DEFAULT.get();
-    public final BitmapFont monospaced = Functions.tryGet(Fonts.MONOSPACED_14).getLeftOrNull();
+    public final BitmapFont monospaced = Functions.tryGet(Fonts.MONOSPACED).getLeftOrNull();
 
     protected volatile int x;
     protected volatile int y;

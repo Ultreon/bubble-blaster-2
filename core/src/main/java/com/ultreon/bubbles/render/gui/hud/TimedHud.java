@@ -23,7 +23,7 @@ public class TimedHud extends ModernHud {
         var seconds = duration.toSeconds();
         if (!duration.isNegative()) {
             renderer.fill(x, y, 300, 80, Color.BLACK.withAlpha(0x80));
-            renderer.drawTextCenter(Fonts.SANS_BOLD_60.get(), duration.toSimpleString(), x + 150, y + 31, seconds <= 5 ? Color.CRIMSON : Color.WHITE);
+            renderer.drawTextCenter(Fonts.SANS_GIANT.get(), duration.toSimpleString(), x + 150, y + 31, seconds <= 5 ? Color.CRIMSON : Color.WHITE);
         }
     }
 }

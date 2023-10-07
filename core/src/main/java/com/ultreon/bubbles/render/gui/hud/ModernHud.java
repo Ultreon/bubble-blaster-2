@@ -35,9 +35,9 @@ public class ModernHud extends HudType {
     private int level;
     private String levelUpText;
     private final GlyphLayout levelUpLayout = new GlyphLayout();
-    private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_24.get();
-    private final BitmapFont playerDetailsNameFont = Fonts.SANS_BOLD_20.get();
-    private final BitmapFont playerDetailsInfoFont = Fonts.SANS_REGULAR_14.get();
+    private final BitmapFont levelUpFont = Fonts.SANS_HEADER_1.get();
+    private final BitmapFont playerDetailsNameFont = Fonts.SANS_HEADER_3.get();
+    private final BitmapFont playerDetailsInfoFont = Fonts.SANS_PARAGRAPH.get();
     private Instant gameOverTime;
 
     @Override
@@ -187,11 +187,11 @@ public class ModernHud extends HudType {
             renderer.scissored(x + 50, y + 2, 248, 46, () -> {
                 var translation = effectInstance.getType().getTranslation();
                 translation.append(" " + RomanNumbers.toRoman(effectInstance.getStrength()));
-                renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), translation, x + 70, finalY + 15, Color.WHITE);
+                renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), translation, x + 70, finalY + 15, Color.WHITE);
 
                 var color = Color.WHITE.withAlpha(0x80);
                 if (effectInstance.getRemainingTime().getSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
-                renderer.drawTextLeft(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time), x + 70, finalY + 35, color);
+                renderer.drawTextLeft(Fonts.SANS_PARAGRAPH.get(), TextObject.literal(time), x + 70, finalY + 35, color);
             });
 
             y += 60;

@@ -45,9 +45,9 @@ public class Notifications implements Renderable {
             renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT, Color.rgb(0x101010));
             renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10, Color.rgb(0x505050));
 
-            renderer.drawText(Fonts.SANS_BOLD_20.get(), title, x + motion + 10, y + 13, Color.rgb(0xd0d0d0));
-            renderer.drawText(Fonts.SANS_REGULAR_15.get(), summary, x + motion + 10, y + 40, Color.rgb(0xb0b0b0));
-            renderer.drawText(Fonts.SANS_BOLD_ITALIC_10.get(), subText == null ? "" : subText, x + motion + 10, y + 60, Color.rgb(0x707070));
+            renderer.drawText(Fonts.SANS_HEADER_3.get(), title, x + motion + 10, y + 13, Color.rgb(0xd0d0d0));
+            renderer.drawText(Fonts.SANS_PARAGRAPH.get(), summary, x + motion + 10, y + 40, Color.rgb(0xb0b0b0));
+            renderer.drawText(Fonts.SANS_SUBTITLE.get(), subText == null ? "" : subText, x + motion + 10, y + 60, Color.rgb(0x707070));
 
             y += NOTIFICATION_HEIGHT + NOTIFICATION_GAP;
         }

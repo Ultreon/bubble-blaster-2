@@ -171,6 +171,18 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         this.recalculateViewport();
     }
 
+    @CanIgnoreReturnValue
+    public boolean selectFirst() {
+        this.selected = this.entries.stream().findFirst().orElse(null);
+        return this.selected != null;
+    }
+
+    @CanIgnoreReturnValue
+    public boolean select(T value) {
+        this.selected = this.entries.stream().filter(entry -> entry.value == value).findFirst().orElse(null);
+        return this.selected != null;
+    }
+
     @FunctionalInterface
     public interface EntryRenderer<T> {
         void render(Renderer renderer, float width, float height, float y, T entry, boolean selected, boolean hovered);

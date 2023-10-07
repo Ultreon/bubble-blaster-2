@@ -34,10 +34,10 @@ public class ManualCrashOverlay implements Renderable {
             renderer.fill(0, 0, (int) width, 10, Color.CRIMSON);
             renderer.fill(0, (int) (height - 10), (int) width, 10, Color.CRIMSON);
 
-            renderer.drawText(Fonts.DONGLE_140.get(), "Manually Initiating Crash", 50, 60, Color.CRIMSON);
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "You have activated the MIC sequence!", 50, 210, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_24.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270, Color.WHITE);
+            renderer.drawText(Fonts.DONGLE_TITLE.get(), "Manually Initiating Crash", 50, 60, Color.CRIMSON);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "You have activated the MIC sequence!", 50, 210, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270, Color.WHITE);
 
             if (Instant.now().isAfter(this.timer))
                 BubbleBlaster.crash(ManualCrashOverlay.createMICLog().createCrash());

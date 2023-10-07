@@ -141,8 +141,8 @@ public class SavesScreen extends Screen {
             else if (hovered)
                 renderer.drawErrorEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
-            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
-            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+            renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
+            renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
             return;
         }
 
@@ -156,8 +156,8 @@ public class SavesScreen extends Screen {
         else if (hovered)
             renderer.drawEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
-        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
-        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+        renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
+        renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
     }
 
     private int calculateWidth() {

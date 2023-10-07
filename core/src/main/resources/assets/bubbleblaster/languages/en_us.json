@@ -91,6 +91,7 @@
   "bubbleblaster.screen.options.graphical.defaultEffectSpeed": "Scrolling Gradient Fx Speed",
   "bubbleblaster.screen.options.graphical.secsBeforeRedEffectTime": "Red Duration for Status Effect",
   "bubbleblaster.screen.options.graphical.gameHud": "HUD",
+  "bubbleblaster.screen.newGame.title": "Setup a New Game",
   "bubbleblaster.screen.saves.create.title": "Create a New Save",
   "bubbleblaster.screen.saves.create.seed": "Seed:",
   "bubbleblaster.screen.saves.create.gamemode": "Gamemode:",

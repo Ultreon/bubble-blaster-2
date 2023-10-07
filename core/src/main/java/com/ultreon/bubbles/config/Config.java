@@ -444,6 +444,7 @@ public class Config {
             this.value = (T) value;
         }
 
+        @SuppressWarnings("unchecked")
         private boolean setSafe(Object value) {
             if (value != null && !this.type.isInstance(value))
                 return false;

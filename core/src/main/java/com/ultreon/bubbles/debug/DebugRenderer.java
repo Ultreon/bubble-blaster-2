@@ -48,7 +48,7 @@ public class DebugRenderer {
 
     public DebugRenderer(BubbleBlaster game) {
         this.game = game;
-        this.font = Fonts.MONOSPACED_14;
+        this.font = Fonts.MONOSPACED;
 
         InputEvents.KEY_RELEASE.listen(this::keyPress);
     }
@@ -282,7 +282,7 @@ public class DebugRenderer {
         }
 
         renderer.fill(10, y, width + 4, height + 4, Color.BLACK.withAlpha(0x99));
-        renderer.drawText(this.font.get(), text1, 12, y + 1, Color.WHITE);
+        renderer.drawTextLeft(this.font.get(), text1, 12, y + 1, Color.WHITE);
     }
 
     public void right(Renderer renderer, String text, Object o) {

@@ -21,8 +21,8 @@ public class GameOverScreen extends Screen {
     private final boolean isHighScore;
     private final long score;
     private long gameOverTime;
-    private final BitmapFont gameOverTitleFont = Fonts.DONGLE_60.get();
-    private final BitmapFont gameOverDescriptionFont = Fonts.SANS_BOLD_14.get();
+    private final BitmapFont gameOverTitleFont = Fonts.DONGLE_GAME_OVER.get();
+    private final BitmapFont gameOverDescriptionFont = Fonts.SANS_PARAGRAPH_BOLD.get();
 
     public GameOverScreen(long score) {
         this(score, TITLE);
@@ -92,7 +92,7 @@ public class GameOverScreen extends Screen {
         if (this.isHighScore)
             renderer.drawTextCenter(this.gameOverDescriptionFont, HIGH_SCORE, this.width / 2f, 216, Color.WHITE);
 
-        renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextCenter(Fonts.SANS_BIG.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
     }
 
     @Override

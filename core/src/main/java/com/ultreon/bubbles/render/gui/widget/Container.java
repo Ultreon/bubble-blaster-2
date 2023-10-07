@@ -25,6 +25,11 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        var focused = this.focused;
+        if (focused != null && !focused.enabled) {
+            focused.onFocusLost();
+            this.focused = null;
+        }
         renderer.scissored(this.getBounds(), () -> this.renderChildren(renderer, mouseX, mouseY, deltaTime));
     }
 
@@ -95,7 +100,8 @@ public abstract class Container extends GuiComponent {
         if (widgetAt != this.focused)
             widgetChanged = true;
 
-        this.focused = widgetAt;
+        if (widgetAt == null || widgetAt.enabled)
+            this.focused = widgetAt;
 
         if (this.focused != null && widgetChanged)
             this.focused.onFocusGained();

@@ -160,7 +160,7 @@ public class AndroidGameWindow implements GameWindow {
 
     @Override
     public boolean isFocused() {
-        return this.game().isFocused();
+        return true;
     }
 
     /**

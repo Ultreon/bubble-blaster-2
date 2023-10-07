@@ -8,6 +8,7 @@ import com.ultreon.bubbles.input.DesktopInput;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.libs.text.v1.TextObject;
 
+@Deprecated(forRemoval = true)
 public class GamemodeScreen extends Screen {
     private static final TextObject TITLE = TextObject.translation("bubbles/screen/difficulty/title");
     private static final Gamemode[] GAMEMODES = {Gamemodes.NORMAL.get(), Gamemodes.TIMED.get()};

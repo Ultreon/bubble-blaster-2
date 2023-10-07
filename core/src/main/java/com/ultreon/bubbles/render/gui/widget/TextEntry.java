@@ -14,8 +14,8 @@ import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.commons.v0.size.IntSize;
 import com.ultreon.libs.commons.v0.vector.Vec2i;
 import com.ultreon.libs.text.v1.TextObject;
-import org.checkerframework.checker.builder.qual.ReturnsReceiver;
 import org.checkerframework.com.google.errorprone.annotations.CanIgnoreReturnValue;
+import org.checkerframework.common.reflection.qual.NewInstance;
 import org.checkerframework.common.returnsreceiver.qual.This;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +70,6 @@ public class TextEntry extends GuiComponent {
             var text = leftText + rightText;
             if (this.responder.test(text)) this.validText = text;
             this.text = text;
-            this.layout.setText(this.font, text.substring(0, Mth.clamp(this.cursorIndex, 0, this.text.length() - 1)));
             this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
             this.updateCursor();
             return true;
@@ -86,7 +85,6 @@ public class TextEntry extends GuiComponent {
             var text = leftText + rightText;
             if (this.responder.test(text)) this.validText = text;
             this.text = text;
-            this.layout.setText(this.font, text.substring(0, this.cursorIndex));
             this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
             this.updateCursor();
             return true;
@@ -172,6 +170,10 @@ public class TextEntry extends GuiComponent {
 
             if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1, 1, 4, 1));
             else renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
+        } else if (!this.enabled) {
+            renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x10));
+            renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x30));
+            if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1));
         } else {
             renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x20));
             renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x60));
@@ -181,7 +183,10 @@ public class TextEntry extends GuiComponent {
 
     protected void drawText(Renderer renderer, int entryX, int entryW, int labelX, int labelW) {
         renderer.scissored(entryX + 2, this.y, entryW - 4, this.height, () -> {
-            renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE);
+            if (this.enabled)
+                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE);
+            else
+                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE.withAlpha(0x60));
 
             if (this.isFocused()) {
                 var cursorX = this.text.isEmpty() ? entryX + 10 : entryX + 10 + this.layout.width;
@@ -257,7 +262,7 @@ public class TextEntry extends GuiComponent {
 
         }
 
-        public TextEntry build() {
+        public @NewInstance TextEntry build() {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating text entry.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating text entry.");
 
@@ -270,24 +275,22 @@ public class TextEntry extends GuiComponent {
             return entry;
         }
 
-        public Builder bounds(Rectangle bounds) {
+        public @This Builder bounds(Rectangle bounds) {
             this.bounds = bounds;
             return this;
         }
 
-        public Builder bounds(int x, int y, int width, int height) {
+        public @This Builder bounds(int x, int y, int width, int height) {
             this.bounds = new Rectangle(x, y, width, height);
             return this;
         }
 
-        public Builder bounds(Vec2i pos, IntSize size) {
+        public @This Builder bounds(Vec2i pos, IntSize size) {
             this.bounds = new Rectangle(pos.x, pos.y, size.width(), size.height());
             return this;
         }
 
-        @Nullable
-        @ReturnsReceiver
-        public Builder text(String text) {
+        public @This Builder text(String text) {
             this.text = text;
             return this;
         }

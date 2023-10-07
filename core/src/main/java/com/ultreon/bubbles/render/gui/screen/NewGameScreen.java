@@ -15,18 +15,16 @@ import com.ultreon.libs.text.v1.TextObject;
 
 import java.util.List;
 
-public class CreateSaveScreen extends Screen {
+public class NewGameScreen extends Screen {
     private final List<Gamemode> gamemodes;
     private final List<Difficulty> difficulties;
     private TextEntry seedEntry;
     private ObjectList<Gamemode> gamemodeList;
     private ObjectList<Difficulty> difficultyList;
-    private Button createBtn;
 
-    public CreateSaveScreen(Screen back) {
+    public NewGameScreen() {
         this.gamemodes = List.copyOf(Registries.GAMEMODES.values());
         this.difficulties = List.of(Difficulty.values());
-        this.setBackScreen(back);
     }
 
     @Override
@@ -42,17 +40,20 @@ public class CreateSaveScreen extends Screen {
 
         var startY = 120;
 
-        this.seedEntry = this.add(new TextEntry.Builder().bounds(this.width / 2 - 150, startY, 300, 45).entryWidth(300).build());
+        this.seedEntry = this.add(new TextEntry.Builder().bounds(this.width / 2 - 150, startY, 300, 45).text(Long.toString(this.game.random.nextLong())).entryWidth(300).build());
+        this.seedEntry.enabled = false;
         this.gamemodeList = this.add(new ObjectList<>(this.gamemodes, 30, 2, this.width / 2 - 150, startY + 50, 300, 195));
         this.gamemodeList.setSelectable(true);
         this.gamemodeList.setEntryRenderer(this::renderEntry);
+        this.gamemodeList.selectFirst();
         this.difficultyList = this.add(new ObjectList<>(this.difficulties, 30, 2, this.width / 2 - 150, startY + 250, 300, 195));
         this.difficultyList.setSelectable(true);
         this.difficultyList.setEntryRenderer(this::renderEntry);
-        this.createBtn = this.add(Button.builder()
+        this.difficultyList.select(Difficulty.NORMAL);
+        this.add(Button.builder()
                 .bounds(this.width / 2 - 50, startY + 450, 200, 40)
                 .text(TextObject.translation("bubbleblaster.screen.saves.create.button"))
-                .command(this::create)
+                .command(this::playGame)
                 .build());
     }
 
@@ -80,7 +81,7 @@ public class CreateSaveScreen extends Screen {
             renderer.drawEffectBox(x, y, width, height, new Insets(1, 1, 1, 1));
     }
 
-    private void create() {
+    public void playGame() {
         var gamemode = this.gamemodeList.getSelected();
         if (gamemode == null) {
             return;
@@ -99,21 +100,9 @@ public class CreateSaveScreen extends Screen {
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 
-        renderer.drawTextCenter(Fonts.SANS_HEADER_1.get(), TextObject.translation("bubbleblaster.screen.saves.create.title"), this.width / 2f, 60, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.seed"), this.width / 2f - 160, this.seedEntry.getY() + 24, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.gamemode"), this.width / 2f - 160, this.gamemodeList.getY() + 24, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.difficulty"), this.width / 2f - 160, this.difficultyList.getY() + 24, Color.WHITE.withAlpha(0x80));
-    }
-
-    public TextEntry getSeedEntry() {
-        return this.seedEntry;
-    }
-
-    public ObjectList<Gamemode> getGamemodeList() {
-        return this.gamemodeList;
-    }
-
-    public Button getCreateBtn() {
-        return this.createBtn;
+        renderer.drawTextCenter(Fonts.SANS_HEADER_1.get(), TextObject.translation("bubbleblaster.screen.newGame.title"), this.width / 2f, 60, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH_BOLD.get(), TextObject.translation("bubbleblaster.screen.saves.create.seed"), this.width / 2f - 160, this.seedEntry.getY() + 24, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH_BOLD.get(), TextObject.translation("bubbleblaster.screen.saves.create.gamemode"), this.width / 2f - 160, this.gamemodeList.getY() + 24, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH_BOLD.get(), TextObject.translation("bubbleblaster.screen.saves.create.difficulty"), this.width / 2f - 160, this.difficultyList.getY() + 24, Color.WHITE.withAlpha(0x80));
     }
 }

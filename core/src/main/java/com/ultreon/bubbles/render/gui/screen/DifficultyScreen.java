@@ -6,6 +6,7 @@ import com.ultreon.libs.text.v1.TextObject;
 
 import java.math.BigDecimal;
 
+@Deprecated(forRemoval = true)
 public class DifficultyScreen extends Screen {
     private static final TextObject TITLE = TextObject.translation("bubbles/screen/difficulty/title");
     private final long seed;

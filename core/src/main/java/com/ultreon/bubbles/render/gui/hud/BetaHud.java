@@ -34,9 +34,9 @@ public class BetaHud extends HudType {
     private int level;
     private String levelUpText;
     private final GlyphLayout levelUpLayout = new GlyphLayout();
-    private final BitmapFont levelUpFont = Fonts.SANS_REGULAR_40.get();
-    private final BitmapFont infoFont = Fonts.SANS_BOLD_14.get();
-    private final BitmapFont fpsFont = Fonts.SANS_ITALIC_20.get();
+    private final BitmapFont levelUpFont = Fonts.SANS_BETA_LEVEL_UP.get();
+    private final BitmapFont infoFont = Fonts.SANS_PARAGRAPH_BOLD.get();
+    private final BitmapFont fpsFont = Fonts.SANS_BETA_FPS.get();
     private long gameOverTime;
 
     /**

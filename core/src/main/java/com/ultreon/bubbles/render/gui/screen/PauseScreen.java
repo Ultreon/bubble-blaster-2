@@ -131,7 +131,7 @@ public class PauseScreen extends Screen {
         this.renderBackground(renderer);
 
         // Pause text
-        renderer.drawTextCenter(Fonts.DONGLE_75.get(), this.title, this.width / 2f, 120f, Color.argb(0x80ffffff));
+        renderer.drawTextCenter(Fonts.DONGLE_PAUSE.get(), this.title, this.width / 2f, 120f, Color.argb(0x80ffffff));
 
         // Render widgets.
         this.prevButton.visible = PauseScreen.helpIndex > 0;
@@ -143,7 +143,7 @@ public class PauseScreen extends Screen {
         renderer.box(this.middleX - 480, 300, 960, 300, Color.WHITE.withAlpha(0x80));
 
         // Bubble name.
-        renderer.drawTextLeft(Fonts.SANS_BOLD_32.get(), this.bubble.getTranslation(), this.middleX - 470, 322, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_HEADER_1.get(), this.bubble.getTranslation(), this.middleX - 470, 322, DETAIL_NAME_COLOR);
 
         // Bubble icon.
         WorldRenderer.drawBubble(renderer, this.middleX - 409, 411, 122, 0, this.bubble);
@@ -153,21 +153,21 @@ public class PauseScreen extends Screen {
         //********************//
 
         // Left data.
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.id, this.middleX - 326 + 10, 362, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.hardness, this.middleX - 326 + 10, 382, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.radius, this.middleX - 326 + 10, 402, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.speed, this.middleX - 326 + 10, 422, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.id, this.middleX - 326 + 10, 362, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.hardness, this.middleX - 326 + 10, 382, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.radius, this.middleX - 326 + 10, 402, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.speed, this.middleX - 326 + 10, 422, DETAIL_NAME_COLOR);
 
         // Right data.
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.curChance, this.middleX + 72 + 10, 322, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.curPriority, this.middleX + 72 + 10, 342, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.scoreMod, this.middleX + 72 + 10, 362, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.attackMod, this.middleX + 72 + 10, 382, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.defenseMod, this.middleX + 72 + 10, 402, DETAIL_NAME_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.canSpawn, this.middleX + 72 + 10, 422, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.curChance, this.middleX + 72 + 10, 322, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.curPriority, this.middleX + 72 + 10, 342, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.scoreMod, this.middleX + 72 + 10, 362, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.attackMod, this.middleX + 72 + 10, 382, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.defenseMod, this.middleX + 72 + 10, 402, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.canSpawn, this.middleX + 72 + 10, 422, DETAIL_NAME_COLOR);
 
         // Description
-        renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), this.description, this.middleX - 470, 502, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_PARAGRAPH_BOLD.get(), this.description, this.middleX - 470, 502, DETAIL_NAME_COLOR);
 
         //****************//
         //     Values     //
@@ -175,21 +175,21 @@ public class PauseScreen extends Screen {
 
         // Left data.
         float leftX = this.middleX - 326 + 200;
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getId().toString(), leftX, 362, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getHardness().getTranslation(), leftX, 382, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getRadius().getTranslation(), leftX, 402, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getSpeed().getTranslation(), leftX, 422, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getId().toString(), leftX, 362, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getHardness().getTranslation(), leftX, 382, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getRadius().getTranslation(), leftX, 402, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getSpeed().getTranslation(), leftX, 422, DETAIL_VALUE_COLOR);
 
         // Right data
         float rightX = this.middleX + 72 + 200;
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), MathHelper.toReadableString((double) 100 * BubbleSystem.getPercentageChance(this.bubble), 5) + "%", rightX, 322, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), MathHelper.compress(BubbleSystem.getPriority(this.bubble)) + " / " +  MathHelper.compress(BubbleSystem.getTotalPriority()), rightX, 342, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getScore().getTranslation(), rightX, 362, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getAttack().getTranslation(), rightX, 382, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.getDefense().getTranslation(), rightX, 402, DETAIL_VALUE_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_ITALIC_16.get(), this.bubble.canSpawn(loadedGame.getWorld()) ? this.boolTrue : this.boolFalse, rightX, 422, DETAIL_NAME_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), MathHelper.toReadableString((double) 100 * BubbleSystem.getPercentageChance(this.bubble), 5) + "%", rightX, 322, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), MathHelper.compress(BubbleSystem.getPriority(this.bubble)) + " / " +  MathHelper.compress(BubbleSystem.getTotalPriority()), rightX, 342, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getScore().getTranslation(), rightX, 362, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getAttack().getTranslation(), rightX, 382, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.getDefense().getTranslation(), rightX, 402, DETAIL_VALUE_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_ITALIC.get(), this.bubble.canSpawn(loadedGame.getWorld()) ? this.boolTrue : this.boolFalse, rightX, 422, DETAIL_NAME_COLOR);
 
         // Description
-        renderer.drawWrappedText(Fonts.SANS_ITALIC_16.get(), Language.translate(this.bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), this.middleX - 470, 512, 940, DETAIL_VALUE_COLOR);
+        renderer.drawWrappedText(Fonts.SANS_ITALIC.get(), Language.translate(this.bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), this.middleX - 470, 512, 940, DETAIL_VALUE_COLOR);
     }
 }

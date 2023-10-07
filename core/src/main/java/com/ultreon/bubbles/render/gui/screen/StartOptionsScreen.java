@@ -9,6 +9,7 @@ import com.ultreon.libs.text.v1.TextObject;
 
 import java.util.Random;
 
+@Deprecated(forRemoval = true)
 public class StartOptionsScreen extends Screen {
     private static final Color TEXT_COLOR = Color.WHITE.withAlpha(0xd0);
     private final Screen back;
@@ -35,8 +36,8 @@ public class StartOptionsScreen extends Screen {
         super.render(game, renderer, mouseX, mouseY, deltaTime);
 
 //        renderer.color(Theme.getMenuLabelColor()); // TODO: Add themes
-        renderer.drawTextRight(Fonts.SANS_REGULAR_20.get(), "Seed: ", this.width / 2f - 120, this.height / 2f - 35, TEXT_COLOR);
-        renderer.drawTextLeft(Fonts.SANS_REGULAR_20.get(), String.valueOf(this.seed), this.width / 2f - 120, this.height / 2f - 35, TEXT_COLOR);
+        renderer.drawTextRight(Fonts.SANS_BIG.get(), "Seed: ", this.width / 2f - 120, this.height / 2f - 35, TEXT_COLOR);
+        renderer.drawTextLeft(Fonts.SANS_BIG.get(), String.valueOf(this.seed), this.width / 2f - 120, this.height / 2f - 35, TEXT_COLOR);
     }
 
     @Override

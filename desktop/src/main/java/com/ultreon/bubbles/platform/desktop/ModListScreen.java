@@ -84,9 +84,9 @@ public class ModListScreen extends Screen {
             renderer.blit(tex, this.modList.getX() + 20, y + 20, iconSize, iconSize);
 
             var textX = this.modList.getX() + 20 + iconSize + 20;
-            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, y + 20, Color.WHITE.withAlpha(0x80));
-            renderer.drawText(Fonts.SANS_BOLD_32.get(), metadata.getName(), textX, y + 36, Color.WHITE);
-            renderer.drawText(Fonts.SANS_ITALIC_16.get(), metadata.getDescription(), textX, y + height - 25, Color.WHITE.withAlpha(0x80));
+            renderer.drawText(Fonts.MONOSPACED_BOLD.get(), metadata.getId(), textX, y + 20, Color.WHITE.withAlpha(0x80));
+            renderer.drawText(Fonts.SANS_HEADER_1.get(), metadata.getName(), textX, y + 36, Color.WHITE);
+            renderer.drawText(Fonts.SANS_ITALIC.get(), metadata.getDescription(), textX, y + height - 25, Color.WHITE.withAlpha(0x80));
         });
     }
 
@@ -125,15 +125,15 @@ public class ModListScreen extends Screen {
         }
 
         private void drawModDetails(Renderer renderer, ModMetadata metadata, AtomicInteger textX, int textY) {
-            this.layout.setText(Fonts.SANS_REGULAR_40.get(), metadata.getName() + "  ");
+            this.layout.setText(Fonts.SANS_TITLE.get(), metadata.getName() + "  ");
 
-            renderer.drawText(Fonts.SANS_REGULAR_40.get(), metadata.getName(), textX.get(), textY, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_BOLD_24.get(), metadata.getVersion().getFriendlyString(), textX.get() + this.layout.width, textY + Fonts.SANS_REGULAR_40.get().getLineHeight() / 2 - Fonts.MONOSPACED_BOLD_12.get().getLineHeight() + 1, Color.argb(0x80ffffff));
-            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_REGULAR_48.get().getLineHeight() - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
-            renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_REGULAR_48.get().getLineHeight() - Fonts.MONOSPACED_BOLD_12.get().getLineHeight(), Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.SANS_TITLE.get(), metadata.getName(), textX.get(), textY, Color.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), metadata.getVersion().getFriendlyString(), textX.get() + this.layout.width, textY + Fonts.SANS_BETA_LEVEL_UP.get().getLineHeight() / 2 - Fonts.MONOSPACED_BOLD.get().getLineHeight() + 1, Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.MONOSPACED_BOLD.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_TITLE.get().getLineHeight() - Fonts.MONOSPACED_BOLD.get().getLineHeight(), Color.argb(0x80ffffff));
+            renderer.drawText(Fonts.MONOSPACED_BOLD.get(), metadata.getId(), textX.get(), textY + Fonts.SANS_TITLE.get().getLineHeight() - Fonts.MONOSPACED_BOLD.get().getLineHeight(), Color.argb(0x80ffffff));
             var description = metadata.getDescription();
             var i = new AtomicInteger();
-            description.lines().forEachOrdered(line -> renderer.drawText(Fonts.SANS_REGULAR_12.get(), line, textX.get(), this.y + 90 + i.getAndUpdate(this::addFontHeight) * (this.font.getLineHeight() + 1), Color.argb(0x60ffffff)));
+            description.lines().forEachOrdered(line -> renderer.drawText(this.font, line, textX.get(), this.y + 90 + i.getAndUpdate(this::addFontHeight) * (this.font.getLineHeight() + 1), Color.argb(0x60ffffff)));
         }
 
         private int addFontHeight(int i1) {

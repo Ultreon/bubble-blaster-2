@@ -19,13 +19,13 @@ public class CommandScreen extends Screen {
 
     private static final Deque<ChatMessage> MESSAGES = new ArrayDeque<>();
 
-    private final BitmapFont font = Fonts.MONOSPACED_14.get();
+    private final BitmapFont font = Fonts.MONOSPACED.get();
     private final GlyphLayout layout = new GlyphLayout();
     private final GlyphLayout beginLayout = new GlyphLayout();
     private String currentText = "/";
     private int cursorIndex = 1;
     private boolean firstSymbol = true;
-    private final BitmapFont textFont = Fonts.SANS_REGULAR_24.get();
+    private final BitmapFont textFont = Fonts.SANS_BIG.get();
 
     public CommandScreen() {
         super();
@@ -95,7 +95,7 @@ public class CommandScreen extends Screen {
     private static void drawMessage(Renderer renderer, int y, ChatMessage message) {
         renderer.fill(2, y, 1000, 20, Color.BLACK.withAlpha(0x80));
 
-        renderer.scissored(2, y, 1000, 20, () -> renderer.drawText(Fonts.SANS_REGULAR_16.get(), message.text(), 4, y + 2, message.system() ? Color.YELLOW.brighter() : Color.WHITE));
+        renderer.scissored(2, y, 1000, 20, () -> renderer.drawText(Fonts.SANS_PARAGRAPH.get(), message.text(), 4, y + 2, message.system() ? Color.YELLOW.brighter() : Color.WHITE));
     }
 
     @Override

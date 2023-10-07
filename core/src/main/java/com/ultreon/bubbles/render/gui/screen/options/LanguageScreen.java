@@ -64,7 +64,7 @@ public final class LanguageScreen extends Screen {
         if (selected)
             renderer.drawEffectBox(x, y, width, height, new Insets(0, 0, 4, 0));
 
-        renderer.drawTextCenter(Fonts.SANS_REGULAR_16.get(), language + " (" + country + ")", x + width / 2, y + (height - 4) / 2, Color.WHITE.withAlpha(0xc0));
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH.get(), language + " (" + country + ")", x + width / 2, y + (height - 4) / 2, Color.WHITE.withAlpha(0xc0));
     }
 
     private int calculateWidth() {

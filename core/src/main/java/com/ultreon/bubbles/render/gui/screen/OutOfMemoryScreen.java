@@ -34,8 +34,8 @@ public final class OutOfMemoryScreen extends Screen {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.drawTextCenter(Fonts.SANS_BOLD_48.get(), Language.translate("bubbleblaster.screen.outOfMemory.title"), this.width / 2f, this.height / 3f, Color.WHITE);
-        renderer.drawTextCenter(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster.screen.outOfMemory.line1"), this.width / 2f, this.height / 3f + 60, Color.WHITE);
-        renderer.drawTextCenter(Fonts.SANS_BOLD_14.get(), Language.translate("bubbleblaster.screen.outOfMemory.line2"), this.width / 2f, this.height / 3f + 80, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_TITLE.get(), Language.translate("bubbleblaster.screen.outOfMemory.title"), this.width / 2f, this.height / 3f, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line1"), this.width / 2f, this.height / 3f + 60, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line2"), this.width / 2f, this.height / 3f + 80, Color.WHITE);
     }
 }

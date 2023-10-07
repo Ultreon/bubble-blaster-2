@@ -9,7 +9,7 @@ public class TestAnimation {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            valueAnimator.animate();
+            System.out.println("Current value: " + valueAnimator.animate());
             try {
                 //noinspection BusyWait
                 Thread.sleep(1000);

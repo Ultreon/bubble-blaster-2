@@ -47,6 +47,8 @@ import com.ultreon.bubbles.input.*;
 import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.notification.Notifications;
 import com.ultreon.bubbles.player.InputController;
+import com.ultreon.bubbles.random.JavaRandom;
+import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.random.valuesource.RandomValueSource;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.*;
@@ -125,6 +127,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     // Tasks
     public final Cursor arrowCursor;
     public final Cursor handCursor;
+    public final RandomSource random = new JavaRandom();
 
     // Fonts.
     private BitmapFont sansFont;
