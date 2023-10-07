@@ -18,10 +18,6 @@ import com.ultreon.libs.text.v1.TextObject;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +153,7 @@ public class SavesScreen extends Screen {
         GameSaveInfo info = cachedInfo.getLeft();
         String name = info.getName();
         String description = info.getGamemode().getName().getText();
-        description += ", " + LocalDateTime.ofInstant(Instant.ofEpochSecond(info.getSavedTime()), ZoneOffset.systemDefault()).format(DateTimeFormatter.ofPattern("dd/LLL/yyyy HH:mm:ss"));
+        description += ", " + info.getSavedTimeFormatted();
 
         renderer.fill(0, 0, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
         if (selected) {
