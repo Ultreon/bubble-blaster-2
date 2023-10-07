@@ -349,7 +349,7 @@ public abstract class BubbleType implements Serializable, Translatable {
                 bubbleType.setBounceAmount(this.bounceAmount);
             }
 
-            bubbleType.colors = List.of(this.colors);
+            bubbleType.setColors(this.colors);
 
             for (var aiTask : this.aiTasks) {
                 bubbleType.addAiTask(aiTask.getFirst(), aiTask.getSecond());
