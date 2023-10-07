@@ -50,5 +50,4 @@ public final class ChatMessage {
                 "text=" + this.text + ", " +
                 "created=" + this.created + ']';
     }
-
 }

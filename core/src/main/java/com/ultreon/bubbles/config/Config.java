@@ -11,6 +11,9 @@ import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.notification.Notification;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,28 +35,59 @@ public class Config {
         this.file = builder.file;
         this.config = builder.config;
         this.entries = builder.entries;
-        this.entries.forEach((s, configEntry) -> {
-            configEntry.set0(configEntry.getDefaultValue());
-            configEntry.setComment(configEntry.getComment());
-        });
-        this.reload();
+        this.entries.values().forEach(ConfigEntry::reset);
         this.watch();
     }
 
     private void watch() {
-//        BubbleBlaster.getWatcher().watchFile(this.file, this.watcher);
+        // TODO implement file watching!
     }
 
     private void unwatch() {
-//        BubbleBlaster.getWatcher().unwatchFile(this.file);
+        // TODO implement file watching!
     }
 
     public synchronized void reload() {
         this.unwatch();
-        PARSER.parse(this.file, this.config, ParsingMode.REPLACE, FileNotFoundAction.CREATE_EMPTY);
+        try {
+            PARSER.parse(this.file, this.config, ParsingMode.REPLACE, FileNotFoundAction.READ_NOTHING);
+            this.entries.forEach((s, configEntry) -> {
+                if (configEntry.isSet()) {
+                    configEntry.inherit();
+                    return;
+                }
+                configEntry.reset();
+            });
+        } catch (ParsingException e) {
+            String fileName = this.file.getName();
+            BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
+            BubbleBlaster.getInstance().notifications.notify(
+                    Notification.builder("Config Failed to Load!", "Failed to load '" + fileName + "'")
+                            .subText("Configuration Manager")
+                            .build()
+            );
+            File backupFile = new File(this.file.getParentFile(), fileName + ".bak");
+            if (backupFile.exists()) {
+                BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
+            }
+
+            try {
+                Files.copy(this.file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            this.reset();
+            this.save();
+        }
+        ConfigEvents.CONFIG_RELOADED.factory().onConfigReloaded(this);
+        this.watch();
+    }
+
+    public synchronized void reset() {
+        this.unwatch();
         this.entries.forEach((s, configEntry) -> {
-            if (configEntry.isSet()) return;
-            configEntry.set0(configEntry.getDefaultValue());
+            configEntry.reset();
             configEntry.setComment(configEntry.getComment());
         });
 
@@ -69,18 +103,19 @@ public class Config {
 
         try {
             WRITER.write(this.config, this.file, WritingMode.REPLACE);
-
             if (WRITER.writeToString(this.config).isBlank()) {
+                BubbleBlaster.LOGGER.error("Failed to save config, the config was empty.");
                 game.notifications.notify(
                         Notification.builder("Config Failed to Save!", "Failed to save config '" + this.file.getName() + "'")
-                                .subText("Config Manager")
+                                .subText("Configuration Manager")
                                 .build()
                 );
             }
         } catch (Exception e) {
+            BubbleBlaster.LOGGER.error("Failed to save config: ", e);
             game.notifications.notify(
                     Notification.builder("Config Failed to Save!", "Failed to save config '" + this.file.getName() + "'")
-                            .subText("Config Manager")
+                            .subText("Configuration Manager")
                             .build());
         }
 
@@ -98,16 +133,6 @@ public class Config {
 
     public Set<Entry<String, ConfigEntry<?>>> entrySet() {
         return this.entries.entrySet();
-    }
-
-    private void fileModified(File f) {
-        if (f.equals(this.file)) {
-            try {
-                this.reload();
-            } catch (ParsingException ignored) {
-
-            }
-        }
     }
 
     public static class EnumEntry<T extends Enum<T>> extends ConfigEntry<T> {
@@ -187,8 +212,10 @@ public class Config {
         }
 
         @Override
-        public Byte get() {
-            return this.config.<Number>get(this.path).byteValue();
+        protected Byte get0() {
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.byteValue();
         }
     }
 
@@ -220,8 +247,10 @@ public class Config {
         }
 
         @Override
-        public Short get() {
-            return this.config.<Number>get(this.path).shortValue();
+        protected Short get0() {
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.shortValue();
         }
     }
 
@@ -253,8 +282,10 @@ public class Config {
         }
 
         @Override
-        public Integer get() {
-            return this.config.<Number>get(this.path).intValue();
+        protected Integer get0() {
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.intValue();
         }
     }
 
@@ -286,8 +317,10 @@ public class Config {
         }
 
         @Override
-        public Long get() {
-            return this.config.<Number>get(this.path).longValue();
+        protected Long get0() {
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.longValue();
         }
     }
 
@@ -319,7 +352,7 @@ public class Config {
         }
 
         @Override
-        public Float get() {
+        protected Float get0() {
             Number number = this.config.get(this.path);
             if (number == null) return this.getDefaultValue();
             return number.floatValue();
@@ -354,8 +387,10 @@ public class Config {
         }
 
         @Override
-        public Double get() {
-            return this.config.<Number>get(this.path).doubleValue();
+        protected Double get0() {
+            Number number = this.config.get(this.path);
+            if (number == null) return this.getDefaultValue();
+            return number.doubleValue();
         }
     }
 
@@ -383,7 +418,7 @@ public class Config {
             return value;
         }
 
-        private T get0() {
+        protected T get0() {
             T value = this.config.get(this.path);
             if (value == null) return this.defaultValue;
             return value;
@@ -424,6 +459,15 @@ public class Config {
 
         public T getOrDefault() {
             return this.get();
+        }
+
+        public void reset() {
+            this.set(this.getDefaultValue());
+            this.config.setComment(this.path, this.getComment());
+        }
+
+        public void inherit() {
+            this.value = this.get0();
         }
     }
 

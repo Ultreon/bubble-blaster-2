@@ -169,7 +169,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @FunctionalInterface
     public interface EntryRenderer<T> {
-        void render(Renderer renderer, int width, int height, float y, T entry, boolean selected, boolean hovered);
+        void render(Renderer renderer, float width, float height, float y, T entry, boolean selected, boolean hovered);
     }
 
     public static class ListEntry<T, C extends T> extends GuiComponent {
@@ -191,8 +191,21 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
             this.index = index;
         }
 
-        public void render(Renderer renderer1, int mouseX, int mouseY, float deltaTime) {
-            this.list.entryRenderer.render(renderer1, this.list.width - SCROLLBAR_WIDTH, this.list.entryHeight, -this.list.getViewport().yScroll + (this.list.entryHeight + this.list.gap) * this.index, this.value, this.list.selected == this && this.list.selectable, this.isHovered());
+        @Override
+        public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+            this.x = this.list.x;
+            this.y = (int) (-this.list.getViewport().yScroll + (this.list.entryHeight + this.list.gap) * this.index);
+            this.width = this.list.width - SCROLLBAR_WIDTH;
+            this.height = this.list.entryHeight;
+            renderer.scissored(this.getBounds(), bounds -> {
+                if (bounds.width <= 0 || bounds.height <= 0) return;
+                this.list.entryRenderer.render(renderer, this.width, this.height, this.y, this.value, this.list.selected == this && this.list.selectable, this.isHovered());
+            });
+        }
+
+        @Override
+        public boolean isHovered() {
+            return this.list.isHovered() && super.isHovered();
         }
 
         public void setIndex(int index) {

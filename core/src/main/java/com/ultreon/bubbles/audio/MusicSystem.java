@@ -63,6 +63,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
         return !this.isDisposed;
     }
 
+    @Override
     @Nullable
     @CanIgnoreReturnValue
     public MusicEvent next() {

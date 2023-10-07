@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.render.gui.GuiStateListener;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.returnsreceiver.qual.This;
@@ -33,42 +34,62 @@ public class ToggleButton extends Button implements GuiStateListener {
     }
 
     public static class Builder extends Button.Builder {
+        private boolean toggled;
+
+        @Override
         public Builder bounds(Rectangle bounds) {
             this.bounds = bounds;
             return this;
         }
 
+        @Override
         public Builder bounds(int x, int y, int width, int height) {
             this.bounds = new Rectangle(x, y, width, height);
             return this;
         }
 
+        @Override
         public Builder text(String text) {
             this.text = TextObject.literal(text);
             return this;
         }
 
+        @Override
         public Builder text(TextObject text) {
             this.text = text;
             return this;
         }
 
+        @Override
         public Builder command(Runnable command) {
             this.command = command;
             return this;
         }
 
+        @Override
         public @This Builder font(BitmapFont font) {
             this.font = font;
             return this;
         }
 
+        public Builder toggled(Config.BooleanEntry entry) {
+            this.toggled = entry.get();
+            return this;
+        }
+
+        public Builder toggled(boolean toggled) {
+            this.toggled = toggled;
+            return this;
+        }
+
+        @Override
         public ToggleButton build() {
             ToggleButton button = new ToggleButton((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);
             button.setFont(this.font);
+            button.setToggled(this.toggled);
             return button;
         }
     }

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public class HudTypes {
     private static final DelayedRegister<HudType> REGISTER = DelayedRegister.create(BubbleBlaster.NAMESPACE, Registries.HUD);
     public static final RegistrySupplier<LegacyHud> LEGACY = HudTypes.register("legacy", LegacyHud::new);
-    public static final RegistrySupplier<ClassicHud> CLASSIC = HudTypes.register("beta", ClassicHud::new);
+    public static final RegistrySupplier<BetaHud> BETA = HudTypes.register("beta", BetaHud::new);
     public static final RegistrySupplier<ModernHud> MODERN = HudTypes.register("modern", ModernHud::new);
     public static final RegistrySupplier<TimedHud> TIMED = HudTypes.register("timed", TimedHud::new);
 

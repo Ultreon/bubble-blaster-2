@@ -69,6 +69,7 @@ public class GameRandom {
          *
          * @return an integer between min and max, inclusive.
          */
+        @Override
         Integer clip(BigInteger bigVal) {
             BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
             return (int) (this.min + bigVal.mod(modulus).longValue());
@@ -99,6 +100,7 @@ public class GameRandom {
          *
          * @return an 64-bit integer between min and max, inclusive.
          */
+        @Override
         Long clip(BigInteger bigVal) {
             BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
             return this.min + bigVal.mod(modulus).longValue();
@@ -129,6 +131,7 @@ public class GameRandom {
          *
          * @return an BigInteger between min and max, inclusive.
          */
+        @Override
         BigInteger clip(BigInteger bigVal) {
             BigInteger modulus = this.max.add(new BigInteger("1")).subtract(this.min);
             return this.min.add(bigVal.mod(modulus));
@@ -159,6 +162,7 @@ public class GameRandom {
          *
          * @return an floateger between min and max, inclusive.
          */
+        @Override
         Float clip(BigInteger bigVal) {
             BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
             return (float) (this.min + GameRandom.mod(bigVal, modulus).doubleValue());
@@ -189,6 +193,7 @@ public class GameRandom {
          *
          * @return an 64-bit integer between min and max, inclusive.
          */
+        @Override
         Double clip(BigInteger bigVal) {
             BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
             return this.min + GameRandom.mod(bigVal, modulus).doubleValue();
@@ -219,6 +224,7 @@ public class GameRandom {
          *
          * @return an BigDecimal between min and max, inclusive.
          */
+        @Override
         BigDecimal clip(BigInteger bigVal) {
             BigDecimal modulus = this.max.add(new BigDecimal("1")).subtract(this.min);
             return this.min.add(GameRandom.mod(bigVal, modulus));

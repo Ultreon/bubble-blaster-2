@@ -96,9 +96,7 @@ public class CommandScreen extends Screen {
     private static void drawMessage(Renderer renderer, int y, ChatMessage message) {
         renderer.fill(2, y, 1000, 20, Color.BLACK.withAlpha(0x80));
 
-        renderer.scissored(2, y, 1000, 20, () -> {
-            renderer.drawText(Fonts.SANS_REGULAR_16.get(), message.text(), 4, y + 2, message.system() ? Color.YELLOW.brighter() : Color.WHITE);
-        });
+        renderer.scissored(2, y, 1000, 20, () -> renderer.drawText(Fonts.SANS_REGULAR_16.get(), message.text(), 4, y + 2, message.system() ? Color.YELLOW.brighter() : Color.WHITE));
     }
 
     @Override
@@ -275,6 +273,11 @@ public class CommandScreen extends Screen {
             int width = this.font.getData().getGlyph(this.currentText.charAt(this.cursorIndex)).width;
             renderer.fillEffect(cursorX, this.height - 2, width, 2);
         }
+    }
+
+    @Override
+    public boolean doesPauseGame() {
+        return false;
     }
 
 }

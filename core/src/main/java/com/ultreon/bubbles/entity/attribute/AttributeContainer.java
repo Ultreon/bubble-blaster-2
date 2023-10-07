@@ -28,6 +28,7 @@ public class AttributeContainer implements ListDataHolder<MapType> {
         return value;
     }
 
+    @Override
     public ListType<MapType> save() {
         ListType<MapType> list = new ListType<>();
         for (Map.Entry<Attribute, Double> entry : this.map.entrySet()) {
@@ -71,6 +72,7 @@ public class AttributeContainer implements ListDataHolder<MapType> {
         }
     }
 
+    @Override
     public void load(ListType<MapType> list) {
         for (MapType tag : list) {
             Attribute key = Attribute.fromName(tag.getString("name"));

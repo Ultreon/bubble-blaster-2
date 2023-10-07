@@ -95,6 +95,11 @@ public class GameOverScreen extends Screen {
         renderer.drawTextCenter(Fonts.SANS_REGULAR_20.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
     }
 
+    @Override
+    public boolean doesPauseGame() {
+        return false;
+    }
+
     public boolean isHighScore() {
         return this.isHighScore;
     }

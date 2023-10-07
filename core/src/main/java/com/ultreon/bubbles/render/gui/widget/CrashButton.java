@@ -94,10 +94,12 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         AbstractButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);
     }
 
+    @Override
     public Runnable getCommand() {
         return this.command;
     }
 
+    @Override
     public void setCommand(Runnable command) {
         this.command = command;
     }

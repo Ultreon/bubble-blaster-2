@@ -26,6 +26,7 @@ public class Notifications implements Renderable {
 
     }
 
+    @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         if (this.game.isLoading()) return;
 

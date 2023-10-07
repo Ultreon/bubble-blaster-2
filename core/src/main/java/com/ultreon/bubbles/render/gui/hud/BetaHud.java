@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see HudType
  */
-public class ClassicHud extends HudType {
+public class BetaHud extends HudType {
 
     // Strokes
     private static final float HEALTH_LINE_WIDTH = 1.0f;

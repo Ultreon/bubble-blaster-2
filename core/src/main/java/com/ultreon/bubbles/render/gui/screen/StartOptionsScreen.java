@@ -39,6 +39,7 @@ public class StartOptionsScreen extends Screen {
         renderer.drawTextLeft(Fonts.SANS_REGULAR_20.get(), String.valueOf(this.seed), this.width / 2f - 120, this.height / 2f - 35, TEXT_COLOR);
     }
 
+    @Override
     public void back() {
         this.game.showScreen(this.back);
     }

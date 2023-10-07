@@ -45,6 +45,7 @@ public final class LoadScreen extends InternalScreen {
     private static final Logger LOGGER = GamePlatform.get().getLogger("Game-Loader");
     private static final float FADE_IN = 1000f;
     private static LoadScreen instance = null;
+    private static volatile boolean languagesLoaded = false;
     private final List<Pair<String, Long>> messages = new CopyOnWriteArrayList<>();
     private Thread loadThread;
     private final String title = "";
@@ -57,7 +58,7 @@ public final class LoadScreen extends InternalScreen {
     private String curMainMsg = "";
     private String curAltMsg = "";
     private long startTime;
-    private Thread thread;
+    private static Thread thread;
 
     public LoadScreen() {
         instance = this;
@@ -67,11 +68,15 @@ public final class LoadScreen extends InternalScreen {
         return done ? null : instance;
     }
 
+    public static boolean isLanguagesLoaded() {
+        return languagesLoaded;
+    }
+
     @Override
     public void init() {
-        if (this.thread == null) {
-            this.thread = new Thread(this::doLoading, "Loading-Thread");
-            this.thread.start();
+        if (thread == null) {
+            thread = new Thread(this::doLoading, "Loading-Thread");
+            thread.start();
         }
     }
 
@@ -192,8 +197,6 @@ public final class LoadScreen extends InternalScreen {
 
         ConfigEvents.RELOAD_ALL.factory().onReloadAll();
 
-        BubbleBlasterConfig.reload();
-
         int fps = BubbleBlasterConfig.MAX_FRAMERATE.get();
         Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
 
@@ -232,6 +235,7 @@ public final class LoadScreen extends InternalScreen {
     public void registerLanguages() {
         this.registerLanguage("en_us");
         this.registerLanguage("en_uk");
+        this.registerLanguage("nl_be");
         this.registerLanguage("nl_nl");
         this.registerLanguage("fy_nl");
         this.registerLanguage("de_de");
@@ -239,7 +243,7 @@ public final class LoadScreen extends InternalScreen {
         this.registerLanguage("fr_fr");
         this.registerLanguage("es_es");
         this.registerLanguage("af_za");
-        this.registerLanguage("uk_uk");
+        this.registerLanguage("uk_ua");
         this.registerLanguage("hi_in");
         this.registerLanguage("tr_tr");
         this.registerLanguage("ko_kp");
@@ -249,6 +253,8 @@ public final class LoadScreen extends InternalScreen {
         this.registerLanguage("ja_jp");
 
         LifecycleEvents.REGISTER_LANGUAGES.factory().onRegisterLanguages(this.game, this, this::registerLanguage);
+
+        languagesLoaded = true;
 
         this.progressAlt = null;
     }

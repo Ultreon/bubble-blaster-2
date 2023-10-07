@@ -34,6 +34,10 @@ public class NumberSlider extends TextEntry {
     public NumberSlider(int x, int y, int width, int height, int value, int min, int max) {
         super(x, y, width, height);
         this.setValueAndRange(value, min, max);
+        this.setResponder(s -> {
+            Integer i = Numbers.tryParseInt(s);
+            return i != null && i >= min && i <= max;
+        });
 
         this.upButton = new ArrowButton(0, 0, 0, 0, this::increment);
         this.downButton = new ArrowButton(0, 0, 0, 0, this::decrement);
@@ -42,17 +46,19 @@ public class NumberSlider extends TextEntry {
     public void setValueAndRange(int value, int min, int max) {
         this.value = Mth.clamp(value, min, max);
         this.text = Integer.toString(this.value);
+        this.validText = this.text;
         this.cursorIndex = this.text.length();
 
         this.min = min;
         this.max = max;
 
-        this.revalidate();
+        this.updateCursor();
     }
 
     private void increment() {
         this.value = Mth.clamp(this.value + this.getChangeAmount(), this.min, this.max);
         this.text = Integer.toString(this.value);
+        this.validText = this.text;
         this.cursorIndex = this.text.length();
         this.callback.accept(this.value);
     }
@@ -60,6 +66,7 @@ public class NumberSlider extends TextEntry {
     private void decrement() {
         this.value = Mth.clamp(this.value - this.getChangeAmount(), this.min, this.max);
         this.text = Integer.toString(this.value);
+        this.validText = this.text;
         this.cursorIndex = this.text.length();
         this.callback.accept(this.value);
     }
@@ -92,7 +99,8 @@ public class NumberSlider extends TextEntry {
 
             this.cursorIndex--;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
+            this.validate();
             return true;
         }
 
@@ -102,20 +110,21 @@ public class NumberSlider extends TextEntry {
             String rightText = this.text.substring(this.cursorIndex + 1);
 
             this.text = leftText + rightText;
+            this.validate();
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
             this.cursorIndex--;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
             this.cursorIndex++;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
             return true;
         }
 
@@ -152,12 +161,13 @@ public class NumberSlider extends TextEntry {
     protected void validateNumber() {
         Integer parsed = Numbers.tryParseInt(this.text);
         if (parsed == null) {
-            this.text = Integer.toString(this.value);
+            this.validText = Integer.toString(this.value);
             return;
         }
 
         this.value = Mth.clamp(parsed, this.min, this.max);
         this.text = parsed.toString();
+        this.validText = this.text;
         this.callback.accept(parsed);
     }
 
@@ -165,30 +175,30 @@ public class NumberSlider extends TextEntry {
     public boolean charType(char character) {
         if (!this.isFocused()) return false;
 
-        if ("0123456789".contains(Character.toString(character))) {
-            if (character == '-' && this.text.startsWith("-")) {
-                this.text = this.text.substring(1);
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
-                return true;
-            }
-            if (character == '-' && !this.text.startsWith("-")) {
-                this.text = "-" + this.text;
-                this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
-                return true;
-            }
+        if (!"0123456789".contains(Character.toString(character)))
+            return false;
 
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex);
-
-            this.text = leftText + character + rightText;
-            this.revalidate();
-
-            this.cursorIndex++;
-
-            this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
+        if (character == '-' && this.text.startsWith("-")) {
+            this.text = this.text.substring(1);
+            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+            this.validate();
             return true;
         }
-        return false;
+        if (character == '-' && !this.text.startsWith("-")) {
+            this.text = "-" + this.text;
+            this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+            this.validate();
+            return true;
+        }
+
+        String leftText = this.text.substring(0, this.cursorIndex);
+        String rightText = this.text.substring(this.cursorIndex);
+
+        this.text = leftText + character + rightText;
+        this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+        this.updateCursor();
+        this.validate();
+        return true;
     }
 
     @Override
@@ -278,6 +288,7 @@ public class NumberSlider extends TextEntry {
         this.cursorIndex = this.text.length();
     }
 
+    @Override
     public void setEntryWidth(int width) {
         if (width < 0) throw new IllegalArgumentException("Entry width should be non-negative.");
         this.entryWidth = width;
@@ -296,7 +307,7 @@ public class NumberSlider extends TextEntry {
         return this.callback;
     }
 
-    public static class Builder {
+    public static class Builder extends TextEntry.Builder {
         public Rectangle bounds = null;
         private int value;
         private int min;
@@ -309,6 +320,7 @@ public class NumberSlider extends TextEntry {
 
         }
 
+        @Override
         public NumberSlider build() {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating number slider.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
@@ -320,33 +332,39 @@ public class NumberSlider extends TextEntry {
             return numberSlider;
         }
 
+        @Override
         public Builder bounds(Rectangle bounds) {
             this.bounds = bounds;
             return this;
         }
 
+        @Override
         public Builder bounds(int x, int y, int width, int height) {
             this.bounds = new Rectangle(x, y, width, height);
             if (this.entryWidth == -1) this.entryWidth(width);
             return this;
         }
 
+        @Override
         public Builder bounds(Vec2i pos, IntSize size) {
             this.bounds = new Rectangle(pos.x, pos.y, size.width(), size.height());
             if (this.entryWidth == -1) this.entryWidth(size.width());
             return this;
         }
 
+        @Override
         public Builder entryWidth(int width) {
             if (width < 0) throw new IllegalArgumentException("Entry width should be non-negative.");
             this.entryWidth = width;
             return this;
         }
 
+        @Override
         public Builder label(@Nullable String label) {
             return this.label(TextObject.nullToEmpty(label));
         }
 
+        @Override
         public Builder label(TextObject label) {
             this.label = label;
             return this;
@@ -366,6 +384,18 @@ public class NumberSlider extends TextEntry {
 
         public Builder value(Config.IntEntry entry) {
             return this.value(entry.get(), entry.getMinValue(), entry.getMaxValue());
+        }
+
+        @Override
+        @Deprecated
+        public TextEntry.@Nullable Builder text(String text) {
+            return this;
+        }
+
+        @Override
+        @Deprecated
+        public TextEntry.Builder text(Config.StringEntry entry) {
+            return this;
         }
     }
 

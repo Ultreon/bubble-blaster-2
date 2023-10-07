@@ -588,9 +588,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         }
         try {
             if (Gdx.graphics.getFrameId() == 2) {
-
-                BubbleBlasterConfig.CONFIG.reload();
-                this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
                 this.firstRender();
             }
             this.camera.update();
@@ -664,6 +661,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private void firstRender() {
+        BubbleBlasterConfig.reload();
         this.window.setVisible(true);
         this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
 
@@ -926,7 +924,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 break;
             case Keys.F6:
                 LOGGER.warn("Triggering developer command: RESET_HP");
-                DevCommands.resetHealth(loadedGame);
+                player.setHealth(player.getMaxHealth());
                 break;
             case Keys.F7:
                 LOGGER.warn("Triggering developer command: GLITCH");

@@ -25,17 +25,13 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.scissored(this.getBounds(), () -> {
-            this.renderChildren(renderer, mouseX, mouseY, deltaTime);
-        });
+        renderer.scissored(this.getBounds(), () -> this.renderChildren(renderer, mouseX, mouseY, deltaTime));
     }
 
     protected void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         for (GuiComponent child : this.children)
             if (child.visible) {
-                renderer.scissored(child.getBounds(), () -> {
-                    child.render(renderer, mouseX, mouseY, deltaTime);
-                });
+                renderer.scissored(child.getBounds(), () -> child.render(renderer, mouseX, mouseY, deltaTime));
             }
     }
 

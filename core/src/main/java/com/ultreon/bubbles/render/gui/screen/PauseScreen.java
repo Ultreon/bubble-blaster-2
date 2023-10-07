@@ -9,10 +9,10 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.options.OptionsScreen;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.bubbles.util.helpers.MathHelper;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.world.WorldRenderer;
 import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.text.v1.TextObject;
@@ -24,6 +24,7 @@ public class PauseScreen extends Screen {
     private static final Color DETAIL_NAME_COLOR = Color.WHITE.withAlpha(0x80);
     private static final Color DETAIL_VALUE_COLOR = Color.WHITE.withAlpha(0x60);
     private Button forfeitButton;
+    private Button optionsButton;
     private Button prevButton;
     private Button nextButton;
 
@@ -62,12 +63,11 @@ public class PauseScreen extends Screen {
 
         this.title = TextObject.translation("bubbleblaster.screen.pause.text");
 
-        this.forfeitButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() - 128), 250, 256, 48).text(TextObject.translation("bubbleblaster.screen.pause.forfeit")).command(this.game::saveAndQuit).build();
-        this.prevButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() - 480), 250, 96, 48).text(Translations.PREV).command(this::previousPage).build();
-        this.nextButton = Button.builder().bounds((int) (BubbleBlaster.getMiddleX() + 480 - 95), 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build();
-
         this.registeredBubbles = Registries.BUBBLES.values().size();
-        this.tickPage();
+    }
+
+    private void showOptions() {
+        this.game.showScreen(new OptionsScreen());
     }
 
     private void previousPage() {
@@ -108,13 +108,12 @@ public class PauseScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        this.forfeitButton = this.add(this.forfeitButton);
-        this.prevButton = this.add(this.prevButton);
-        this.nextButton = this.add(this.nextButton);
+        this.forfeitButton = this.add(Button.builder().bounds(this.middleX - 175, 200, 350, 48).text(TextObject.translation("bubbleblaster.screen.pause.forfeit")).command(this.game::saveAndQuit).build());
+        this.optionsButton = this.add(Button.builder().bounds(this.middleX - 175, 250, 350, 48).text(TextObject.translation("bubbleblaster.screen.title.options")).command(this::showOptions).build());
+        this.prevButton = this.add(Button.builder().bounds(this.middleX - 480, 250, 96, 48).text(Translations.PREV).command(this::previousPage).build());
+        this.nextButton = this.add(Button.builder().bounds(this.middleX + 480 - 95, 250, 96, 48).text(Translations.NEXT).command(this::nextPage).build());
 
-        if (!this.game.isInGame()) {
-            return;
-        }
+        this.tickPage();
     }
 
     @Override
@@ -129,8 +128,8 @@ public class PauseScreen extends Screen {
             return;
         }
 
-        // Darkened background
-        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Color.BLACK.withAlpha(0xc0));
+        // Render background
+        this.renderBackground(renderer);
 
         // Pause text
         renderer.drawTextCenter(Fonts.DONGLE_75.get(), this.title, this.width / 2f, 120f, Color.argb(0x80ffffff));
@@ -193,11 +192,5 @@ public class PauseScreen extends Screen {
 
         // Description
         renderer.drawWrappedText(Fonts.SANS_ITALIC_16.get(), Language.translate(this.bubble.getDescriptionTranslationPath()).replaceAll("\\\\n", "\n"), this.middleX - 470, 512, 940, DETAIL_VALUE_COLOR);
-    }
-
-    @Override
-    public boolean doesPauseGame() {
-        World world = this.game.world;
-        return world != null && world.getGamemode().canBePaused();
     }
 }

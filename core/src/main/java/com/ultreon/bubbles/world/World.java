@@ -802,6 +802,7 @@ public final class World implements CrashFiller, Closeable {
         return this.activeEvent;
     }
 
+    @Override
     public void close() {
         this.shuttingDown = true;
 

@@ -7,6 +7,8 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.TitleScreenBackground;
+import com.ultreon.bubbles.render.gui.screen.options.LanguageScreen;
+import com.ultreon.bubbles.render.gui.screen.options.OptionsScreen;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.libs.text.v1.TextObject;
 
@@ -34,11 +36,11 @@ public class TitleScreen extends Screen {
     }
 
     private void openLanguageSettings() {
-        this.game.showScreen(new LanguageScreen(this));
+        this.game.showScreen(new LanguageScreen());
     }
 
     private void openOptions() {
-        this.game.showScreen(new OptionsScreen(this));
+        this.game.showScreen(new OptionsScreen());
     }
 
     private void startGame() {

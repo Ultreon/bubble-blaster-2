@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
+import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
@@ -25,21 +26,25 @@ import java.util.function.Predicate;
 
 public class TextEntry extends GuiComponent {
     // Cursor Index/
+    protected final GlyphLayout layout = new GlyphLayout();
     protected int cursorIndex;
 
-    // Values.
+    @NotNull
     protected String text = "";
-
-    protected final GlyphLayout layout = new GlyphLayout();
-
-    // State
-    protected boolean activated;
-    private Predicate<String> responder = text -> true;
-    protected int entryWidth;
     protected TextObject label;
 
-    public TextEntry(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
+    protected boolean activated;
+    protected int entryWidth;
+
+    private Predicate<String> responder = text -> true;
+    String validText;
+
+    protected TextEntry(int x, int y, @IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         super(x, y, width, height);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -63,12 +68,11 @@ public class TextEntry extends GuiComponent {
             String rightText = this.text.substring(this.cursorIndex);
 
             String text = leftText + rightText;
-            if (this.responder.test(text)) {
-                this.text = text;
-                this.layout.setText(this.font, text.substring(0, Mth.clamp(this.cursorIndex, 0, this.text.length() - 1)));
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
-                this.revalidate();
-            }
+            if (this.responder.test(text)) this.validText = text;
+            this.text = text;
+            this.layout.setText(this.font, text.substring(0, Mth.clamp(this.cursorIndex, 0, this.text.length() - 1)));
+            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+            this.updateCursor();
             return true;
         }
 
@@ -80,24 +84,28 @@ public class TextEntry extends GuiComponent {
             String rightText = this.text.substring(this.cursorIndex + 1);
 
             String text = leftText + rightText;
-            if (this.responder.test(text)) {
-                this.text = text;
-                this.layout.setText(this.font, text.substring(0, this.cursorIndex));
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
-                this.revalidate();
-            }
+            if (this.responder.test(text)) this.validText = text;
+            this.text = text;
+            this.layout.setText(this.font, text.substring(0, this.cursorIndex));
+            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+            this.updateCursor();
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
             this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
             this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
+            return true;
+        }
+
+        if (keyCode == Input.Keys.ENTER) {
+            this.text = this.validText;
             return true;
         }
         return false;
@@ -110,12 +118,11 @@ public class TextEntry extends GuiComponent {
             String rightText = this.text.substring(this.cursorIndex);
 
             String text = leftText + character + rightText;
-            if (this.responder.test(text)) {
-                this.text = text;
-                this.layout.setText(this.font, text.substring(0, this.cursorIndex));
-                this.cursorIndex++;
-                this.revalidate();
-            }
+            if (this.responder.test(text)) this.validText = text;
+            this.text = text;
+            this.layout.setText(this.font, text.substring(0, this.cursorIndex));
+            this.cursorIndex++;
+            this.updateCursor();
 
             return true;
         }
@@ -128,6 +135,8 @@ public class TextEntry extends GuiComponent {
         super.onFocusLost();
 
         Gdx.input.setOnscreenKeyboardVisible(false);
+
+        this.text = this.validText;
     }
 
     @Override
@@ -141,7 +150,7 @@ public class TextEntry extends GuiComponent {
         return Input.OnscreenKeyboardType.Default;
     }
 
-    protected void revalidate() {
+    protected void updateCursor() {
         this.layout.setText(this.font, this.text.substring(0, Mth.clamp(this.cursorIndex, 0, this.text.length())));
     }
 
@@ -160,10 +169,13 @@ public class TextEntry extends GuiComponent {
         if (this.isFocused()) {
             renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x40));
             renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x80));
-            renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
+
+            if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1, 1, 4, 1));
+            else renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
         } else {
             renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x20));
             renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x60));
+            if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1));
         }
     }
 
@@ -177,20 +189,24 @@ public class TextEntry extends GuiComponent {
             }
         });
 
-        renderer.scissored(labelX + 2, this.y, labelW - 4, this.height, () -> {
-            renderer.drawTextCenter(this.font, this.label, labelX + labelW / 2f , this.y + this.getHeight() / 2f - 2f, Color.WHITE);
-        });
+        renderer.scissored(labelX + 2, this.y, labelW - 4, this.isFocused() ? this.height - 4 : this.height, () -> renderer.drawTextCenter(this.font, this.label, labelX + labelW / 2f , this.y + this.getHeight() / 2f - 2f, Color.WHITE));
     }
 
     public void setText(@NotNull String text) {
+        if (this.responder.test(text)) this.validText = text;
         this.text = text;
         this.cursorIndex = this.text.length();
-        this.revalidate();
+        this.updateCursor();
     }
 
     @NotNull
     public String getText() {
         return this.text;
+    }
+
+    @Nullable
+    public String getValidText() {
+        return this.validText;
     }
 
     public void setResponder(@NotNull Consumer<@NotNull String> responder) {
@@ -220,12 +236,22 @@ public class TextEntry extends GuiComponent {
         return this.label;
     }
 
+    public boolean isError() {
+        return !this.text.equals(this.validText);
+    }
+
+    protected void validate() {
+        String text = this.text;
+        if (this.responder.test(text)) this.validText = text;
+    }
+
     public static class Builder {
         public Rectangle bounds = null;
         @Nullable
         private String text = "";
         private int entryWidth = -1;
         private TextObject label = TextObject.EMPTY;
+        private Predicate<String> responder = s -> true;
 
         public Builder() {
 
@@ -239,12 +265,13 @@ public class TextEntry extends GuiComponent {
             entry.setText(this.text == null ? "" : this.text);
             entry.setEntryWidth(this.entryWidth);
             entry.setLabel(this.label);
+            entry.setResponder(this.responder);
 
             return entry;
         }
 
-        public Builder bounds(Rectangle _bounds) {
-            this.bounds = _bounds;
+        public Builder bounds(Rectangle bounds) {
+            this.bounds = bounds;
             return this;
         }
 
@@ -260,8 +287,13 @@ public class TextEntry extends GuiComponent {
 
         @Nullable
         @ReturnsReceiver
-        public Builder text(String _text) {
-            this.text = _text;
+        public Builder text(String text) {
+            this.text = text;
+            return this;
+        }
+
+        public Builder text(Config.StringEntry entry) {
+            this.text = entry.get();
             return this;
         }
 
@@ -269,6 +301,21 @@ public class TextEntry extends GuiComponent {
         public @This Builder entryWidth(int width) {
             if (width < 0) throw new IllegalArgumentException("Entry width should be non-negative.");
             this.entryWidth = width;
+            return this;
+        }
+
+        @CanIgnoreReturnValue
+        public @This Builder responder(Predicate<@NotNull String> responder) {
+            this.responder = responder;
+            return this;
+        }
+
+        @CanIgnoreReturnValue
+        public @This Builder responder(Consumer<@NotNull String> responder) {
+            this.responder = s -> {
+                responder.accept(s);
+                return true;
+            };
             return this;
         }
 
@@ -280,6 +327,5 @@ public class TextEntry extends GuiComponent {
             this.label = label;
             return this;
         }
-
     }
 }

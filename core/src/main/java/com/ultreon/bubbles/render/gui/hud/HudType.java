@@ -16,7 +16,7 @@ import com.ultreon.bubbles.world.World;
  * HUD Baseclass
  * The baseclass for all HUD's.
  *
- * @see ClassicHud
+ * @see BetaHud
  * @see Gamemode
  */
 public abstract class HudType implements Controllable {
@@ -61,10 +61,12 @@ public abstract class HudType implements Controllable {
         return false;
     }
 
+    @Override
     public void begin() {
         
     }
 
+    @Override
     public void end() {
         
     }

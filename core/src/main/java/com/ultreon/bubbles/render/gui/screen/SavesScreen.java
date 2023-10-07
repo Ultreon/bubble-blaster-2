@@ -127,7 +127,7 @@ public class SavesScreen extends Screen {
         this.editSaveBtn.setCommand(this::editSave);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, float y, GameSave save, boolean selected, boolean hovered) {
+    private void renderEntry(Renderer renderer, float width, float height, float y, GameSave save, boolean selected, boolean hovered) {
         Either<GameSaveInfo, Exception> cachedInfo = this.cache.get(save);
         try {
             if (cachedInfo == null) {
@@ -146,7 +146,7 @@ public class SavesScreen extends Screen {
 
             renderer.fill(0, 0, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
             if (selected) {
-                renderer.drawErrorEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
+                renderer.drawErrorEffectBox(10, 10, (int) (width - 20), (int) (height - 20), new Insets(2, 2, 2, 2));
             }
 
             renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20, Color.WHITE.withAlpha(0xc0));

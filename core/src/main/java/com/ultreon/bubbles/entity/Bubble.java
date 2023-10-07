@@ -137,6 +137,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.make();
     }
 
+    @Override
     public AiTask nextAiTask() {
         if (this.currentAiTask != null && this.currentAiTask.executeTask(this)) {
             return this.currentAiTask;
@@ -292,10 +293,12 @@ public class Bubble extends AbstractBubbleEntity {
         this.radius = radius;
     }
 
+    @Override
     public float getRadius() {
         return this.radius;
     }
 
+    @Override
     public float radius() {
         return this.getShape().radius;
     }

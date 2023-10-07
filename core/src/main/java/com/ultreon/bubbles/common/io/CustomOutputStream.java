@@ -15,6 +15,7 @@ public class CustomOutputStream extends OutputStream {
         this.name = name;
     }
 
+    @Override
     public synchronized final void write(int b) {
         // the correct way create doing this would be using a buffer
         // to store characters until a newline is encountered,

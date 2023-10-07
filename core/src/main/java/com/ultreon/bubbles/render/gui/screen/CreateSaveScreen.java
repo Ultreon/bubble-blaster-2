@@ -60,7 +60,7 @@ public class CreateSaveScreen extends Screen {
         this.game.createGame(seed, selected.value);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, float y, Gamemode gamemode, boolean selected, boolean hovered) {
+    private void renderEntry(Renderer renderer, float width, float height, float y, Gamemode gamemode, boolean selected, boolean hovered) {
         String name = gamemode.getName().getText();
 
         int x = this.gamemodeList.getX();

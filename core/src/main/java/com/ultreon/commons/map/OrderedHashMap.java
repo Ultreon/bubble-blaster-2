@@ -196,6 +196,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#size()}.
      */
+    @Override
     public int size() {
         // use the underlying Map's size since size is not maintained here.
         return this.entries.size();
@@ -204,6 +205,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#isEmpty()}.
      */
+    @Override
     public boolean isEmpty() {
         // for quick check whether the map is entry, we can check the linked list
         // and see if there's anything in it.
@@ -213,6 +215,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#containsKey(Object)}.
      */
+    @Override
     public boolean containsKey(Object key) {
         // pass on to underlying map implementation
         return this.entries.containsKey(key);
@@ -221,6 +224,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#containsValue(Object)}.
      */
+    @Override
     public boolean containsValue(Object value) {
         // unfortunately, we cannot just pass this call to the underlying map
         // because we are mapping keys into entries, not keys into values. The
@@ -250,6 +254,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      *
      * @param o
      */
+    @Override
     public V get(Object o) {
         // find entry for the specified key object
         Entry<K, V> entry = this.entries.get(o);
@@ -368,6 +373,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#put(Object, Object)}.
      */
+    @Override
     public V put(K key, V value) {
         this.modCount++;
         V oldValue = null;
@@ -405,6 +411,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      *
      * @param key
      */
+    @Override
     @SuppressWarnings("unchecked")
     public V remove(Object key) {
         Entry<K, V> e = this.removeImpl((K) key);
@@ -433,6 +440,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * @param t the mappings that should be added to this map.
      * @throws NullPointerException if <code>t</code> is <code>null</code>
      */
+    @Override
     public void putAll(Map<? extends K, ? extends V> t) {
         for (Map.Entry<? extends K, ? extends V> entry : t.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
@@ -442,6 +450,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#clear()}.
      */
+    @Override
     public void clear() {
         this.modCount++;
 
@@ -500,13 +509,16 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#keySet()}.
      */
+    @Override
     public @NotNull Set<K> keySet() {
         return new AbstractSet<>() {
             // required impls
+            @Override
             public @NotNull Iterator<K> iterator() {
                 return new OrderedIterator<>(KEY);
             }
 
+            @Override
             @SuppressWarnings("unchecked")
             public boolean remove(Object o) {
                 Entry<K, V> e = OrderedHashMap.this.removeImpl((K) o);
@@ -514,18 +526,22 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // more efficient impls than abstract set
+            @Override
             public void clear() {
                 OrderedHashMap.this.clear();
             }
 
+            @Override
             public int size() {
                 return OrderedHashMap.this.size();
             }
 
+            @Override
             public boolean isEmpty() {
                 return OrderedHashMap.this.isEmpty();
             }
 
+            @Override
             public boolean contains(Object o) {
                 return OrderedHashMap.this.containsKey(o);
             }
@@ -535,13 +551,16 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     /**
      * Implements {@link Map#values()}.
      */
+    @Override
     public @NotNull Collection<V> values() {
         return new AbstractCollection<>() {
             // required impl
+            @Override
             public @NotNull Iterator<V> iterator() {
                 return new OrderedIterator<>(VALUE);
             }
 
+            @Override
             public boolean remove(Object value) {
                 // do null comparison outside loop, so we only need to do it once. This
                 // provides a tighter, more efficient loop at the expense create slight
@@ -565,18 +584,22 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // more efficient impls than abstract collection
+            @Override
             public void clear() {
                 OrderedHashMap.this.clear();
             }
 
+            @Override
             public int size() {
                 return OrderedHashMap.this.size();
             }
 
+            @Override
             public boolean isEmpty() {
                 return OrderedHashMap.this.isEmpty();
             }
 
+            @Override
             public boolean contains(Object o) {
                 return OrderedHashMap.this.containsValue(o);
             }
@@ -588,6 +611,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      *
      * @return
      */
+    @Override
     public @NotNull Set<Map.Entry<K, V>> entrySet() {
         return new AbstractSet<>() {
             // helper
@@ -604,6 +628,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // required impl
+            @Override
             public @NotNull Iterator<Map.Entry<K, V>> iterator() {
                 return new OrderedIterator<>(ENTRY);
             }
@@ -623,14 +648,17 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             }
 
             // more efficient impls than abstract collection
+            @Override
             public void clear() {
                 OrderedHashMap.this.clear();
             }
 
+            @Override
             public int size() {
                 return OrderedHashMap.this.size();
             }
 
+            @Override
             public boolean isEmpty() {
                 return OrderedHashMap.this.isEmpty();
             }
@@ -657,6 +685,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * @return A clone create this instance.
      * @throws CloneNotSupportedException if clone is not supported by a subclass.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public OrderedHashMap<K, V> clone() throws CloneNotSupportedException {
         // yes, calling super.clone() silly since we're just blowing away all
@@ -799,6 +828,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * @throws IOException            if the stream raises it
      * @throws ClassNotFoundException if the stream raises it
      */
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException, ClassCastException {
         int size = in.readInt();
         for (int i = 0; i < size; i++) {
@@ -814,6 +844,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * @param out the stream to serialize to
      * @throws IOException if the stream raises it
      */
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(this.size());
         for (Entry<K, V> pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
@@ -851,16 +882,19 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         }
 
         // per Map.Entry.getKey()
+        @Override
         public K getKey() {
             return this.key;
         }
 
         // per Map.Entry.getValue()
+        @Override
         public V getValue() {
             return this.value;
         }
 
         // per Map.Entry.setValue()
+        @Override
         public V setValue(V value) {
             V oldValue = this.value;
             this.value = value;
@@ -943,6 +977,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
          * @return <code>true</code> if there are more elements left to be returned from the iterator;
          * <code>false</code> otherwise.
          */
+        @Override
         public boolean hasNext() {
             return this.pos.next != OrderedHashMap.this.sentinel;
         }
@@ -954,6 +989,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
          * @throws NoSuchElementException          if there are no more elements in the iterator.
          * @throws ConcurrentModificationException if a modification occurs in the underlying map.
          */
+        @Override
         @SuppressWarnings("unchecked")
         public T next() {
             if (OrderedHashMap.this.modCount != this.expectedModCount) {
@@ -986,6 +1022,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
          *                                         never been called, or if {@link #remove()}was already called on the element.
          * @throws ConcurrentModificationException if a modification occurs in the underlying map.
          */
+        @Override
         public void remove() {
             if ((this.returnType & REMOVED_MASK) != 0) {
                 throw new IllegalStateException("remove() must follow next()");

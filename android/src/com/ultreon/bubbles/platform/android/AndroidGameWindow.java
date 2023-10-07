@@ -44,18 +44,22 @@ public class AndroidGameWindow implements GameWindow {
         Gdx.graphics.setResizable(false);
     }
 
+    @Override
     public int getWidth() {
         return Gdx.graphics.getWidth();
     }
 
+    @Override
     public void setWidth(int width) {
         Gdx.graphics.setWindowedMode(width, this.getHeight());
     }
 
+    @Override
     public int getHeight() {
         return Gdx.graphics.getHeight();
     }
 
+    @Override
     public void setHeight(int height) {
         Gdx.graphics.setWindowedMode(this.getWidth(), height);
     }
@@ -63,6 +67,7 @@ public class AndroidGameWindow implements GameWindow {
     /**
      * Initialized window.
      */
+    @Override
     public synchronized void init() {
         if (this.initialized) {
             throw new OneTimeUseException("The game window is already initialized.");
@@ -74,23 +79,28 @@ public class AndroidGameWindow implements GameWindow {
         this.game().windowLoaded();
     }
 
+    @Override
     public void dispose() {
         this.game().shutdown();
     }
 
+    @Override
     public Cursor registerCursor(int hotSpotX, int hotSpotY, Identifier identifier) {
         return Gdx.graphics.newCursor(new Pixmap(BubbleBlaster.resource(identifier.mapPath(s -> "textures/cursor/" + s + ".png"))), hotSpotX, hotSpotY);
     }
 
+    @Override
     public void finalSetup() {
         // TODO: Use final setup in game window.
     }
 
+    @Override
     public boolean toggleFullscreen() {
         this.setFullscreen(!this.isFullscreen());
         return false;
     }
 
+    @Override
     public boolean setFullscreen(boolean enable) {
         if (this.isFullscreen() && !enable) {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, false).isCanceled()) {
@@ -113,34 +123,42 @@ public class AndroidGameWindow implements GameWindow {
         return enable;
     }
 
+    @Override
     public void setVisible(boolean visible) {
 
     }
 
+    @Override
     public boolean isVisible() {
         return this.visible;
     }
 
+    @Override
     public boolean isInitialized() {
         return this.initialized;
     }
 
+    @Override
     public Rectangle getBounds() {
         return new Rectangle(0, 0, this.getWidth(), this.getHeight());
     }
 
+    @Override
     public int getX() {
         return 0;
     }
 
+    @Override
     public int getY() {
         return 0;
     }
 
+    @Override
     public void requestFocus() {
 
     }
 
+    @Override
     public boolean isFocused() {
         return this.game().isFocused();
     }
@@ -149,6 +167,7 @@ public class AndroidGameWindow implements GameWindow {
      * Taskbar feature, flashes the taskbar icon on Windows.
      * Other operating systems are unknown for this behavior.
      */
+    @Override
     public void requestUserAttention() {
 
     }

@@ -80,36 +80,43 @@ public class CycleButton<T extends Enum<T>> extends Button implements GuiStateLi
             }
         }
 
+        @Override
         public Builder<T> bounds(Rectangle bounds) {
             this.bounds = bounds;
             return this;
         }
 
+        @Override
         public Builder<T> bounds(int x, int y, int width, int height) {
             this.bounds = new Rectangle(x, y, width, height);
             return this;
         }
 
+        @Override
         public Builder<T> text(String text) {
             this.text = TextObject.literal(text);
             return this;
         }
 
+        @Override
         public Builder<T> text(TextObject text) {
             this.text = text;
             return this;
         }
 
+        @Override
         public Builder<T> command(Runnable command) {
             this.command = command;
             return this;
         }
 
+        @Override
         public @This Builder<T> font(BitmapFont font) {
             this.font = font;
             return this;
         }
 
+        @Override
         public CycleButton<T> build() {
             CycleButton<T> button = new CycleButton<>(this.componentType, (int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 

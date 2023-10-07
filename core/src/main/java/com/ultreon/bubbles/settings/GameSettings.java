@@ -29,6 +29,7 @@ public final class GameSettings implements Serializable {
     public Keybind keybindRotateLeft = new Keybind(Input.Keys.LEFT);
     public Keybind keybindRotateRight = new Keybind(Input.Keys.RIGHT);
     public int maxBubbles = 500;
+    @Deprecated
     private String language = "en";
 
     public Identifier gamemode = Gamemodes.NORMAL.id();
@@ -41,12 +42,10 @@ public final class GameSettings implements Serializable {
         if (!GameSettings.reload()) {
             BubbleBlaster.getLogger().error("Failed to load settings.");
         }
-
-//        BubbleBlaster.getWatcher().watchFile(GameFolders.SETTINGS_FILE.file(), file -> GameSettings.reload());
     }
 
     private GameSettings() {
-        LanguageManager.setCurrentLanguage(Locale.forLanguageTag(this.language));
+
     }
 
     public synchronized static boolean reload() {
@@ -65,7 +64,6 @@ public final class GameSettings implements Serializable {
                 GameSettings.save();
             }
             GameSettings.instance = instance;
-            LanguageManager.setCurrentLanguage(instance.getLanguageLocale());
         } catch (Exception e) {
             BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.path() + ":", e);
             return GameSettings.save();
@@ -91,14 +89,17 @@ public final class GameSettings implements Serializable {
         return instance;
     }
 
+    @Deprecated(forRemoval = true)
     public String getLanguage() {
         return this.language;
     }
 
+    @Deprecated(forRemoval = true)
     public Locale getLanguageLocale() {
         return new Locale(this.getLanguage());
     }
 
+    @Deprecated(forRemoval = true)
     public void setLanguage(String language) {
         this.language = language;
         String oldLang = this.language;
@@ -108,6 +109,7 @@ public final class GameSettings implements Serializable {
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, newLocale);
     }
 
+    @Deprecated(forRemoval = true)
     public void setLanguage(Locale locale) {
         String oldLang = this.language;
         Locale oldLocale = Locale.forLanguageTag(oldLang);

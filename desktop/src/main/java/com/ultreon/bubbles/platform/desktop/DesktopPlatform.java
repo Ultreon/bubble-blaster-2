@@ -75,6 +75,12 @@ public class DesktopPlatform extends GamePlatform {
 
         this.dataDir = new FileHandle(path.toFile());
         this.gameFile = BubbleBlaster.class.getProtectionDomain().getCodeSource().getLocation();
+        this.data("game-crashes").mkdirs();
+        this.data("logs").mkdirs();
+        this.data("screenshots").mkdirs();
+        this.data("saves").mkdirs();
+        this.data("config").mkdirs();
+        this.data("mods").mkdirs();
     }
 
     @Override
@@ -139,6 +145,7 @@ public class DesktopPlatform extends GamePlatform {
         this.addModIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
     }
 
+    @Override
     public void addModIcon(String modId, Identifier location) {
         Resource resource = this.game().getResourceManager().getResource(location);
         if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;

@@ -36,7 +36,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected volatile int width;
     protected volatile int height;
 
-    protected Color backgroundColor = Color.WHITE;
+    protected Color backgroundColor = Color.WHITE.withAlpha(0x20);
 
     public boolean enabled = true;
     public boolean visible = true;
@@ -90,6 +90,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
      * @param mouseY the Y position of the mouse pointer.
      * @param deltaTime the game's {@linkplain Graphics#getDeltaTime() delta time}.
      */
+    @Override
     public abstract void render(Renderer renderer, int mouseX, int mouseY, float deltaTime);
 
     /**
@@ -209,6 +210,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         return false;
     }
 
+    @Override
     public int getX() {
         return this.x;
     }
@@ -217,6 +219,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.x = x;
     }
 
+    @Override
     public int getY() {
         return this.y;
     }
@@ -225,6 +228,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.y = y;
     }
 
+    @Override
     public int getWidth() {
         return this.width;
     }
@@ -236,6 +240,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.width = width;
     }
 
+    @Override
     public int getHeight() {
         return this.height;
     }
@@ -247,6 +252,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.height = height;
     }
 
+    @Override
     public Vec2i getPos() {
         return new Vec2i(this.x, this.y);
     }
@@ -260,6 +266,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.setPos(pos.x, pos.y);
     }
 
+    @Override
     public Vec2i getSize() {
         return new Vec2i(this.width, this.height);
     }
@@ -273,6 +280,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
         this.setHeight(height);
     }
 
+    @Override
     public Rectangle getBounds() {
         return new Rectangle(this.x, this.y, this.width, this.height);
     }

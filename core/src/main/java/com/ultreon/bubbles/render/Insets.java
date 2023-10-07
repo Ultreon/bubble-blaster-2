@@ -67,6 +67,7 @@ public class Insets implements Cloneable, Serializable {
                 '}';
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();

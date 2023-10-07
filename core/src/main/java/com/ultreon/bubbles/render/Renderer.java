@@ -46,6 +46,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.*;
@@ -1770,6 +1771,27 @@ public class Renderer {
     public void scissored(int x, int y, int width, int height, Runnable func) {
         if (this.pushScissor(x, y, width, height)) {
             func.run();
+            this.popScissor();
+        }
+    }
+
+    public void scissored(Rectangle rect, Consumer<Rectangle> func) {
+        if (this.pushScissor(rect)) {
+            func.accept(ScissorStack.peekScissors());
+            this.popScissor();
+        }
+    }
+
+    public void scissored(float x, float y, float width, float height, Consumer<Rectangle> func) {
+        if (this.pushScissor(x, y, width, height)) {
+            func.accept(ScissorStack.peekScissors());
+            this.popScissor();
+        }
+    }
+
+    public void scissored(int x, int y, int width, int height, Consumer<Rectangle> func) {
+        if (this.pushScissor(x, y, width, height)) {
+            func.accept(ScissorStack.peekScissors());
             this.popScissor();
         }
     }

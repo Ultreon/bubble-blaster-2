@@ -31,6 +31,10 @@ public class DecimalNumberInput extends TextEntry {
     private DecimalNumberInput(int x, int y, int width, int height, double value, double min, double max) {
         super(x, y, width, height);
         this.setValueAndRange(value, min, max);
+        this.setResponder(s -> {
+            Double v = Numbers.tryParseDouble(s);
+            return v != null && v >= min && v <= max;
+        });
     }
 
     private void increment() {
@@ -60,12 +64,13 @@ public class DecimalNumberInput extends TextEntry {
     public void setValueAndRange(double value, double min, double max) {
         this.value = Mth.clamp(value, min, max);
         this.text = Double.toString(this.value);
+        this.validText = this.text;
         this.cursorIndex = this.text.length();
 
         this.min = min;
         this.max = max;
 
-        this.revalidate();
+        this.updateCursor();
     }
 
     @Override
@@ -81,7 +86,8 @@ public class DecimalNumberInput extends TextEntry {
 
             this.cursorIndex--;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
+            this.validate();
             return true;
         }
 
@@ -91,20 +97,21 @@ public class DecimalNumberInput extends TextEntry {
             String rightText = this.text.substring(this.cursorIndex + 1);
 
             this.text = leftText + rightText;
+            this.validate();
             return true;
         }
 
         if (keyCode == Input.Keys.LEFT) {
             this.cursorIndex--;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
             return true;
         }
 
         if (keyCode == Input.Keys.RIGHT) {
             this.cursorIndex++;
             this.cursorIndex = Mth.clamp(this.cursorIndex, 0, this.text.length());
-            this.revalidate();
+            this.updateCursor();
             return true;
         }
 
@@ -130,41 +137,45 @@ public class DecimalNumberInput extends TextEntry {
     public boolean charType(char character) {
         if (!this.isFocused()) return false;
 
-        if ("0123456789.".contains(Character.toString(character))) {
-            if (character == '.' && this.text.contains(".")) return false;
-            if (character == '-' && this.text.startsWith("-")) {
-                this.text = this.text.substring(1);
-                this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
-                return true;
-            }
-            if (character == '-' && !this.text.startsWith("-")) {
-                this.text = "-" + this.text;
-                this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
-                return true;
-            }
+        if (!"0123456789.".contains(Character.toString(character)))
+            return false;
 
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex);
+        if (character == '.' && this.text.contains("."))
+            return false;
 
-            this.text = leftText + character + rightText;
-            this.revalidate();
-
-            this.cursorIndex++;
-            this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+        if (character == '-' && this.text.startsWith("-")) {
+            this.text = this.text.substring(1);
+            this.cursorIndex = Mth.clamp(this.cursorIndex - 1, 0, this.text.length());
+            this.validate();
             return true;
         }
-        return false;
+        if (character == '-' && !this.text.startsWith("-")) {
+            this.text = "-" + this.text;
+            this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+            this.validate();
+            return true;
+        }
+
+        String leftText = this.text.substring(0, this.cursorIndex);
+        String rightText = this.text.substring(this.cursorIndex);
+
+        this.text = leftText + character + rightText;
+        this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
+        this.updateCursor();
+        this.validate();
+        return true;
     }
 
     protected void validateNumber() {
         Double parsed = Numbers.tryParseDouble(this.text);
         if (parsed == null) {
-            this.text = Double.toString(this.value);
+            this.validText = Double.toString(this.value);
             return;
         }
 
         this.value = Mth.clamp(parsed, this.min, this.max);
         this.text = parsed.toString();
+        this.validText = this.text;
         this.cursorIndex = this.text.length();
         this.callback.accept(parsed);
     }
@@ -188,6 +199,7 @@ public class DecimalNumberInput extends TextEntry {
     public void setValue(int value) {
         this.value = Mth.clamp(value, this.min, this.max);
         this.text = Double.toString(this.value);
+        this.validText = this.text;
     }
 
     public double getMin() {
@@ -198,6 +210,7 @@ public class DecimalNumberInput extends TextEntry {
         this.min = min;
         this.value = Mth.clamp(this.value, min, this.max);
         this.text = Double.toString(this.value);
+        this.validText = this.text;
     }
 
     public double getMax() {
@@ -208,8 +221,10 @@ public class DecimalNumberInput extends TextEntry {
         this.max = max;
         this.value = Mth.clamp(this.value, this.min, max);
         this.text = Double.toString(this.value);
+        this.validText = this.text;
     }
 
+    @Override
     public void setEntryWidth(int width) {
         if (width < 0) throw new IllegalArgumentException("Entry width should be non-negative.");
         this.entryWidth = width;
@@ -228,7 +243,11 @@ public class DecimalNumberInput extends TextEntry {
         return this.callback;
     }
 
-    public static class Builder {
+    public float getValueFloat() {
+        return (float) this.value;
+    }
+
+    public static class Builder extends TextEntry.Builder {
         public Rectangle bounds = null;
         private double value;
         private double min;
@@ -241,6 +260,7 @@ public class DecimalNumberInput extends TextEntry {
 
         }
 
+        @Override
         public DecimalNumberInput build() {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating number slider.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
@@ -252,23 +272,27 @@ public class DecimalNumberInput extends TextEntry {
             return numberSlider;
         }
 
+        @Override
         public @This Builder bounds(Rectangle bounds) {
             this.bounds = bounds;
             return this;
         }
 
+        @Override
         public @This Builder bounds(int x, int y, int width, int height) {
             this.bounds = new Rectangle(x, y, width, height);
             if (this.entryWidth == -1) this.entryWidth(width);
             return this;
         }
 
+        @Override
         public @This Builder bounds(Vec2i pos, IntSize size) {
             this.bounds = new Rectangle(pos.x, pos.y, size.width(), size.height());
             if (this.entryWidth == -1) this.entryWidth(size.width());
             return this;
         }
 
+        @Override
         @CanIgnoreReturnValue
         public @This Builder entryWidth(int width) {
             if (width < 0) throw new IllegalArgumentException("Entry width should be non-negative.");
@@ -276,10 +300,12 @@ public class DecimalNumberInput extends TextEntry {
             return this;
         }
 
+        @Override
         public @This Builder label(@Nullable String label) {
             return this.label(TextObject.nullToEmpty(label));
         }
 
+        @Override
         public @This Builder label(TextObject label) {
             this.label = label;
             return this;

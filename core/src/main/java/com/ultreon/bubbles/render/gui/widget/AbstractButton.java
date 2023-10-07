@@ -19,9 +19,7 @@ public abstract class AbstractButton extends GuiComponent {
     }
 
     protected static void drawText(Renderer renderer, Color color, Vec2i pos, Vec2i size, TextObject text, BitmapFont font) {
-        renderer.scissored(pos.x + 4, pos.y + 4, size.x - 8, size.y - 8, () -> {
-            renderer.drawTextCenter(font, text.getText(), pos.x + (size.x - 8) / 2f, pos.y + size.y / 2f - 4f, color);
-        });
+        renderer.scissored(pos.x + 4, pos.y + 4, size.x - 8, size.y - 8, () -> renderer.drawTextCenter(font, text.getText(), pos.x + (size.x - 8) / 2f, pos.y + size.y / 2f - 4f, color));
     }
 
     @Override

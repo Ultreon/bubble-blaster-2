@@ -1,54 +1,60 @@
-package com.ultreon.bubbles.render.gui.screen;
+package com.ultreon.bubbles.render.gui.screen.options;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.bubbles.render.gui.screen.Screen;
 import com.ultreon.bubbles.render.gui.widget.Button;
 import com.ultreon.bubbles.render.gui.widget.NumberSlider;
+import com.ultreon.bubbles.render.gui.widget.ToggleButton;
 import com.ultreon.bubbles.text.Translations;
 import com.ultreon.libs.text.v1.TextObject;
 
-import static com.ultreon.bubbles.BubbleBlasterConfig.AUTO_SAVE_RATE;
-import static com.ultreon.bubbles.BubbleBlasterConfig.MAX_FRAMERATE;
+import static com.ultreon.bubbles.BubbleBlasterConfig.*;
 
 public class GenericOptionsScreen extends Screen {
-    private NumberSlider maxBubblesOption;
-    private Button languageButton;
-    private Button cancelButton;
-    private Button saveButton;
-    private final Screen back;
+    private ToggleButton enableAnnoyingEasterEggs;
+    private ToggleButton enableEasterEggs;
     private NumberSlider autoSaveRate;
     private NumberSlider maxFramerate;
+    private Button cancelButton;
+    private Button saveButton;
 
     public GenericOptionsScreen(Screen back) {
-        super();
-
-        this.back = back;
+        super(back);
     }
 
-    private void save() {
+    public void save() {
+        ENABLE_ANNOYING_EASTER_EGGS.set(this.enableAnnoyingEasterEggs.isToggled());
+        ENABLE_EASTER_EGGS.set(this.enableEasterEggs.isToggled());
         AUTO_SAVE_RATE.set(this.autoSaveRate.getValue());
         MAX_FRAMERATE.set(this.maxFramerate.getValue());
         BubbleBlasterConfig.save();
-    }
-
-    private void back() {
-        this.game.showScreen(this.back);
+        this.back();
     }
 
     @Override
     public void init() {
+        int entryWidth = 100;
+        this.enableAnnoyingEasterEggs = this.add(ToggleButton.builder()
+                .toggled(ENABLE_ANNOYING_EASTER_EGGS)
+                .text(TextObject.translation("bubbleblaster.screen.options.generic.enableAnnoyingEasterEggs"))
+                .bounds(this.middleX - 301, this.middleY + 51, 300, 48).build());
+        this.enableEasterEggs = this.add(ToggleButton.builder()
+                .toggled(ENABLE_EASTER_EGGS)
+                .text(TextObject.translation("bubbleblaster.screen.options.generic.enableEasterEggs"))
+                .bounds(this.middleX + 1, this.middleY + 51, 300, 48).build());
         this.autoSaveRate = this.add(NumberSlider.builder()
                 .value(AUTO_SAVE_RATE)
                 .label(TextObject.translation("bubbleblaster.screen.options.generic.autoSaveRate"))
                 .bounds(this.middleX - 301, this.middleY + 101, 300, 48)
-                .entryWidth(80).build());
+                .entryWidth(entryWidth).build());
         this.maxFramerate = this.add(NumberSlider.builder()
                 .value(MAX_FRAMERATE)
                 .label(TextObject.translation("bubbleblaster.screen.options.generic.maxFramerate"))
                 .bounds(this.middleX + 1, this.middleY + 101, 300, 48)
-                .entryWidth(80).build());
+                .entryWidth(entryWidth).build());
         this.cancelButton = this.add(Button.builder()
                 .text(Translations.CANCEL)
                 .bounds(this.middleX - 151, this.middleY + 151, 150, 48)
@@ -66,5 +72,13 @@ public class GenericOptionsScreen extends Screen {
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {
         renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Color.GRAY_6);
+    }
+
+    public Button getCancelButton() {
+        return this.cancelButton;
+    }
+
+    public Button getSaveButton() {
+        return this.saveButton;
     }
 }

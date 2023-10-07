@@ -69,7 +69,7 @@ public class ModListScreen extends Screen {
         super.render(renderer, mouseX, mouseY, deltaTime);
     }
 
-    private void renderEntry(Renderer renderer, int width, int height, float y, ModContainer entry, boolean selected, boolean hovered) {
+    private void renderEntry(Renderer renderer, float width, float height, float y, ModContainer entry, boolean selected, boolean hovered) {
         ModMetadata metadata = entry.getMetadata();
 
         renderer.fill(0, y, width, height, Color.argb(hovered ? 0x40ffffff : 0x20ffffff));

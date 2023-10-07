@@ -58,6 +58,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for " + this.deactivateTicks + " ticks (" + (this.deactivateTicks / TPS) + " secs)");
     }
 
+    @Override
     public void tick() {
         if (this.deactivateTicks-- < 0)
             this.deactivateTicks = -1;

@@ -1,14 +1,20 @@
 package com.ultreon.bubbles;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.common.DifficultyEffectType;
 import com.ultreon.bubbles.config.Config;
 import com.ultreon.bubbles.config.ConfigManager;
 import com.ultreon.bubbles.event.v1.ConfigEvents;
 import com.ultreon.bubbles.init.HudTypes;
+import com.ultreon.bubbles.notification.Notification;
+import com.ultreon.bubbles.render.gui.screen.LoadScreen;
+import com.ultreon.libs.translations.v1.LanguageManager;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class BubbleBlasterConfig {
     public static final FileHandle FILE = BubbleBlaster.getConfigDir().child("bubble_blaster.toml");
@@ -18,6 +24,8 @@ public class BubbleBlasterConfig {
     public static final Config.BooleanEntry ENABLE_EASTER_EGGS;
     public static final Config.IntEntry AUTO_SAVE_RATE;
     public static final Config.IntEntry MAX_FRAMERATE;
+    public static final Config.BooleanEntry FULLSCREEN;
+    public static final Config.StringEntry LANGUAGE;
 
     // Gameplay
     public static final Config.IntEntry LEVEL_THRESHOLD;
@@ -45,7 +53,6 @@ public class BubbleBlasterConfig {
     public static final Config.IntEntry BLOOD_MOON_STOP_HIGH;
     public static final Config.IntEntry BLOOD_MOON_TRIGGER_LOW;
     public static final Config.IntEntry BLOOD_MOON_TRIGGER_HIGH;
-    public static final Config.BooleanEntry FULLSCREEN;
 
     static final Config CONFIG;
 
@@ -55,11 +62,12 @@ public class BubbleBlasterConfig {
         Config.Builder builder = new Config.Builder(FILE.file());
 
         // Generic
-        ENABLE_ANNOYING_EASTER_EGGS = builder.entry("generic.enableAnnoyingEasterEggs").comment("Enables easter eggs that mess with gameplay a little to hard.").value(false);
-        ENABLE_EASTER_EGGS = builder.entry("generic.enableEasterEggs").comment("Enables hidden easter eggs.").value(true);
-        AUTO_SAVE_RATE = builder.entry("generic.autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
-        MAX_FRAMERATE = builder.entry("generic.maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, GamePlatform.get().getRecommendedFPS());
-        FULLSCREEN = builder.entry("generic.fullscreen").comment("Play the game in fullscreen mode.").value(false);
+        ENABLE_ANNOYING_EASTER_EGGS = builder.entry("enableAnnoyingEasterEggs").comment("Enables easter eggs that mess with gameplay a little to hard.").value(false);
+        ENABLE_EASTER_EGGS = builder.entry("enableEasterEggs").comment("Enables hidden easter eggs.").value(true);
+        AUTO_SAVE_RATE = builder.entry("autoSaveRate").comment("The rate in seconds of which the game automatically saves.").withinRange(30, 3600, 60);
+        MAX_FRAMERATE = builder.entry("maxFramerate").comment("Maximum framerate limit.").withinRange(10, 240, GamePlatform.get().getRecommendedFPS());
+        FULLSCREEN = builder.entry("fullscreen").comment("Play the game in fullscreen mode.").value(false);
+        LANGUAGE = builder.entry("language").comment("The language of the game.").value(new Locale("en", "us").toLanguageTag());
 
         // Gameplay
         LEVEL_THRESHOLD = builder.entry("gameplay.levelThreshold").comment("How much score do you need to get a new level").withinRange(1_000, 2_000, 1_000);
@@ -91,7 +99,7 @@ public class BubbleBlasterConfig {
         CONFIG = builder.build();
 
         ConfigEvents.CONFIG_RELOADED.listen(reloaded -> {
-            if (reloaded == CONFIG) {
+            if (reloaded.equals(CONFIG)) {
                 BubbleBlasterConfig.onReload();
             }
         });
@@ -103,12 +111,33 @@ public class BubbleBlasterConfig {
     }
 
     public static void onReload() {
+        BubbleBlaster.LOGGER.debug("Post-reloading config!");
+        BubbleBlasterConfig.reloadLanguage();
+    }
 
+    private static void reloadLanguage() {
+        String languageTag = LANGUAGE.get();
+        Locale locale = Locale.forLanguageTag(languageTag);
+
+        if (!LoadScreen.isLanguagesLoaded()) return;
+
+        if (locale == null || !LanguageManager.INSTANCE.getLocales().contains(locale)) {
+            BubbleBlaster.LOGGER.warn("Invalid language: " + languageTag);
+            BubbleBlaster.LOGGER.warn("Those are valid: " + LanguageManager.INSTANCE.getLocales().stream().map(Locale::toLanguageTag).collect(Collectors.joining(", ")));
+            BubbleBlaster.getInstance().notifications.notify(Notification.builder("Invalid Language!", "Language Tag: " + languageTag).subText("Language Manager").build());
+            LANGUAGE.reset();
+        } else {
+            BubbleBlaster.LOGGER.debug("Setting language to " + locale.toLanguageTag());
+            LanguageManager.setCurrentLanguage(locale);
+        }
     }
 
     public static void save() {
         CONFIG.save();
-        CONFIG.reload();
+
+        BubbleBlaster.invoke(() -> {
+            Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());;
+        });
     }
 
     public static void reload() {

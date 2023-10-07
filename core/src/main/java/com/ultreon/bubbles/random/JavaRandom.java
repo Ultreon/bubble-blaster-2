@@ -88,6 +88,7 @@ public class JavaRandom implements SeededRandomSource {
         return new JavaRandom(this.random.nextLong() ^ Randomizer.hash(seed));
     }
 
+    @Override
     public long getSeed() {
         return this.seed;
     }

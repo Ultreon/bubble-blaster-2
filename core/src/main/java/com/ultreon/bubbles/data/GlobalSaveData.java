@@ -37,6 +37,7 @@ public final class GlobalSaveData extends GameData {
         this.load(FILE);
     }
 
+    @Override
     public MapType dump(MapType tag) {
         tag.putDouble("HighScore", this.highScore);
         tag.putLong("HighScoreTime", this.highScoreTime);

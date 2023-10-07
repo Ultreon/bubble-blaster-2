@@ -12,6 +12,7 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.widget.Circle;
 import com.ultreon.bubbles.render.gui.widget.Container;
+import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
@@ -36,6 +37,7 @@ public abstract class Screen extends Container implements CrashFiller {
     public Screen(TextObject title) {
         super(0, 0, 0, 0);
         this.title = title;
+        this.backScreen = this.game.getCurrentScreen();
     }
 
     public Screen(Screen backScreen) {
@@ -92,6 +94,10 @@ public abstract class Screen extends Container implements CrashFiller {
             child.dispose();
 
         return false;
+    }
+
+    public void back() {
+        this.game.showScreen(this.backScreen);
     }
 
     public void forceClose() {
@@ -162,7 +168,7 @@ public abstract class Screen extends Container implements CrashFiller {
 
     public void renderBackground(Renderer renderer) {
         if (this.game.world != null)
-            renderer.fillGradient(0, 0, this.getWidth(), this.getHeight(), Color.BLACK.withAlpha(0x70), Color.BLACK.withAlpha(0x80), Axis2D.VERTICAL);
+            renderer.fillGradient(0, 0, this.getWidth(), this.getHeight(), Color.BLACK.withAlpha(0xb0), Color.BLACK.withAlpha(0xc0), Axis2D.VERTICAL);
         else
             renderer.fill(0, 0, this.getWidth(), this.getHeight(), Color.grayscale(0x1e));
     }
@@ -203,7 +209,8 @@ public abstract class Screen extends Container implements CrashFiller {
      * @see BubbleBlaster#isPaused()
      */
     public boolean doesPauseGame() {
-        return false;
+        World world = this.game.world;
+        return world != null && world.getGamemode().canBePaused();
     }
 
     @Override

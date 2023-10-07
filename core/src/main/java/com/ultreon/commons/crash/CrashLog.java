@@ -56,6 +56,7 @@ public final class CrashLog extends CrashCategory {
         return this.addCrashLog(crashLog1);
     }
 
+    @Override
     @NotNull
     public Throwable getThrowable() {
         return this.throwable;

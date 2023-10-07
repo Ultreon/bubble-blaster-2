@@ -134,6 +134,7 @@ public abstract class Gamemode implements Controllable {
         return null;
     }
 
+    @Override
     public void end() {
         if (this.hud != null) {
             this.hud.end();
