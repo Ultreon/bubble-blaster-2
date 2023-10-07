@@ -178,6 +178,9 @@ public class DiscordRPC {
         this.activity = () -> {
             var ret = activity.get();
             var state = ret.getState();
+            if (GamePlatform.get().isDevelopmentEnvironment())
+                ret.setDetails("Development Mode");
+
             BubbleBlaster.invoke(() -> Gdx.graphics.setTitle("Bubble Blaster 2 - " + this.gameVersion + " - " + state));
             ret.assets().setLargeImage("icon");
             ret.assets().setLargeText(this.gameVersion);
