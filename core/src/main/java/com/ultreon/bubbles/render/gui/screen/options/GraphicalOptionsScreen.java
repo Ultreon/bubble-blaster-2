@@ -33,7 +33,7 @@ public class GraphicalOptionsScreen extends Screen {
         BUBBLE_LINE_THICKNESS.set(this.bubbleLineThickness.getValueFloat());
         DEFAULT_EFFECT_SPEED.set(this.defaultEffectSpeed.getValueFloat());
         SECS_BEFORE_RED_EFFECT_TIME.set(this.secsBeforeRedEffectTime.getValue());
-        String validText = this.gameHud.getValidText();
+        var validText = this.gameHud.getValidText();
         if (validText != null) GAME_HUD.set(validText);
         BubbleBlasterConfig.save();
         this.back();
@@ -41,7 +41,7 @@ public class GraphicalOptionsScreen extends Screen {
 
     @Override
     public void init() {
-        int entryWidth = 100;
+        var entryWidth = 100;
         this.bubbleLineThickness = this.add(DecimalNumberInput.builder()
                 .value(BUBBLE_LINE_THICKNESS)
                 .label(TextObject.translation("bubbleblaster.screen.options.graphical.bubbleLineThickness"))
@@ -61,7 +61,7 @@ public class GraphicalOptionsScreen extends Screen {
         this.gameHud = this.add(TextEntry.builder()
                 .text(GAME_HUD)
                 .responder(s -> {
-                    Identifier id = Identifier.tryParse(s);
+                    var id = Identifier.tryParse(s);
                     if (id == null) return false;
 
                     try {

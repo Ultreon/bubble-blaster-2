@@ -167,7 +167,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * sentinel has a <code>null</code> key and value.
      */
     private static <K, V> Entry<K, V> createSentinel() {
-        Entry<K, V> s = new Entry<>(null, null);
+        var s = new Entry<K, V>(null, null);
         s.prev = s;
         s.next = s;
         return s;
@@ -234,13 +234,13 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         // provides a tighter, more efficient loop at the expense create slight
         // code duplication.
         if (value == null) {
-            for (Entry<K, V> pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
+            for (var pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
                 if (pos.getValue() == null) {
                     return true;
                 }
             }
         } else {
-            for (Entry<K, V> pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
+            for (var pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
                 if (value.equals(pos.getValue())) {
                     return true;
                 }
@@ -257,7 +257,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     @Override
     public V get(Object o) {
         // find entry for the specified key object
-        Entry<K, V> entry = this.entries.get(o);
+        var entry = this.entries.get(o);
         if (entry == null) {
             return null;
         }
@@ -379,7 +379,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         V oldValue = null;
 
         // lookup the entry for the specified key
-        Entry<K, V> e = this.entries.get(key);
+        var e = this.entries.get(key);
 
         // check to see if it already exists
         if (e != null) {
@@ -414,7 +414,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     @Override
     @SuppressWarnings("unchecked")
     public V remove(Object key) {
-        Entry<K, V> e = this.removeImpl((K) key);
+        var e = this.removeImpl((K) key);
         return (e == null) ? null : e.getValue();
     }
 
@@ -423,7 +423,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * key.
      */
     private Entry<K, V> removeImpl(K key) {
-        Entry<K, V> e = this.entries.remove(key);
+        var e = this.entries.remove(key);
         if (e == null) {
             return null;
         }
@@ -492,9 +492,9 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * as appropriate.
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        var buf = new StringBuilder();
         buf.append('[');
-        for (Entry<K, V> pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
+        for (var pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
             buf.append(pos.getKey());
             buf.append('=');
             buf.append(pos.getValue());
@@ -521,7 +521,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
             @Override
             @SuppressWarnings("unchecked")
             public boolean remove(Object o) {
-                Entry<K, V> e = OrderedHashMap.this.removeImpl((K) o);
+                var e = OrderedHashMap.this.removeImpl((K) o);
                 return (e != null);
             }
 
@@ -566,14 +566,14 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
                 // provides a tighter, more efficient loop at the expense create slight
                 // code duplication.
                 if (value == null) {
-                    for (Entry<K, V> pos = OrderedHashMap.this.sentinel.next; pos != OrderedHashMap.this.sentinel; pos = pos.next) {
+                    for (var pos = OrderedHashMap.this.sentinel.next; pos != OrderedHashMap.this.sentinel; pos = pos.next) {
                         if (pos.getValue() == null) {
                             OrderedHashMap.this.removeImpl(pos.getKey());
                             return true;
                         }
                     }
                 } else {
-                    for (Entry<K, V> pos = OrderedHashMap.this.sentinel.next; pos != OrderedHashMap.this.sentinel; pos = pos.next) {
+                    for (var pos = OrderedHashMap.this.sentinel.next; pos != OrderedHashMap.this.sentinel; pos = pos.next) {
                         if (value.equals(pos.getValue())) {
                             OrderedHashMap.this.removeImpl(pos.getKey());
                             return true;
@@ -619,7 +619,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
                 if (o == null) {
                     return null;
                 }
-                Entry<K, V> entry = OrderedHashMap.this.entries.get(o.getKey());
+                var entry = OrderedHashMap.this.entries.get(o.getKey());
                 if ((entry != null) && entry.equals(o)) {
                     return entry;
                 } else {
@@ -692,7 +692,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         // the stuff that super might be doing anyway, but for motivations on
         // this, see:
         // http://www.javaworld.com/javaworld/jw-01-1999/jw-01-object.html
-        OrderedHashMap<K, V> map = (OrderedHashMap<K, V>) super.clone();
+        var map = (OrderedHashMap<K, V>) super.clone();
 
         // create new, empty sentinel
         map.sentinel = OrderedHashMap.createSentinel();
@@ -721,13 +721,13 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      *                                        size create the map.
      */
     private Map.Entry<K, V> getEntry(int index) {
-        Entry<K, V> pos = this.sentinel;
+        var pos = this.sentinel;
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException(index + " < 0");
         }
 
         // loop to one before the position
-        int i = -1;
+        var i = -1;
         while ((i < (index - 1)) && (pos.next != this.sentinel)) {
             i++;
             pos = pos.next;
@@ -765,8 +765,8 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      * Returns the index create the specified key.
      */
     public int indexOf(K key) {
-        Entry<K, V> e = this.entries.get(key);
-        int pos = 0;
+        var e = this.entries.get(key);
+        var pos = 0;
         while (e.prev != this.sentinel) {
             pos++;
             e = e.prev;
@@ -830,10 +830,10 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
      */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException, ClassCastException {
-        int size = in.readInt();
-        for (int i = 0; i < size; i++) {
-            @SuppressWarnings("unchecked") K key = (K) in.readObject();
-            @SuppressWarnings("unchecked") V value = (V) in.readObject();
+        var size = in.readInt();
+        for (var i = 0; i < size; i++) {
+            @SuppressWarnings("unchecked") var key = (K) in.readObject();
+            @SuppressWarnings("unchecked") var value = (V) in.readObject();
             this.put(key, value);
         }
     }
@@ -847,7 +847,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(this.size());
-        for (Entry<K, V> pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
+        for (var pos = this.sentinel.next; pos != this.sentinel; pos = pos.next) {
             out.writeObject(pos.getKey());
             out.writeObject(pos.getValue());
         }
@@ -896,7 +896,7 @@ public class OrderedHashMap<K, V> implements Map<K, V>, Cloneable, Externalizabl
         // per Map.Entry.setValue()
         @Override
         public V setValue(V value) {
-            V oldValue = this.value;
+            var oldValue = this.value;
             this.value = value;
             return oldValue;
         }

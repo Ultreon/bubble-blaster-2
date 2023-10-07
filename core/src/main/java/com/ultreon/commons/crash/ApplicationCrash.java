@@ -17,15 +17,15 @@ public final class ApplicationCrash {
     }
 
     public void printCrash() {
-        String crashString = this.crashLog.toString();
-        List<String> strings = StringUtils.splitIntoLines(crashString);
-        for (String string : strings) {
+        var crashString = this.crashLog.toString();
+        var strings = StringUtils.splitIntoLines(crashString);
+        for (var string : strings) {
             System.err.println(string);
         }
     }
 
     private void crash() {
-        for (Runnable handler : crashHandlers) {
+        for (var handler : crashHandlers) {
             handler.run();
         }
     }

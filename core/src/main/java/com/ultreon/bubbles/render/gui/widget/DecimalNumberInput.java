@@ -32,7 +32,7 @@ public class DecimalNumberInput extends TextEntry {
         super(x, y, width, height);
         this.setValueAndRange(value, min, max);
         this.setResponder(s -> {
-            Double v = Numbers.tryParseDouble(s);
+            var v = Numbers.tryParseDouble(s);
             return v != null && v >= min && v <= max;
         });
     }
@@ -79,8 +79,8 @@ public class DecimalNumberInput extends TextEntry {
 
         if (keyCode == Input.Keys.BACKSPACE) {
             if (this.cursorIndex == 0) return false;
-            String leftText = this.text.substring(0, this.cursorIndex - 1);
-            String rightText = this.text.substring(this.cursorIndex);
+            var leftText = this.text.substring(0, this.cursorIndex - 1);
+            var rightText = this.text.substring(this.cursorIndex);
 
             this.text = leftText + rightText;
 
@@ -93,8 +93,8 @@ public class DecimalNumberInput extends TextEntry {
 
         if (keyCode == Input.Keys.FORWARD_DEL) {
             if (this.cursorIndex >= this.text.length()) return false;
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex + 1);
+            var leftText = this.text.substring(0, this.cursorIndex);
+            var rightText = this.text.substring(this.cursorIndex + 1);
 
             this.text = leftText + rightText;
             this.validate();
@@ -156,8 +156,8 @@ public class DecimalNumberInput extends TextEntry {
             return true;
         }
 
-        String leftText = this.text.substring(0, this.cursorIndex);
-        String rightText = this.text.substring(this.cursorIndex);
+        var leftText = this.text.substring(0, this.cursorIndex);
+        var rightText = this.text.substring(this.cursorIndex);
 
         this.text = leftText + character + rightText;
         this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
@@ -167,7 +167,7 @@ public class DecimalNumberInput extends TextEntry {
     }
 
     protected void validateNumber() {
-        Double parsed = Numbers.tryParseDouble(this.text);
+        var parsed = Numbers.tryParseDouble(this.text);
         if (parsed == null) {
             this.validText = Double.toString(this.value);
             return;
@@ -265,7 +265,7 @@ public class DecimalNumberInput extends TextEntry {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating number slider.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
 
-            DecimalNumberInput numberSlider = new DecimalNumberInput(this.bounds, this.value, this.min, this.max);
+            var numberSlider = new DecimalNumberInput(this.bounds, this.value, this.min, this.max);
             numberSlider.setEntryWidth(this.entryWidth);
             numberSlider.setLabel(this.label);
             numberSlider.setCallback(this.callback);

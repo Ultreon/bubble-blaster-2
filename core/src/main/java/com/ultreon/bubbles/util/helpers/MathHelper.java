@@ -72,7 +72,7 @@ public class MathHelper {
 
         if (places < 0) throw new IllegalArgumentException();
 
-        BigDecimal bd = new BigDecimal(Double.toString(value));
+        var bd = new BigDecimal(Double.toString(value));
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
@@ -83,11 +83,11 @@ public class MathHelper {
     }
 
     public static Color mixColors(Color color1, Color color2, double percent) {
-        double inverse_percent = 1.0 - percent;
-        int redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
-        int greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);
-        int bluePart = (int) (color1.getBlue() * percent + color2.getBlue() * inverse_percent);
-        int alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
+        var inverse_percent = 1.0 - percent;
+        var redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
+        var greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);
+        var bluePart = (int) (color1.getBlue() * percent + color2.getBlue() * inverse_percent);
+        var alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
         return Color.rgba(redPart, greenPart, bluePart, alphaPart);
     }
 
@@ -130,9 +130,9 @@ public class MathHelper {
             return Double.toString(value);
         }
 
-        BigDecimal bd = new BigDecimal(Double.toString(value));
+        var bd = new BigDecimal(Double.toString(value));
         bd = bd.setScale(maxPlaces, RoundingMode.HALF_UP);
-        String $1 = bd.toPlainString().replaceAll("([.,][1-9]*)0+$", "$1");
+        var $1 = bd.toPlainString().replaceAll("([.,][1-9]*)0+$", "$1");
         if ($1.endsWith(".") || $1.endsWith(",")) {
             return $1.substring(0, $1.length() - 1);
         }

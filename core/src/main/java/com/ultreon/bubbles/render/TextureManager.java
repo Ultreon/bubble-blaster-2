@@ -9,7 +9,6 @@ import com.ultreon.libs.resources.v0.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,18 +22,18 @@ public final class TextureManager {
 
     static {
         DEFAULT_TEX_RESOURCE = new Resource(() -> {
-            BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            Graphics graphics = image.getGraphics();
+            var image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            var graphics = image.getGraphics();
             graphics.setColor(Color.rgb(0xffbb00).toAwt());
             graphics.fillRect(0, 0, 16, 16);
             graphics.setColor(Color.rgb(0x333333).toAwt());
             graphics.fillRect(0, 8, 8, 8);
             graphics.fillRect(8, 0, 8, 8);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            var out = new ByteArrayOutputStream();
             ImageIO.write(image, "png", out);
             graphics.dispose();
             out.flush();
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
+            var byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
             out.close();
             return byteArrayInputStream;
         }); // TODO: Replace with mem:// url.
@@ -65,7 +64,7 @@ public final class TextureManager {
             @Override
             public Texture create() {
                 @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
-                Resource resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
+                var resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
                 if (resource == null) resource = DEFAULT_TEX_RESOURCE;
                 return new NativeImage(resource);
             }
@@ -73,7 +72,7 @@ public final class TextureManager {
     }
 
     public Texture loadTexture(Identifier entry, TextureSource source) {
-        Texture texture = source.create();
+        var texture = source.create();
         this.textureMap.put(entry, texture);
         return texture;
     }

@@ -1,25 +1,19 @@
 package com.ultreon.bubbles.gradle;
 
 import com.google.gson.JsonArray;
-import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.DependencyArtifact;
-import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
-import org.gradle.api.artifacts.repositories.ArtifactRepository;
 import org.gradle.api.artifacts.repositories.UrlArtifactRepository;
 import org.gradle.api.internal.artifacts.dependencies.AbstractModuleDependency;
 import org.gradle.api.tasks.Internal;
 import org.gradle.jvm.tasks.Jar;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Retrieve URLs for the dependencies that will be downloaded by the game.
@@ -35,49 +29,49 @@ public class RetrieveUrlsTask extends BaseTask {
     }
 
     private void execute(Task task) {
-        Project project = task.getProject();
-        DependencySet dependencies = project.getConfigurations().getByName("api").getDependencies();
-        for (Dependency dependency : dependencies) {
+        var project = task.getProject();
+        var dependencies = project.getConfigurations().getByName("api").getDependencies();
+        for (var dependency : dependencies) {
             if (dependency instanceof AbstractModuleDependency) {
-                AbstractModuleDependency dep = (AbstractModuleDependency) dependency;
-                for (ArtifactRepository repository : project.getRepositories()) {
+                var dep = (AbstractModuleDependency) dependency;
+                for (var repository : project.getRepositories()) {
                     if (repository instanceof UrlArtifactRepository) {
-                        UrlArtifactRepository urlRepo = (UrlArtifactRepository) repository;
-                        URI url = urlRepo.getUrl();
+                        var urlRepo = (UrlArtifactRepository) repository;
+                        var url = urlRepo.getUrl();
                         this.retrieveDependencyInfo(dependency, url, dep);
                         this.retrieveArtifactsInfo(dependency, url, dep);
                     }
                 }
             }
             if (dependency instanceof ProjectDependency) {
-                ProjectDependency dep = (ProjectDependency) dependency;
-                Task jarTask = dep.getDependencyProject().getTasks().getByName("jar");
+                var dep = (ProjectDependency) dependency;
+                var jarTask = dep.getDependencyProject().getTasks().getByName("jar");
                 if (!(jarTask instanceof Jar)) {
                     throw new IllegalArgumentException("Gradle task 'jar' isn't an instance of org.gradle.jvm.tasks.Jar");
                 }
-                Jar jar = (Jar) jarTask;
+                var jar = (Jar) jarTask;
 
-                String name = jar.getArchiveBaseName().get();
-                String group = project.getGroup().toString();
-                String version = project.getVersion().toString();
+                var name = jar.getArchiveBaseName().get();
+                var group = project.getGroup().toString();
+                var version = project.getVersion().toString();
 
-                Object nullableUrl = project.property("bubbles.project_dependency_url");
+                var nullableUrl = project.property("bubbles.project_dependency_url");
                 if (nullableUrl == null) continue;
-                String url = nullableUrl.toString();
+                var url = nullableUrl.toString();
 
-                String jarUrl = String.format("%s%s/%s/%s/%s-%s-%s.%s",
+                var jarUrl = String.format("%s%s/%s/%s/%s-%s-%s.%s",
                         url, group.replaceAll("\\.", "/"),
                         name, version,
                         name, version,
                         jar.getArchiveClassifier().get(), jar.getArchiveExtension());
 
-                Platform platform = Platform.get(dep.getTargetConfiguration());
+                var platform = Platform.get(dep.getTargetConfiguration());
                 if (platform == null) {
                     continue;
                 }
                 try {
-                    URL jarFile = new URL(jarUrl);
-                    try (InputStream in = jarFile.openStream()) {
+                    var jarFile = new URL(jarUrl);
+                    try (var in = jarFile.openStream()) {
                         if (in != null) {
                             this.getLogger().info(String.format("%s:%s:%s:%s:%s",
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
@@ -101,21 +95,21 @@ public class RetrieveUrlsTask extends BaseTask {
     }
 
     private void retrieveArtifactsInfo(Dependency dependency, URI url, AbstractModuleDependency dep) {
-        for (DependencyArtifact artifact : dep.getArtifacts()) {
-            Platform platform = Platform.get(dep.getTargetConfiguration());
+        for (var artifact : dep.getArtifacts()) {
+            var platform = Platform.get(dep.getTargetConfiguration());
             if (platform == null) {
                 return;
             }
             if (dependency.getGroup() != null) {
-                String jarUrl = String.format("%s%s/%s/%s/%s-%s-%s.%s",
+                var jarUrl = String.format("%s%s/%s/%s/%s-%s-%s.%s",
                         url, dependency.getGroup().replaceAll("\\.", "/"),
                         dependency.getName(), dependency.getVersion(),
                         dependency.getName(), dependency.getVersion(),
                         artifact.getClassifier(), artifact.getExtension());
 
                 try {
-                    URL jarFile = new URL(jarUrl);
-                    try (InputStream in = jarFile.openStream()) {
+                    var jarFile = new URL(jarUrl);
+                    try (var in = jarFile.openStream()) {
                         if (in != null) {
                             this.getLogger().info(String.format("%s:%s:%s:%s:%s",
                                     dependency.getGroup(), dependency.getName(), dependency.getVersion(),
@@ -139,21 +133,21 @@ public class RetrieveUrlsTask extends BaseTask {
     }
 
     private void retrieveDependencyInfo(Dependency dependency, URI url, AbstractModuleDependency dep) {
-        Set<DependencyArtifact> artifacts = dep.getArtifacts();
-        Platform platform = Platform.get(dep.getTargetConfiguration());
+        var artifacts = dep.getArtifacts();
+        var platform = Platform.get(dep.getTargetConfiguration());
         if (platform == null) {
             return;
         }
         if (artifacts.isEmpty()) {
             if (dependency.getGroup() != null) {
-                String jarUrl = String.format("%s%s/%s/%s/%s-%s.jar",
+                var jarUrl = String.format("%s%s/%s/%s/%s-%s.jar",
                         url, dependency.getGroup().replaceAll("\\.", "/"),
                         dependency.getName(), dependency.getVersion(),
                         dependency.getName(), dependency.getVersion());
 
                 try {
-                    URL jarFile = new URL(jarUrl);
-                    try (InputStream in = jarFile.openStream()) {
+                    var jarFile = new URL(jarUrl);
+                    try (var in = jarFile.openStream()) {
                         if (in != null) {
                             this.getLogger().info(String.format("%s:%s:%s", dependency.getGroup(), dependency.getName(), dependency.getVersion()));
                             this.urls.add(jarFile.toString());

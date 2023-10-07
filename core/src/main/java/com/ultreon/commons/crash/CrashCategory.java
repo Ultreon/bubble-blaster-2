@@ -48,13 +48,13 @@ public class CrashCategory {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append(this.details).append(": \r\n");
 
         if (!this.entries.isEmpty()) {
-            ArrayList<AbstractMap.SimpleEntry<String, String>> simpleEntries = new ArrayList<>(this.entries);
-            for (int i = 0; i < simpleEntries.size() - 1; i++) {
-                AbstractMap.SimpleEntry<String, String> entry = simpleEntries.get(i);
+            var simpleEntries = new ArrayList<AbstractMap.SimpleEntry<String, String>>(this.entries);
+            for (var i = 0; i < simpleEntries.size() - 1; i++) {
+                var entry = simpleEntries.get(i);
                 sb.append("   ");
                 sb.append(entry.getKey());
                 sb.append(": ");
@@ -62,7 +62,7 @@ public class CrashCategory {
                 sb.append(System.lineSeparator());
             }
 
-            AbstractMap.SimpleEntry<String, String> entry = simpleEntries.get(simpleEntries.size() - 1);
+            var entry = simpleEntries.get(simpleEntries.size() - 1);
             sb.append("   ");
             sb.append(entry.getKey());
             sb.append(": ");
@@ -71,22 +71,22 @@ public class CrashCategory {
         }
 
         if (this.throwable != null) {
-            StringWriter stringWriter = new StringWriter();
-            PrintWriter writer = new PrintWriter(stringWriter);
+            var stringWriter = new StringWriter();
+            var writer = new PrintWriter(stringWriter);
 
             this.throwable.printStackTrace(writer);
             writer.flush();
 
-            StringBuffer buffer = stringWriter.getBuffer();
+            var buffer = stringWriter.getBuffer();
             try {
                 stringWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            String s = buffer.toString();
-            List<String> strings = splitIntoLines(s);
-            String join = "   " + StringUtils.join(strings, System.lineSeparator() + "   ");
+            var s = buffer.toString();
+            var strings = splitIntoLines(s);
+            var join = "   " + StringUtils.join(strings, System.lineSeparator() + "   ");
 
             sb.append(join);
         }

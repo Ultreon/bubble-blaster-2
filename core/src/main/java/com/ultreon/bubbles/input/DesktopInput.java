@@ -9,7 +9,6 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.commons.exceptions.OneTimeUseException;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -138,8 +137,8 @@ public class DesktopInput implements InputProcessor, InputObject {
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (pointer == 0) POS.set(screenX, screenY);
 
-        for (Int2ReferenceMap.Entry<GridPoint2> entry : this.dragStarts.int2ReferenceEntrySet()) {
-            GridPoint2 vec = entry.getValue();
+        for (var entry : this.dragStarts.int2ReferenceEntrySet()) {
+            var vec = entry.getValue();
             this.game.mouseDragged(vec.x, vec.y, screenX, screenY, pointer, entry.getIntKey());
         }
 

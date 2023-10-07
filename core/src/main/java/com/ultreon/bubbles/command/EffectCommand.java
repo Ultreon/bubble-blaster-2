@@ -18,9 +18,9 @@ public class EffectCommand implements CommandExecutor {
                         return true;
                     }
 
-                    int amount = player.getActiveEffects().size();
+                    var amount = player.getActiveEffects().size();
 
-                    for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
+                    for (var appliedEffect : player.getActiveEffects()) {
                         player.removeEffect(appliedEffect);
                     }
 
@@ -33,7 +33,7 @@ public class EffectCommand implements CommandExecutor {
                 if (args[0].equals("give")) {
                     StatusEffectInstance appliedEffect;
                     try {
-                        StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
+                        var statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                         if (statusEffect == null) {
                             player.sendSystemMessage("Status effect with key ‘" + args[1] + "’ was not found.");
                             return true;
@@ -83,7 +83,7 @@ public class EffectCommand implements CommandExecutor {
 
                     StatusEffectInstance appliedEffect;
                     try {
-                        StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
+                        var statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                         if (statusEffect == null) {
                             appliedEffect = null;
                         } else {
@@ -132,7 +132,7 @@ public class EffectCommand implements CommandExecutor {
 
                     StatusEffectInstance appliedEffect;
                     try {
-                        StatusEffect statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
+                        var statusEffect = Registries.EFFECTS.getValue(Identifier.parse(args[1]));
                         if (statusEffect == null) {
                             appliedEffect = null;
                         } else {

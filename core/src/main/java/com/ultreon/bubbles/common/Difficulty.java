@@ -68,7 +68,7 @@ public enum Difficulty implements Translatable {
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            Modifier that = (Modifier) obj;
+            var that = (Modifier) obj;
             return Objects.equals(this.action, that.action) &&
                     Float.floatToIntBits(this.value) == Float.floatToIntBits(that.value);
         }
@@ -132,9 +132,9 @@ public enum Difficulty implements Translatable {
         }
 
         public float modify(Difficulty difficulty) {
-            float value = difficulty.getPlainModifier();
+            var value = difficulty.getPlainModifier();
             float modifyTotal = 1;
-            for (Modifier modifier : this.modifiers.values()) {
+            for (var modifier : this.modifiers.values()) {
                 switch (modifier.action) {
                     case ADD:
                         value += modifier.value;

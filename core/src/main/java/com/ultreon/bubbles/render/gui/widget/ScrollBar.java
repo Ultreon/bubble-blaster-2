@@ -29,7 +29,7 @@ public class ScrollBar extends GuiComponent {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         this.setWidth(SIZE);
 
-        Rectangle thumbBounds = this.getThumbBounds();
+        var thumbBounds = this.getThumbBounds();
         renderer.fill(this.x, this.y, this.width, this.height, Color.BLACK.withAlpha(0x40));
         renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.WHITE.withAlpha(0x60));
     }
@@ -61,7 +61,7 @@ public class ScrollBar extends GuiComponent {
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
         if (this.dragging) {
-            float percent = (float)ny / this.getHeight();
+            var percent = (float)ny / this.getHeight();
             this.setPercent(percent);
             this.scrollHandler.onScroll(percent);
         }
@@ -71,7 +71,7 @@ public class ScrollBar extends GuiComponent {
     public boolean mousePress(int x, int y, int button) {
         if (this.scrollHandler != null) {
             if (!this.getThumbBounds().contains(x, y)) {
-                float percent = (float) y / this.getHeight();
+                var percent = (float) y / this.getHeight();
                 this.setPercent(percent);
                 this.scrollHandler.onScroll(percent);
             } else {

@@ -12,7 +12,6 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.widget.Circle;
 import com.ultreon.bubbles.render.gui.widget.Container;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.crash.v0.CrashLog;
 import com.ultreon.libs.text.v1.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
@@ -90,7 +89,7 @@ public abstract class Screen extends Container implements CrashFiller {
      */
     @CanIgnoreReturnValue
     public boolean close(Screen to) {
-        for (GuiComponent child : this.children)
+        for (var child : this.children)
             child.dispose();
 
         return false;
@@ -142,7 +141,7 @@ public abstract class Screen extends Container implements CrashFiller {
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        GuiComponent inputWidget = this.getWidgetAt(x, y);
+        var inputWidget = this.getWidgetAt(x, y);
         if (inputWidget != null) {
             this.focused = inputWidget;
         }
@@ -150,7 +149,7 @@ public abstract class Screen extends Container implements CrashFiller {
     }
 
     public void onChildFocusChanged() {
-        CopyOnWriteArrayList<GuiComponent> clone = new CopyOnWriteArrayList<>(this.children);
+        var clone = new CopyOnWriteArrayList<GuiComponent>(this.children);
         if (clone.isEmpty()) return;
         if (this.focusIndex >= clone.size()) {
             this.focusIndex = 0;
@@ -209,7 +208,7 @@ public abstract class Screen extends Container implements CrashFiller {
      * @see BubbleBlaster#isPaused()
      */
     public boolean doesPauseGame() {
-        World world = this.game.world;
+        var world = this.game.world;
         return world != null && world.getGamemode().canBePaused();
     }
 
@@ -220,7 +219,7 @@ public abstract class Screen extends Container implements CrashFiller {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        Circle circle = new Circle(this.width - 100, 100, 50);
+        var circle = new Circle(this.width - 100, 100, 50);
         if (circle.contains(x, y)) {
             this.playMenuEvent();
             this.game.showScreen(this.backScreen);
@@ -230,7 +229,7 @@ public abstract class Screen extends Container implements CrashFiller {
     }
 
     public void renderCloseButton(Renderer renderer, int mouseX, int mouseY) {
-        Circle circle = new Circle(this.width - 100, 100, 50);
+        var circle = new Circle(this.width - 100, 100, 50);
         renderer.fillCircle(this.width - 100, 100, 100, Color.WHITE.withAlpha(circle.contains(mouseX, mouseY) ? MobileInput.isTouchDown() ? 0x80 : 0x60 : 0x40));
         renderer.setLineThickness(3);
         renderer.line(this.width - 125, 75, this.width - 75, 125, Color.WHITE);

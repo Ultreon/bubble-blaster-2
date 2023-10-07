@@ -31,7 +31,7 @@ public class OuterBorder extends Border {
      */
     @Override
     public void drawBorder(Renderer renderer, float x, float y, float width, float height) {
-        Insets insets = this.getBorderInsets();
+        var insets = this.getBorderInsets();
 
         // Draw rectangles around the component, but do not draw
         // in the component area itself.

@@ -40,7 +40,7 @@ public final class GameplayContext {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        GameplayContext that = (GameplayContext) obj;
+        var that = (GameplayContext) obj;
         return Objects.equals(this.time, that.time) &&
                 Objects.equals(this.world, that.world) &&
                 Objects.equals(this.gamemode, that.gamemode) &&

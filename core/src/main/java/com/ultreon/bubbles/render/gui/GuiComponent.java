@@ -72,7 +72,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        GuiComponent that = (GuiComponent) o;
+        var that = (GuiComponent) o;
         return this.hash == that.hash;
     }
 

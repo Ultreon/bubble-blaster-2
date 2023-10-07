@@ -33,8 +33,8 @@ public class DesktopInputHandler extends InputHandler<DesktopInput> {
     public boolean tickPlayer(Player player) {
         if (!GamePlatform.get().isDesktop()) return false;
 
-        float rotating = 0f;
-        float moving = 0f;
+        var rotating = 0f;
+        var moving = 0f;
 
         if (KeyBindings.FORWARD.isPressed()) moving += 1f;
         if (KeyBindings.ROTATE_LEFT.isPressed()) rotating -= 1f;

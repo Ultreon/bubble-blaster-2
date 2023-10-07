@@ -8,7 +8,6 @@ import com.ultreon.bubbles.event.v1.EntityEvents;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Mth;
-import com.ultreon.libs.events.v1.ValueEventResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +63,7 @@ public abstract class LivingEntity extends Entity {
     public void damage(double value, EntityDamageSource source) {
         if (this.invincible) return;
 
-        ValueEventResult<Double> eventResult = EntityEvents.DAMAGE.factory().onDamage(this, source, value);
+        var eventResult = EntityEvents.DAMAGE.factory().onDamage(this, source, value);
         if (eventResult.isCanceled()) return;
 
         if (this.attributes.getBase(Attribute.DEFENSE) == 0f) this.destroy();

@@ -1,7 +1,6 @@
 package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -22,7 +21,7 @@ public interface GameWindow {
      * Window constructor.
      */
     static GameWindow create(Properties properties) {
-        GameWindow window = GamePlatform.get().createWindow(properties);
+        var window = GamePlatform.get().createWindow(properties);
         window.setSize(properties.width, properties.height);
         Gdx.graphics.setResizable(false);
         return window;
@@ -68,7 +67,7 @@ public interface GameWindow {
             Gdx.graphics.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
         } else if (!this.isFullscreen() && enable && !WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
             Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-            Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
+            var mode = Gdx.graphics.getDisplayMode();
             this.game().resize(mode.width, mode.height);
         } else {
             return false;

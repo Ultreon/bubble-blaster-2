@@ -115,14 +115,14 @@ public abstract class Gamemode implements Controllable {
      */
     @Deprecated
     public HashMap<Registries, List<Identifier>> checkRegistry(GameSave gameSave) throws IOException {
-        HashMap<Registries, List<Identifier>> missing = new HashMap<>();
+        var missing = new HashMap<Registries, List<Identifier>>();
 
         return missing;
     }
 
     @Override
     public void begin() {
-        HudType hudOverride = this.getHudOverride();
+        var hudOverride = this.getHudOverride();
         this.hud = hudOverride != null ? hudOverride : HudType.getCurrent();
         this.hud.begin();
 
@@ -184,7 +184,7 @@ public abstract class Gamemode implements Controllable {
 
     public void drawBubble(Renderer renderer, double x, double y, int radius, Color... colors) {
         double i = 0f;
-        for (Color color : colors) {
+        for (var color : colors) {
             if (i == 0) {
                 if (colors.length >= 2) {
                     renderer.setLineThickness(2.2f);
@@ -197,7 +197,7 @@ public abstract class Gamemode implements Controllable {
                 renderer.setLineThickness(2.2f);
             }
 
-            Circle ellipse = this.getCircle(x - (float) radius / 2, y - (float) radius / 2, radius, i);
+            var ellipse = this.getCircle(x - (float) radius / 2, y - (float) radius / 2, radius, i);
             renderer.outline(ellipse, color);
 
             i += 2f;
@@ -239,7 +239,7 @@ public abstract class Gamemode implements Controllable {
     }
 
     public String getTranslationId() {
-        Identifier id = this.getId();
+        var id = this.getId();
         return id.location() + ".gamemode." + id.path();
     }
 

@@ -32,8 +32,8 @@ public class RenderSettings {
         if (BubbleBlaster.getInstance() == null) {
             return 1.f;
         }
-        int width = this.window.getWidth();
-        int height = this.window.getHeight();
+        var width = this.window.getWidth();
+        var height = this.window.getHeight();
 
         return width > height ? width / 600f : height / 600f;
     }

@@ -25,7 +25,7 @@ public class OS {
 
     private static OSType getOSType() {
         if (osType == OS.OSType.OSUndefined) {
-            String os = System.getProperty("os.name").toLowerCase();
+            var os = System.getProperty("os.name").toLowerCase();
             if (os.startsWith("windows")) {
                 osType = OS.OSType.OSWindows;
             } else if (os.startsWith("linux")) {

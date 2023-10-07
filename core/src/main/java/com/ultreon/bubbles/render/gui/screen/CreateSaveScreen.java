@@ -28,13 +28,13 @@ public class CreateSaveScreen extends Screen {
 
     @Override
     public void init() {
-        Label label = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.title"), this.width / 2 - 150, 0, 300, 50));
+        var label = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.title"), this.width / 2 - 150, 0, 300, 50));
         label.setFontSize(36);
 
-        Label label1 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.seed"), this.width / 2 - 150, 50, 300, 30));
+        var label1 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.seed"), this.width / 2 - 150, 50, 300, 30));
         label1.setFontSize(20);
 
-        Label label2 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.gamemode"), this.width / 2 - 150, 95, 300, 25));
+        var label2 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.gamemode"), this.width / 2 - 150, 95, 300, 25));
         label2.setFontSize(20);
 
         this.seedEntry = this.add(new TextEntry.Builder()
@@ -51,19 +51,19 @@ public class CreateSaveScreen extends Screen {
     }
 
     private void create() {
-        ObjectList.ListEntry<Gamemode, ? extends Gamemode> selected = this.gamemodeList.getSelected();
+        var selected = this.gamemodeList.getSelected();
         if (selected == null) {
             return;
         }
 
-        long seed = this.game.serializeSeed(this.seedEntry.getText());
+        var seed = this.game.serializeSeed(this.seedEntry.getText());
         this.game.createGame(seed, selected.value);
     }
 
     private void renderEntry(Renderer renderer, float width, float height, float y, Gamemode gamemode, boolean selected, boolean hovered) {
-        String name = gamemode.getName().getText();
+        var name = gamemode.getName().getText();
 
-        int x = this.gamemodeList.getX();
+        var x = this.gamemodeList.getX();
 
         renderer.fill(x, this.y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
         if (selected) {

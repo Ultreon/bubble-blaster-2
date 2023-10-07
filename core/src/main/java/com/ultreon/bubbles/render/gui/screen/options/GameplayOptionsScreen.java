@@ -50,7 +50,7 @@ public class GameplayOptionsScreen extends Screen {
 
     @Override
     public void init() {
-        int entryWidth = 100;
+        var entryWidth = 100;
         this.timedModeLimit = this.add(NumberSlider.builder()
                 .value(TIME_LIMIT)
                 .label(TextObject.translation("bubbleblaster.screen.options.gameplay.timedMode.timeLimit"))

@@ -9,15 +9,16 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.io.*;
 import java.util.Collections;
 import java.util.Map;
-import java.util.jar.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
 
 /**
  * An artifact transform that applies additional information to Jars without module information.
@@ -54,10 +55,10 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
 
     @Override
     public void transform(@NotNull TransformOutputs outputs) {
-        Map<String, ModuleInfo> moduleInfo = this.getParameters().moduleInfo;
-        Map<String, String> automaticModules = this.getParameters().automaticModules;
-        File originalJar = this.getInputArtifact().get().getAsFile();
-        String originalJarName = originalJar.getName();
+        var moduleInfo = this.getParameters().moduleInfo;
+        var automaticModules = this.getParameters().automaticModules;
+        var originalJar = this.getInputArtifact().get().getAsFile();
+        var originalJarName = originalJar.getName();
 
         if (this.isModule(originalJar)) {
             outputs.file(originalJar);
@@ -73,10 +74,10 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     private boolean isModule(File jar) {
-        Pattern moduleInfoClassMrjarPath = Pattern.compile("META-INF/versions/\\d+/module-info.class");
-        try (JarInputStream inputStream =  new JarInputStream(new FileInputStream(jar))) {
-            boolean isMultiReleaseJar = this.containsMultiReleaseJarEntry(inputStream);
-            ZipEntry next = inputStream.getNextEntry();
+        var moduleInfoClassMrjarPath = Pattern.compile("META-INF/versions/\\d+/module-info.class");
+        try (var inputStream =  new JarInputStream(new FileInputStream(jar))) {
+            var isMultiReleaseJar = this.containsMultiReleaseJarEntry(inputStream);
+            var next = inputStream.getNextEntry();
             while (next != null) {
                 if ("module-info.class".equals(next.getName())) {
                     return true;
@@ -93,12 +94,12 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     private boolean containsMultiReleaseJarEntry(JarInputStream jarStream) {
-        Manifest manifest = jarStream.getManifest();
+        var manifest = jarStream.getManifest();
         return manifest != null && Boolean.parseBoolean(manifest.getMainAttributes().getValue("Multi-Release"));
     }
 
     private boolean isAutoModule(File jar) {
-        try (JarInputStream inputStream = new JarInputStream(new FileInputStream(jar))) {
+        try (var inputStream = new JarInputStream(new FileInputStream(jar))) {
             return inputStream.getManifest().getMainAttributes().getValue("Automatic-Module-Name") != null;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -110,10 +111,10 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     private static void addAutomaticModuleName(File originalJar, File moduleJar, String moduleName) {
-        try (JarInputStream inputStream = new JarInputStream(new FileInputStream(originalJar))) {
-            Manifest manifest = inputStream.getManifest();
+        try (var inputStream = new JarInputStream(new FileInputStream(originalJar))) {
+            var manifest = inputStream.getManifest();
             manifest.getMainAttributes().put(new Attributes.Name("Automatic-Module-Name"), moduleName);
-            try (JarOutputStream outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
+            try (var outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
                 ExtraModuleInfoTransform.copyEntries(inputStream, outputStream);
             }
         } catch (IOException e) {
@@ -122,8 +123,8 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     private static void addModuleDescriptor(File originalJar, File moduleJar, ModuleInfo moduleInfo) {
-        try (JarInputStream inputStream = new JarInputStream(new FileInputStream(originalJar))) {
-            try (JarOutputStream outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
+        try (var inputStream = new JarInputStream(new FileInputStream(originalJar))) {
+            try (var outputStream = new JarOutputStream(new FileOutputStream(moduleJar), inputStream.getManifest())) {
                 ExtraModuleInfoTransform.copyEntries(inputStream, outputStream);
                 outputStream.putNextEntry(new JarEntry("module-info.class"));
                 outputStream.write(ExtraModuleInfoTransform.addModuleInfo(moduleInfo));
@@ -135,7 +136,7 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     private static void copyEntries(JarInputStream inputStream, JarOutputStream outputStream) throws IOException {
-        JarEntry jarEntry = inputStream.getNextJarEntry();
+        var jarEntry = inputStream.getNextJarEntry();
         while (jarEntry != null) {
             outputStream.putNextEntry(jarEntry);
             outputStream.write(ExtraModuleInfoTransform.readAllBytes(inputStream));
@@ -145,8 +146,8 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
     }
 
     public static byte[] readAllBytes(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        var baos = new ByteArrayOutputStream();
+        var buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = is.read(buffer)) != -1) {
             baos.write(buffer, 0, bytesRead);
@@ -154,17 +155,17 @@ abstract public class ExtraModuleInfoTransform implements TransformAction<ExtraM
         return baos.toByteArray();
     }
     private static byte[] addModuleInfo(ModuleInfo moduleInfo) {
-        ClassWriter classWriter = new ClassWriter(0);
+        var classWriter = new ClassWriter(0);
         classWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, "module-info", null, null, null);
-        ModuleVisitor moduleVisitor = classWriter.visitModule(moduleInfo.getModuleName(), Opcodes.ACC_OPEN, moduleInfo.getModuleVersion());
-        for (String packageName : moduleInfo.getExports()) {
+        var moduleVisitor = classWriter.visitModule(moduleInfo.getModuleName(), Opcodes.ACC_OPEN, moduleInfo.getModuleVersion());
+        for (var packageName : moduleInfo.getExports()) {
             moduleVisitor.visitExport(packageName.replace('.', '/'), 0);
         }
         moduleVisitor.visitRequire("java.base", 0, null);
-        for (String requireName : moduleInfo.getRequires()) {
+        for (var requireName : moduleInfo.getRequires()) {
             moduleVisitor.visitRequire(requireName, 0, null);
         }
-        for (String requireName : moduleInfo.getRequiresTransitive()) {
+        for (var requireName : moduleInfo.getRequiresTransitive()) {
             moduleVisitor.visitRequire(requireName, Opcodes.ACC_TRANSITIVE, null);
         }
         moduleVisitor.visitEnd();

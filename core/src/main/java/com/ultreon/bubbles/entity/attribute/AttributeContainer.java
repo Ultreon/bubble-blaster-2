@@ -21,7 +21,7 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public double getBase(Attribute attribute) {
-        @Nullable Double value = this.map.get(attribute);
+        @Nullable var value = this.map.get(attribute);
         if (value == null) {
             throw new NoSuchElementException("Attribute \"" + attribute.name() + "\" has no set base value.");
         }
@@ -30,9 +30,9 @@ public class AttributeContainer implements ListDataHolder<MapType> {
 
     @Override
     public ListType<MapType> save() {
-        ListType<MapType> list = new ListType<>();
-        for (Map.Entry<Attribute, Double> entry : this.map.entrySet()) {
-            MapType tag = new MapType();
+        var list = new ListType<MapType>();
+        for (var entry : this.map.entrySet()) {
+            var tag = new MapType();
             tag.putString("name", entry.getKey().name());
             tag.putDouble("value", entry.getValue());
             list.add(tag);
@@ -41,12 +41,12 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public ListType<MapType> saveModifiers() {
-        ListType<MapType> list = new ListType<>();
-        for (Map.Entry<Attribute, List<AttributeModifier>> entry : this.modifierMap.entrySet()) {
-            MapType tag = new MapType();
+        var list = new ListType<MapType>();
+        for (var entry : this.modifierMap.entrySet()) {
+            var tag = new MapType();
 
-            ListType<MapType> modifiersTag = new ListType<>();
-            for (AttributeModifier modifier : entry.getValue()) {
+            var modifiersTag = new ListType<MapType>();
+            for (var modifier : entry.getValue()) {
                 modifiersTag.add(modifier.serialize());
             }
 
@@ -59,12 +59,12 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public void loadModifiers(ListType<MapType> list) {
-        for (MapType tag : list) {
-            Attribute key = Attribute.fromName(tag.getString("name"));
+        for (var tag : list) {
+            var key = Attribute.fromName(tag.getString("name"));
             if (key == null) continue;
             ListType<MapType> modifiersTag = tag.getList("Modifiers");
             List<AttributeModifier> modifiers = new ArrayList<>();
-            for (MapType modifierTag : modifiersTag) {
+            for (var modifierTag : modifiersTag) {
                 modifiers.add(AttributeModifier.deserialize(modifierTag));
             }
 
@@ -74,10 +74,10 @@ public class AttributeContainer implements ListDataHolder<MapType> {
 
     @Override
     public void load(ListType<MapType> list) {
-        for (MapType tag : list) {
-            Attribute key = Attribute.fromName(tag.getString("name"));
+        for (var tag : list) {
+            var key = Attribute.fromName(tag.getString("name"));
             if (key == null) continue;
-            double value = tag.getDouble("value");
+            var value = tag.getDouble("value");
 
             this.map.put(key, value);
         }
@@ -88,14 +88,14 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public double get(Attribute attribute) {
-        List<AttributeModifier> modifiers = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
-        double base = this.getBase(attribute);
+        var modifiers = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        var base = this.getBase(attribute);
         if (modifiers.isEmpty()) {
             return base;
         }
-        for (AttributeModifier modifier : modifiers) {
-            AttributeModifier.Type type = modifier.type();
-            final double modify = modifier.value();
+        for (var modifier : modifiers) {
+            var type = modifier.type();
+            final var modify = modifier.value();
             switch (type) {
                 case ADD:
                     base += modify;
@@ -113,19 +113,19 @@ public class AttributeContainer implements ListDataHolder<MapType> {
     }
 
     public void addModifier(Attribute attribute, AttributeModifier modifier) {
-        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        var list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
         list.add(modifier);
     }
 
     public void removeModifier(Attribute attribute, UUID id) {
-        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        var list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         if (list.isEmpty()) return;
         list.removeIf(modifier -> modifier.id() == id);
     }
 
     public void removeModifier(Attribute attribute, AttributeModifier modifier) {
-        List<AttributeModifier> list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
+        var list = this.modifierMap.computeIfAbsent(attribute, attr -> new ArrayList<>());
         list.remove(modifier);
     }
 

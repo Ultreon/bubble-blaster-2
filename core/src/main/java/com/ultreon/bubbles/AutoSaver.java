@@ -1,7 +1,6 @@
 package com.ultreon.bubbles;
 
 import com.ultreon.bubbles.common.Controllable;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.DummyMessenger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -26,7 +25,7 @@ class AutoSaver implements Controllable {
     }
 
     private void onAutoSave() {
-        World world = this.loadedGame.getWorld();
+        var world = this.loadedGame.getWorld();
         if (world == null) {
             this.end();
             return;

@@ -35,7 +35,7 @@ public class GameplayCommand implements CommandExecutor {
                         break;
                     case "end":
                         BubbleBlaster.invokeTick(() -> {
-                            GameplayEvent activeEvent = player.getWorld().getActiveEvent();
+                            var activeEvent = player.getWorld().getActiveEvent();
                             if (activeEvent == null) {
                                 player.sendSystemMessage("There isn't any gameplay event active.");
                             }
@@ -52,7 +52,7 @@ public class GameplayCommand implements CommandExecutor {
             }
             if (args.length == 2 && args[1].equals("end")) {
                 BubbleBlaster.invokeTick(() -> {
-                    GameplayEvent activeEvent = player.getWorld().getActiveEvent();
+                    var activeEvent = player.getWorld().getActiveEvent();
                     if (activeEvent == null) {
                         player.sendSystemMessage("There isn't any gameplay event active.");
                         return;

@@ -7,10 +7,10 @@ import java.text.CharacterIterator;
 class AttributedStringUtil {
 
     public static AttributedString concat(AttributedString first, AttributedString second, String separation) {
-        String firstString = AttributedStringUtil.getString(first);
-        String secondString = AttributedStringUtil.getString(second);
-        String resultString = firstString + separation + secondString;
-        AttributedString result = new AttributedString(resultString);
+        var firstString = AttributedStringUtil.getString(first);
+        var secondString = AttributedStringUtil.getString(second);
+        var resultString = firstString + separation + secondString;
+        var result = new AttributedString(resultString);
         AttributedStringUtil.addAttributes(result, first, second, separation.length());
         return result;
     }
@@ -20,17 +20,17 @@ class AttributedStringUtil {
     }
 
     private static void addAttributes(AttributedString result, AttributedString first, AttributedString second, int separationOffset) {
-        AttributedCharacterIterator resultIterator = result.getIterator();
-        AttributedCharacterIterator firstIterator = first.getIterator();
-        AttributedCharacterIterator secondIterator = second.getIterator();
+        var resultIterator = result.getIterator();
+        var firstIterator = first.getIterator();
+        var secondIterator = second.getIterator();
 
-        char resultCharacter = resultIterator.current();
-        int truePosition = 0;
+        var resultCharacter = resultIterator.current();
+        var truePosition = 0;
         int usePosition;
 
         while (resultCharacter != CharacterIterator.DONE) {
             usePosition = truePosition;
-            AttributedCharacterIterator it = AttributedStringUtil.getIterator(firstIterator, secondIterator);
+            var it = AttributedStringUtil.getIterator(firstIterator, secondIterator);
             if (it == null) {
                 break;
             }
@@ -56,10 +56,10 @@ class AttributedStringUtil {
     }
 
     public static String getString(AttributedString attributedString) {
-        AttributedCharacterIterator it = attributedString.getIterator();
-        StringBuilder stringBuilder = new StringBuilder();
+        var it = attributedString.getIterator();
+        var stringBuilder = new StringBuilder();
 
-        char ch = it.current();
+        var ch = it.current();
         while (ch != CharacterIterator.DONE) {
             stringBuilder.append(ch);
             ch = it.next();

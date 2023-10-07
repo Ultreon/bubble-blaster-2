@@ -4,7 +4,7 @@ import com.ultreon.bubbles.render.ValueAnimator;
 
 public class TestAnimation {
     public static void main(String[] args) {
-        ValueAnimator valueAnimator = new ValueAnimator(100, 200, 30d);
+        var valueAnimator = new ValueAnimator(100, 200, 30d);
         valueAnimator.start();
 
         //noinspection InfiniteLoopStatement

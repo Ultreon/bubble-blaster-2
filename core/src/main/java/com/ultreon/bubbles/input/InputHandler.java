@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.input;
 
-import com.badlogic.gdx.controllers.Controller;
 import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.entity.player.Player;
@@ -27,7 +26,7 @@ public abstract class InputHandler<T extends InputObject> {
     }
 
     public final void tickInputType() {
-        Controller controller = ControllerInput.get().controller;
+        var controller = ControllerInput.get().controller;
         if (controller == null || !controller.isConnected()) {
             InputHandler.touchscreenOrKeyboard();
             return;

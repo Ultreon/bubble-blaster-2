@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.ChatMessage;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.command.CommandConstructor;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
@@ -37,8 +36,8 @@ public class CommandScreen extends Screen {
     }
 
     public static void addMessage(String message, boolean system) {
-        String[] lines = message.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
-        for (String line : lines)
+        var lines = message.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
+        for (var line : lines)
             CommandScreen.addMessageLine(line, system);
     }
 
@@ -47,7 +46,7 @@ public class CommandScreen extends Screen {
     }
 
     public static void addMessageLine(String message, boolean system) {
-        String line = message.replaceAll("[\r\n]", "");
+        var line = message.replaceAll("[\r\n]", "");
         if (line.isBlank()) return;
 
         MESSAGES.addFirst(new ChatMessage(line, system));
@@ -83,9 +82,9 @@ public class CommandScreen extends Screen {
      * @param renderer  a 2D graphics instance.
      */
     public static void drawMessages(Renderer renderer, int y, boolean all) {
-        int line = 1;
-        for (ChatMessage message : MESSAGES) {
-            int msgY = y - (22 * line);
+        var line = 1;
+        for (var message : MESSAGES) {
+            var msgY = y - (22 * line);
             if (msgY < -20) break;
             if (!all && Instant.now().isAfter(message.created().plusMillis(MESSAGE_DURATION))) continue;
             CommandScreen.drawMessage(renderer, msgY, message);
@@ -153,15 +152,15 @@ public class CommandScreen extends Screen {
             return true;
         }
         if (keyCode == Input.Keys.ENTER) {
-            LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
+            var loadedGame = BubbleBlaster.getInstance().getLoadedGame();
             if (loadedGame != null) {
                 if (!this.currentText.isEmpty()) {
                     if (this.currentText.charAt(0) != '/') {
                         CommandScreen.addMessage("[Player]: " + this.currentText);
                     } else {
-                        List<String> parsed = Arrays.asList(CommandScreen.translateCommandline(this.currentText.substring(1)));
+                        var parsed = Arrays.asList(CommandScreen.translateCommandline(this.currentText.substring(1)));
                         if (!parsed.isEmpty()) {
-                            String[] args = parsed.subList(1, parsed.size()).toArray(new String[]{});
+                            var args = parsed.subList(1, parsed.size()).toArray(new String[]{});
 
                             BubbleBlaster.invokeTick(() -> {
                                 if (!CommandConstructor.execute(parsed.get(0), loadedGame.getGamemode().getPlayer(), args)) {
@@ -193,17 +192,17 @@ public class CommandScreen extends Screen {
         }
         // parse with a simple finite state machine
 
-        final int normal = 0;
-        final int inQuote = 1;
-        final int inDoubleQuote = 2;
-        int state = normal;
-        final StringTokenizer tok = new StringTokenizer(toProcess, "\"' ", true);
-        final ArrayList<String> result = new ArrayList<>();
-        final StringBuilder current = new StringBuilder();
-        boolean lastTokenHasBeenQuoted = false;
+        final var normal = 0;
+        final var inQuote = 1;
+        final var inDoubleQuote = 2;
+        var state = normal;
+        final var tok = new StringTokenizer(toProcess, "\"' ", true);
+        final var result = new ArrayList<String>();
+        final var current = new StringBuilder();
+        var lastTokenHasBeenQuoted = false;
 
         while (tok.hasMoreTokens()) {
-            String nextTok = tok.nextToken();
+            var nextTok = tok.nextToken();
             switch (state) {
                 case inQuote:
                     if ("'".equals(nextTok)) {
@@ -270,7 +269,7 @@ public class CommandScreen extends Screen {
                 cursorX = 0;
             }
 
-            int width = this.font.getData().getGlyph(this.currentText.charAt(this.cursorIndex)).width;
+            var width = this.font.getData().getGlyph(this.currentText.charAt(this.cursorIndex)).width;
             renderer.fillEffect(cursorX, this.height - 2, width, 2);
         }
     }

@@ -1,9 +1,7 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.Resizer;
@@ -45,22 +43,22 @@ public final class SplashScreen extends InternalScreen {
         if (this.startTime == -1L) {
             this.startTime = System.currentTimeMillis();
 
-            Sound sound = Gdx.audio.newSound(Gdx.files.internal("assets/bubbleblaster/sounds/logo_reveal.mp3"));
+            var sound = Gdx.audio.newSound(Gdx.files.internal("assets/bubbleblaster/sounds/logo_reveal.mp3"));
             sound.play(0.4f);
         }
 
         renderer.hideCursor();
 
-        final long timeDiff = System.currentTimeMillis() - this.startTime;
-        float zoom = (float) SplashScreen.interpolate(FROM_ZOOM, TO_ZOOM, Mth.clamp(timeDiff / DURATION, 0f, 1f));
-        Vector2 thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);
+        final var timeDiff = System.currentTimeMillis() - this.startTime;
+        var zoom = (float) SplashScreen.interpolate(FROM_ZOOM, TO_ZOOM, Mth.clamp(timeDiff / DURATION, 0f, 1f));
+        var thumbnail = this.resizer.thumbnail(this.width * zoom, this.height * zoom);
         this.zoom = zoom;
 
-        float drawWidth = thumbnail.x;
-        float drawHeight = thumbnail.y;
+        var drawWidth = thumbnail.x;
+        var drawHeight = thumbnail.y;
 
-        float drawX = (this.width - drawWidth) / 2;
-        float drawY = (this.height - drawHeight) / 2;
+        var drawX = (this.width - drawWidth) / 2;
+        var drawY = (this.height - drawHeight) / 2;
 
         renderer.blit(this.logoTexture, (int) drawX, (int) drawY, (int) drawWidth, (int) drawHeight, LoadScreen.BACKGROUND);
 

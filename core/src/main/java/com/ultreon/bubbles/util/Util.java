@@ -38,12 +38,12 @@ public class Util {
 
     @Deprecated(forRemoval = true)
     public static ArrayList<GameSave> getSaves() {
-        ArrayList<GameSave> saves = new ArrayList<>();
-        FileHandle savesDir = GameFolders.SAVES_DIR;
+        var saves = new ArrayList<GameSave>();
+        var savesDir = GameFolders.SAVES_DIR;
 
-        FileHandle[] files = savesDir.list(new DirectoryFileFilter());
+        var files = savesDir.list(new DirectoryFileFilter());
         if (files == null) files = new FileHandle[]{};
-        for (FileHandle save : files) {
+        for (var save : files) {
             if (save.isDirectory()) {
                 saves.add(GameSave.fromFile(save));
             }

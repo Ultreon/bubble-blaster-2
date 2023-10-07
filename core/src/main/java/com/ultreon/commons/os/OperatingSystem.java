@@ -28,7 +28,7 @@ public enum OperatingSystem {
     }
 
     public static OperatingSystem getSystem() {
-        String osName = System.getProperty("os.name");
+        var osName = System.getProperty("os.name");
 
         if (osName.toLowerCase().startsWith("windows")) return Windows;
         else if (osName.equalsIgnoreCase("solaris")) return Solaris;

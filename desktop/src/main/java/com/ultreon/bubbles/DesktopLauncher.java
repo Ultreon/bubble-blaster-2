@@ -19,12 +19,12 @@ public class DesktopLauncher {
     };
 
     public static void main(String[] argv) {
-        Lwjgl3ApplicationConfiguration config = DesktopLauncher.createConfig();
+        var config = DesktopLauncher.createConfig();
 
 
-        Arguments arguments = new Arguments();
+        var arguments = new Arguments();
         arguments.parse(argv);
-        DesktopPlatform platform = new DesktopPlatform(arguments);
+        var platform = new DesktopPlatform(arguments);
 
         GameLibGDXWrapper game;
         try {
@@ -46,11 +46,11 @@ public class DesktopLauncher {
     @NotNull
     private static Lwjgl3ApplicationConfiguration createConfig() {
         List<String> icons = new ArrayList<>();
-        for (int size : SIZES) {
+        for (var size : SIZES) {
             icons.add("assets/bubbleblaster/icons/icon" + size + ".png");
         }
 
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        var config = new Lwjgl3ApplicationConfiguration();
         config.setBackBufferConfig(8, 8, 8, 8, 32, 0, 16);
         config.setResizable(false);
         config.useVsync(true);

@@ -1,7 +1,6 @@
 package com.ultreon.gameprovider.bubbles;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.ObjectShare;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.FormattedException;
 import net.fabricmc.loader.impl.game.GameProvider;
@@ -19,7 +18,6 @@ import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.fabricmc.loader.impl.util.log.LogHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -46,8 +44,8 @@ public class BB2GameProvider implements GameProvider {
     private final Properties versions;
 
     public BB2GameProvider() {
-        InputStream stream = this.getClass().getResourceAsStream("/versions.properties");
-        Properties properties = new Properties();
+        var stream = this.getClass().getResourceAsStream("/versions.properties");
+        var properties = new Properties();
         try {
             properties.load(stream);
         } catch (IOException e) {
@@ -145,10 +143,10 @@ public class BB2GameProvider implements GameProvider {
         this.arguments.parse(args);
 
         try {
-            LibClassifier<GameLibrary> classifier = new LibClassifier<>(GameLibrary.class, this.envType, this);
-            GameLibrary gameLib = GameLibrary.BB_DESKTOP;
-            Path gameJar = GameProviderHelper.getCommonGameJar();
-            boolean commonGameJarDeclared = gameJar != null;
+            var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, this.envType, this);
+            var gameLib = GameLibrary.BB_DESKTOP;
+            var gameJar = GameProviderHelper.getCommonGameJar();
+            var commonGameJarDeclared = gameJar != null;
 
             if (commonGameJarDeclared) {
                 classifier.process(gameJar);
@@ -157,7 +155,7 @@ public class BB2GameProvider implements GameProvider {
             classifier.process(launcher.getClassPath());
 
             gameJar = classifier.getOrigin(GameLibrary.BB_DESKTOP);
-            Path coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
+            var coreJar = classifier.getOrigin(GameLibrary.BB_CORE);
             this.libGdxJar = classifier.getOrigin(GameLibrary.LIBGDX);
 
             if (commonGameJarDeclared && gameJar == null) {
@@ -179,12 +177,12 @@ public class BB2GameProvider implements GameProvider {
             this.entrypoint = classifier.getClassName(gameLib);
             this.log4jAvailable = classifier.has(GameLibrary.LOG4J_API) && classifier.has(GameLibrary.LOG4J_CORE);
             this.slf4jAvailable = classifier.has(GameLibrary.SLF4J_API) && classifier.has(GameLibrary.SLF4J_CORE);
-            boolean hasLogLib = this.log4jAvailable || this.slf4jAvailable;
+            var hasLogLib = this.log4jAvailable || this.slf4jAvailable;
 
             Log.configureBuiltin(hasLogLib, !hasLogLib);
 
-            for (GameLibrary lib : GameLibrary.LOGGING) {
-                Path path = classifier.getOrigin(lib);
+            for (var lib : GameLibrary.LOGGING) {
+                var path = classifier.getOrigin(lib);
 
                 if (path != null) {
                     if (hasLogLib) {
@@ -202,7 +200,7 @@ public class BB2GameProvider implements GameProvider {
         }
 
         // expose obfuscated jar locations for mods to more easily remap code from obfuscated to intermediary
-        ObjectShare share = FabricLoaderImpl.INSTANCE.getObjectShare();
+        var share = FabricLoaderImpl.INSTANCE.getObjectShare();
         share.put("fabric-loader:inputGameJar", this.gameJars.get(0)); // deprecated
         share.put("fabric-loader:inputGameJars", this.gameJars);
 
@@ -215,7 +213,7 @@ public class BB2GameProvider implements GameProvider {
 
         // Load the logger libraries on the platform CL when in a unit test
         if (!this.logJars.isEmpty() && !Boolean.getBoolean(SystemProperties.UNIT_TEST)) {
-            for (Path jar : this.logJars) {
+            for (var jar : this.logJars) {
                 if (this.gameJars.contains(jar)) {
                     launcher.addToClassPath(jar, ALLOWED_EARLY_CLASS_PREFIXES);
                 } else {
@@ -233,9 +231,9 @@ public class BB2GameProvider implements GameProvider {
         System.setProperty("log4j2.formatMsgNoLookups", "true"); // lookups are not used by mc and cause issues with older log4j2 versions
 
         try {
-            final String logHandlerClsName = "com.ultreon.gameprovider.bubbles.BB2LogHandler";
+            final var logHandlerClsName = "com.ultreon.gameprovider.bubbles.BB2LogHandler";
 
-            ClassLoader prevCl = Thread.currentThread().getContextClassLoader();
+            var prevCl = Thread.currentThread().getContextClassLoader();
             Class<?> logHandlerCls;
 
             if (useTargetCl) {
@@ -264,7 +262,7 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public void unlockClassPath(FabricLauncher launcher) {
-        for (Path gameJar : this.gameJars) {
+        for (var gameJar : this.gameJars) {
             if (this.logJars.contains(gameJar)) {
                 launcher.setAllowedPrefixes(gameJar);
             } else {
@@ -272,7 +270,7 @@ public class BB2GameProvider implements GameProvider {
             }
         }
 
-        for (Path lib : this.miscGameLibraries) {
+        for (var lib : this.miscGameLibraries) {
             launcher.addToClassPath(lib);
         }
     }
@@ -283,12 +281,12 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public void launch(ClassLoader loader) {
-        String targetClass = this.entrypoint;
+        var targetClass = this.entrypoint;
 
         MethodHandle invoker;
 
         try {
-            Class<?> c = loader.loadClass(targetClass);
+            var c = loader.loadClass(targetClass);
             invoker = MethodHandles.lookup().findStatic(c, "main", MethodType.methodType(void.class, String[].class));
         } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
             throw new FormattedException("Failed to start Bubble Blaster", e);
@@ -312,7 +310,7 @@ public class BB2GameProvider implements GameProvider {
             return true;
         }
 
-        List<String> extras = this.arguments.getExtraArgs();
+        var extras = this.arguments.getExtraArgs();
         return !extras.contains("nogui") && !extras.contains("--nogui");
     }
 

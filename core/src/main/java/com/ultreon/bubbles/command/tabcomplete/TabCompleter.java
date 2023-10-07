@@ -11,25 +11,25 @@ public final class TabCompleter {
     }
 
     public static List<String> getStrings(String arg, String... strings) {
-        ArrayList<String> list = new ArrayList<>();
-        for (String str : strings) {
+        var list = new ArrayList<String>();
+        for (var str : strings) {
             TabCompleter.addIfStartsWith(list, arg + " ", str);
         }
         return list;
     }
 
     public static List<String> getInts(String arg) {
-        ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i <= 9; i++) {
+        var list = new ArrayList<String>();
+        for (var i = 0; i <= 9; i++) {
             list.add(arg + i);
         }
         return list;
     }
 
     public static List<String> getDecimals(String arg) {
-        ArrayList<String> list = new ArrayList<>();
+        var list = new ArrayList<String>();
         list.add(arg + ".");
-        for (int i = 0; i <= 9; i++) {
+        for (var i = 0; i <= 9; i++) {
             list.add(arg + i);
         }
         return list;

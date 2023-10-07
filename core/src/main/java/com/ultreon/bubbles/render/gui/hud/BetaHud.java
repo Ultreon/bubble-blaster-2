@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
@@ -48,11 +46,11 @@ public class BetaHud extends HudType {
      */
     @Override
     public void renderHudOverlay(Renderer renderer, World world, Gamemode gamemode, float deltaTime) {
-        BubbleBlaster game = BubbleBlaster.getInstance();
-        LoadedGame loadedGame = game.getLoadedGame();
+        var game = BubbleBlaster.getInstance();
+        var loadedGame = game.getLoadedGame();
         if (loadedGame == null) return;
 
-        Player player = gamemode.getPlayer();
+        var player = gamemode.getPlayer();
 
         if (player == null) return;
 
@@ -95,19 +93,19 @@ public class BetaHud extends HudType {
 
         // Level up message
         if (this.showLevelUp) {
-            String text = "Level " + this.level;
+            var text = "Level " + this.level;
             if (!text.equals(this.levelUpText)) {
                 this.levelUpText = text;
                 this.levelUpLayout.setText(this.levelUpFont, text);
             }
 
-            float textWidth = this.levelUpLayout.width;
-            float textHeight = this.levelUpLayout.height;
+            var textWidth = this.levelUpLayout.width;
+            var textHeight = this.levelUpLayout.height;
 
-            float width = textWidth + 16;
-            float height = textHeight + 16;
+            var width = textWidth + 16;
+            var height = textHeight + 16;
 
-            Rectangle gameBounds = gamemode.getGameBounds();
+            var gameBounds = gamemode.getGameBounds();
 
             renderer.fill(
                     gameBounds.getX() + gameBounds.getWidth() - width / 2,
@@ -128,8 +126,8 @@ public class BetaHud extends HudType {
      */
     public void drawPlayerDetails(World world, @NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         // Assign colors for title and description.
-        Color titleColor = Color.rgb(255, 128, 0);
-        Color valueColor = Color.rgb(255, 255, 255);
+        var titleColor = Color.rgb(255, 128, 0);
+        var valueColor = Color.rgb(255, 255, 255);
 
         // As long the player isn't game over.
         if (world.isGameOver()) return;
@@ -155,12 +153,12 @@ public class BetaHud extends HudType {
         // Prepare for health display.
         int greenValue;
         int redValue;
-        double playerMaxDamage = player.getMaxHealth();
-        double playerDamage = player.getHealth();
+        var playerMaxDamage = player.getMaxHealth();
+        var playerDamage = player.getHealth();
 
         // Calculate colors based on damage and max damage.
         playerDamage = Mth.clamp(playerDamage, 0, player.getMaxHealth());
-        double max = playerMaxDamage / 2;
+        var max = playerMaxDamage / 2;
         if (playerDamage > playerMaxDamage / 2) {
             redValue = (int) ((max - (((playerDamage) - max))) * 255 / max);
             redValue = (int) Mth.clamp((double) redValue, 0, 255);
@@ -215,14 +213,14 @@ public class BetaHud extends HudType {
             // EffectInstance image.
             renderer.setTexture(BubbleBlaster.id("ui/effect_banner"));
 
-            int i = 0;
-            for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
-                final int y = 16;
-                final int x = 320 + i * 196;
+            var i = 0;
+            for (var appliedEffect : player.getActiveEffects()) {
+                final var y = 16;
+                final var x = 320 + i * 196;
 
                 renderer.scissored(x, y, 192, 38, () -> {
                     // Format duration to string.
-                    String time = appliedEffect.getRemainingTime().toSimpleString();
+                    var time = appliedEffect.getRemainingTime().toSimpleString();
 
                     // EffectInstance bar.
                     renderer.blit(x, y, 192, 38);
@@ -259,7 +257,7 @@ public class BetaHud extends HudType {
      * @param game     game instance.
      */
     public void drawTopBar(Renderer renderer, BubbleBlaster game) {
-        Rectangle topBar = new Rectangle(0, 0, game.getWidth(), 70);
+        var topBar = new Rectangle(0, 0, game.getWidth(), 70);
         renderer.fill(topBar, TOP_BAR_BG_COLOR);
     }
 

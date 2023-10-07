@@ -70,25 +70,25 @@ public class Either<L, R> {
 
     public L getLeftOr(L other) {
         if (this.left == null) return other;
-        L value = this.left.value;
+        var value = this.left.value;
         return value == null ? other : value;
     }
 
     public R getRightOr(R other) {
         if (this.right == null) return other;
-        R value = this.right.value;
+        var value = this.right.value;
         return value == null ? other : value;
     }
 
     public L getLeftOrGet(Supplier<? extends L> other) {
         if (this.left == null) return other.get();
-        L value = this.left.value;
+        var value = this.left.value;
         return value == null ? other.get() : value;
     }
 
     public R getRightOrGet(Supplier<? extends R> other) {
         if (this.right == null) return other.get();
-        R value = this.right.value;
+        var value = this.right.value;
         return value == null ? other.get() : value;
     }
 
@@ -112,7 +112,7 @@ public class Either<L, R> {
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            Left that = (Left) obj;
+            var that = (Left) obj;
             return Objects.equals(this.value, that.value);
         }
 
@@ -143,7 +143,7 @@ public class Either<L, R> {
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            Right that = (Right) obj;
+            var that = (Right) obj;
             return Objects.equals(this.value, that.value);
         }
 

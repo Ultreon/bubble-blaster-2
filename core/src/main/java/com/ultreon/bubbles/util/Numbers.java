@@ -16,7 +16,7 @@ public class Numbers {
         }
     }
     public static Float tryParseFloat(String s) {
-        Integer v = Numbers.tryParseInt(s);
+        var v = Numbers.tryParseInt(s);
         if (v != null) return v.floatValue();
 
         try {
@@ -26,7 +26,7 @@ public class Numbers {
         }
     }
     public static Double tryParseDouble(String s) {
-        Long v = Numbers.tryParseLong(s);
+        var v = Numbers.tryParseLong(s);
         if (v != null) return v.doubleValue();
         try {
             return Double.valueOf(s);

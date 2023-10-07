@@ -19,7 +19,7 @@ public class BloodMoonCommand implements CommandExecutor {
                     BubbleBlaster.invokeTick(() -> player.getWorld().endEvent(GameplayEvents.BLOOD_MOON_EVENT));
                     break;
                 case "next": {
-                    long nextInMs = (long) (player.getWorld().getNextBloodMoon() / (double) TPS * 1000.0);
+                    var nextInMs = (long) (player.getWorld().getNextBloodMoon() / (double) TPS * 1000.0);
                     if (nextInMs < 0) {
                         player.sendSystemMessage("Blood moon is active right now.");
                     } else {
@@ -28,7 +28,7 @@ public class BloodMoonCommand implements CommandExecutor {
                     break;
                 }
                 case "ends": {
-                    long nextInMs = (long) (GameplayEvents.BLOOD_MOON_EVENT.getDeactivateTicks() / (double) TPS * 1000.0);
+                    var nextInMs = (long) (GameplayEvents.BLOOD_MOON_EVENT.getDeactivateTicks() / (double) TPS * 1000.0);
                     if (nextInMs < 0) {
                         player.sendSystemMessage("Blood moon is inactive right now.");
                     } else {

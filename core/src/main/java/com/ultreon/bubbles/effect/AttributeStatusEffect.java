@@ -5,8 +5,6 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.attribute.AttributeModifier;
 
-import java.util.Map;
-
 public abstract class AttributeStatusEffect extends StatusEffect {
     @Override
     protected boolean canExecute(Entity entity, StatusEffectInstance appliedEffect) {
@@ -17,9 +15,9 @@ public abstract class AttributeStatusEffect extends StatusEffect {
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
         super.onStart(appliedEffect, entity);
 
-        for (Map.Entry<Attribute, AttributeModifier> entry : this.getAttributeModifiers(appliedEffect.getStrength()).entries()) {
-            Attribute key = entry.getKey();
-            AttributeModifier value = entry.getValue();
+        for (var entry : this.getAttributeModifiers(appliedEffect.getStrength()).entries()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
             entity.getAttributes().addModifier(key, value);
         }
     }
@@ -28,9 +26,9 @@ public abstract class AttributeStatusEffect extends StatusEffect {
     public void onStop(Entity entity) {
         super.onStop(entity);
 
-        for (Map.Entry<Attribute, AttributeModifier> entry : this.getAttributeModifiers(-1).entries()) {
-            Attribute key = entry.getKey();
-            AttributeModifier value = entry.getValue();
+        for (var entry : this.getAttributeModifiers(-1).entries()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
             entity.getAttributes().removeModifier(key, value.id());
         }
     }

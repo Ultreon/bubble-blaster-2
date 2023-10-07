@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.event.v1.GameEvents;
@@ -50,7 +49,7 @@ public class PauseScreen extends Screen {
     static {
         GameEvents.LANGUAGE_CHANGED.listen((from, to) -> {
             if (BubbleBlaster.getInstance().getCurrentScreen() instanceof PauseScreen) {
-                PauseScreen pauseScreen = (PauseScreen) BubbleBlaster.getInstance().getCurrentScreen();
+                var pauseScreen = (PauseScreen) BubbleBlaster.getInstance().getCurrentScreen();
                 pauseScreen.changeLanguage();
             }
         });
@@ -123,7 +122,7 @@ public class PauseScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
+        var loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {
             return;
         }

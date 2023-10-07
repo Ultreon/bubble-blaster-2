@@ -4,24 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GamePlatform;
-import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.input.DesktopInput;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.screen.Screen;
-import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.size.FloatSize;
 import com.ultreon.libs.registries.v0.RegistrySupplier;
 import com.ultreon.libs.text.v1.MutableText;
@@ -33,7 +28,7 @@ public class DebugRenderer {
     private static final Formatter<Object> DEFAULT_FORMATTER = new Formatter<>(Object.class, BubbleBlaster.id("object")) {
         @Override
         public void format(Object obj, IFormatterContext context) {
-            Class<?> c = obj.getClass();
+            var c = obj.getClass();
 
             context.classValue(c);
             context.identifier("@");
@@ -63,7 +58,7 @@ public class DebugRenderer {
         if (obj == null) {
             context.keyword("null");
         } else if (obj instanceof Class<?>) {
-            Class<?> c = (Class<?>) obj;
+            var c = (Class<?>) obj;
             context.packageName(c.getPackage().getName() + ".");
             context.className(c.getSimpleName());
         } else {
@@ -86,7 +81,7 @@ public class DebugRenderer {
 
         renderer.setColor(255, 255, 255);
 
-        Rectangle gameBounds = this.game.getGameBounds();
+        var gameBounds = this.game.getGameBounds();
         this.left(renderer, "FPS", this.game.getFps());
         this.left(renderer, "TPS", this.game.getCurrentTps());
         this.left(renderer, "RPT", Gdx.graphics.getDeltaTime());
@@ -96,9 +91,9 @@ public class DebugRenderer {
         this.left(renderer, "Canvas Size", new FloatSize(this.game.getWidth(), this.game.getHeight()));
         this.left(renderer, "Free FBOs", renderer.getFreeFrameBuffers());
         this.left(renderer, "Managed FBOs", renderer.getManagedFrameBuffers());
-        World world = this.game.world;
+        var world = this.game.world;
         if (world != null) {
-            GameplayEvent curGe = world.getActiveEvent();
+            var curGe = world.getActiveEvent();
             this.left(renderer, "Entity Count", world.getEntities().size());
             this.left(renderer, "Visible Entity Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::isVisible).count());
             this.left(renderer, "Entity Removal Count", world.getEntities().stream().filter(Objects::nonNull).filter(Entity::willBeDeleted).count());
@@ -106,12 +101,12 @@ public class DebugRenderer {
             this.left(renderer, "Cur. Game Event", (curGe != null ? Registries.GAMEPLAY_EVENTS.getKey(curGe) : null));
 
             if (DesktopInput.isKeyDown(Input.Keys.SHIFT_LEFT)) {
-                Vector2 pos = DesktopInput.getMousePos();
-                Entity entityAt = world.getEntityAt(pos);
+                var pos = DesktopInput.getMousePos();
+                var entityAt = world.getEntityAt(pos);
                 if (entityAt != null) {
                     this.left(renderer, "Entity Type", Registries.ENTITIES.getKey(entityAt.getType()));
                     if (entityAt instanceof Bubble) {
-                        Bubble bubble = (Bubble) entityAt;
+                        var bubble = (Bubble) entityAt;
                         this.left(renderer, "Bubble Type", Registries.BUBBLES.getKey(bubble.getBubbleType()));
                         this.left(renderer, "Base Speed:", bubble.getAttributes().getBase(Attribute.SPEED));
                         this.left(renderer, "Speed", bubble.getAttributes().get(Attribute.SPEED));
@@ -120,7 +115,7 @@ public class DebugRenderer {
                 }
             }
 
-            Player player = world.getPlayer();
+            var player = world.getPlayer();
             if (player != null) {
                 this.left(renderer, "Pos", player.getPos());
                 this.left(renderer, "Score", player.getScore());
@@ -136,7 +131,7 @@ public class DebugRenderer {
                 this.left(renderer, "DstToMouseCursor", player.distanceTo(DesktopInput.getMousePos()));
             }
         }
-        Screen screen = this.game.getCurrentScreen();
+        var screen = this.game.getCurrentScreen();
         this.left(renderer, "Screen", (screen == null ? null : screen.getClass()));
 
         this.lastProfile = BubbleBlaster.getLastProfile();
@@ -144,19 +139,19 @@ public class DebugRenderer {
             List<Thread> threads = Lists.newArrayList(this.lastProfile.keySet());
             threads.sort(Comparator.comparing(Thread::getName));
 
-            MutableText selInputText = TextObject.literal(this.selectInput);
+            var selInputText = TextObject.literal(this.selectInput);
             selInputText.setColor(Color.rgb(0xff4040).toAwt());
-            MutableText typingText = TextObject.literal("Typing ");
+            var typingText = TextObject.literal("Typing ");
             typingText.setColor(Color.rgb(0xffa040).toAwt());
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
 
             for (int i = 0, threadsSize = threads.size(); i < threadsSize; i++) {
-                Thread e = threads.get(i);
-                MutableText literal = TextObject.literal(" [" + e.getName() + "]");
+                var e = threads.get(i);
+                var literal = TextObject.literal(" [" + e.getName() + "]");
                 literal.setColor(Color.rgb(0xff4040).toAwt());
-                MutableText thread = TextObject.literal("Thread");
-                MutableText index = TextObject.literal("[" + (i + 1) + "] ");
+                var thread = TextObject.literal("Thread");
+                var index = TextObject.literal("[" + (i + 1) + "] ");
                 index.setColor(Color.rgb(0x30ff30).toAwt());
                 this.right(renderer, index.append(thread), literal);
             }
@@ -169,30 +164,30 @@ public class DebugRenderer {
                 entries.sort(Map.Entry.comparingByKey());
                 millis = entries.stream().mapToLong(e -> e.getValue().getMillis()).sum();
             } else {
-                Section peek = this.sectionStack.peek();
+                var peek = this.sectionStack.peek();
                 millis = peek.getMillis();
 
                 entries = Lists.newArrayList(peek.getValues().entrySet());
                 entries.sort(Map.Entry.comparingByKey());
             }
 
-            MutableText curMillisText = TextObject.literal(" (" + millis + "ms)");
+            var curMillisText = TextObject.literal(" (" + millis + "ms)");
             curMillisText.setColor(Color.rgb(0xff4040).toAwt());
-            MutableText curSectionText = TextObject.literal("Current Section: ");
+            var curSectionText = TextObject.literal("Current Section: ");
             curSectionText.setColor(Color.rgb(0xffa040).toAwt());
             this.right(renderer, curSectionText, curMillisText);
-            MutableText selInputText = TextObject.literal(this.selectInput);
+            var selInputText = TextObject.literal(this.selectInput);
             selInputText.setColor(Color.rgb(0xff4040).toAwt());
-            MutableText typingText = TextObject.literal("Typing ");
+            var typingText = TextObject.literal("Typing ");
             typingText.setColor(Color.rgb(0xffa040).toAwt());
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
             for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
-                Map.Entry<String, Section> e = entries.get(i);
-                MutableText millisText = TextObject.literal(" (" + e.getValue().getMillis() + "ms)");
+                var e = entries.get(i);
+                var millisText = TextObject.literal(" (" + e.getValue().getMillis() + "ms)");
                 millisText.setColor(Color.rgb(0xff4040).toAwt());
-                MutableText name = TextObject.literal(e.getKey());
-                MutableText index = TextObject.literal("[" + (i + 1) + "] ");
+                var name = TextObject.literal(e.getKey());
+                var index = TextObject.literal("[" + (i + 1) + "] ");
                 index.setColor(Color.rgb(0x30ff30).toAwt());
                 this.right(renderer, index.append(name), millisText);
             }
@@ -229,7 +224,7 @@ public class DebugRenderer {
                     entries = Lists.newArrayList(this.lastProfile.get(this.selectedThread).getValues().entrySet());
                     entries.sort(Map.Entry.comparingByKey());
                 } else {
-                    Section peek = this.sectionStack.peek();
+                    var peek = this.sectionStack.peek();
 
                     entries = Lists.newArrayList(peek.getValues().entrySet());
                     entries.sort(Map.Entry.comparingByKey());
@@ -237,7 +232,7 @@ public class DebugRenderer {
 
                 if (number >= entries.size()) return;
 
-                Map.Entry<String, Section> entry = entries.get(number);
+                var entry = entries.get(number);
                 this.sectionStack.push(entry.getValue());
                 this.pathStack.push(entry.getKey());
                 System.out.println("entry = " + entry.getKey());
@@ -266,7 +261,7 @@ public class DebugRenderer {
     }
 
     public void left(Renderer renderer, MutableText text, Object o) {
-        FormatterContext formatterContext = new FormatterContext();
+        var formatterContext = new FormatterContext();
         DebugRenderer.format(o, formatterContext);
         this.left(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
@@ -276,12 +271,12 @@ public class DebugRenderer {
     }
 
     public void left(Renderer renderer, MutableText text) {
-        String text1 = text.getText();
+        var text1 = text.getText();
         this.layout.setText(this.font.get(), text1);
-        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
-        int width = (int) bounds.x;
-        int height = (int) bounds.y;
-        int y = this.yLeft += height + 5;
+        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        var width = (int) bounds.x;
+        var height = (int) bounds.y;
+        var y = this.yLeft += height + 5;
         if (this.game.isInGame()) {
             y += (int) this.game.getGameBounds().y;
         }
@@ -295,7 +290,7 @@ public class DebugRenderer {
     }
 
     public void right(Renderer renderer, MutableText text, Object o) {
-        FormatterContext formatterContext = new FormatterContext();
+        var formatterContext = new FormatterContext();
         DebugRenderer.format(o, formatterContext);
         this.right(renderer, text.append(TextObject.literal(": ")).append(formatterContext.build()));
     }
@@ -305,12 +300,12 @@ public class DebugRenderer {
     }
 
     public void right(Renderer renderer, MutableText text) {
-        String text1 = text.getText();
+        var text1 = text.getText();
         this.layout.setText(this.font.get(), text1);
-        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
-        int width = (int) bounds.x;
-        int height = (int) bounds.y;
-        int y = this.yRight += height + 5;
+        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        var width = (int) bounds.x;
+        var height = (int) bounds.y;
+        var y = this.yRight += height + 5;
         if (this.game.isInGame()) {
             y += (int) this.game.getGameBounds().y;
         }
@@ -320,22 +315,22 @@ public class DebugRenderer {
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
-        String text2 = text.getText();
+        var text2 = text.getText();
         this.layout.setText(this.font.get(), text2);
-        Vector2 bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
         int height;
         if (!text1.getText().isEmpty()) {
-            Vector2 bounds1 = new Vector2(this.layout.width, this.font.get().getLineHeight());
+            var bounds1 = new Vector2(this.layout.width, this.font.get().getLineHeight());
             height = Math.max((int) bounds.y, (int) bounds1.y);
         } else {
             height = (int) bounds.y;
         }
-        int y = this.yRight += height + 5;
+        var y = this.yRight += height + 5;
         if (this.game.isInGame()) {
             y += (int) this.game.getGameBounds().y;
         }
 
-        int i = 400;
+        var i = 400;
 
         renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4, Color.BLACK.withAlpha(0x99));
         renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1, Color.WHITE);

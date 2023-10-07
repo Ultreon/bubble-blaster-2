@@ -5,14 +5,11 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
-import com.ultreon.bubbles.bubble.BubbleProperties;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.random.BubbleRandomizer;
 import com.ultreon.bubbles.entity.ai.AiTask;
 import com.ultreon.bubbles.entity.attribute.Attribute;
 import com.ultreon.bubbles.entity.bubble.BubbleSystem;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
-import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
 import com.ultreon.bubbles.entity.spawning.SpawnUsage;
@@ -88,22 +85,22 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public void preSpawn(SpawnInformation information) {
-        World world = information.getWorld();
-        RandomSource random = information.getRandom();
+        var world = information.getWorld();
+        var random = information.getRandom();
 
         super.preSpawn(information);
 
         if (information.getReason() instanceof NaturalSpawnReason) {
-            NaturalSpawnReason reason = (NaturalSpawnReason) information.getReason();
-            BubbleType bubbleType = BubbleSystem.random(random, world);
+            var reason = (NaturalSpawnReason) information.getReason();
+            var bubbleType = BubbleSystem.random(random, world);
             if (!bubbleType.canSpawn(information.getWorld())) {
                 bubbleType = information.getWorld().getGamemode().getDefaultBubble();
             }
             this.bubbleType = bubbleType;
 
             // Get random properties
-            BubbleRandomizer randomizer = world.getBubbleRandomizer();
-            BubbleProperties properties = randomizer.randomProperties(world.game().getGameBounds(), random, reason.getRetry(), world, this);
+            var randomizer = world.getBubbleRandomizer();
+            var properties = randomizer.randomProperties(world.game().getGameBounds(), random, reason.getRetry(), world, this);
 
             this.invincible = properties.getType().isInvincible();
             this.radius = properties.getRadius();
@@ -142,7 +139,7 @@ public class Bubble extends AbstractBubbleEntity {
         if (this.currentAiTask != null && this.currentAiTask.executeTask(this)) {
             return this.currentAiTask;
         }
-        for (AiTask task : this.bubbleType.getAiTasks()) {
+        for (var task : this.bubbleType.getAiTasks()) {
             if (task.executeTask(this)) {
                 return this.currentAiTask = task;
             }
@@ -190,8 +187,8 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public Rectangle getBounds() {
-        Circle circle = this.getShape();
-        Rectangle rectangle = new Rectangle(this.pos.x - circle.radius / 2, this.pos.y - circle.radius / 2, circle.radius, circle.radius);
+        var circle = this.getShape();
+        var rectangle = new Rectangle(this.pos.x - circle.radius / 2, this.pos.y - circle.radius / 2, circle.radius, circle.radius);
         rectangle.width += 4;
         rectangle.height += 4;
         return rectangle;
@@ -210,7 +207,7 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public void tick(World world) {
         // Check player and current scene.
-        Player player = this.world.getPlayer();
+        var player = this.world.getPlayer();
 
         this.prevPos.set(this.pos);
 
@@ -256,7 +253,7 @@ public class Bubble extends AbstractBubbleEntity {
     public void render(Renderer renderer) {
         if (this.willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
-        Player player = this.world.getPlayer();
+        var player = this.world.getPlayer();
         if (player != null && player.getActiveEffect(StatusEffects.BLINDNESS) != null) {
             WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, BubbleTypes.NORMAL);
         } else {
@@ -273,13 +270,13 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public Circle getShape() {
-        float rad = this.radius / 2;
+        var rad = this.radius / 2;
         return new Circle(this.pos.x - rad, this.pos.y - rad, rad);
     }
 
     @Override
     public boolean isVisible() {
-        Rectangle bounds = BubbleBlaster.getInstance().getBounds();
+        var bounds = BubbleBlaster.getInstance().getBounds();
         return this.pos.x + this.radius >= 0 && this.pos.y + this.radius >= 0 &&
                 this.pos.x - this.radius <= bounds.width && this.pos.y - this.radius <= bounds.height;
     }
@@ -373,7 +370,7 @@ public class Bubble extends AbstractBubbleEntity {
         data.putFloat("baseBounceAmount", this.baseBounceAmount);
 
         data.putBoolean("effectApplied", this.effectApplied);
-        Identifier id = Registries.BUBBLES.getKey(this.bubbleType);
+        var id = Registries.BUBBLES.getKey(this.bubbleType);
         data.putString("bubbleType", id == null ? BubbleTypes.NORMAL.getId().toString() : id.toString());
 
         return data;
@@ -390,7 +387,7 @@ public class Bubble extends AbstractBubbleEntity {
         this.baseBounceAmount = data.getFloat("baseBounceAmount");
         this.variant = EnumUtils.byName(data.getString(this.variant.name(), ""), Variant.NORMAL);
 
-        Identifier bubbleTypeKey = Identifier.parse(data.getString("bubbleType"));
+        var bubbleTypeKey = Identifier.parse(data.getString("bubbleType"));
         this.effectApplied = data.getBoolean("effectApplied");
         this.bubbleType = Registries.BUBBLES.getValue(bubbleTypeKey);
     }

@@ -64,10 +64,10 @@ public class TextEntry extends GuiComponent {
         if (keyCode == Input.Keys.BACKSPACE) {
             if (this.text.isEmpty()) return false;
 
-            String leftText = this.text.substring(0, this.cursorIndex - 1);
-            String rightText = this.text.substring(this.cursorIndex);
+            var leftText = this.text.substring(0, this.cursorIndex - 1);
+            var rightText = this.text.substring(this.cursorIndex);
 
-            String text = leftText + rightText;
+            var text = leftText + rightText;
             if (this.responder.test(text)) this.validText = text;
             this.text = text;
             this.layout.setText(this.font, text.substring(0, Mth.clamp(this.cursorIndex, 0, this.text.length() - 1)));
@@ -80,10 +80,10 @@ public class TextEntry extends GuiComponent {
             if (this.text.isEmpty()) return false;
             if (this.cursorIndex >= this.text.length() - 1) return false;
 
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex + 1);
+            var leftText = this.text.substring(0, this.cursorIndex);
+            var rightText = this.text.substring(this.cursorIndex + 1);
 
-            String text = leftText + rightText;
+            var text = leftText + rightText;
             if (this.responder.test(text)) this.validText = text;
             this.text = text;
             this.layout.setText(this.font, text.substring(0, this.cursorIndex));
@@ -114,10 +114,10 @@ public class TextEntry extends GuiComponent {
     @Override
     public boolean charType(char character) {
         if ((short) character >= 32) {
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex);
+            var leftText = this.text.substring(0, this.cursorIndex);
+            var rightText = this.text.substring(this.cursorIndex);
 
-            String text = leftText + character + rightText;
+            var text = leftText + character + rightText;
             if (this.responder.test(text)) this.validText = text;
             this.text = text;
             this.layout.setText(this.font, text.substring(0, this.cursorIndex));
@@ -156,10 +156,10 @@ public class TextEntry extends GuiComponent {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        final int entryX = Math.max(this.x + this.width - this.entryWidth, this.x);
-        final int entryW = Math.min(this.entryWidth, this.width);
-        final int labelX = this.x;
-        final int labelW = Math.max(this.width - entryW, 0);
+        final var entryX = Math.max(this.x + this.width - this.entryWidth, this.x);
+        final var entryW = Math.min(this.entryWidth, this.width);
+        final var labelX = this.x;
+        final var labelW = Math.max(this.width - entryW, 0);
 
         this.drawBackground(renderer, labelX, labelW, entryX, entryW);
         this.drawText(renderer, entryX, entryW, labelX, labelW);
@@ -184,7 +184,7 @@ public class TextEntry extends GuiComponent {
             renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE);
 
             if (this.isFocused()) {
-                float cursorX = this.text.isEmpty() ? entryX + 10 : entryX + 10 + this.layout.width;
+                var cursorX = this.text.isEmpty() ? entryX + 10 : entryX + 10 + this.layout.width;
                 renderer.fillEffect(cursorX, this.y + this.getHeight() / 2f - this.font.getLineHeight() / 2, 2, this.font.getLineHeight());
             }
         });
@@ -241,7 +241,7 @@ public class TextEntry extends GuiComponent {
     }
 
     protected void validate() {
-        String text = this.text;
+        var text = this.text;
         if (this.responder.test(text)) this.validText = text;
     }
 
@@ -261,7 +261,7 @@ public class TextEntry extends GuiComponent {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating OptionsTextEntry.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
 
-            TextEntry entry = new TextEntry((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            var entry = new TextEntry((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
             entry.setText(this.text == null ? "" : this.text);
             entry.setEntryWidth(this.entryWidth);
             entry.setLabel(this.label);

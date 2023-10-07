@@ -40,7 +40,7 @@ public class Button extends AbstractButton implements GuiStateListener {
         }
 
         public Button build() {
-            Button button = new Button((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            var button = new Button((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);

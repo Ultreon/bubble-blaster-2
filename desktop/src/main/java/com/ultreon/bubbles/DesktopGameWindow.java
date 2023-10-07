@@ -1,7 +1,6 @@
 package com.ultreon.bubbles;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowListener;
@@ -113,7 +112,7 @@ public class DesktopGameWindow implements GameWindow {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
                 this.setVisible(true);
                 Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
+                var mode = Gdx.graphics.getDisplayMode();
                 this.game().resize(mode.width, mode.height);
                 this.requestFocus();
             }
@@ -126,7 +125,7 @@ public class DesktopGameWindow implements GameWindow {
 
     @Override
     public void setVisible(boolean visible) {
-        Lwjgl3Window window = this.getLwjglWindow();
+        var window = this.getLwjglWindow();
         window.setVisible(visible);
         this.visible = visible;
 

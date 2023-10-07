@@ -29,7 +29,7 @@ public abstract class Container extends GuiComponent {
     }
 
     protected void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        for (GuiComponent child : this.children)
+        for (var child : this.children)
             if (child.visible) {
                 renderer.scissored(child.getBounds(), () -> child.render(renderer, mouseX, mouseY, deltaTime));
             }
@@ -37,9 +37,9 @@ public abstract class Container extends GuiComponent {
 
     @Nullable
     public GuiComponent getExactWidgetAt(int x, int y) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
+        var widgetAt = this.getWidgetAt(x, y);
         if (widgetAt instanceof Container) {
-            Container container = (Container) widgetAt;
+            var container = (Container) widgetAt;
             return container.getExactWidgetAt(x, y);
         }
         return widgetAt;
@@ -64,9 +64,9 @@ public abstract class Container extends GuiComponent {
 
     @Nullable
     public GuiComponent getWidgetAt(int x, int y) {
-        List<GuiComponent> guiComponents = this.children;
-        for (int i = guiComponents.size() - 1; i >= 0; i--) {
-            GuiComponent child = guiComponents.get(i);
+        var guiComponents = this.children;
+        for (var i = guiComponents.size() - 1; i >= 0; i--) {
+            var child = guiComponents.get(i);
             if (!child.enabled || !child.visible) continue;
             if (child.isWithinBounds(x, y)) return child;
         }
@@ -75,19 +75,19 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
+        var widgetAt = this.getWidgetAt(x, y);
         return widgetAt != null && widgetAt.mouseClick(x - widgetAt.getX(), y - widgetAt.getY(), button, count);
     }
 
     @Override
     public boolean mousePress(int x, int y, int button) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
+        var widgetAt = this.getWidgetAt(x, y);
 
         // Pressing widget.
         this.pressed = widgetAt;
 
         // Focus
-        boolean widgetChanged = false;
+        var widgetChanged = false;
 
         if (this.focused != null && !this.focused.isWithinBounds(x, y))
             this.focused.onFocusLost();
@@ -106,7 +106,7 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
-        GuiComponent widgetAt = this.pressed;
+        var widgetAt = this.pressed;
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         return widgetAt != null && widgetAt.mouseRelease(x, y, button);
@@ -114,8 +114,8 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseEnter(int x, int y) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
-        boolean widgetChanged = false;
+        var widgetAt = this.getWidgetAt(x, y);
+        var widgetChanged = false;
         if (this.hovered != null && !this.hovered.isWithinBounds(x, y)) {
             this.hovered.mouseExit();
         }
@@ -135,7 +135,7 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public void mouseDrag(int x, int y, int nx, int ny, int button) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
+        var widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         nx -= this.x + this.innerXOffset;
@@ -153,7 +153,7 @@ public abstract class Container extends GuiComponent {
 
     @Override
     public boolean mouseWheel(int x, int y, float rotation) {
-        GuiComponent widgetAt = this.getWidgetAt(x, y);
+        var widgetAt = this.getWidgetAt(x, y);
         x -= this.x + this.innerXOffset;
         y -= this.y + this.innerYOffset;
         if (widgetAt != null) return widgetAt.mouseWheel(x - widgetAt.getX(), y - widgetAt.getY(), rotation);
@@ -161,7 +161,7 @@ public abstract class Container extends GuiComponent {
     }
 
     protected final void clearWidgets() {
-        for (GuiComponent widget : this.children)
+        for (var widget : this.children)
             widget.dispose();
         this.children.clear();
     }

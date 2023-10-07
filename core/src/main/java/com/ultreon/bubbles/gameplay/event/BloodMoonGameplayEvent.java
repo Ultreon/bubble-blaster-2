@@ -1,6 +1,5 @@
 package com.ultreon.bubbles.gameplay.event;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import com.ultreon.bubbles.Axis2D;
 import com.ultreon.bubbles.BubbleBlaster;
@@ -16,7 +15,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.bubbles.world.WorldRenderer;
-import com.ultreon.data.types.MapType;
 import com.ultreon.libs.datetime.v0.Date;
 import com.ultreon.libs.datetime.v0.DateTime;
 import com.ultreon.libs.datetime.v0.Time;
@@ -77,7 +75,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
     @Override
     public void buildVfx(VfxEffectBuilder builder) {
-        FilmGrainEffect effect = new FilmGrainEffect();
+        var effect = new FilmGrainEffect();
         effect.setNoiseAmount(0.4f);
         builder.set(NOISE_EFFECT_ID, effect);
     }
@@ -89,7 +87,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
         if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
 
-        MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
+        var storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
     }
 
@@ -102,25 +100,25 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
         if (this.deactivateTicks > 0) return true;
 
-        MapType storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
+        var storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
     }
 
     @Override
     public void renderBackground(World world, Renderer renderer) {
-        BubbleBlaster instance = BubbleBlaster.getInstance();
-        Rectangle bounds = instance.getBounds();
+        var instance = BubbleBlaster.getInstance();
+        var bounds = instance.getBounds();
         renderer.fillGradient(bounds, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM, Axis2D.VERTICAL);
         bounds.height *= 5f / 4f;
         renderer.fillGradient(bounds, UPPER_COLOR, Color.TRANSPARENT, Axis2D.VERTICAL);
     }
 
     public final boolean wouldActive(DateTime dateTime) {
-        boolean flag1 = dateTime.getTime().isBetween(this.timeLo, this.timeHi);  // Devil's hour.
-        boolean flag2 = dateTime.getDate().equalsIgnoreYear(this.date);  // Halloween.
+        var flag1 = dateTime.getTime().isBetween(this.timeLo, this.timeHi);  // Devil's hour.
+        var flag2 = dateTime.getDate().equalsIgnoreYear(this.date);  // Halloween.
 
-        boolean flag3 = dateTime.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;  // Friday
-        boolean flag4 = dateTime.getDate().getDay() == 13;  // 13th
+        var flag3 = dateTime.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;  // Friday
+        var flag4 = dateTime.getDate().getDay() == 13;  // 13th
 
         return (flag1 && flag2) || (flag3 && flag4);  // Every October 31st in devil's hour. Or Friday 13th.
     }

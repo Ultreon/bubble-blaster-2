@@ -64,7 +64,7 @@ public final class DebugFormatters {
             }
 
             while (true) {
-                Object e = it.next();
+                var e = it.next();
                 if (e == obj) {
                     context.keyword("[...]");
                 } else {
@@ -146,7 +146,7 @@ public final class DebugFormatters {
             }
 
             while (true) {
-                Object e = it.next();
+                var e = it.next();
                 if (e == obj) {
                     context.keyword("{...}");
                 } else {
@@ -172,7 +172,7 @@ public final class DebugFormatters {
             }
 
             while (true) {
-                Object e = it.next();
+                var e = it.next();
                 if (e == obj) {
                     context.keyword("(...)");
                 } else {
@@ -189,11 +189,11 @@ public final class DebugFormatters {
     public static final Formatter<UUID> UUID = FormatterRegistry.register(new Formatter<>(UUID.class, new Identifier("java/uuid")) {
         @Override
         public void format(UUID obj, IFormatterContext context) {
-            Iterator<String> iterator = Arrays.stream(obj.toString().split("-")).iterator();
+            var iterator = Arrays.stream(obj.toString().split("-")).iterator();
             if (!iterator.hasNext()) return;
 
             while (true) {
-                String s = iterator.next();
+                var s = iterator.next();
                 context.hex(s);
                 if (!iterator.hasNext()) return;
                 context.operator("-");
@@ -203,7 +203,7 @@ public final class DebugFormatters {
     public static final Formatter<Color> AWT_COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
         @Override
         public void format(Color obj, IFormatterContext context) {
-            String s = Integer.toHexString(obj.getRgb());
+            var s = Integer.toHexString(obj.getRgb());
 
             context.operator("#");
             context.hex("0".repeat(8 - s.length()) + s);
@@ -212,7 +212,7 @@ public final class DebugFormatters {
     public static final Formatter<Color> COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
         @Override
         public void format(Color obj, IFormatterContext context) {
-            String s = Integer.toHexString(obj.getRgb());
+            var s = Integer.toHexString(obj.getRgb());
 
             context.operator("#");
             context.hex("0".repeat(8 - s.length()) + s);

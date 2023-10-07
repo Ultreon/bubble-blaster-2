@@ -107,8 +107,8 @@ public class SizedList<T> {
     public Range getRange(int index) {
         Range range = null;
         double currentSize = 0;
-        for (int i = 0; i < this.sizes.size(); i++) {
-            double newSize = currentSize + this.sizes.get(i);
+        for (var i = 0; i < this.sizes.size(); i++) {
+            var newSize = currentSize + this.sizes.get(i);
             if (i == index) {
                 range = new Range(currentSize, newSize);
             }
@@ -136,8 +136,8 @@ public class SizedList<T> {
 
         T value = null;
         double currentSize = -1;
-        for (int i = 0; i < this.sizes.size(); i++) {
-            double newSize = currentSize + this.sizes.get(i);
+        for (var i = 0; i < this.sizes.size(); i++) {
+            var newSize = currentSize + this.sizes.get(i);
             if ((currentSize < drIndex) && (newSize >= drIndex)) {
                 value = this.values.get(i);
             }
@@ -156,7 +156,7 @@ public class SizedList<T> {
      * @return the new size.
      */
     public Double edit(T value, Double size) {
-        int index = this.indexOf(value);
+        var index = this.indexOf(value);
 
         if (index >= this.sizes.size()) throw new OutOfRangeException(index, 0, this.sizes.size());
 
@@ -175,7 +175,7 @@ public class SizedList<T> {
      * @return the new size.
      */
     public Double edit(T value, Double size, T newValue) {
-        int index = this.indexOf(value);
+        var index = this.indexOf(value);
 
         if (index >= this.sizes.size()) throw new OutOfRangeException(index, 0, this.sizes.size());
 
@@ -192,10 +192,10 @@ public class SizedList<T> {
      * @return the ranges create all partitions.
      */
     public Range[] getRanges() {
-        Range[] ranges = new Range[]{};
+        var ranges = new Range[]{};
         double currentSize = 0;
-        for (Double size : this.sizes) {
-            double newSize = currentSize + size;
+        for (var size : this.sizes) {
+            var newSize = currentSize + size;
 
             ranges = ArrayUtils.add(ranges, new Range(currentSize, newSize));
             currentSize = newSize;
@@ -225,7 +225,7 @@ public class SizedList<T> {
      * @return the index.
      */
     public Range rangeOf(T value) {
-        int index = this.values.indexOf(value);
+        var index = this.values.indexOf(value);
 
         return this.getRange(index);
     }
@@ -233,9 +233,9 @@ public class SizedList<T> {
     public void editLengths(Applier<T, Double> applier) {
         double currentSize = 0;
         List<Double> sizes2 = new ArrayList<>(this.sizes);
-        for (int i = 0; i < sizes2.size(); i++) {
-            Double applierSize = applier.apply(this.values.get(i));
-            double newSize = currentSize + sizes2.get(i);
+        for (var i = 0; i < sizes2.size(); i++) {
+            var applierSize = applier.apply(this.values.get(i));
+            var newSize = currentSize + sizes2.get(i);
             this.totalSize = this.totalSize - sizes2.get(i) + applierSize;
             sizes2.set(i, applierSize);
 

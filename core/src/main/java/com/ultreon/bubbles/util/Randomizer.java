@@ -44,7 +44,7 @@ public class Randomizer {
     }
 
     public static long hash(String seed) {
-        byte[] bytes = seed.getBytes(StandardCharsets.UTF_8);
+        var bytes = seed.getBytes(StandardCharsets.UTF_8);
         return Hashing.murmur3_128().hashBytes(bytes).asLong();
     }
 
@@ -57,12 +57,12 @@ public class Randomizer {
     }
 
     private static long hash(String[] arraySeed) {
-        StringBuilder sb = new StringBuilder();
-        for (String element : arraySeed) {
+        var sb = new StringBuilder();
+        for (var element : arraySeed) {
             sb.append(element);
         }
-        String concatenatedString = sb.toString();
-        byte[] bytes = concatenatedString.getBytes(StandardCharsets.UTF_8);
+        var concatenatedString = sb.toString();
+        var bytes = concatenatedString.getBytes(StandardCharsets.UTF_8);
         return Hashing.murmur3_128().hashBytes(bytes).asLong();
     }
 

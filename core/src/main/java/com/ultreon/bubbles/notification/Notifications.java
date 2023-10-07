@@ -30,17 +30,17 @@ public class Notifications implements Renderable {
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         if (this.game.isLoading()) return;
 
-        int x = this.game.getWidth() - NOTIFICATION_OFFSET - NOTIFICATION_WIDTH;
-        int y = NOTIFICATION_OFFSET;
+        var x = this.game.getWidth() - NOTIFICATION_OFFSET - NOTIFICATION_WIDTH;
+        var y = NOTIFICATION_OFFSET;
 
         this.lock.lock();
         this.notifications.removeIf(Notification::isDead);
-        for (Notification notification : this.notifications) {
-            String title = notification.getTitle();
-            String summary = notification.getSummary();
-            String subText = notification.getSubText();
-            float motionRatio = notification.getMotion();
-            float motion = (NOTIFICATION_WIDTH + NOTIFICATION_OFFSET) * motionRatio;
+        for (var notification : this.notifications) {
+            var title = notification.getTitle();
+            var summary = notification.getSummary();
+            var subText = notification.getSubText();
+            var motionRatio = notification.getMotion();
+            var motion = (NOTIFICATION_WIDTH + NOTIFICATION_OFFSET) * motionRatio;
 
             renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT, Color.rgb(0x101010));
             renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10, Color.rgb(0x505050));

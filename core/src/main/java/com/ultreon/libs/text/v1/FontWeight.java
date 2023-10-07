@@ -19,9 +19,9 @@ public enum FontWeight {
     }
     @NotNull
     public static FontWeight closestTo(float weight) {
-        float lastDiff = Float.MAX_VALUE;
+        var lastDiff = Float.MAX_VALUE;
         FontWeight cur = null;
-        for (FontWeight value : FontWeight.values()) {
+        for (var value : FontWeight.values()) {
             if (Mth.diff(weight, value.weight) < lastDiff) {
                 cur = value;
             }
@@ -33,9 +33,9 @@ public enum FontWeight {
 
     @NotNull
     public static FontWeight closestTo(float weight, Collection<FontWeight> values) {
-        float lastDiff = Float.MAX_VALUE;
+        var lastDiff = Float.MAX_VALUE;
         FontWeight cur = null;
-        for (FontWeight value : values) {
+        for (var value : values) {
             if (Mth.diff(weight, value.weight) < lastDiff) {
                 cur = value;
             }

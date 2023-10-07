@@ -9,7 +9,7 @@ public final class Enums {
     }
 
     public static <E extends Enum<E>> E byIndex(int value, E defaultValue, Function<E, Integer> getter) {
-        for (E e : defaultValue.getDeclaringClass().getEnumConstants()) {
+        for (var e : defaultValue.getDeclaringClass().getEnumConstants()) {
             if (getter.apply(e) == value) {
                 return e;
             }
@@ -18,7 +18,7 @@ public final class Enums {
     }
 
     public static <E extends Enum<E>> E byName(String name, E defaultValue) {
-        for (E e : defaultValue.getDeclaringClass().getEnumConstants()) {
+        for (var e : defaultValue.getDeclaringClass().getEnumConstants()) {
             if (e.name().equalsIgnoreCase(name)) {
                 return e;
             }
@@ -27,7 +27,7 @@ public final class Enums {
     }
 
     public static <E extends Enum<E>> E byOrdinal(int ordinal, E defaultValue) {
-        E[] enumConstants = defaultValue.getDeclaringClass().getEnumConstants();
+        var enumConstants = defaultValue.getDeclaringClass().getEnumConstants();
         if (ordinal >= 0 && ordinal < enumConstants.length) {
             return enumConstants[ordinal];
         }
@@ -36,7 +36,7 @@ public final class Enums {
 
     public static <E extends Enum<E>> boolean validate(@Nullable Object obj, Class<E> enumClass) {
         if (obj != null) {
-            for (E e : enumClass.getEnumConstants()) {
+            for (var e : enumClass.getEnumConstants()) {
                 if (e.name().equalsIgnoreCase(obj.toString())) {
                     return true;
                 }

@@ -2,7 +2,6 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GamePlatform;
-import com.ultreon.bubbles.data.GlobalSaveData;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
@@ -27,7 +26,7 @@ public class TitleScreen extends Screen {
     }
 
     private void openModList() {
-        Screen screen = GamePlatform.get().openModListScreen();
+        var screen = GamePlatform.get().openModListScreen();
         if (screen == null) {
             this.game.notifications.unavailable("Mods on " + GamePlatform.get().getOperatingSystem().toString());
             return;
@@ -106,7 +105,7 @@ public class TitleScreen extends Screen {
     }
 
     private void resetHighScore() {
-        GlobalSaveData globalData = this.game.getGlobalData();
+        var globalData = this.game.getGlobalData();
         globalData.setHighScore(0.0, Instant.EPOCH);
     }
 
@@ -114,7 +113,7 @@ public class TitleScreen extends Screen {
     public void tick() {
         super.tick();
 
-        TitleScreenBackground background = this.background;
+        var background = this.background;
         if (background != null) {
             background.tick();
         }

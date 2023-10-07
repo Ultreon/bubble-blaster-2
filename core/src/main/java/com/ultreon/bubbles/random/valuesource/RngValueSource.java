@@ -52,7 +52,7 @@ public class RngValueSource implements ValueSource {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        RngValueSource that = (RngValueSource) o;
+        var that = (RngValueSource) o;
         return this.seed == that.seed && this.min == that.min && this.max == that.max;
     }
 

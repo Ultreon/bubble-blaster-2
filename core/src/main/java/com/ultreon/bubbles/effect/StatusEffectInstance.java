@@ -37,11 +37,11 @@ public class StatusEffectInstance implements TagHolder {
      */
     private StatusEffectInstance(MapType document) {
         this.tag = document.getMap("Tag");
-        Identifier id = Identifier.tryParse(document.getString("id"));
+        var id = Identifier.tryParse(document.getString("id"));
         if (id == null) {
             this.type = StatusEffects.NONE;
         } else {
-            StatusEffect type = Registries.EFFECTS.getValue(id);
+            var type = Registries.EFFECTS.getValue(id);
             this.type = type == null ? StatusEffects.NONE : type;
         }
         
@@ -70,13 +70,13 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public @NotNull MapType save() {
-        MapType tag = new MapType();
+        var tag = new MapType();
         tag.put("Tag", this.tag);
         tag.putLong("baseDuration", this.originalTicks);
         tag.putLong("duration", this.remainingTicks);
         tag.putInt("strength", this.getStrength());
 
-        Identifier key = Registries.EFFECTS.getKey(this.getType());
+        var key = Registries.EFFECTS.getKey(this.getType());
         tag.putString("id", key == null ? "none" : key.toString());
 
         return tag;
@@ -129,7 +129,7 @@ public class StatusEffectInstance implements TagHolder {
     @Deprecated
     public void addStrength() {
         float old = this.getStrength();
-        byte output = (byte) (this.strength + 1);
+        var output = (byte) (this.strength + 1);
         this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
@@ -137,7 +137,7 @@ public class StatusEffectInstance implements TagHolder {
     @Deprecated
     public void addStrength(byte amount) {
         float old = this.getStrength();
-        byte output = (byte) (this.strength + amount);
+        var output = (byte) (this.strength + amount);
         this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
@@ -145,7 +145,7 @@ public class StatusEffectInstance implements TagHolder {
     @Deprecated
     public void removeStrength() {
         float old = this.getStrength();
-        byte output = (byte) (this.strength - 1);
+        var output = (byte) (this.strength - 1);
         this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
@@ -153,7 +153,7 @@ public class StatusEffectInstance implements TagHolder {
     @Deprecated
     public void removeStrength(byte amount) {
         float old = this.getStrength();
-        byte output = (byte) (this.strength - amount);
+        var output = (byte) (this.strength - amount);
         this.strength = Mth.clamp(output, 1, 255);
         this.updateStrength(old, this.getStrength());
     }
@@ -164,7 +164,7 @@ public class StatusEffectInstance implements TagHolder {
 
     @ApiStatus.Experimental
     public void setStrength(int strength) throws InvalidValueException {
-        int old = this.getStrength();
+        var old = this.getStrength();
         if (strength < 1) {
             throw new InvalidValueException("Tried to set strength less than 1.");
         }
@@ -205,7 +205,7 @@ public class StatusEffectInstance implements TagHolder {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        StatusEffectInstance appliedEffect = (StatusEffectInstance) o;
+        var appliedEffect = (StatusEffectInstance) o;
         return Objects.equals(this.getType(), appliedEffect.getType());
     }
 

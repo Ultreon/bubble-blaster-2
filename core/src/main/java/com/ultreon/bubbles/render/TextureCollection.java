@@ -26,16 +26,16 @@ public class TextureCollection {
         }
 
         if (BubbleBlaster.isOnRenderingThread()) {
-            Renderer renderer = this.game.getRenderer();
-            FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+            var renderer = this.game.getRenderer();
+            var fbo = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
             fbo.begin();
             texture.render(renderer);
             fbo.end();
             this.textures.put(index, fbo.getColorBufferTexture());
         } else {
-            Texture tex = BubbleBlaster.invokeAndWait(() -> {
-                Renderer renderer = this.game.getRenderer();
-                FrameBuffer fbo = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+            var tex = BubbleBlaster.invokeAndWait(() -> {
+                var renderer = this.game.getRenderer();
+                var fbo = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
                 fbo.begin();
                 texture.render(renderer);
                 fbo.end();
@@ -79,7 +79,7 @@ public class TextureCollection {
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
-            Index that = (Index) obj;
+            var that = (Index) obj;
             return Objects.equals(this.modId, that.modId) &&
                     Objects.equals(this.id, that.id);
         }

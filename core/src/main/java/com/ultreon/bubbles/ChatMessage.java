@@ -34,7 +34,7 @@ public final class ChatMessage {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        ChatMessage that = (ChatMessage) obj;
+        var that = (ChatMessage) obj;
         return Objects.equals(this.text, that.text) &&
                 Objects.equals(this.created, that.created);
     }

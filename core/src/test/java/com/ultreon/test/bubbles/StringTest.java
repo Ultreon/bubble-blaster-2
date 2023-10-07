@@ -9,10 +9,10 @@ import static java.lang.System.out;
 public class StringTest {
     @Test
     void splitTest1() {
-        String source = "a:b:c";
-        String[] shouldBe = {"a", "b:c"};
+        var source = "a:b:c";
+        var shouldBe = new String[]{"a", "b:c"};
 
-        String[] output = source.split(":", 2);
+        var output = source.split(":", 2);
 
         out.println("Source: " + source);
         out.println("Should be: " + Arrays.toString(shouldBe));

@@ -2,15 +2,11 @@ package com.ultreon.bubbles.world;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Shape2D;
 import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.bubble.BubbleType;
-import com.ultreon.bubbles.common.gamestate.GameplayEvent;
 import com.ultreon.bubbles.debug.Profiler;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
-import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.event.v1.RenderEvents;
 import com.ultreon.bubbles.init.StatusEffects;
@@ -93,17 +89,17 @@ public class WorldRenderer implements Renderable {
     @Deprecated(forRemoval = true)
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, List<Color> colors, Texture insideTexture) {
         // Define ellipse-depth (pixels).
-        float i = 0f;
-        int destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
+        var i = 0f;
+        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
         // Loop colors.
-        for (Color color : colors) {
+        for (var color : colors) {
             renderer.setLineThickness(thickness + 1 / 2f);
 
             // Draw singular circle in the circle list.
-            Circle circle = WorldRenderer.getCircle(x, y, radius, i);
+            var circle = WorldRenderer.getCircle(x, y, radius, i);
             renderer.circle(circle.x, circle.y, circle.radius, color);
             if (insideTexture != null) {
                 renderer.setTexture(insideTexture);
@@ -126,19 +122,19 @@ public class WorldRenderer implements Renderable {
      */
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, BubbleType type) {
         // Define ellipse-depth (pixels).
-        float i = 0f;
-        int destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
+        var i = 0f;
+        var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
 
         float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
         // Loop colors.
-        for (Color color : type.getColors()) {
+        for (var color : type.getColors()) {
             renderer.setLineThickness(thickness + 1 / 2f);
 
             // Draw singular circle in the circle list.
-            Circle circle = WorldRenderer.getCircle(x, y, radius, i);
+            var circle = WorldRenderer.getCircle(x, y, radius, i);
             renderer.circle(circle.x, circle.y, circle.radius, color);
-            Texture insideTexture = type.getInsideTexture();
+            var insideTexture = type.getInsideTexture();
             if (insideTexture != null) {
                 renderer.setTexture(insideTexture);
                 renderer.blit((int) (circle.x - circle.radius / 4), (int) (circle.y - circle.radius / 4), (int) circle.radius / 2, (int) circle.radius / 2);
@@ -175,24 +171,24 @@ public class WorldRenderer implements Renderable {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        World world = this.getWorld();
+        var world = this.getWorld();
         if (world == null) return;
         if (world.shuttingDown) return;
         if (!world.isInitialized()) return;
 
-        HudType hudOverride = this.getWorld().getGamemode().getHudOverride();
-        HudType hud = hudOverride != null ? hudOverride : HudType.getCurrent();
+        var hudOverride = this.getWorld().getGamemode().getHudOverride();
+        var hud = hudOverride != null ? hudOverride : HudType.getCurrent();
 
 //        renderer.enableNoise();
 
         this.profiler.section("Render BG", () -> this.renderBackground(renderer, world, hud));
         this.profiler.section("Render Entities", () -> this.renderEntities(renderer, world));
 
-        Player player = world.getPlayer();
-        StatusEffectInstance blindness = player.getActiveEffect(StatusEffects.BLINDNESS);
+        var player = world.getPlayer();
+        var blindness = player.getActiveEffect(StatusEffects.BLINDNESS);
         if (blindness != null) {
-            int strength = blindness.getStrength();
-            int alpha = Mth.clamp((strength + 1) * 0x10 + 0x60, 0, 255);
+            var strength = blindness.getStrength();
+            var alpha = Mth.clamp((strength + 1) * 0x10 + 0x60, 0, 255);
             renderer.fill(0, 0, this.game.getWidth(), this.game.getHeight(), Color.BLACK.withAlpha(alpha));
         }
 
@@ -202,7 +198,7 @@ public class WorldRenderer implements Renderable {
     }
 
     private void renderBackground(Renderer renderer, World world, HudType hud) {
-        GameplayEvent currentGameplayEvent = world.getActiveEvent();
+        var currentGameplayEvent = world.getActiveEvent();
         if (currentGameplayEvent != null) {
             currentGameplayEvent.renderBackground(this.getWorld(), renderer);
         } else {
@@ -213,22 +209,22 @@ public class WorldRenderer implements Renderable {
     }
 
     private void renderEntities(Renderer renderer, World world) {
-        for (Entity entity : world.getEntities()) {
+        for (var entity : world.getEntities()) {
             if (entity.isVisible()) {
                 if (entity instanceof Player) {
-                    Player player = (Player) entity;
+                    var player = (Player) entity;
                     RenderEvents.RENDER_PLAYER_BEFORE.factory().onRenderPlayerBefore(player, renderer);
                 }
                 RenderEvents.RENDER_ENTITY_BEFORE.factory().onRenderEntityBefore(entity, renderer);
                 entity.render(renderer);
                 RenderEvents.RENDER_ENTITY_AFTER.factory().onRenderEntityAfter(entity, renderer);
                 if (entity instanceof Player) {
-                    Player player = (Player) entity;
+                    var player = (Player) entity;
                     RenderEvents.RENDER_PLAYER_AFTER.factory().onRenderPlayerAfter(player, renderer);
                 }
             }
             if (this.game.isCollisionShapesShown()) {
-                Shape2D shape = entity.getShape();
+                var shape = entity.getShape();
                 renderer.setLineThickness(6.0f);
                 renderer.outline(shape, Color.BLACK);
                 renderer.setLineThickness(2.0f);

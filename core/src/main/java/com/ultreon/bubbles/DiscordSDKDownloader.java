@@ -5,7 +5,6 @@ import com.ultreon.libs.commons.v0.Mth;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -40,11 +39,11 @@ class DiscordSDKDownloader implements IDownloader {
     @Override
     public void downloadSync() throws IOException {
         // Find out which name Discord's library has (.dll for Windows, .so for Linux)
-        String name = "discord_game_sdk";
+        var name = "discord_game_sdk";
         String suffix;
 
-        String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
-        String arch = System.getProperty("os.arch").toLowerCase(Locale.ROOT);
+        var osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+        var arch = System.getProperty("os.arch").toLowerCase(Locale.ROOT);
 
         if (osName.contains("windows")) {
             suffix = ".dll";
@@ -65,32 +64,32 @@ class DiscordSDKDownloader implements IDownloader {
         }
 
         // Path create Discord's library inside the ZIP
-        String zipPath = "lib/" + arch + "/" + name + suffix;
+        var zipPath = "lib/" + arch + "/" + name + suffix;
 
         // Open the URL as a ZipInputStream
-        InputStream inputStream = this.url.openStream();
+        var inputStream = this.url.openStream();
 
         this.length = inputStream.available();
 
-        ZipInputStream zin = new ZipInputStream(inputStream);
+        var zin = new ZipInputStream(inputStream);
 
         // Search for the right file inside the ZIP
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) {
-            int left = inputStream.available();
+            var left = inputStream.available();
             this.bytesDownloaded = this.length - left;
 
             if (entry.getName().equals(zipPath)) {
                 // Create a new temporary directory
                 // We need to do this, because we may not change the filename on Windows
-                File tempDir = new File(System.getProperty("java.io.tmpdir"), "java-" + name + System.nanoTime());
+                var tempDir = new File(System.getProperty("java.io.tmpdir"), "java-" + name + System.nanoTime());
                 if (!tempDir.mkdir()) {
                     throw new IOException("Cannot create temporary directory");
                 }
                 tempDir.deleteOnExit();
 
                 // Create a temporary file inside our directory (with a "normal" name)
-                File temp = new File(tempDir, name + suffix);
+                var temp = new File(tempDir, name + suffix);
                 temp.deleteOnExit();
 
                 // Copy the file in the ZIP to our temporary file

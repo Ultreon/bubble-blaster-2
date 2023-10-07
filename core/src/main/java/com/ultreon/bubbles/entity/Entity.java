@@ -160,7 +160,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public void preSpawn(SpawnInformation information) {
         @Nullable Vector2 spawnPos = this.pos;
         if (information.getReason() instanceof NaturalSpawnReason) {
-            NaturalSpawnReason reason = (NaturalSpawnReason) information.getReason();
+            var reason = (NaturalSpawnReason) information.getReason();
             spawnPos.set(information.getWorld().getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry()));
         }
 
@@ -270,8 +270,8 @@ public abstract class Entity extends GameObject implements StateHolder {
     public void applyForceDir(float direction, float velocity, float delta) {
         if (velocity == 0) return;
 
-        float x = MathUtils.cos(direction) * velocity;
-        float y = MathUtils.sin(direction) * velocity;
+        var x = MathUtils.cos(direction) * velocity;
+        var y = MathUtils.sin(direction) * velocity;
         this.applyForce(x, y, delta);
     }
 
@@ -334,7 +334,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param world the world where the entity is from.
      */
     public void tick(World world) {
-        for (StatusEffectInstance effect : this.statusEffects) {
+        for (var effect : this.statusEffects) {
             effect.tick(this);
         }
 
@@ -343,7 +343,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.accel.scl(0.98f * (float) TPS * 20 + 1);
 
         // Calculate Velocity X and Y.
-        float angelRadians = this.getRotation() * MathUtils.degRad;
+        var angelRadians = this.getRotation() * MathUtils.degRad;
         this.velocity.setAngleRad(angelRadians).setLength(this.getSpeed());
         this.velocity.x = (float) (Math.cos(angelRadians) * this.getSpeed());
         this.velocity.y = (float) (Math.sin(angelRadians) * this.getSpeed());
@@ -366,7 +366,7 @@ public abstract class Entity extends GameObject implements StateHolder {
             }
 
             if (this.target != null) {
-                float angleTo = this.getAngleToTarget();
+                var angleTo = this.getAngleToTarget();
                 this.setRotation(angleTo);
             }
         }
@@ -378,7 +378,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     @SuppressWarnings("UnusedReturnValue")
     public AiTask nextAiTask() {
-        for (AiTask task : this.aiTasks) {
+        for (var task : this.aiTasks) {
             if (task.executeTask(this)) {
                 return this.currentAiTask = task;
             }
@@ -422,7 +422,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Entity entity = (Entity) o;
+        var entity = (Entity) o;
         return this.id == entity.id;
     }
 
@@ -451,7 +451,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     }
 
     public final void teleport(Vector2 dest) {
-        Vector2 old = this.pos.cpy();
+        var old = this.pos.cpy();
         if (this.onTeleporting(old, dest)) return;
         this.pos.set(dest);
         this.onTeleported(old, dest.cpy());
@@ -500,7 +500,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public final String toAdvancedString() {
         @NotNull MapType nbt = this.save();
-        String data = nbt.toString();
+        var data = nbt.toString();
 
         return this.getKey() + ":" + data;
     }
@@ -519,7 +519,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param instance the applied effect to add.
      */
     public void addEffect(StatusEffectInstance instance) {
-        for (StatusEffectInstance effectInstance : this.statusEffects) {
+        for (var effectInstance : this.statusEffects) {
             if (effectInstance.getType() == instance.getType()) {
                 if (effectInstance.getRemainingTime().toMillis() < instance.getRemainingTime().toMillis()) {
                     EffectEvents.UPDATE.factory().onUpdate(effectInstance);
@@ -557,9 +557,9 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     @Nullable
     public static Entity loadFully(World world, MapType tags) {
-        Identifier type = Identifier.tryParse(tags.getString("type"));
+        var type = Identifier.tryParse(tags.getString("type"));
         if (type == null) return null;
-        EntityType<?> entityType = Registries.ENTITIES.getValue(type);
+        var entityType = Registries.ENTITIES.getValue(type);
         if (entityType == null) {
             BubbleBlaster.LOGGER.warn("Unknown entity loaded: " + type);
             return null;
@@ -577,25 +577,25 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.attributes.load(data.getList("Attributes"));
         this.attributes.loadModifiers(data.getList("AttributeModifiers"));
 
-        MapType positionTag = data.getMap("Position");
+        var positionTag = data.getMap("Position");
         this.pos.x = positionTag.getFloat("x");
         this.pos.y = positionTag.getFloat("y");
 
-        MapType acceleration = data.getMap("Acceleration");
+        var acceleration = data.getMap("Acceleration");
         this.accel.x = acceleration.getFloat("x");
         this.accel.y = acceleration.getFloat("y");
 
-        MapType previousTag = data.getMap("PrevPosition");
+        var previousTag = data.getMap("PrevPosition");
         this.prevPos.x = previousTag.getFloat("x");
         this.prevPos.y = previousTag.getFloat("y");
 
-        MapType velocityTag = data.getMap("Velocity");
+        var velocityTag = data.getMap("Velocity");
         this.velocity.x = velocityTag.getFloat("x");
         this.velocity.y = velocityTag.getFloat("y");
 
         ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
         this.clearEffects();
-        for (MapType activeEffectData : activeEffectsData) {
+        for (var activeEffectData : activeEffectsData) {
             this.statusEffects.add(StatusEffectInstance.load(activeEffectData));
         }
 
@@ -613,30 +613,30 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Override
     public @NotNull MapType save() {
         // Save components.
-        MapType data = new MapType();
+        var data = new MapType();
         data.put("Tag", this.tag);
         data.put("Attributes", this.attributes.save());
         data.put("AttributesModifiers", this.attributes.saveModifiers());
 
         // Save position.
-        MapType positionTag = new MapType();
+        var positionTag = new MapType();
         positionTag.putFloat("x", this.pos.x);
         positionTag.putFloat("y", this.pos.y);
         data.put("Position", positionTag);
 
-        MapType previousTag = new MapType();
+        var previousTag = new MapType();
         previousTag.putDouble("x", this.prevPos.x);
         previousTag.putDouble("y", this.prevPos.y);
         data.put("PrevPosition", previousTag);
 
         // Velocity.
-        MapType velocityTag = new MapType();
+        var velocityTag = new MapType();
         velocityTag.putDouble("x", this.velocity.x);
         velocityTag.putDouble("y", this.velocity.y);
         data.put("Velocity", velocityTag);
 
-        ListType<MapType> activeEffectsTag = new ListType<>();
-        for (StatusEffectInstance instance : this.statusEffects)
+        var activeEffectsTag = new ListType<MapType>();
+        for (var instance : this.statusEffects)
             activeEffectsTag.add(instance.save());
         data.put("ActiveEffects", activeEffectsTag);
 
@@ -648,7 +648,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         data.putDouble("scale", this.scale);
         data.putFloat("rotation", this.rotation);
 
-        Identifier key = Registries.ENTITIES.getKey(this.type);
+        var key = Registries.ENTITIES.getKey(this.type);
         data.putString("type", (key == null ? BubbleTypes.NORMAL.getId() : key).toString());
         return data;
     }
@@ -787,7 +787,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @return true if visible, false if invisible.
      */
     public boolean isVisible() {
-        Rectangle entityBounds = this.getBounds();
+        var entityBounds = this.getBounds();
         return entityBounds.x + entityBounds.width >= 0 && entityBounds.y + entityBounds.height >= 0 &&
                 entityBounds.x <= this.game.getWidth() && entityBounds.y <= this.game.getHeight();
     }

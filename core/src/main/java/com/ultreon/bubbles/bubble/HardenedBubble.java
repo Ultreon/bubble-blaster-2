@@ -18,7 +18,7 @@ public class HardenedBubble extends BubbleType {
 
     @Override
     public float getDefense(World world, Rng rng) {
-        float val = world.getLocalDifficulty() * 4;
+        var val = world.getLocalDifficulty() * 4;
         return rng.getNumber(val / 4f, 3f * val / 4f, world.getTicks(), 1L);
     }
 

@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 
 public final class ColorUtils {
     public static Color[] extractMultiHex(String... colorStrings) {
-        ArrayList<Color> colors = new ArrayList<>();
+        var colors = new ArrayList<Color>();
 
-        for (String colorStr : colorStrings) {
+        for (var colorStr : colorStrings) {
             colors.add(Color.hex(colorStr));
         }
 
@@ -24,9 +24,9 @@ public final class ColorUtils {
      * @return an array create colors parsed from the color string.
      */
     public static Color[] parseHexList(String hexList) {
-        String[] strings = hexList.split(",");
-        for (int i = 0; i < strings.length; i++) {
-            String s = strings[i];
+        var strings = hexList.split(",");
+        for (var i = 0; i < strings.length; i++) {
+            var s = strings[i];
             strings[i] = s.startsWith("#") ? s : "#" + s;
         }
 
@@ -77,9 +77,9 @@ public final class ColorUtils {
 
     @Deprecated
     public static Color[] multiConvertHexToRgb(String... colorStrings) {
-        ArrayList<Color> colors = new ArrayList<>();
+        var colors = new ArrayList<Color>();
 
-        for (String colorStr : colorStrings) {
+        for (var colorStr : colorStrings) {
             colors.add(ColorUtils.unpackHex(colorStr));
         }
 
@@ -109,9 +109,9 @@ public final class ColorUtils {
      */
     @Deprecated
     public static Color[] parseColorString(String colorString, boolean addPrefix) {
-        String[] strings = colorString.split(",");
+        var strings = colorString.split(",");
         if (addPrefix) {
-            for (int i = 0; i < strings.length; i++) {
+            for (var i = 0; i < strings.length; i++) {
                 strings[i] = "#" + strings[i];
             }
         }

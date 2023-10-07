@@ -30,13 +30,13 @@ public abstract class StatusEffect implements Translatable {
     }
 
     public Identifier getIconId() {
-        Identifier key = Registries.EFFECTS.getKey(this);
+        var key = Registries.EFFECTS.getKey(this);
         if (key == null) throw new RegistryException("Object not registered: " + this.getClass().getName());
         return key.mapPath(path -> "effects/" + path);
     }
 
     public @Nullable Resource getIconResource() {
-        Identifier resId = this.getIconId();
+        var resId = this.getIconId();
         @Nullable Resource stream = BubbleBlaster.getInstance().getResourceManager().getResource(resId);
         if (stream == null) {
             BubbleBlaster.getLogger().warn("Cannot find effect-icon: " + resId);
@@ -49,8 +49,8 @@ public abstract class StatusEffect implements Translatable {
             return this.cachedTexture;
         }
 
-        BubbleBlaster game = BubbleBlaster.getInstance();
-        Texture texture = game.getTextureManager().getOrLoadTexture(this.getIconId());
+        var game = BubbleBlaster.getInstance();
+        var texture = game.getTextureManager().getOrLoadTexture(this.getIconId());
         return this.cachedTexture = Objects.requireNonNullElse(texture, FALLBACK_TEXTURE);
     }
 
@@ -89,7 +89,7 @@ public abstract class StatusEffect implements Translatable {
 
     @Override
     public String getTranslationPath() {
-        Identifier id = this.getId();
+        var id = this.getId();
         return id.location() + ".statusEffect." + id.path().replaceAll("/", ".");
     }
 }

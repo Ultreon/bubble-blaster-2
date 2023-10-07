@@ -37,7 +37,7 @@ public class GLScissorState {
             currentH = Gdx.graphics.getBackBufferHeight();
         }
 
-        boolean scissorEnabled = Gdx.gl.glIsEnabled(GL20.GL_SCISSOR_TEST);
+        var scissorEnabled = Gdx.gl.glIsEnabled(GL20.GL_SCISSOR_TEST);
         return new GLScissorState(currentX, currentY, currentW, currentH, scissorEnabled);
     }
 

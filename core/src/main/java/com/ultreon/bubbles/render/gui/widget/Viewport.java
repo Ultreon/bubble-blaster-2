@@ -3,7 +3,6 @@ package com.ultreon.bubbles.render.gui.widget;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.commons.v0.size.IntSize;
 
@@ -22,7 +21,7 @@ public class Viewport extends Container {
     @Override
     public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         renderer.scissored(this.x, this.y, (int) this.viewportRect.width, (int) this.viewportRect.height, () -> {
-            for (GuiComponent child : this.children) {
+            for (var child : this.children) {
                 renderer.scissored(child.getX(), child.getY(), child.getWidth(), child.getHeight(), () -> child.render(renderer, mouseX, mouseY, deltaTime));
             }
         });
@@ -63,24 +62,24 @@ public class Viewport extends Container {
     }
 
     public void setXScroll(float xScroll) {
-        float width = this.getBounds().width;
-        float viewportWidth = this.viewportRect.width;
+        var width = this.getBounds().width;
+        var viewportWidth = this.viewportRect.width;
         if (viewportWidth > width) {
             this.viewportRect.x = (int) (this.xScroll = Mth.clamp(xScroll, 0, viewportWidth - this.height));
         }
     }
 
     public void setYScroll(float yScroll) {
-        float height = this.getBounds().height;
-        float viewportHeight = this.viewportRect.height;
+        var height = this.getBounds().height;
+        var viewportHeight = this.viewportRect.height;
         if (viewportHeight > height) {
             this.viewportRect.y = (int) (this.yScroll = Mth.clamp(yScroll, 0, viewportHeight - height));
         }
     }
 
     public float getXScroll() {
-        float width = this.getBounds().width;
-        float viewportWidth = this.viewportRect.width;
+        var width = this.getBounds().width;
+        var viewportWidth = this.viewportRect.width;
         if (viewportWidth > width) {
             return this.xScroll;
         } else {
@@ -89,8 +88,8 @@ public class Viewport extends Container {
     }
 
     public float getYScroll() {
-        float height = this.getBounds().height;
-        float viewportHeight = this.viewportRect.height;
+        var height = this.getBounds().height;
+        var viewportHeight = this.viewportRect.height;
         if (viewportHeight > height) {
             return this.yScroll;
         } else {

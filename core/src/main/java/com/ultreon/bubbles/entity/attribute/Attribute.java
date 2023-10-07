@@ -47,7 +47,7 @@ public final class Attribute {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        Attribute that = (Attribute) obj;
+        var that = (Attribute) obj;
         return Objects.equals(this.name, that.name);
     }
 

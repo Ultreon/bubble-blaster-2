@@ -19,7 +19,7 @@ public class FormatterRegistry {
 
     public static void dump() {
         System.out.println("-=====- DEBUG FORMATTER REGISTRY DUMP -=====-");
-        for (Map.Entry<String, Formatter<?>> entry : FORMATTERS.entrySet()) {
+        for (var entry : FORMATTERS.entrySet()) {
             System.out.println(entry.getKey());
             System.out.println(entry.getValue().registryName());
         }
@@ -28,12 +28,12 @@ public class FormatterRegistry {
 
     @Nullable
     public static Formatter<?> identify(Class<?> aClass) {
-        for (Class<?> clazz = aClass; clazz != null; clazz = clazz.getSuperclass()) {
+        for (var clazz = aClass; clazz != null; clazz = clazz.getSuperclass()) {
             if (FORMATTERS.containsKey(clazz.getName())) {
                 return FORMATTERS.get(clazz.getName());
             }
-            for (Class<?> inter : clazz.getInterfaces()) {
-                Formatter<?> identify = FormatterRegistry.identify(inter);
+            for (var inter : clazz.getInterfaces()) {
+                var identify = FormatterRegistry.identify(inter);
                 if (identify != null) return identify;
             }
         }

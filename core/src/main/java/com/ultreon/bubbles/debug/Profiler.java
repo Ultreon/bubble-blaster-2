@@ -13,12 +13,12 @@ public class Profiler {
     }
 
     public void start(String name) {
-        ThreadSection threadSection = this.values.computeIfAbsent(Thread.currentThread(), thread -> new ThreadSection(this));
+        var threadSection = this.values.computeIfAbsent(Thread.currentThread(), thread -> new ThreadSection(this));
         threadSection.start(name);
     }
 
     public void end() {
-        Thread cur = Thread.currentThread();
+        var cur = Thread.currentThread();
         if (this.values.containsKey(cur)) this.values.get(cur).end();
         else this.values.put(cur, new ThreadSection(this));
     }

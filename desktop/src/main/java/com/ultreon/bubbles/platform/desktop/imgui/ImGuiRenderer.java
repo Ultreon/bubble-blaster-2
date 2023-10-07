@@ -2,14 +2,11 @@ package com.ultreon.bubbles.platform.desktop.imgui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
-import com.ultreon.bubbles.render.gui.screen.Screen;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
@@ -47,11 +44,11 @@ public class ImGuiRenderer {
 
         // Initialize ImGui
         ImGui.createContext();
-        final ImGuiIO io = ImGui.getIO();
+        final var io = ImGui.getIO();
         io.setIniFilename(null);
         io.getFonts().addFontDefault();
 
-        long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
+        var windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
 
         INSTANCE.imGuiGlfw.init(windowHandle, true);
         INSTANCE.imGuiGl3.init("#version 150");
@@ -110,12 +107,12 @@ public class ImGuiRenderer {
     }
 
     private void showGuiModifier(Renderer renderer) {
-        Screen screen = BubbleBlaster.getInstance().getCurrentScreen();
+        var screen = BubbleBlaster.getInstance().getCurrentScreen();
         GuiComponent exactWidgetAt = null;
         if (screen != null) exactWidgetAt = screen.getExactWidgetAt(Gdx.input.getX(), Gdx.input.getY());
 
         if (exactWidgetAt != null) {
-            Rectangle bounds = exactWidgetAt.getBounds();
+            var bounds = exactWidgetAt.getBounds();
             renderer.box(bounds.x, bounds.y, bounds.width, bounds.height, Color.RED);
         }
 
@@ -129,7 +126,7 @@ public class ImGuiRenderer {
     }
 
     private void showInfoWindow() {
-        Screen screen = BubbleBlaster.getInstance().getCurrentScreen();
+        var screen = BubbleBlaster.getInstance().getCurrentScreen();
         ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);
         ImGui.setNextWindowPos(ImGui.getMainViewport().getPosX() + 100, ImGui.getMainViewport().getPosY() + 100, ImGuiCond.Once);
         if (ImGui.begin("Debug Info")) {

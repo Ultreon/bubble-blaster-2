@@ -3,7 +3,6 @@ package com.ultreon.bubbles.render.gui.hud;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.common.Controllable;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
@@ -41,7 +40,7 @@ public abstract class HudType implements Controllable {
     }
 
     public void drawMessages(Renderer renderer) {
-        LoadedGame loadedGame = this.game.getLoadedGame();
+        var loadedGame = this.game.getLoadedGame();
         if (loadedGame != null && !this.game.hasScreenOpen()) {
             CommandScreen.drawMessages(renderer, this.game.getHeight());
         }

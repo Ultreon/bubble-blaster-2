@@ -25,7 +25,7 @@ public class UltraBubble extends BubbleType {
 
     @Override
     public ArrayList<Object> getFilters(Bubble bubble) {
-        ArrayList<Object> filters = new ArrayList<>();
+        var filters = new ArrayList<Object>();
 
 //        HSBAdjustFilter filter = new HSBAdjustFilter();
 //        filter.setHFactor((float) (System.currentTimeMillis() / 3) % 1);
@@ -38,7 +38,7 @@ public class UltraBubble extends BubbleType {
     public void onCollision(Bubble source, Entity target) {
         super.onCollision(source, target);
         if (target instanceof Player) {
-            Player player = (Player) target;
+            var player = (Player) target;
             player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, 10, 3));
             player.addEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 3));
             player.addEffect(new StatusEffectInstance(StatusEffects.SCORE, 12, 10));

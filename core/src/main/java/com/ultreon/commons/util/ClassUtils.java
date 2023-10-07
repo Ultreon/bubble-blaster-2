@@ -4,9 +4,9 @@ import com.ultreon.commons.exceptions.IllegalCallerException;
 
 public class ClassUtils {
     public static String getCallerClassName() {
-        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
-        for (int i = 1; i < stElements.length; i++) {
-            StackTraceElement ste = stElements[i];
+        var stElements = Thread.currentThread().getStackTrace();
+        for (var i = 1; i < stElements.length; i++) {
+            var ste = stElements[i];
             if (!ste.getClassName().equals(ClassUtils.class.getName()) && ste.getClassName().indexOf("java.lang.Thread") != 0) {
                 return stElements[i + 1].getClassName();
             }
@@ -16,7 +16,7 @@ public class ClassUtils {
     }
 
     public static Class<?> getCallerClass() {
-        String className = ClassUtils.getCallerClassName();
+        var className = ClassUtils.getCallerClassName();
 
         if (className == null) {
             return null;

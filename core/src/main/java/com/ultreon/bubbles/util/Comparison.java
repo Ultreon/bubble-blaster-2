@@ -30,10 +30,10 @@ public class Comparison {
             return def;
         }
 
-        T candidate = i.next();
+        var candidate = i.next();
 
         while (i.hasNext()) {
-            T next = i.next();
+            var next = i.next();
             if (next.compareTo(candidate) > 0)
                 candidate = next;
         }

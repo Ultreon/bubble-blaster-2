@@ -24,7 +24,7 @@ public final class VisibilityFileFilter implements FileFilter {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        VisibilityFileFilter that = (VisibilityFileFilter) obj;
+        var that = (VisibilityFileFilter) obj;
         return this.filterVisible == that.filterVisible;
     }
 

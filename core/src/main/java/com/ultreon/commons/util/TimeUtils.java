@@ -47,10 +47,10 @@ public class TimeUtils extends UtilityClass {
         hourDouble -= (double) minute / 60;
         hourDouble -= (double) second / 60 / 60;
 
-        int hour = (int) hourDouble;
+        var hour = (int) hourDouble;
 
-        String minuteString = Integer.toString(minute);
-        String secondString = Integer.toString(second);
+        var minuteString = Integer.toString(minute);
+        var secondString = Integer.toString(second);
 
         if (minuteString.length() == 1) minuteString = "0" + minuteString;
         if (secondString.length() == 1) secondString = "0" + secondString;

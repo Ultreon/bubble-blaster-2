@@ -7,37 +7,37 @@ import java.nio.ByteBuffer;
 
 public class Buffers {
     public static ByteBuffer read(URL url) throws IOException {
-        InputStream stream = url.openStream();
-        byte[] bytes = stream.readAllBytes();
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+        var stream = url.openStream();
+        var bytes = stream.readAllBytes();
+        var byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
         stream.close();
         return byteBuffer;
     }
 
     public static byte[] readBytes(URL url) throws IOException {
-        InputStream stream = url.openStream();
-        byte[] bytes = stream.readAllBytes();
+        var stream = url.openStream();
+        var bytes = stream.readAllBytes();
         stream.close();
         return bytes;
     }
 
     public static ByteBuffer read(InputStream stream) throws IOException {
-        byte[] bytes = stream.readAllBytes();
+        var bytes = stream.readAllBytes();
         stream.close();
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+        var byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
         return byteBuffer;
     }
 
     public static byte[] readBytes(InputStream stream) throws IOException {
-        byte[] bytes = stream.readAllBytes();
+        var bytes = stream.readAllBytes();
         stream.close();
         return bytes;
     }
 
     public static ByteBuffer wrap(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+        var byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
         return byteBuffer;
     }

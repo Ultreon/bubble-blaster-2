@@ -18,7 +18,7 @@ public final class AttributeModifier {
     }
 
     public MapType serialize() {
-        MapType nbt = new MapType();
+        var nbt = new MapType();
         nbt.putUUID("id", this.id);
         nbt.putString("type", this.type.name());
         nbt.putDouble("value", this.value);
@@ -27,9 +27,9 @@ public final class AttributeModifier {
     }
 
     public static AttributeModifier deserialize(MapType tag) {
-        UUID id = tag.getUUID("id");
-        Type type = Enums.byName(tag.getString("type"), Type.ADD);
-        double value = tag.getDouble("value");
+        var id = tag.getUUID("id");
+        var type = Enums.byName(tag.getString("type"), Type.ADD);
+        var value = tag.getDouble("value");
 
         return new AttributeModifier(id, type, value);
     }
@@ -42,7 +42,7 @@ public final class AttributeModifier {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        AttributeModifier modifier = (AttributeModifier) o;
+        var modifier = (AttributeModifier) o;
         return Objects.equals(this.id, modifier.id);
     }
 

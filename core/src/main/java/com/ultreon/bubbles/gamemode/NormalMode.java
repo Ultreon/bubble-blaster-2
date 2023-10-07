@@ -66,19 +66,19 @@ public class NormalMode extends Gamemode {
     public @NotNull Vector2 getSpawnPos(Entity entity, @Nullable Vector2 pos, SpawnUsage usage, RandomSource random, int retry) {
         if (pos != null) return pos;
 
-        RandomSource spawnRng = random.nextRandom(usage);
+        var spawnRng = random.nextRandom(usage);
 
-        Rectangle bounds = this.getGameBounds();
+        var bounds = this.getGameBounds();
         if (entity instanceof AbstractBubbleEntity) {
-            AbstractBubbleEntity bubble = (AbstractBubbleEntity) entity;
-            float radius = bubble.getRadius();
-            float x = usage == SpawnUsage.BUBBLE_INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
-            float y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
+            var bubble = (AbstractBubbleEntity) entity;
+            var radius = bubble.getRadius();
+            var x = usage == SpawnUsage.BUBBLE_INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
+            var y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
             return new Vector2(x, y);
         }
 
-        float x = spawnRng.nextFloat(bounds.x, bounds.x + bounds.width);
-        float y = spawnRng.nextFloat(bounds.y, bounds.y + bounds.height);
+        var x = spawnRng.nextFloat(bounds.x, bounds.x + bounds.width);
+        var y = spawnRng.nextFloat(bounds.y, bounds.y + bounds.height);
         return new Vector2(x, y);
     }
 

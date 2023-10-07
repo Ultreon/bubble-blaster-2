@@ -217,7 +217,7 @@ public class FormatterContext implements IFormatterContext {
 
     @Override
     public IFormatterContext other(Object obj) {
-        FormatterContext ctx = new FormatterContext();
+        var ctx = new FormatterContext();
         DebugRenderer.format(obj, ctx);
         this.builder.append(ctx.build());
         return this;
@@ -225,9 +225,9 @@ public class FormatterContext implements IFormatterContext {
 
     @Override
     public IFormatterContext stringEscaped(String text) {
-        StringBuilder current = new StringBuilder();
+        var current = new StringBuilder();
 
-        for (char c : text.toCharArray()) {
+        for (var c : text.toCharArray()) {
             switch (c) {
                 case '\b':
                     this.colored(current.toString(), STRING_COLOR);
@@ -276,9 +276,9 @@ public class FormatterContext implements IFormatterContext {
 
     @Override
     public IFormatterContext charsEscaped(String text) {
-        StringBuilder current = new StringBuilder();
+        var current = new StringBuilder();
 
-        for (char c : text.toCharArray()) {
+        for (var c : text.toCharArray()) {
             switch (c) {
                 case '\b':
                     this.colored(current.toString(), STRING_COLOR);
@@ -332,15 +332,15 @@ public class FormatterContext implements IFormatterContext {
 
     @Override
     public void subFormat(Consumer<IFormatterContext> o) {
-        FormatterContext ctx = new FormatterContext();
+        var ctx = new FormatterContext();
         o.accept(ctx);
         this.builder.append(ctx.build());
     }
 
     private void colored(String text, String keywordColor) {
-        Color hex = Color.hex(keywordColor);
-        java.awt.Color color = hex.toAwt();
-        MutableText o = TextObject.literal(text);
+        var hex = Color.hex(keywordColor);
+        var color = hex.toAwt();
+        var o = TextObject.literal(text);
         o.setColor(color);
         this.builder = this.builder.append(o);
     }

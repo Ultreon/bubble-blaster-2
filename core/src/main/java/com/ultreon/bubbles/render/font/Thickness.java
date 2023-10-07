@@ -16,9 +16,9 @@ public enum Thickness {
 
     @NotNull
     public static Thickness closestTo(int amount) {
-        int lastDiff = Integer.MAX_VALUE;
+        var lastDiff = Integer.MAX_VALUE;
         Thickness cur = null;
-        for (Thickness value : Thickness.values()) {
+        for (var value : Thickness.values()) {
             if (Mth.diff(amount, value.amount) < lastDiff) {
                 cur = value;
             }
@@ -30,10 +30,10 @@ public enum Thickness {
 
     @NotNull
     public static Thickness closestTo(int amount, Collection<Thickness> values) {
-        int lastDiff = Integer.MAX_VALUE;
+        var lastDiff = Integer.MAX_VALUE;
         Thickness cur = null;
-        for (Thickness value : values) {
-            int diff = Mth.diff(amount, value.amount);
+        for (var value : values) {
+            var diff = Mth.diff(amount, value.amount);
             if (diff < lastDiff) {
                 lastDiff = diff;
                 cur = value;

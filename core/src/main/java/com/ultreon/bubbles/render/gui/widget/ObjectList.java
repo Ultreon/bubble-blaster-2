@@ -29,8 +29,8 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         this.listContent = this.add(new Container(x, y, width, this.getViewport().getHeight()) {
             @Override
             public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-                int y = ObjectList.this.getViewport().innerYOffset;
-                for (ListEntry<T, ? extends T> entry : ObjectList.this.entries) {
+                var y = ObjectList.this.getViewport().innerYOffset;
+                for (var entry : ObjectList.this.entries) {
                     entry.setPos(ObjectList.this.x, y);
                     entry.setSize(this.width, entryHeight);
                     entry.render(renderer, mouseX, mouseY, deltaTime);
@@ -60,7 +60,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     private void recalculateViewport() {
-        int viewHeight = ObjectList.calculateViewHeight(this.entries, this.entryHeight, this.gap);
+        var viewHeight = ObjectList.calculateViewHeight(this.entries, this.entryHeight, this.gap);
         this.getViewport().setViewportSize(this.width - SCROLLBAR_WIDTH, viewHeight);
         this.listContent.setHeight(viewHeight);
     }
@@ -91,7 +91,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @CanIgnoreReturnValue
     public <C extends T> ListEntry<T, C> addItem(C item) {
-        ListEntry<T, C> entry = new ListEntry<>(this, item, 0, (int) (this.getViewport().getViewportSize().y + this.gap), this.width, this.height, this.entries.size());
+        var entry = new ListEntry<T, C>(this, item, 0, (int) (this.getViewport().getViewportSize().y + this.gap), this.width, this.height, this.entries.size());
         this.entries.add(entry);
         this.listContent.add(entry);
         this.recalculateViewport();
@@ -113,7 +113,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @CanIgnoreReturnValue
     public ListEntry<T, ? extends T> removeItem(int index) {
-        ListEntry<T, ? extends T> item = this.entries.remove(index);
+        var item = this.entries.remove(index);
         this.recalculateViewport();
         return item;
     }
@@ -151,7 +151,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
     }
 
     public boolean removeAllItems(@NotNull Collection<?> c) {
-        boolean b = this.entries.removeIf(entry -> c.contains(entry.value));
+        var b = this.entries.removeIf(entry -> c.contains(entry.value));
         this.recalculateViewport();
         return b;
     }

@@ -14,7 +14,7 @@ public class ExtraModuleInfoPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         // register the plugin extension as 'extraJavaModuleInfo {}' configuration block
-        ExtraModuleInfoPluginExtension extension = project.getObjects().newInstance(ExtraModuleInfoPluginExtension.class);
+        var extension = project.getObjects().newInstance(ExtraModuleInfoPluginExtension.class);
         project.getExtensions().add(ExtraModuleInfoPluginExtension.class, "extraJavaModuleInfo", extension);
 
         // setup the transform for all projects in the build
@@ -22,8 +22,8 @@ public class ExtraModuleInfoPlugin implements Plugin<Project> {
     }
 
     private void configureTransform(Project project, ExtraModuleInfoPluginExtension extension) {
-        Attribute<String> artifactType = Attribute.of("artifactType", String.class);
-        Attribute<Boolean> javaModule = Attribute.of("javaModule", Boolean.class);
+        var artifactType = Attribute.of("artifactType", String.class);
+        var javaModule = Attribute.of("javaModule", Boolean.class);
 
         // compile and runtime classpath express that they only accept modules by requesting the javaModule=true attribute
         project.getConfigurations().matching(this::isResolvingJavaPluginConfiguration).all(

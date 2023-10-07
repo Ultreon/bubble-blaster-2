@@ -12,7 +12,6 @@ import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Random;
 
@@ -57,7 +56,7 @@ public class GameSave {
     }
 
     public MapType debugInfoData() {
-        MapType tag = new MapType();
+        var tag = new MapType();
         tag.putString("name", "Test Name - " + new Random().nextInt());
         tag.putLong("saveTime", System.currentTimeMillis());
 
@@ -89,12 +88,12 @@ public class GameSave {
 
     private void dump(FileHandle file, MapType data, boolean compressed) throws IOException {
         if (compressed) {
-            try (OutputStream output = file.write(false)) {
+            try (var output = file.write(false)) {
                 DataIo.writeCompressed(data, output);
             }
             return;
         }
-        try (OutputStream output = file.write(false)) {
+        try (var output = file.write(false)) {
             DataIo.write(data, output);
         }
     }
@@ -118,7 +117,7 @@ public class GameSave {
     }
 
     public void createFolders(String relPath) throws IOException {
-        FileHandle file = this.handle.child(relPath);
+        var file = this.handle.child(relPath);
         if (!file.exists()) {
             file.mkdirs();
         }

@@ -18,7 +18,7 @@ public class Formula {
     }
 
     public Point2D.Double getPoint(double x) {
-        double y = this.formula.calculate(x);
+        var y = this.formula.calculate(x);
         return new Point2D.Double(x, y);
     }
 

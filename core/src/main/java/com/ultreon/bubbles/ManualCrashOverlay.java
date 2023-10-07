@@ -11,7 +11,6 @@ import com.ultreon.libs.crash.v0.CrashLog;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
-import java.util.Map;
 
 public class ManualCrashOverlay implements Renderable {
     private static final String BSOD = "\n:(\nBubble Blaster ran into a problem and needs to restart.\nStop code: MANUALLY_INITIATED_CRASH\nFile: " + ManualCrashOverlay.class.getSimpleName() + ".class";
@@ -29,7 +28,7 @@ public class ManualCrashOverlay implements Renderable {
                 this.setTimer();
             }
 
-            long secondsLeft = this.timer.getEpochSecond() - Instant.now().getEpochSecond();
+            var secondsLeft = this.timer.getEpochSecond() - Instant.now().getEpochSecond();
 
             renderer.fill(0, 0, width, height, Color.GRAY_4);
             renderer.fill(0, 0, (int) width, 10, Color.CRIMSON);
@@ -49,13 +48,13 @@ public class ManualCrashOverlay implements Renderable {
 
     @NotNull
     private static CrashLog createMICLog() {
-        CrashLog crashLog = new CrashLog("Manually Initiated Crash", new RuntimeException(BSOD));
+        var crashLog = new CrashLog("Manually Initiated Crash", new RuntimeException(BSOD));
 
         BubbleBlaster.getInstance().fillInCrash(crashLog);
 
-        Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
+        var allStackTraces = Thread.getAllStackTraces();
         allStackTraces.forEach((thread, stackTraceElements) -> {
-            RuntimeException exception = new RuntimeException();
+            var exception = new RuntimeException();
             exception.setStackTrace(stackTraceElements);
             crashLog.addCategory(new CrashCategory("Thread #" + thread.getId() + ": " + thread.getName(), exception));
         });

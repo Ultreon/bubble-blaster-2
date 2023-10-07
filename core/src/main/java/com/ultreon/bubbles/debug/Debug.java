@@ -12,12 +12,12 @@ public class Debug {
     private static final Logger logger = GamePlatform.get().getLogger("Debugger");
 
     public static void notify(String name, String detail) {
-        BubbleBlaster game = BubbleBlaster.getInstance();
+        var game = BubbleBlaster.getInstance();
         game.notifications.notify(Notification.builder(name, detail).subText("Debug").build());
     }
 
     public static void notifyOnce(UUID uuid, String name, String detail) {
-        BubbleBlaster game = BubbleBlaster.getInstance();
+        var game = BubbleBlaster.getInstance();
         game.notifications.notifyOnce(uuid, Notification.builder(name, detail).subText("debug").build());
     }
 

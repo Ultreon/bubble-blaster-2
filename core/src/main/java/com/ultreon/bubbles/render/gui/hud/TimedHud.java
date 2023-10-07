@@ -14,13 +14,13 @@ public class TimedHud extends ModernHud {
         super.renderHudOverlay(renderer, world, gamemode, deltaTime);
 
         if (!(gamemode instanceof TimedMode)) return;
-        TimedMode timedGamemode = (TimedMode) gamemode;
+        var timedGamemode = (TimedMode) gamemode;
 
-        Duration duration = Duration.ofMilliseconds(timedGamemode.getTimeRemaining());
-        int x = 20;
-        int y = 120;
+        var duration = Duration.ofMilliseconds(timedGamemode.getTimeRemaining());
+        var x = 20;
+        var y = 120;
 
-        long seconds = duration.toSeconds();
+        var seconds = duration.toSeconds();
         if (!duration.isNegative()) {
             renderer.fill(x, y, 300, 80, Color.BLACK.withAlpha(0x80));
             renderer.drawTextCenter(Fonts.SANS_BOLD_60.get(), duration.toSimpleString(), x + 150, y + 31, seconds <= 5 ? Color.CRIMSON : Color.WHITE);

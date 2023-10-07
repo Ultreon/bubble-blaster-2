@@ -19,7 +19,7 @@ public class DamageType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        DamageType that = (DamageType) o;
+        var that = (DamageType) o;
         return this.name.equals(that.name);
     }
 

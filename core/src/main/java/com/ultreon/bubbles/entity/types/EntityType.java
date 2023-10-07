@@ -18,7 +18,7 @@ public class EntityType<T extends Entity> {
     }
 
     public T create(World world, MapType document) {
-        T t = this.entityFactory.create(world);
+        var t = this.entityFactory.create(world);
         t.load(document);
         return t;
     }

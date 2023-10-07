@@ -26,20 +26,20 @@ public class TitleScreenBackground {
         this.width = width;
         this.height = height;
 
-        for (int i = 0; i <= MAX_BUBBLES; i++) {
+        for (var i = 0; i <= MAX_BUBBLES; i++) {
             this.addBubbleInit();
         }
     }
 
     private void addBubble() {
-        FakeBubble fakeBubble = new FakeBubble(TYPE.getRadius(), TYPE.getSpeed());
+        var fakeBubble = new FakeBubble(TYPE.getRadius(), TYPE.getSpeed());
         fakeBubble.position.x = this.width + fakeBubble.radius;
         fakeBubble.position.y = this.random.nextFloat(-fakeBubble.radius, this.height + fakeBubble.radius);
         this.bubbles.add(fakeBubble);
     }
 
     private void addBubbleInit() {
-        FakeBubble fakeBubble = new FakeBubble(TYPE.getRadius(), TYPE.getSpeed());
+        var fakeBubble = new FakeBubble(TYPE.getRadius(), TYPE.getSpeed());
         fakeBubble.position.x = this.random.nextFloat(-fakeBubble.radius, this.width + fakeBubble.radius);
         fakeBubble.position.y = this.random.nextFloat(-fakeBubble.radius, this.height + fakeBubble.radius);
         this.bubbles.add(fakeBubble);
@@ -47,7 +47,7 @@ public class TitleScreenBackground {
 
     public void tick() {
         List<FakeBubble> toRemove = new ArrayList<>();
-        for (FakeBubble bubble : this.bubbles) {
+        for (var bubble : this.bubbles) {
             bubble.position.add(-bubble.speed, 0);
             if (bubble.position.x < -bubble.radius) {
                 toRemove.add(bubble);
@@ -65,7 +65,7 @@ public class TitleScreenBackground {
         renderer.enableBlur(15);
         renderer.fillGradient(0, 0, this.width, this.height, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM);
 
-        for (FakeBubble fakeBubble : this.bubbles)
+        for (var fakeBubble : this.bubbles)
             WorldRenderer.drawBubble(renderer, fakeBubble.position.x, fakeBubble.position.y, fakeBubble.radius, 0, TYPE);
 
         renderer.disableBlur();

@@ -17,7 +17,7 @@ public final class Command {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        Command that = (Command) obj;
+        var that = (Command) obj;
         return Objects.equals(this.name, that.name);
     }
 

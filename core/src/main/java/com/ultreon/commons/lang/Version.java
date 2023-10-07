@@ -30,7 +30,7 @@ public final class Version implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Version version = (Version) o;
+        var version = (Version) o;
         return this.major == version.major &&
                 this.minor == version.minor &&
                 this.release == version.release &&

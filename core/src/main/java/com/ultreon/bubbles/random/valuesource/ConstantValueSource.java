@@ -42,7 +42,7 @@ public class ConstantValueSource implements ValueSource {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        ConstantValueSource that = (ConstantValueSource) o;
+        var that = (ConstantValueSource) o;
         return Double.compare(this.value, that.value) == 0;
     }
 

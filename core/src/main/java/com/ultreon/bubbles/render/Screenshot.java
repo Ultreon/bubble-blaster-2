@@ -9,7 +9,6 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.notification.Notification;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -27,16 +26,16 @@ public final class Screenshot {
     @Nullable
     public static Screenshot take() {
         try {
-            int width = graphics.getWidth();
-            int height = graphics.getHeight();
+            var width = graphics.getWidth();
+            var height = graphics.getHeight();
 
             // Read framebuffer into pixmap.
-            final Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
-            ByteBuffer pixels = pixmap.getPixels();
+            final var pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
+            var pixels = pixmap.getPixels();
             Gdx.gl.glReadPixels(0, 0, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
 
             // Save screenshot
-            FileHandle fileHandle = BubbleBlaster.data(String.format("screenshots/screenshot_%s.png", DateTimeFormatter.ofPattern("MM.dd.yyyy-HH.mm.ss").format(LocalDateTime.now())));
+            var fileHandle = BubbleBlaster.data(String.format("screenshots/screenshot_%s.png", DateTimeFormatter.ofPattern("MM.dd.yyyy-HH.mm.ss").format(LocalDateTime.now())));
             PixmapIO.writePNG(fileHandle, pixmap, Deflater.DEFAULT_COMPRESSION, true);
             pixmap.dispose();
 
@@ -64,7 +63,7 @@ public final class Screenshot {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        Screenshot that = (Screenshot) obj;
+        var that = (Screenshot) obj;
         return Objects.equals(this.fileHandle, that.fileHandle);
     }
 

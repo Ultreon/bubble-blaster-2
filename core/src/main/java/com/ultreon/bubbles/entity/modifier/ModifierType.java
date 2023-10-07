@@ -25,7 +25,7 @@ public final class ModifierType {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        ModifierType that = (ModifierType) obj;
+        var that = (ModifierType) obj;
         return Objects.equals(this.name, that.name);
     }
 

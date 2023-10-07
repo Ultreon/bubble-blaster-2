@@ -38,7 +38,7 @@ public class NativeImage extends Texture {
     }
 
     private static ByteBuffer readAndClose(InputStream inputStream) throws IOException {
-        ByteBuffer read = NativeImage.read(inputStream);
+        var read = NativeImage.read(inputStream);
         inputStream.close();
         return read.flip();
     }

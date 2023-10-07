@@ -23,10 +23,10 @@ public abstract class MutableText extends TextObject implements Cloneable {
 
     @Override
     public AttributedString getAttrString() {
-        AttributedStringBuilder builder = new AttributedStringBuilder();
-        String string = this.createString();
+        var builder = new AttributedStringBuilder();
+        var string = this.createString();
         if (!string.isEmpty()) builder.append(new AttributedString(string, this.getAttrs()));
-        for (TextObject extra : this.extras) {
+        for (var extra : this.extras) {
             builder.append(extra.getAttrString());
         }
 
@@ -35,9 +35,9 @@ public abstract class MutableText extends TextObject implements Cloneable {
 
     @Override
     public final String getText() {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         builder.append(this.createString());
-        for (TextObject extra : this.extras) {
+        for (var extra : this.extras) {
             builder.append(extra.getText());
         }
         return builder.toString();
@@ -142,7 +142,7 @@ public abstract class MutableText extends TextObject implements Cloneable {
         Preconditions.checkNotNull(textObject, "Appending text object is null.");
 
         try {
-            MutableText clone = this.clone();
+            var clone = this.clone();
             clone.extras.add(textObject);
             return clone;
         } catch (CloneNotSupportedException e) {

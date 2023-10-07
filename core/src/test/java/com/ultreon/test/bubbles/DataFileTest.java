@@ -6,7 +6,7 @@ import java.io.*;
 
 public class DataFileTest {
     public static void main(String[] args) {
-        File file = new File("test.qdat");
+        var file = new File("test.qdat");
 
         FileOutputStream fout;
         try {
@@ -16,7 +16,7 @@ public class DataFileTest {
             System.exit(1);
             return;
         }
-        DataOutputStream out = new DataOutputStream(fout);
+        var out = new DataOutputStream(fout);
         ObjectOutputStream oos;
         try {
             oos = new ObjectOutputStream(out);
@@ -27,7 +27,7 @@ public class DataFileTest {
         }
 
         try {
-            Identifier key = new Identifier("qbubbles", "hello");
+            var key = new Identifier("qbubbles", "hello");
             System.out.println(key);
 
             oos.writeObject(key);
@@ -51,7 +51,7 @@ public class DataFileTest {
             System.exit(1);
             return;
         }
-        DataInputStream in = new DataInputStream(fin);
+        var in = new DataInputStream(fin);
         ObjectInputStream ois;
         try {
             ois = new ObjectInputStream(in);
@@ -62,7 +62,7 @@ public class DataFileTest {
         }
 
         try {
-            Identifier key = (Identifier) ois.readObject();
+            var key = (Identifier) ois.readObject();
             System.out.println(key);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

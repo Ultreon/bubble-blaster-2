@@ -44,7 +44,7 @@ public final class Percentage implements Serializable, Comparable<Percentage> {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        Percentage that = (Percentage) obj;
+        var that = (Percentage) obj;
         return Double.doubleToLongBits(this.percentage) == Double.doubleToLongBits(that.percentage);
     }
 

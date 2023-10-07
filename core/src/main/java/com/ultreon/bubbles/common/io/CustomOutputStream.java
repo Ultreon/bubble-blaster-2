@@ -28,10 +28,10 @@ public class CustomOutputStream extends OutputStream {
     @Override
     public synchronized void flush() {
         // create object create StringBuilder class
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         // Appends characters one by one
-        for (Character ch : this.characters) {
+        for (var ch : this.characters) {
             sb.append(ch);
         }
 
@@ -42,7 +42,7 @@ public class CustomOutputStream extends OutputStream {
         this.characters.clear();
 
         // convert in string
-        String string = StringUtils.stripEnd(sb.toString()
+        var string = StringUtils.stripEnd(sb.toString()
                 .replaceAll("\r\n", "\n")
                 .replaceAll("\r", "\n"), "\n");
 

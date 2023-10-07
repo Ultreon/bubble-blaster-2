@@ -46,17 +46,17 @@ public class PollingExecutorService implements ExecutorService {
     @Override
     @SuppressWarnings("BusyWait")
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        long endTime = System.currentTimeMillis() + unit.toMillis(timeout);
+        var endTime = System.currentTimeMillis() + unit.toMillis(timeout);
         while (!this.isTerminated() && System.currentTimeMillis() < endTime) Thread.sleep(100);
         return this.isTerminated();
     }
 
     @Override
     public <T> @NotNull CompletableFuture<T> submit(@NotNull Callable<T> task) {
-        CompletableFuture<T> future = new CompletableFuture<>();
+        var future = new CompletableFuture<T>();
         this.execute(() -> {
             try {
-                T result = task.call();
+                var result = task.call();
                 future.complete(result);
             } catch (Throwable throwable) {
                 future.completeExceptionally(throwable);
@@ -67,7 +67,7 @@ public class PollingExecutorService implements ExecutorService {
 
     @Override
     public <T> @NotNull CompletableFuture<T> submit(@NotNull Runnable task, T result) {
-        CompletableFuture<T> future = new CompletableFuture<>();
+        var future = new CompletableFuture<T>();
         this.execute(() -> {
             try {
                 task.run();
@@ -81,7 +81,7 @@ public class PollingExecutorService implements ExecutorService {
 
     @Override
     public @NotNull CompletableFuture<Void> submit(@NotNull Runnable task) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
+        var future = new CompletableFuture<Void>();
         this.execute(() -> {
             try {
                 task.run();
@@ -95,7 +95,7 @@ public class PollingExecutorService implements ExecutorService {
 
     @Override
     public <T> @NotNull List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) {
-        List<CompletableFuture<T>> futures = tasks.stream()
+        var futures = tasks.stream()
                 .map(this::submit)
                 .collect(Collectors.toList());
         return futures.stream()
@@ -106,14 +106,14 @@ public class PollingExecutorService implements ExecutorService {
 
     @Override
     public <T> @NotNull List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) {
-        long endTime = System.currentTimeMillis() + unit.toMillis(timeout);
-        List<CompletableFuture<T>> futures = tasks.stream()
+        var endTime = System.currentTimeMillis() + unit.toMillis(timeout);
+        var futures = tasks.stream()
                 .map(this::submit)
                 .collect(Collectors.toList());
         List<Future<T>> resultList = new ArrayList<>();
 
-        for (CompletableFuture<T> future : futures) {
-            long timeLeft = endTime - System.currentTimeMillis();
+        for (var future : futures) {
+            var timeLeft = endTime - System.currentTimeMillis();
             if (timeLeft <= 0)
                 break;
 
@@ -126,7 +126,7 @@ public class PollingExecutorService implements ExecutorService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> @NotNull T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        List<CompletableFuture<T>> futures = tasks.stream()
+        var futures = tasks.stream()
                 .map(this::submit)
                 .collect(Collectors.toList());
 
@@ -143,16 +143,16 @@ public class PollingExecutorService implements ExecutorService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        long endTime = System.currentTimeMillis() + unit.toMillis(timeout);
-        List<CompletableFuture<T>> futures = tasks.stream()
+        var endTime = System.currentTimeMillis() + unit.toMillis(timeout);
+        var futures = tasks.stream()
                 .map(this::submit)
                 .collect(Collectors.toList());
 
         try {
-            CompletableFuture<T> result = CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0]))
+            var result = CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0]))
                     .thenApply(o -> ((CompletableFuture<T>)o).join());
 
-            long timeLeft = endTime - System.currentTimeMillis();
+            var timeLeft = endTime - System.currentTimeMillis();
             if (timeLeft <= 0)
                 throw new TimeoutException();
 

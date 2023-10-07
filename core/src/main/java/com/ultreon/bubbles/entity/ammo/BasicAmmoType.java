@@ -26,7 +26,7 @@ public class BasicAmmoType extends AmmoType {
 
     @Override
     public AttributeContainer getDefaultAttributes() {
-        AttributeContainer map = new AttributeContainer();
+        var map = new AttributeContainer();
         map.setBase(Attribute.ATTACK, 1f);
         map.setBase(Attribute.DEFENSE, 4f);
         return map;

@@ -36,7 +36,7 @@ public class GenericOptionsScreen extends Screen {
 
     @Override
     public void init() {
-        int entryWidth = 100;
+        var entryWidth = 100;
         this.enableAnnoyingEasterEggs = this.add(ToggleButton.builder()
                 .toggled(ENABLE_ANNOYING_EASTER_EGGS)
                 .text(TextObject.translation("bubbleblaster.screen.options.generic.enableAnnoyingEasterEggs"))

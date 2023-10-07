@@ -46,14 +46,14 @@ public class GlitchRenderer {
     }
 
     public void render(Renderer renderer) {
-        SecureRandom rand = new SecureRandom();
+        var rand = new SecureRandom();
         this.addChar(this.randomChar(), rand.nextInt(this.matrixW), rand.nextInt(this.matrixH), new Random().nextInt(0xffffff));
 
-        for (int x = 0; x < this.matrixW; x++) {
-            for (int y = 0; y < this.matrixH; y++) {
-                char matrix = this.matrix[x][y];
-                int xi = x * this.charW;
-                int yi = y * this.charH;
+        for (var x = 0; x < this.matrixW; x++) {
+            for (var y = 0; y < this.matrixH; y++) {
+                var matrix = this.matrix[x][y];
+                var xi = x * this.charW;
+                var yi = y * this.charH;
 
                 renderer.setColor("#000");
                 if (matrix != 0) {

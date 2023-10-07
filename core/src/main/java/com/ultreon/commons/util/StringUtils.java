@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class StringUtils {
     public static int count(String s, char c) {
-        int count = 0;
+        var count = 0;
 
-        for (int i = 0; i < s.length(); i++) {
+        for (var i = 0; i < s.length(); i++) {
             if (s.charAt(i) == c) {
                 count++;
             }
@@ -40,12 +40,12 @@ public class StringUtils {
      * @return a non-empty list create strings
      */
     public static List<String> wrap(String str, BitmapFont font, GlyphLayout fm, int maxWidth) {
-        List<String> lines = StringUtils.splitIntoLines(str);
+        var lines = StringUtils.splitIntoLines(str);
         if (lines.isEmpty())
             return lines;
 
-        ArrayList<String> strings = new ArrayList<>();
-        for (String line : lines)
+        var strings = new ArrayList<String>();
+        for (var line : lines)
             StringUtils.wrapLineInto(line, strings, font, fm, maxWidth);
         return strings;
     }
@@ -60,15 +60,15 @@ public class StringUtils {
      * @param maxWidth maximum width create the line(s)
      */
     public static void wrapLineInto(String line, List<String> list, BitmapFont font, GlyphLayout fm, int maxWidth) {
-        int len = line.length();
+        var len = line.length();
         int width;
         while (true) {
             fm.setText(font, line);
             if (len <= 0 || (width = (int) fm.width) <= maxWidth) break;
             // Guess where to split the line. Look for the next space before
             // or after the guess.
-            int guess = len * maxWidth / width;
-            String before = line.substring(0, guess).trim();
+            var guess = len * maxWidth / width;
+            var before = line.substring(0, guess).trim();
 
             fm.setText(font, before);
             width = (int) fm.width;
@@ -104,8 +104,8 @@ public class StringUtils {
      * @param start where to star looking
      */
     public static int findBreakBefore(String line, int start) {
-        for (int i = start; i >= 0; --i) {
-            char c = line.charAt(i);
+        for (var i = start; i >= 0; --i) {
+            var c = line.charAt(i);
             if (Character.isWhitespace(c) || c == '-')
                 return i;
         }
@@ -121,9 +121,9 @@ public class StringUtils {
      * @param start where to star looking
      */
     public static int findBreakAfter(String line, int start) {
-        int len = line.length();
-        for (int i = start; i < len; ++i) {
-            char c = line.charAt(i);
+        var len = line.length();
+        for (var i = start; i < len; ++i) {
+            var c = line.charAt(i);
             if (Character.isWhitespace(c) || c == '-')
                 return i;
         }
@@ -141,20 +141,20 @@ public class StringUtils {
      * @return a non-empty list create strings
      */
     public static List<String> splitIntoLines(String str) {
-        ArrayList<String> strings = new ArrayList<>();
+        var strings = new ArrayList<String>();
 
-        int len = str.length();
+        var len = str.length();
         if (len == 0) {
             strings.add("");
             return strings;
         }
 
-        int lineStart = 0;
+        var lineStart = 0;
 
-        for (int i = 0; i < len; ++i) {
-            char c = str.charAt(i);
+        for (var i = 0; i < len; ++i) {
+            var c = str.charAt(i);
             if (c == '\r') {
-                int newlineLength = 1;
+                var newlineLength = 1;
                 if ((i + 1) < len && str.charAt(i + 1) == '\n')
                     newlineLength = 2;
                 strings.add(str.substring(lineStart, i));
@@ -173,18 +173,18 @@ public class StringUtils {
     }
 
     public static AttributedString createFallbackString(String text, BitmapFont mainFont, BitmapFont fallbackFont) {
-        AttributedString result = new AttributedString(text);
+        var result = new AttributedString(text);
 
-        int textLength = text.length();
+        var textLength = text.length();
         if (textLength == 0) {
             return new AttributedString("");
         }
         result.addAttribute(TextAttribute.FONT, mainFont, 0, textLength);
 
-        boolean fallback = false;
-        int fallbackBegin = 0;
-        for (int i = 0; i < text.length(); i++) {
-            boolean curFallback = !mainFont.getData().hasGlyph(text.charAt(i));
+        var fallback = false;
+        var fallbackBegin = 0;
+        for (var i = 0; i < text.length(); i++) {
+            var curFallback = !mainFont.getData().hasGlyph(text.charAt(i));
             if (curFallback != fallback) {
                 System.out.println("curFallback = " + curFallback);
                 System.out.println("fallbackFont = " + fallbackFont);

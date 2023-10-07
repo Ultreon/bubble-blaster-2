@@ -39,7 +39,7 @@ public class LevelUpBubble extends BubbleType {
 
         // Check target is a player/
         if (target instanceof Player) {
-            Player player = (Player) target;
+            var player = (Player) target;
             // Remove Bubble.
             source.delete();
 
@@ -54,7 +54,7 @@ public class LevelUpBubble extends BubbleType {
         if (world.getPlayer() == null) return false;
 
         // Calculate the maximum level for the player's score.
-        int maxLevelUp = (int) Math.round(world.getPlayer().getScore()) / BubbleBlasterConfig.LEVEL_THRESHOLD.get() + 1;
+        var maxLevelUp = (int) Math.round(world.getPlayer().getScore()) / BubbleBlasterConfig.LEVEL_THRESHOLD.get() + 1;
 
         // Check for existing level-up bubble entities.
         if (world.getEntities().stream().

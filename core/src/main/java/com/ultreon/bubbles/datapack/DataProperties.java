@@ -28,7 +28,7 @@ public class DataProperties {
         }
 
         public DataProperties build() {
-            DataProperties properties = new DataProperties();
+            var properties = new DataProperties();
             properties.id = this.id;
             return properties;
         }

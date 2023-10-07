@@ -57,9 +57,9 @@ public class SavesScreen extends Screen {
     }
 
     private void openSave() {
-        ObjectList<GameSave> saveList = this.saveList;
+        var saveList = this.saveList;
         if (saveList != null) {
-            ObjectList.ListEntry<GameSave, ? extends GameSave> selected = saveList.getSelected();
+            var selected = saveList.getSelected();
             if (selected != null) {
                 try {
                     BubbleBlaster.getInstance().loadGame(selected.value);
@@ -71,9 +71,9 @@ public class SavesScreen extends Screen {
     }
 
     private void deleteSave() {
-        ObjectList<GameSave> saveList = this.saveList;
+        var saveList = this.saveList;
         if (saveList != null) {
-            ObjectList.ListEntry<GameSave, ? extends GameSave> selected = saveList.getSelected();
+            var selected = saveList.getSelected();
             if (selected != null) {
                 try {
                     selected.value.delete();
@@ -104,7 +104,7 @@ public class SavesScreen extends Screen {
     @Override
     public void init() {
         this.clearWidgets();
-        int calcWidth = this.calculateWidth();
+        var calcWidth = this.calculateWidth();
 
         this.saveList = this.add(new ObjectList<>(this.saves, 130, 2, (this.width - calcWidth) / 2, 10, calcWidth, this.height - 120));
         this.saveList.setSelectable(true);
@@ -124,7 +124,7 @@ public class SavesScreen extends Screen {
     }
 
     private void renderEntry(Renderer renderer, float width, float height, float y, GameSave save, boolean selected, boolean hovered) {
-        Either<GameSaveInfo, Exception> cachedInfo = this.cache.get(save);
+        var cachedInfo = this.cache.get(save);
         try {
             if (cachedInfo == null) {
                 cachedInfo = Either.left(save.getInfo());
@@ -137,8 +137,8 @@ public class SavesScreen extends Screen {
         }
 
         if (cachedInfo.isRightPresent()) {
-            String name = "Loading Error";
-            String description = String.format("Save filename: %s", save.getHandle().name());
+            var name = "Loading Error";
+            var description = String.format("Save filename: %s", save.getHandle().name());
 
             renderer.fill(0, 0, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
             if (selected) {
@@ -150,9 +150,9 @@ public class SavesScreen extends Screen {
             return;
         }
 
-        GameSaveInfo info = cachedInfo.getLeft();
-        String name = info.getName();
-        String description = info.getGamemode().getName().getText();
+        var info = cachedInfo.getLeft();
+        var name = info.getName();
+        var description = info.getGamemode().getName().getText();
         description += ", " + info.getSavedTimeFormatted();
 
         renderer.fill(0, 0, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));

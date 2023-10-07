@@ -28,26 +28,26 @@ class LibraryJarManager {
     }
 
     private void openStreams() {
-        for (String jar : this.jars) {
+        for (var jar : this.jars) {
             try {
-                InputStream resource = this.reference.getResourceAsStream("/META-INF/jars/" + jar);
+                var resource = this.reference.getResourceAsStream("/META-INF/jars/" + jar);
                 if (resource == null) continue;
-                JarInputStream stream = new JarInputStream(resource);
+                var stream = new JarInputStream(resource);
                 JarEntry e;
 
-                URL libUrl = new URL("libraryjar", jar, "");
+                var libUrl = new URL("libraryjar", jar, "");
                 this.libUrls.add(libUrl);
                 while ((e = stream.getNextJarEntry()) != null) {
-                    String entryName = e.getName();
-                    byte[] data = stream.readAllBytes();
+                    var entryName = e.getName();
+                    var data = stream.readAllBytes();
                     if (entryName.endsWith(".class")) {
-                        String className = entryName.substring(0, entryName.length() - 6).replaceAll("/", ".");
+                        var className = entryName.substring(0, entryName.length() - 6).replaceAll("/", ".");
                         this.classData.put(className, data);
                         this.classToJar.put(className, jar);
                         this.classCertificates.put(className, e.getCertificates());
                     }
 
-                    URL url = new URL("libraryjar", jar, "/" + entryName);
+                    var url = new URL("libraryjar", jar, "/" + entryName);
                     this.resources.put(jar + "/" + entryName, data);
                     this.resourceUrls.add(url);
                 }
@@ -65,10 +65,10 @@ class LibraryJarManager {
     }
 
     InputStream openConnectionInternal(URL url) {
-        String jarFile = url.getHost();
+        var jarFile = url.getHost();
         if (!url.getPath().isEmpty()) {
-            String id = jarFile + url.getPath();
-            byte[] bytes = this.resources.get(id);
+            var id = jarFile + url.getPath();
+            var bytes = this.resources.get(id);
             return bytes == null ? null : new ByteArrayInputStream(bytes);
         } else {
             return this.getClass().getResourceAsStream("/META-INF/jars/" + jarFile);
@@ -76,8 +76,8 @@ class LibraryJarManager {
     }
 
     boolean jarExists(String name) {
-        String[] split = name.split("/", 2);
-        String jarFile = split[0];
+        var split = name.split("/", 2);
+        var jarFile = split[0];
         return this.jars.contains(jarFile);
     }
 

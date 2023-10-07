@@ -76,11 +76,11 @@ public class LoadedGame implements Controllable {
     }
 
     private void checkWorldCollision(List<Entity> loopingEntities) {
-        for (int a = 0; a < loopingEntities.size(); a++) {
-            for (int b = a + 1; b < loopingEntities.size(); b++) {
+        for (var a = 0; a < loopingEntities.size(); a++) {
+            for (var b = a + 1; b < loopingEntities.size(); b++) {
                 try {
-                    Entity entityA = loopingEntities.get(a);
-                    Entity entityB = loopingEntities.get(b);
+                    var entityA = loopingEntities.get(a);
+                    var entityB = loopingEntities.get(b);
 
                     this.checkCollision(entityA, entityB);
                 } catch (RuntimeException e) {
@@ -101,7 +101,7 @@ public class LoadedGame implements Controllable {
     }
 
     private static void collideEntities(Entity entityA, Entity entityB) {
-        double delta = 1.0 / TPS;
+        var delta = 1.0 / TPS;
         if (entityA.isCollidableWith(entityB)) {
             // Handling collision by posting collision event, and let the intersected entities attack each other.
             EntityEvents.COLLISION.factory().onCollision(delta, entityA, entityB);
@@ -145,7 +145,7 @@ public class LoadedGame implements Controllable {
     }
 
     public void tick() {
-        List<Entity> entities = List.copyOf(this.world.getEntities());
+        var entities = List.copyOf(this.world.getEntities());
 
         if (this.world.isInitialized() && !BubbleBlaster.isPaused()) {
             this.checkWorldCollision(entities);

@@ -20,7 +20,7 @@ public final class CommandConstructor {
     }
 
     public static boolean execute(String name, Player player, String[] args) {
-        CommandExecutor handler = CommandConstructor.get(name);
+        var handler = CommandConstructor.get(name);
 
         if (handler == null) {
             return false;

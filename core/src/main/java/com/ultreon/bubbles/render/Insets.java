@@ -48,7 +48,7 @@ public class Insets implements Cloneable, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Insets insets = (Insets) o;
+        var insets = (Insets) o;
         return this.top == insets.top && this.left == insets.left && this.bottom == insets.bottom && this.right == insets.right;
     }
 

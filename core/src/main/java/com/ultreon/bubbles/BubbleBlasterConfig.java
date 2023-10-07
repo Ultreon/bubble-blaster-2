@@ -59,7 +59,7 @@ public class BubbleBlasterConfig {
 
 
     static {
-        Config.Builder builder = new Config.Builder(FILE.file());
+        var builder = new Config.Builder(FILE.file());
 
         // Generic
         ENABLE_ANNOYING_EASTER_EGGS = builder.entry("enableAnnoyingEasterEggs").comment("Enables easter eggs that mess with gameplay a little to hard.").value(false);
@@ -116,8 +116,8 @@ public class BubbleBlasterConfig {
     }
 
     private static void reloadLanguage() {
-        String languageTag = LANGUAGE.get();
-        Locale locale = Locale.forLanguageTag(languageTag);
+        var languageTag = LANGUAGE.get();
+        var locale = Locale.forLanguageTag(languageTag);
 
         if (!LoadScreen.isLanguagesLoaded()) return;
 

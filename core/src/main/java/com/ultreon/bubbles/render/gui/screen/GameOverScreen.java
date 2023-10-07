@@ -32,7 +32,7 @@ public class GameOverScreen extends Screen {
         super(title);
         this.score = score;
 
-        GlobalSaveData globalData = GlobalSaveData.instance();
+        var globalData = GlobalSaveData.instance();
 
         this.isHighScore = globalData.getHighScore() < score;
 
@@ -72,8 +72,8 @@ public class GameOverScreen extends Screen {
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 
-        long cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
-        int phase = (int) (Math.floorDiv(cycled, 1000));
+        var cycled = (System.currentTimeMillis() - this.gameOverTime) % 4000;
+        var phase = (int) (Math.floorDiv(cycled, 1000));
         switch (phase) {
             case 4:
             case 3:

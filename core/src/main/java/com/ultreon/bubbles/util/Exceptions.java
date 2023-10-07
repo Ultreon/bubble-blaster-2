@@ -18,11 +18,11 @@ public class Exceptions {
     }
 
     public static String getStackTrace(Throwable throwable) {
-        StringWriter writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
+        var writer = new StringWriter();
+        var printWriter = new PrintWriter(writer);
         throwable.printStackTrace(printWriter);
         printWriter.flush();
-        String stackTrace = writer.toString();
+        var stackTrace = writer.toString();
         printWriter.close();
         return stackTrace;
     }

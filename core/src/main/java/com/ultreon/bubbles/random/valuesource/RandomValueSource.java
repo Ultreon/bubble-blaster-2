@@ -76,7 +76,7 @@ public class RandomValueSource implements ValueSource {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        RandomValueSource that = (RandomValueSource) o;
+        var that = (RandomValueSource) o;
         return Double.compare(this.min, that.min) == 0 && Double.compare(this.max, that.max) == 0 && Objects.equals(this.random, that.random);
     }
 

@@ -12,40 +12,39 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class WriteDownloadJsonTask extends BaseTask {
     public WriteDownloadJsonTask() {
         super("writeDownloadJson", "bubbles");
 
-        List<String> collect = this.getProject().getSubprojects().stream().map(Project::getName).collect(Collectors.toList());
+        var collect = this.getProject().getSubprojects().stream().map(Project::getName).collect(Collectors.toList());
         this.dependsOn("retrieveUrls");
-        for (String project : collect) {
+        for (var project : collect) {
             this.dependsOn(project + ":retrieveUrls");
         }
         this.doFirst(this::execute);
     }
 
     private void execute(Task task) {
-        Task t = this.getProject().getTasks().getByName("retrieveUrls");
-        Task t1 = this.getProject().getTasks().getByName("bubbles");
+        var t = this.getProject().getTasks().getByName("retrieveUrls");
+        var t1 = this.getProject().getTasks().getByName("bubbles");
         if (!(t instanceof RetrieveUrlsTask)) {
             throw new RuntimeException("The task 'retrieveUrls' is not the internal bubble blaster task for retrieving urls.");
         }
-        RetrieveUrlsTask retrieveUrls = (RetrieveUrlsTask) t;
+        var retrieveUrls = (RetrieveUrlsTask) t;
 
         if (!(t1 instanceof BubblesTask)) {
             throw new RuntimeException("The task 'bubbles' is not the internal bubble blaster task for retrieving urls.");
         }
-        BubblesTask bubbles = (BubblesTask) t1;
+        var bubbles = (BubblesTask) t1;
 
-        Gson gson = new Gson();
-        StringWriter sw = new StringWriter();
-        JsonWriter jw = new JsonWriter(sw);
+        var gson = new Gson();
+        var sw = new StringWriter();
+        var jw = new JsonWriter(sw);
         jw.setIndent("  ");
         gson.toJson(new BuildVersion(this.getProject().getVersion().toString(), null, Date.from(Instant.now()), bubbles.getVersionType(), retrieveUrls.getGameDeps()), BuildVersion.class, jw);
-        Project rootProject = this.getProject().getRootProject();
+        var rootProject = this.getProject().getRootProject();
         try {
             Files.write(Paths.get(rootProject.getProjectDir().getPath() + "/build/libs/libraries.json"), sw.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         } catch (IOException e) {

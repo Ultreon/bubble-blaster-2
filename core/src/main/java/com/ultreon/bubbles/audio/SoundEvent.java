@@ -45,14 +45,14 @@ public class SoundEvent implements RegisterHandler {
 
     @CanIgnoreReturnValue
     public SoundInstance play() {
-        SoundInstance instance = new SoundInstance(this);
+        var instance = new SoundInstance(this);
         instance.play();
         return instance;
     }
 
     @CanIgnoreReturnValue
     public SoundInstance play(float volume) {
-        SoundInstance instance = this.randomPitch ? new SoundInstance(this, volume) : new SoundInstance(this, volume, 1f);
+        var instance = this.randomPitch ? new SoundInstance(this, volume) : new SoundInstance(this, volume, 1f);
         instance.play();
         return instance;
     }

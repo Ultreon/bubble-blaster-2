@@ -84,7 +84,7 @@ public class ToggleButton extends Button implements GuiStateListener {
 
         @Override
         public ToggleButton build() {
-            ToggleButton button = new ToggleButton((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            var button = new ToggleButton((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);

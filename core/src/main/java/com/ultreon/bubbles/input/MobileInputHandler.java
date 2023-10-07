@@ -30,7 +30,7 @@ public class MobileInputHandler extends InputHandler<MobileInput> {
         if (!GamePlatform.get().isMobile())
             return false;
 
-        BubbleBlaster game = BubbleBlaster.getInstance();
+        var game = BubbleBlaster.getInstance();
         if (MobileInput.isTouchDown() && this.getPauseBtnRegion().contains(MobileInput.getTouchPos()))
             game.pause();
 
@@ -41,7 +41,7 @@ public class MobileInputHandler extends InputHandler<MobileInput> {
     public boolean tickPlayer(Player player) {
         if (!GamePlatform.get().isMobile()) return false;
 
-        float touchPressure = MobileInput.getTouchPressure();
+        var touchPressure = MobileInput.getTouchPressure();
         if (touchPressure < 0.2) touchPressure = 0;
         player.moving(Mth.clamp(touchPressure, 0, 1));
         player.setRotation(player.getAngleTo(MobileInput.getTouchPos()));

@@ -17,7 +17,7 @@ public class GameplayStorage {
     public MapType get(String modId) {
         if (GamePlatform.get().isModLoaded(modId)) return new MapType();
 
-        MapType data = this.storage.getMap(modId, new MapType());
+        var data = this.storage.getMap(modId, new MapType());
         this.storage.put(modId, data);
         return data;
     }

@@ -36,12 +36,12 @@ public class GameRandom {
         abstract T clip(BigInteger bigVal);
     }
     private static BigDecimal mod(BigDecimal a, BigDecimal m) {
-        BigDecimal result = a.remainder(m);
+        var result = a.remainder(m);
         return (result.signum() >= 0 ? result : result.add(m));
     }
 
     private static BigDecimal mod(BigInteger a, BigDecimal m) {
-        BigDecimal result = new BigDecimal(a).remainder(m);
+        var result = new BigDecimal(a).remainder(m);
         return (result.signum() >= 0 ? result : result.add(m));
     }
 
@@ -71,7 +71,7 @@ public class GameRandom {
          */
         @Override
         Integer clip(BigInteger bigVal) {
-            BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
+            var modulus = BigInteger.valueOf(this.max + 1L - this.min);
             return (int) (this.min + bigVal.mod(modulus).longValue());
         }
 
@@ -102,7 +102,7 @@ public class GameRandom {
          */
         @Override
         Long clip(BigInteger bigVal) {
-            BigInteger modulus = BigInteger.valueOf(this.max + 1L - this.min);
+            var modulus = BigInteger.valueOf(this.max + 1L - this.min);
             return this.min + bigVal.mod(modulus).longValue();
         }
 
@@ -133,7 +133,7 @@ public class GameRandom {
          */
         @Override
         BigInteger clip(BigInteger bigVal) {
-            BigInteger modulus = this.max.add(new BigInteger("1")).subtract(this.min);
+            var modulus = this.max.add(new BigInteger("1")).subtract(this.min);
             return this.min.add(bigVal.mod(modulus));
         }
 
@@ -164,7 +164,7 @@ public class GameRandom {
          */
         @Override
         Float clip(BigInteger bigVal) {
-            BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
+            var modulus = BigDecimal.valueOf(this.max + 1d - this.min);
             return (float) (this.min + GameRandom.mod(bigVal, modulus).doubleValue());
         }
 
@@ -195,7 +195,7 @@ public class GameRandom {
          */
         @Override
         Double clip(BigInteger bigVal) {
-            BigDecimal modulus = BigDecimal.valueOf(this.max + 1d - this.min);
+            var modulus = BigDecimal.valueOf(this.max + 1d - this.min);
             return this.min + GameRandom.mod(bigVal, modulus).doubleValue();
         }
 
@@ -226,7 +226,7 @@ public class GameRandom {
          */
         @Override
         BigDecimal clip(BigInteger bigVal) {
-            BigDecimal modulus = this.max.add(new BigDecimal("1")).subtract(this.min);
+            var modulus = this.max.add(new BigDecimal("1")).subtract(this.min);
             return this.min.add(GameRandom.mod(bigVal, modulus));
         }
 
@@ -286,7 +286,7 @@ public class GameRandom {
     }
 
     public static byte[] serialize(String text) {
-        for (char c : text.toCharArray()) {
+        for (var c : text.toCharArray()) {
             if (!Character.isDigit(c)) {
                 return text.getBytes();
             }
@@ -417,7 +417,7 @@ public class GameRandom {
         this.seed = proposal;
 
         // we want our seed be big enough so s^2 > M.
-        BigInteger s = proposal;
+        var s = proposal;
         while (s.bitLength() <= M.bitLength() / 2) {
             s = s.shiftLeft(10);
         }
@@ -433,8 +433,8 @@ public class GameRandom {
      * calculates {@code x_k = r.clip( s_k )}.
      */
     private <T extends Number> T calculate(Range<T> r, BigInteger k) {
-        BigInteger exp = TWO.modPow(k, lambdaM);
-        BigInteger s_k = this.s_0.modPow(exp, M);
+        var exp = TWO.modPow(k, lambdaM);
+        var s_k = this.s_0.modPow(exp, M);
         return r.clip(s_k);
     }
 
@@ -629,7 +629,7 @@ public class GameRandom {
         byte[] dig;
         synchronized (this.md) {
             this.md.reset();
-            for (int i : input) {
+            for (var i : input) {
                 this.md.update(new byte[]{(byte) (i >> 24), (byte) (i >> 16),
                         (byte) (i >> 8), (byte) (i)});
             }
@@ -646,7 +646,7 @@ public class GameRandom {
         byte[] dig;
         synchronized (this.md) {
             this.md.reset();
-            for (long i : input) {
+            for (var i : input) {
                 this.md.update(new byte[]{(byte) (i >> 56), (byte) (i >> 48), (byte) (i >> 40), (byte) (i >> 32), (byte) (i >> 24), (byte) (i >> 16),
                         (byte) (i >> 8), (byte) (i)});
             }
@@ -662,7 +662,7 @@ public class GameRandom {
         byte[] dig;
         synchronized (this.md) {
             this.md.reset();
-            for (BigInteger i : input) {
+            for (var i : input) {
                 this.md.update(i.toByteArray());
             }
             dig = this.md.digest();
@@ -674,30 +674,30 @@ public class GameRandom {
      * Test method.
      */
     public static void main(String[] test) {
-        GameRandom pr = new GameRandom("Hallo Welt".getBytes());
+        var pr = new GameRandom("Hallo Welt".getBytes());
 
-        IntRange r = new IntRange(10, 30);
-        for (int i = 0; i < 10; i++) {
+        var r = new IntRange(10, 30);
+        for (var i = 0; i < 10; i++) {
             System.out.println("x(" + i + ") = " + pr.getNumber(r, i));
         }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
                 System.out.println("x(" + i + ", " + j + ") = " +
                         pr.getNumber(r, i, j));
             }
         }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                for (int k = 0; j < 5; j++) {
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                for (var k = 0; j < 5; j++) {
                     System.out.println("x(" + i + ", " + j + ", " + k + ") = " +
                             pr.getNumber(r, i, j, k));
                 }
             }
         }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                for (int k = 0; j < 5; j++) {
-                    for (int l = 0; j < 5; j++) {
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                for (var k = 0; j < 5; j++) {
+                    for (var l = 0; j < 5; j++) {
                         System.out.println("x(" + i + ", " + j + ", " + k + ", " + l + ") = " +
                                 pr.getNumber(r, i, j, k, l));
                     }
@@ -705,7 +705,7 @@ public class GameRandom {
             }
         }
         // to show that it really is deterministic:
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             System.out.println("x(" + i + ") = " + pr.getNumber(r, i));
         }
     }

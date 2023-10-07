@@ -19,7 +19,6 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.crash.v0.CrashLog;
-import com.ultreon.libs.resources.v0.Resource;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -123,8 +121,8 @@ public class DesktopPlatform extends GamePlatform {
 
     @Override
     public void setupMods() {
-        for (ModContainer container : FabricLoader.getInstance().getAllMods()) {
-            ModMetadata metadata = container.getMetadata();
+        for (var container : FabricLoader.getInstance().getAllMods()) {
+            var metadata = container.getMetadata();
             metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
                 try {
                     return new Texture(new Pixmap(FileHandles.imageBytes(path1.toUri().toURL())));
@@ -132,11 +130,11 @@ public class DesktopPlatform extends GamePlatform {
                     throw new RuntimeException(e);
                 }
             })), () -> {
-                Resource resource = this.game().getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
+                var resource = this.game().getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
                 if (resource == null) {
                     resource = TextureManager.DEFAULT_TEX_RESOURCE;
                 }
-                Resource finalResource = resource;
+                var finalResource = resource;
                 ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
             });
         }
@@ -147,23 +145,23 @@ public class DesktopPlatform extends GamePlatform {
 
     @Override
     public void addModIcon(String modId, Identifier location) {
-        Resource resource = this.game().getResourceManager().getResource(location);
+        var resource = this.game().getResourceManager().getResource(location);
         if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
-        Resource finalResource = resource;
+        var finalResource = resource;
         ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
     }
 
     @Override
     public void loadModResources(AtomicReference<ProgressMessenger> progressAlt, Messenger msgAlt) {
-        Collection<ModContainer> allMods = FabricLoader.getInstance().getAllMods();
-        ProgressMessenger progressMessenger = new ProgressMessenger(msgAlt, allMods.size());
+        var allMods = FabricLoader.getInstance().getAllMods();
+        var progressMessenger = new ProgressMessenger(msgAlt, allMods.size());
         progressAlt.set(progressMessenger);
-        for (ModContainer container : allMods) {
+        for (var container : allMods) {
             progressAlt.get().sendNext(container.getMetadata().getName());
-            ModOrigin origin = container.getOrigin();
+            var origin = container.getOrigin();
             if (origin.getKind() == ModOrigin.Kind.PATH) {
-                List<Path> paths = origin.getPaths();
-                for (Path path : paths) {
+                var paths = origin.getPaths();
+                for (var path : paths) {
                     try {
                         this.game().getResourceManager().importPackage(path);
                     } catch (IOException e) {

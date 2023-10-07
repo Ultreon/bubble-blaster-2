@@ -33,9 +33,9 @@ public class RedirectPrintStream extends PrintStream {
         @Override
         public void write(char @NotNull [] cbuf, int off, int len) {
             synchronized (this.lock) {
-                char[] dest = new char[len];
+                var dest = new char[len];
                 System.arraycopy(cbuf, off, dest, 0, len);
-                for (char c : dest) {
+                for (var c : dest) {
                     switch (c) {
                         case '\r':
                             if (this.carriageReturn) {
@@ -68,7 +68,7 @@ public class RedirectPrintStream extends PrintStream {
         @Override
         public void flush() {
             synchronized (this.lock) {
-                for (String line : this.lines) {
+                for (var line : this.lines) {
                     this.logger.info(line);
                 }
                 this.lines.clear();

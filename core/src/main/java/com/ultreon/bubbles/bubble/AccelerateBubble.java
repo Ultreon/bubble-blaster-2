@@ -22,7 +22,7 @@ public class AccelerateBubble extends BubbleType {
     @Override
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof Player) {
-            Player player = (Player) target;
+            var player = (Player) target;
             player.boost(true);
         }
     }

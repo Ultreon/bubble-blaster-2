@@ -6,7 +6,6 @@ import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Gamemodes;
 import com.ultreon.bubbles.input.DesktopInput;
 import com.ultreon.bubbles.render.gui.widget.Button;
-import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 
 public class GamemodeScreen extends Screen {
@@ -25,12 +24,12 @@ public class GamemodeScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        int width = 200;
-        int height = 60;
-        int y = 150;
-        int x = (this.width - width) / 2;
-        for (Gamemode gamemode : GAMEMODES) {
-            MutableText text = TextObject.translation(gamemode.getTranslationId());
+        var width = 200;
+        var height = 60;
+        var y = 150;
+        var x = (this.width - width) / 2;
+        for (var gamemode : GAMEMODES) {
+            var text = TextObject.translation(gamemode.getTranslationId());
             this.add(Button.builder()
                     .text(text)
                     .bounds(x, y, width, height)

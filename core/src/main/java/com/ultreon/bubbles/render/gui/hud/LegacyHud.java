@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
@@ -43,10 +41,10 @@ public class LegacyHud extends HudType {
      */
     @Override
     public void renderHudOverlay(Renderer renderer, World world, Gamemode gamemode, float deltaTime) {
-        LoadedGame loadedGame = this.game.getLoadedGame();
+        var loadedGame = this.game.getLoadedGame();
         if (loadedGame == null) return;
 
-        Player player = gamemode.getPlayer();
+        var player = gamemode.getPlayer();
 
         if (player == null) return;
 
@@ -79,13 +77,13 @@ public class LegacyHud extends HudType {
 
         // Level up message
         if (this.showLevelUp) {
-            String text = "Level " + this.level;
+            var text = "Level " + this.level;
             if (!text.equals(this.levelUpText)) {
                 this.levelUpText = text;
                 this.levelUpLayout.setText(this.levelUpFont, text);
             }
 
-            Rectangle gameBounds = gamemode.getGameBounds();
+            var gameBounds = gamemode.getGameBounds();
 
             renderer.drawTextCenter(this.levelUpFont, text, gameBounds.getX() + gameBounds.getWidth() / 2, gameBounds.getY() + gameBounds.getHeight() / 2, LEVEL_UP_COLOR);
         }
@@ -100,8 +98,8 @@ public class LegacyHud extends HudType {
      */
     public void drawPlayerDetails(@NotNull World world, @NotNull Renderer renderer, @NotNull Player player) {
         // Assign colors for title and description.
-        Color titleColor = Color.WHITE;
-        Color valueColor = Color.CYAN;
+        var titleColor = Color.WHITE;
+        var valueColor = Color.CYAN;
 
         // As long the player isn't game over.
         if (world.isGameOver()) return;
@@ -183,14 +181,14 @@ public class LegacyHud extends HudType {
             // EffectInstance image.
             renderer.setTexture(BubbleBlaster.id("ui/effect_banner"));
 
-            int i = 0;
-            for (StatusEffectInstance appliedEffect : player.getActiveEffects()) {
+            var i = 0;
+            for (var appliedEffect : player.getActiveEffects()) {
                 // Renderer 2D
-                int x = 320 + i * 196;
-                int y = 16;
+                var x = 320 + i * 196;
+                var y = 16;
                 renderer.scissored(x, y, 192, 38, () -> {
                     // Format duration to string.
-                    String time = appliedEffect.getRemainingTime().toSimpleString();
+                    var time = appliedEffect.getRemainingTime().toSimpleString();
 
                     // EffectInstance bar.
                     renderer.blit(x, y, 192, 38);
@@ -217,7 +215,7 @@ public class LegacyHud extends HudType {
      * @param game     game instance.
      */
     public void drawTopBar(Renderer renderer, BubbleBlaster game) {
-        Rectangle topBar = new Rectangle(0, 0, game.getWidth(), 70);
+        var topBar = new Rectangle(0, 0, game.getWidth(), 70);
         renderer.fill(topBar, TOP_BAR_BG_COLOR);
         renderer.setColor(Color.rgb(0xadd8e6));
         renderer.setLineThickness(1);

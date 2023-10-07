@@ -31,7 +31,7 @@ public class TimedMode extends NormalMode {
     public void begin() {
         super.begin();
 
-        World world = this.game.world;
+        var world = this.game.world;
         if (world == null) throw new IllegalStateException("The world isn't loaded in.");
         this.world = world;
 
@@ -54,7 +54,7 @@ public class TimedMode extends NormalMode {
     }
 
     private MapType save() {
-        MapType data = new MapType();
+        var data = new MapType();
         data.putLong("createTime", this.createTime);
         return data;
     }

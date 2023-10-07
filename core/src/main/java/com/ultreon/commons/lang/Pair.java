@@ -40,7 +40,7 @@ public class Pair<F, S> implements Cloneable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Pair<?, ?> pair = (Pair<?, ?>) o;
+        var pair = (Pair<?, ?>) o;
         return Objects.equals(this.getFirst(), pair.getFirst()) && Objects.equals(this.getSecond(), pair.getSecond());
     }
 

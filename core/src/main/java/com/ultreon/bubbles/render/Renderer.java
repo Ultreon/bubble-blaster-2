@@ -264,16 +264,16 @@ public class Renderer {
 
     public void outline(Shape2D shape, Color color) {
         if (shape instanceof Circle) {
-            Circle circle = (Circle) shape;
+            var circle = (Circle) shape;
             this.outline(circle, color);
         } else if (shape instanceof Rectangle) {
-            Rectangle rectangle = (Rectangle) shape;
+            var rectangle = (Rectangle) shape;
             this.outline(rectangle, color);
         } else if (shape instanceof Polygon) {
-            Polygon polygon = (Polygon) shape;
+            var polygon = (Polygon) shape;
             this.outline(polygon, color);
         } else if (shape instanceof Ellipse) {
-            Ellipse ellipse = (Ellipse) shape;
+            var ellipse = (Ellipse) shape;
             this.outline(ellipse, color);
         } else throw new UnsupportedOperationException("Shape not supported: " + shape.getClass().getName());
     }
@@ -352,19 +352,19 @@ public class Renderer {
         if (!this.rendering) return;
 
         if (s instanceof Circle) {
-            Circle circle = (Circle) s;
+            var circle = (Circle) s;
             this.fill(circle, color);
         } else if (s instanceof Ellipse) {
-            Ellipse ellipse = (Ellipse) s;
+            var ellipse = (Ellipse) s;
             this.fill(ellipse, color);
         } else if (s instanceof Rectangle) {
-            Rectangle rect = (Rectangle) s;
+            var rect = (Rectangle) s;
             this.fill(rect, color);
         } else if (s instanceof Polygon) {
-            Polygon rect = (Polygon) s;
+            var rect = (Polygon) s;
             this.fill(rect, color);
         } else if (s instanceof Polyline) {
-            Polyline rect = (Polyline) s;
+            var rect = (Polyline) s;
             this.fill(rect, color);
         }
     }
@@ -409,7 +409,7 @@ public class Renderer {
 
         this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
         this.fboStack.push(this.beginCapture());
-        boolean b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
+        var b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
         this.blurring = true;
 
         this.batch.begin();
@@ -464,7 +464,7 @@ public class Renderer {
 
         this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
         this.fboStack.push(this.beginCapture());
-        boolean b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
+        var b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
         this.noising = true;
 
         this.batch.begin();
@@ -529,7 +529,7 @@ public class Renderer {
     @CheckReturnValue
     @ApiStatus.Experimental
     public VfxFrameBuffer beginCapture() {
-        VfxFrameBuffer fbo = this.fboPool.obtain();
+        var fbo = this.fboPool.obtain();
         fbo.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
         return fbo;
@@ -545,7 +545,7 @@ public class Renderer {
     @CheckReturnValue
     @ApiStatus.Experimental
     public VfxFrameBuffer capture(Runnable func) {
-        VfxFrameBuffer fbo = this.beginCapture();
+        var fbo = this.beginCapture();
         func.run();
         return this.endCapture(fbo);
     }
@@ -711,7 +711,7 @@ public class Renderer {
     public void box(float x, float y, float width, float height, Color color) {
         if (!this.rendering) return;
 
-        Border border = new Border(1);
+        var border = new Border(1);
         border.setColor(color);
         border.drawBorder(this, x, y, width, height);
     }
@@ -719,7 +719,7 @@ public class Renderer {
     public void box(int x, int y, int width, int height, Color color, Insets insets) {
         if (!this.rendering) return;
 
-        Border border = new Border(insets);
+        var border = new Border(insets);
         border.setColor(color);
         border.drawBorder(this, x, y, width, height);
     }
@@ -727,7 +727,7 @@ public class Renderer {
     public void box(float x, float y, float width, float height, Color color, Insets insets) {
         if (!this.rendering) return;
 
-        Border border = new Border(insets);
+        var border = new Border(insets);
         border.setColor(color);
         border.drawBorder(this, (int) x, (int) y, (int) width, (int) height);
     }
@@ -779,14 +779,14 @@ public class Renderer {
         this.toShapes();
         this.shapes.set(Line);
 
-        float endAngle = startAngle + angle;
+        var endAngle = startAngle + angle;
 
-        float[] vertices = new float[segments * 2];
+        var vertices = new float[segments * 2];
 
-        for (int i = 0; i < segments; i++) {
-            float angleNow = MathUtils.lerp(startAngle, endAngle, (float) i / (segments - 1));
-            float startX = x + radius * MathUtils.cosDeg(angleNow);
-            float startY = y + radius * MathUtils.sinDeg(angleNow);
+        for (var i = 0; i < segments; i++) {
+            var angleNow = MathUtils.lerp(startAngle, endAngle, (float) i / (segments - 1));
+            var startX = x + radius * MathUtils.cosDeg(angleNow);
+            var startY = y + radius * MathUtils.sinDeg(angleNow);
 
             vertices[i * 2] = startX;
             vertices[i * 2 + 1] = startY;
@@ -808,7 +808,7 @@ public class Renderer {
         height -= this.lineThickness;
         radius -= this.lineThickness / 2;
 
-        float cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
 
         Gdx.gl20.glLineWidth(this.lineThickness);
         this.shapes.line(x + cornerRadius, y, x + width - cornerRadius, y); // Draw top line
@@ -829,7 +829,7 @@ public class Renderer {
         this.setFilled();
         this.shapes.setColor(color.toGdx());
 
-        float cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
+        var cornerRadius = Math.min(radius, Math.min(width, height) / 2 - 4);
 
         // Draw the top-left rounded corner
         this.shapes.arc(x + cornerRadius, y + cornerRadius, cornerRadius, 180f, 91f, this.sides.estimateSidesRequired(1.0f, cornerRadius, cornerRadius));
@@ -939,14 +939,14 @@ public class Renderer {
         this.setFilled();
         this.shapes.setColor(color.toGdx());
 
-        float[] transformedVertices = p.getTransformedVertices();
-        for (int i = 0; i < transformedVertices.length - 2; i += 2) {
-            float x1 = transformedVertices[i];
-            float y1 = transformedVertices[i + 1];
-            float x2 = transformedVertices[i + 2];
-            float y2 = transformedVertices[i + 3];
-            float x3 = transformedVertices[0];
-            float y3 = transformedVertices[1];
+        var transformedVertices = p.getTransformedVertices();
+        for (var i = 0; i < transformedVertices.length - 2; i += 2) {
+            var x1 = transformedVertices[i];
+            var y1 = transformedVertices[i + 1];
+            var x2 = transformedVertices[i + 2];
+            var y2 = transformedVertices[i + 3];
+            var x3 = transformedVertices[0];
+            var y3 = transformedVertices[1];
 
             this.shapes.triangle(x1, y1, x2, y2, x3, y3);
         }
@@ -1058,7 +1058,7 @@ public class Renderer {
         if (!this.rendering) return;
 
 
-        GlyphLayout layout = this.glyphLayout.get();
+        var layout = this.glyphLayout.get();
         if (layout == null) {
             layout = new GlyphLayout();
             this.glyphLayout.set(layout);
@@ -1066,8 +1066,8 @@ public class Renderer {
 
         layout.setText(this.font, str);
 
-        float anchoredX = (anchor.getX() + 1) * (layout.width / 2);
-        float anchoredY = (anchor.getY() + 1) * (layout.height / 2);
+        var anchoredX = (anchor.getX() + 1) * (layout.width / 2);
+        var anchoredY = (anchor.getY() + 1) * (layout.height / 2);
         this.toBatch();
         this.font.setColor(color.toGdx());
         this.font.draw(this.batch, str, x, y);
@@ -1076,7 +1076,7 @@ public class Renderer {
     public void drawMultiLineText(BitmapFont font, String str, int x, int y, Color color) {
         if (!this.rendering) return;
 
-        for (String line : str.split("\n"))
+        for (var line : str.split("\n"))
             this.drawText(font, line, x, y += (int) font.getLineHeight(), color);
     }
 
@@ -1084,8 +1084,8 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.setColor(color);
-        List<String> lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        var lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
+        var joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
         this.drawMultiLineText(font, joined, x, y, color);
     }
 
@@ -1093,15 +1093,15 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.setColor(color);
-        List<String> lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
-        String joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
+        var lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
+        var joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
         this.drawMultiLineText(font, joined, x, y, color);
     }
 
     public void drawTabbedText(BitmapFont font, String text, int x, int y, Color color) {
         if (!this.rendering) return;
 
-        for (String line : text.split("\t"))
+        for (var line : text.split("\t"))
             this.drawText(font, line, x += (int) font.getLineHeight(), y, color);
     }
 
@@ -1123,7 +1123,7 @@ public class Renderer {
     public void drawTextCenter(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        String string = text.getText();
+        var string = text.getText();
 
         this.layout.setText(font, string);
 
@@ -1152,7 +1152,7 @@ public class Renderer {
     public void drawTextLeft(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        String string = text.getText();
+        var string = text.getText();
 
         this.layout.setText(font, string);
 
@@ -1181,7 +1181,7 @@ public class Renderer {
     public void drawTextRight(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
 
-        String string = text.getText();
+        var string = text.getText();
 
         this.layout.setText(font, string);
 
@@ -1213,7 +1213,7 @@ public class Renderer {
     ////////////////////////////
     private void editMatrix(Function<Matrix4, Matrix4> editor) {
         this.flush();
-        Matrix4 matrix = editor.apply(this.shapes.getProjectionMatrix());
+        var matrix = editor.apply(this.shapes.getProjectionMatrix());
         editor.apply(this.globalTransform);
         this.shapes.setProjectionMatrix(matrix);
         this.batch.setProjectionMatrix(matrix);
@@ -1350,7 +1350,7 @@ public class Renderer {
 
         if (!BubbleBlasterConfig.DEBUG_DISABLE_SCISSORS.getOrDefault()) {
             this.flush();
-            Rectangle rectangle = ScissorStack.popScissors();
+            var rectangle = ScissorStack.popScissors();
 
             if (this.loggingScissors) {
                 Debug.log("ScissorDebug", String.format("Popping scissor [%d]", this.scissorDepth));
@@ -1432,7 +1432,7 @@ public class Renderer {
     public void drawEffectBox(float x, float y, float width, float height, Insets insets, float speed) {
         if (!this.rendering) return;
 
-        Border border = new Border(insets);
+        var border = new Border(insets);
         border.setRenderType(Border.RenderType.EFFECT);
         border.setEffectSpeed(speed);
         border.drawBorder(this, x, y, width, height);
@@ -1490,7 +1490,7 @@ public class Renderer {
     public void drawErrorEffectBox(int x, int y, int width, int height, Insets insets, float speed) {
         if (!this.rendering) return;
 
-        Border border = new Border(insets);
+        var border = new Border(insets);
         border.setRenderType(Border.RenderType.ERROR_EFFECT);
         border.setEffectSpeed(speed);
         border.drawBorder(this, x, y, width, height);
@@ -1527,7 +1527,7 @@ public class Renderer {
     private void fillScrollingGradient(float x, float y, float width, float height, float speed, Color color1, Color color2) {
         float gameWidth = this.getWidth();
         float gameHeight = this.getHeight();
-        float shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
+        var shiftX = (gameWidth * 2f * BubbleBlaster.getTicks() / (BubbleBlaster.TPS * speed) - this.camera.combined.getTranslation(new Vector3()).x) % (gameWidth * 2);
 
         this.scissored(new Rectangle(x, y, width, height), () -> {
             this.fillGradient(-shiftX, 0, gameWidth, gameHeight, color1, color2, Axis2D.HORIZONTAL);
@@ -1547,7 +1547,7 @@ public class Renderer {
     public void blit(int x, int y) {
         if (!this.rendering) return;
 
-        Texture tex = this.texture;
+        var tex = this.texture;
 
         this.toBatch();
         this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
@@ -1590,7 +1590,7 @@ public class Renderer {
     public void setTransform(Matrix4 matrix) {
         if (!this.rendering) return;
 
-        Matrix4 m = this.matrixStack.last();
+        var m = this.matrixStack.last();
         if (m != null) {
             m.set(matrix);
             this.batch.setTransformMatrix(m);
@@ -1880,8 +1880,8 @@ public class Renderer {
         public void freeAll() {
             this.cleanupInvalid();
 
-            Array<VfxFrameBuffer> copy = new Array<>(this.managedBuffers);
-            for (VfxFrameBuffer fbo : copy)
+            var copy = new Array<VfxFrameBuffer>(this.managedBuffers);
+            for (var fbo : copy)
                 this.free(fbo);
 
             copy.clear(); // Todo: Check performance.

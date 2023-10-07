@@ -64,7 +64,7 @@ public final class GlobalSaveData extends GameData {
             this.dump();
         } catch (IOException e) {
             BubbleBlaster.LOGGER.error("Failed to save high score:", e);
-            Notification.Builder builder = Notification.builder("Error!", "Saving highscore failed!");
+            var builder = Notification.builder("Error!", "Saving highscore failed!");
             builder.subText("Global Save Data");
         }
     }
@@ -78,7 +78,7 @@ public final class GlobalSaveData extends GameData {
                 this.dump();
             } catch (IOException e) {
                 BubbleBlaster.LOGGER.error("Failed to save high score:", e);
-                Notification.Builder builder = Notification.builder("Error!", "Saving highscore failed!");
+                var builder = Notification.builder("Error!", "Saving highscore failed!");
                 builder.subText("Global Save Data");
             }
         }

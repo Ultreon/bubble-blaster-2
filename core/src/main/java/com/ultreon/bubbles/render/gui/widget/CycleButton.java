@@ -49,7 +49,7 @@ public class CycleButton<T extends Enum<T>> extends Button implements GuiStateLi
     }
 
     public void setIndex(int index) {
-        int minValue = -(Enums.size(this.componentType));
+        var minValue = -(Enums.size(this.componentType));
         if (index < minValue) throw new IllegalArgumentException("Index below minimum value: " + index + " (min: " + minValue + ")");
         index += Enums.size(this.componentType);
         this.index = index % Enums.size(this.componentType);
@@ -118,7 +118,7 @@ public class CycleButton<T extends Enum<T>> extends Button implements GuiStateLi
 
         @Override
         public CycleButton<T> build() {
-            CycleButton<T> button = new CycleButton<>(this.componentType, (int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            var button = new CycleButton<T>(this.componentType, (int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);

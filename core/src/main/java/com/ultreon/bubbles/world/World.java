@@ -3,7 +3,10 @@ package com.ultreon.bubbles.world;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.ultreon.bubbles.*;
+import com.ultreon.bubbles.BubbleBlaster;
+import com.ultreon.bubbles.BubbleBlasterConfig;
+import com.ultreon.bubbles.CrashFiller;
+import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.audio.MusicEvent;
 import com.ultreon.bubbles.bubble.BubbleSpawnContext;
 import com.ultreon.bubbles.bubble.BubbleType;
@@ -139,7 +142,7 @@ public final class World implements CrashFiller, Closeable {
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, long seed) {
         this.gamemode = gamemode;
         this.difficulty = difficulty;
-        GameRandom random = new GameRandom(seed);
+        var random = new GameRandom(seed);
         this.bubbleRng = this.gamemode.createBubbleRandomizer();
         this.seed = seed;
         this.gameSave = save;
@@ -161,8 +164,8 @@ public final class World implements CrashFiller, Closeable {
         try {
             // Spawn player
             messenger.send("Spawning player...");
-            Vector2 pos = new Vector2(this.game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f);
-            Player player = this.game.loadPlayerIntoWorld(this);
+            var pos = new Vector2(this.game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f);
+            var player = this.game.loadPlayerIntoWorld(this);
             this.spawn(player, SpawnInformation.playerSpawn(pos, this, new JavaRandom()));
 
             if (!this.gamemode.preSpawn()) {
@@ -174,7 +177,7 @@ public final class World implements CrashFiller, Closeable {
 
             this.gamemode.onPostSpawn();
         } catch (Exception e) {
-            CrashLog crashLog = new CrashLog("Could not initialize world.", e);
+            var crashLog = new CrashLog("Could not initialize world.", e);
 
             BubbleBlaster.crash(crashLog.createCrash());
             return;
@@ -193,12 +196,12 @@ public final class World implements CrashFiller, Closeable {
     private void firstInit(Messenger messenger, int maxBubbles) {
         if (this.gamemode.firstInit(messenger, maxBubbles)) return;
 
-        for (int i = 0; i < maxBubbles; i++) {
-            int retry = 0;
+        for (var i = 0; i < maxBubbles; i++) {
+            var retry = 0;
 
-            long idx = this.entitySeedIdx++;
-            RandomSource random = new JavaRandom(this.getSeed() ^ idx).nextRandom(Randomizer.hash(retry));
-            Bubble bubble = new Bubble(this, Bubble.getRandomVariant(this, random));
+            var idx = this.entitySeedIdx++;
+            var random = new JavaRandom(this.getSeed() ^ idx).nextRandom(Randomizer.hash(retry));
+            var bubble = new Bubble(this, Bubble.getRandomVariant(this, random));
             this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_INIT_SPAWN, retry, this));
 
             messenger.send("Spawning bubble " + i + "/" + maxBubbles);
@@ -249,20 +252,20 @@ public final class World implements CrashFiller, Closeable {
 
     private void dumpPlayers(GameSave save, Messenger messenger) throws IOException {
         messenger.send("Saving players...");
-        for (Player p : this.players) {
+        for (var p : this.players) {
             this.dumpPlayer(save, p);
         }
     }
 
     private void dumpPlayer(GameSave save, Player player) throws IOException {
-        MapType data = player.save();
-        UUID uniqueId = player.getUuid();
+        var data = player.save();
+        var uniqueId = player.getUuid();
         save.dump("players/" + uniqueId, data, true);
     }
 
     private void loadPlayer(GameSave save, UUID uuid) throws IOException {
-        MapType data = save.load("Players/" + uuid, true);
-        Player player = new Player(this);
+        var data = save.load("Players/" + uuid, true);
+        var player = new Player(this);
         player.load(data);
         this.players.add(player);
 
@@ -280,7 +283,7 @@ public final class World implements CrashFiller, Closeable {
         if (entity.getId() < MINIMUM_ENTITY_ID)
             entity.setId(this.nextId());
 
-        UUID uuid = UUID.randomUUID();
+        var uuid = UUID.randomUUID();
         while (this.entitiesByUuid.containsKey(uuid))
             uuid = UUID.randomUUID();
 
@@ -292,16 +295,16 @@ public final class World implements CrashFiller, Closeable {
 
     private void dumpRegistries(GameSave save, Messenger messenger) throws IOException {
         messenger.send("Dumping registries.");
-        for (Registry<?> registry : Registry.getRegistries()) {
+        for (var registry : Registry.getRegistries()) {
             this.dumpRegistryData(save, registry);
         }
     }
 
     private <T> void dumpRegistryData(GameSave gameSave, Registry<T> registry) throws IOException {
-        MapType tag = new MapType();
-        ListType<StringType> entriesTag = new ListType<>();
+        var tag = new MapType();
+        var entriesTag = new ListType<StringType>();
 
-        for (T type : registry.values()) {
+        for (var type : registry.values()) {
             entriesTag.add(new StringType(Objects.requireNonNull(registry.getKey(type)).toString()));
         }
         tag.put("Entries", entriesTag);
@@ -312,8 +315,8 @@ public final class World implements CrashFiller, Closeable {
 
     private void loadWorld(MapType data) {
         ListType<MapType> entitiesTag = data.getList("Entities");
-        for (MapType entityTag : entitiesTag) {
-            Entity entity = Entity.loadFully(this, entityTag);
+        for (var entityTag : entitiesTag) {
+            var entity = Entity.loadFully(this, entityTag);
             if (entity != null) this.addEntity(entity);
         }
 
@@ -328,14 +331,14 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private MapType saveWorld() {
-        MapType data = new MapType();
-        ListType<MapType> entitiesData = new ListType<>();
-        for (Entity entity : this.entitiesById.values()) {
+        var data = new MapType();
+        var entitiesData = new ListType<MapType>();
+        for (var entity : this.entitiesById.values()) {
             entitiesData.add(entity.save());
         }
         data.put("Entities", entitiesData);
         data.put("Player", this.game.player.save());
-        UUID uuid = this.game.player.getUuid();
+        var uuid = this.game.player.getUuid();
         if (uuid != null) {
             data.putUUID("playerUuid", uuid);
         }
@@ -347,11 +350,11 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private MapType saveInfo() {
-        MapType tag = new MapType();
+        var tag = new MapType();
         tag.putString("name", this.name);
         tag.putLong("seed", this.seed);
         tag.putLong("savedTime", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC));
-        Identifier key = Registries.GAMEMODES.getKey(this.gamemode);
+        var key = Registries.GAMEMODES.getKey(this.gamemode);
         tag.putString("gamemode", (key == null ? Gamemodes.NORMAL.id() : key).toString());
         return tag;
     }
@@ -387,9 +390,9 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public float getLocalDifficulty() {
-        Difficulty diff = this.getDifficulty();
+        var diff = this.getDifficulty();
 
-        float value = this.difficultyModifiers.modify(diff);
+        var value = this.difficultyModifiers.modify(diff);
         if (!BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isLocal()) {
             return value;
         }
@@ -397,7 +400,7 @@ public final class World implements CrashFiller, Closeable {
         this.stateDifficultyModifier = Comparison.max(new ArrayList<>(this.stateDifficultyModifiers.values()), 1f);
         if (this.getPlayer() == null) return value * this.stateDifficultyModifier;
 
-        int i = (this.getPlayer().getLevel() - 1) * 5 + 1;
+        var i = (this.getPlayer().getLevel() - 1) * 5 + 1;
         return i * value * this.stateDifficultyModifier;
     }
 
@@ -461,7 +464,7 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public void tickBloodMoon() {
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
+        var loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         if (loadedGame == null) {
             return;
         }
@@ -506,7 +509,7 @@ public final class World implements CrashFiller, Closeable {
         if (!isOnTickingThread())
             throw new IllegalCallerException("Ending gameplay event should be on ticking thread.");
 
-        GameplayEvent event = this.activeEvent;
+        var event = this.activeEvent;
         this.activeEvent = null;
         event.end(this);
     }
@@ -542,20 +545,20 @@ public final class World implements CrashFiller, Closeable {
      */
     @NonNull
     public BubbleType getRandomBubble(RandomSource random) {
-        BubbleType bubbleType = this.gamemode.randomBubble(random, this);
+        var bubbleType = this.gamemode.randomBubble(random, this);
         if (bubbleType != null)
             return bubbleType;
 
         bubbleType = BubbleSystem.random(random, this);
 
-        int retries = 0;
+        var retries = 0;
         while (bubbleType == null) {
             bubbleType = BubbleSystem.random(random, this);
             if (++retries == 5)
                 return this.gamemode.getDefaultBubble();
         }
 
-        boolean canSpawn = bubbleType.canSpawn(this);
+        var canSpawn = bubbleType.canSpawn(this);
 
         if (canSpawn) return bubbleType;
         return this.gamemode.getDefaultBubble();
@@ -563,7 +566,7 @@ public final class World implements CrashFiller, Closeable {
 
     public void attack(Entity target, double damage, EntityDamageSource damageSource) {
         if (target instanceof LivingEntity) {
-            LivingEntity e = (LivingEntity) target;
+            var e = (LivingEntity) target;
             e.damage(damage, damageSource);
         }
     }
@@ -611,9 +614,9 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private void loadAndSpawnEntity(MapType data) {
-        String type = data.getString("Type");
-        EntityType<?> entityType = Registries.ENTITIES.getValue(Identifier.parse(type));
-        Entity entity = entityType.create(this, data);
+        var type = data.getString("Type");
+        var entityType = Registries.ENTITIES.getValue(Identifier.parse(type));
+        var entity = entityType.create(this, data);
         entity.preSpawn(SpawnInformation.loadingSpawn(data));
         entity.load(data);
 
@@ -644,14 +647,14 @@ public final class World implements CrashFiller, Closeable {
 
             if (information.getReason() instanceof NaturalSpawnReason
                     && ((NaturalSpawnReason) information.getReason()).getUsage() == SpawnUsage.BUBBLE_SPAWN && this.bubblesFrozen) {
-                NaturalSpawnReason reason = (NaturalSpawnReason) information.getReason();
+                var reason = (NaturalSpawnReason) information.getReason();
                 return;
             }
 
             // Prepare entity with spawn information,
             entity.preSpawn(information);
 
-            Vector2 pos = entity.getPos();
+            var pos = entity.getPos();
             entity.onSpawn(pos, this);
 
             this.addEntity(entity);
@@ -663,7 +666,7 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public <T extends Entity> T spawn(EntityType<T> type, SpawnInformation information) {
-        T entity = type.create(this, information.getData());
+        var entity = type.create(this, information.getData());
         this.spawn(entity, information);
         return entity;
     }
@@ -695,26 +698,26 @@ public final class World implements CrashFiller, Closeable {
 
                 // Tick entities
                 List<Entity> toRemove = new ArrayList<>();
-                for (Entity entity : this.entitiesById.values()) {
+                for (var entity : this.entitiesById.values()) {
                     if (entity.willBeDeleted()) {
                         toRemove.add(entity);
                         continue;
                     }
 
                     if (entity instanceof Player) {
-                        Player p = (Player) entity;
+                        var p = (Player) entity;
                         TickEvents.PRE_TICK_PLAYER.factory().onTickPlayer(p);
                     }
                     TickEvents.PRE_TICK_ENTITY.factory().onTickEntity(entity);
                     entity.tick(this);
                     TickEvents.POST_TICK_ENTITY.factory().onTickEntity(entity);
                     if (entity instanceof Player) {
-                        Player p = (Player) entity;
+                        var p = (Player) entity;
                         TickEvents.POST_TICK_PLAYER.factory().onTickPlayer(p);
                     }
                 }
 
-                for (Entity entity : toRemove) {
+                for (var entity : toRemove) {
                     this.entitiesById.remove(entity.getId());
                     this.entitiesByUuid.remove(entity.getUuid());
                 }
@@ -734,7 +737,7 @@ public final class World implements CrashFiller, Closeable {
                         }
                     }
 
-                    GameplayEvent gameplayEvent = this.activeEvent;
+                    var gameplayEvent = this.activeEvent;
                     if (gameplayEvent != null) {
                         gameplayEvent.tick();
                     }
@@ -743,8 +746,8 @@ public final class World implements CrashFiller, Closeable {
                 }
 
                 this.onlyTickEvery(5, () -> {
-                    List<GameplayEvent> choices = Randomizer.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
-                    for (GameplayEvent gameplayEvent : choices) {
+                    var choices = Randomizer.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
+                    for (var gameplayEvent : choices) {
                         if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
                             if (!WorldEvents.GAMEPLAY_EVENT_TRIGGERED.factory().onGameplayEventTriggered(this, gameplayEvent).isCanceled()) {
                                 this.activeEvent = gameplayEvent;
@@ -764,13 +767,13 @@ public final class World implements CrashFiller, Closeable {
 
     private void tickSpawning() {
         if (this.entitiesById.values().stream().filter(Bubble.class::isInstance).count() < this.maxBubbles) {
-            long idx = this.entitySeedIdx++;
+            var idx = this.entitySeedIdx++;
             RandomSource random = new JavaRandom(this.seed ^ idx);
-            Bubble.Variant variant = Bubble.getRandomVariant(this, random.nextRandom());
+            var variant = Bubble.getRandomVariant(this, random.nextRandom());
 
-            final int retry = 0;
+            final var retry = 0;
             BubbleSpawnContext.inContext(random, retry, () -> {
-                Bubble bubble = new Bubble(this, variant);
+                var bubble = new Bubble(this, variant);
                 this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_SPAWN, retry, this));
                 return bubble;
             });
@@ -809,7 +812,7 @@ public final class World implements CrashFiller, Closeable {
         WorldEvents.WORLD_STOPPING.factory().onWorldStopping(this);
 
         synchronized (this.entitiesLock) {
-            for (Entity entity : this.entitiesById.values()) {
+            for (var entity : this.entitiesById.values()) {
                 entity.delete();
             }
         }
@@ -852,7 +855,7 @@ public final class World implements CrashFiller, Closeable {
 
     @Nullable
     public Entity getEntityAt(Vector2 pos) {
-        for (Entity entity : this.entitiesById.values()) {
+        for (var entity : this.entitiesById.values()) {
             if (entity.getShape().contains(pos)) {
                 return entity;
             }
@@ -870,10 +873,10 @@ public final class World implements CrashFiller, Closeable {
 
     @Nullable
     public Entity getNearestEntity(Vector2 pos) {
-        double distance = Double.MAX_VALUE;
+        var distance = Double.MAX_VALUE;
         Entity nearest = null;
-        for (Entity entity : this.entitiesById.values()) {
-            double cur = entity.distanceTo(pos);
+        for (var entity : this.entitiesById.values()) {
+            var cur = entity.distanceTo(pos);
             if (cur < distance) {
                 distance = cur;
                 nearest = entity;
@@ -883,11 +886,11 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public Entity getNearestEntity(Vector2 pos, EntityType<?> targetType) {
-        double distance = Double.MAX_VALUE;
+        var distance = Double.MAX_VALUE;
         Entity nearest = null;
-        for (Entity entity : this.entitiesById.values()) {
+        for (var entity : this.entitiesById.values()) {
             if (!entity.getType().equals(targetType)) continue;
-            double cur = entity.distanceTo(pos);
+            var cur = entity.distanceTo(pos);
             if (cur < distance) {
                 distance = cur;
                 nearest = entity;
@@ -923,7 +926,7 @@ public final class World implements CrashFiller, Closeable {
 
     @Override
     public void fillInCrash(CrashLog crashLog) {
-        CrashCategory category = new CrashCategory("World", new RuntimeException());
+        var category = new CrashCategory("World", new RuntimeException());
         category.add("Players", this.players);
         category.add("Entities", this.entitiesById);
         category.add("Game Save", this.gameSave);

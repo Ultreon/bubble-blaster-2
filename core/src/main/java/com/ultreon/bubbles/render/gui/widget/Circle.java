@@ -48,9 +48,9 @@ public class Circle extends Shape {
 
     @Override
     public boolean contains(int x, int y) {
-        int dx = abs(x - this.x);
-        int dy = abs(y - this.y);
-        int r = this.radius;
+        var dx = abs(x - this.x);
+        var dy = abs(y - this.y);
+        var r = this.radius;
 
         if (dx > r) {
             return false;

@@ -8,7 +8,7 @@ class GameExceptions implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable throwable) {
-        CrashLog crashLog = new CrashLog("Uncaught exception", throwable);
+        var crashLog = new CrashLog("Uncaught exception", throwable);
         BubbleBlaster.crash(crashLog.createCrash());
     }
 }

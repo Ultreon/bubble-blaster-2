@@ -2,10 +2,7 @@ package com.ultreon.bubbles.render.gui.hud;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.GamePlatform;
-import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.gamemode.Gamemode;
 import com.ultreon.bubbles.init.Fonts;
@@ -15,7 +12,6 @@ import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.RomanNumbers;
 import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.commons.v0.Mth;
-import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,10 +42,10 @@ public class ModernHud extends HudType {
 
     @Override
     public void renderHudOverlay(Renderer renderer, World world, Gamemode gamemode, float deltaTime) {
-        LoadedGame loadedGame = this.game.getLoadedGame();
+        var loadedGame = this.game.getLoadedGame();
         if (loadedGame == null) return;
 
-        Player player = gamemode.getPlayer();
+        var player = gamemode.getPlayer();
 
         if (player == null) return;
 
@@ -88,10 +84,10 @@ public class ModernHud extends HudType {
      * @param player   the player to draw information for.
      */
     private void drawPlayerDetails(@NotNull Renderer renderer, @NotNull Player player) {
-        int x = 20;
-        int y = 20;
+        var x = 20;
+        var y = 20;
 
-        String name = player.getName();
+        var name = player.getName();
         renderer.setColor(0xffffffff);
         renderer.drawText(this.playerDetailsNameFont, name, x + 5, y + 5, Color.WHITE);
         renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Score: ").append(Math.round(player.getScore())).append("    Level: ").append(player.getLevel()), x + 5, y + 25, Color.WHITE.withAlpha(0xa0));
@@ -99,12 +95,12 @@ public class ModernHud extends HudType {
 
         renderer.line(x + 5, y + 75, x + 295, y + 75, Color.WHITE.withAlpha(0x40));
 
-        MutableText hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append(" / ").append((int) Math.floor(player.getMaxHealth()));
+        var hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append(" / ").append((int) Math.floor(player.getMaxHealth()));
 
-        double maxHealth = player.getMaxHealth();
-        double health = Mth.clamp(player.getHealth(), 0, maxHealth);
+        var maxHealth = player.getMaxHealth();
+        var health = Mth.clamp(player.getHealth(), 0, maxHealth);
         if (maxHealth != 0) {
-            double ratio = health / maxHealth;
+            var ratio = health / maxHealth;
 
             Color color;
             if (ratio >= 0.5) color = Color.GREEN;
@@ -135,19 +131,19 @@ public class ModernHud extends HudType {
 
         // Level up message
         if (this.showLevelUp) {
-            String text = "Level " + this.level;
+            var text = "Level " + this.level;
             if (!text.equals(this.levelUpText)) {
                 this.levelUpText = text;
                 this.levelUpLayout.setText(this.levelUpFont, text);
             }
 
-            float textWidth = this.levelUpLayout.width;
-            float textHeight = this.levelUpLayout.height;
+            var textWidth = this.levelUpLayout.width;
+            var textHeight = this.levelUpLayout.height;
 
-            float width = textWidth + 16;
-            float height = textHeight + 16;
+            var width = textWidth + 16;
+            var height = textHeight + 16;
 
-            Rectangle gameBounds = gamemode.getGameBounds();
+            var gameBounds = gamemode.getGameBounds();
 
             renderer.fillRoundRect(
                     (float) (int) (gameBounds.getX() + gameBounds.getWidth() - width) / 2,
@@ -165,14 +161,14 @@ public class ModernHud extends HudType {
      * @param player   the player, to get the information about the status effects from.
      */
     private void drawStatusEffects(@NotNull Renderer renderer, @NotNull Player player) {
-        int x = this.game.getWidth() - 320;
-        int y = 20;
+        var x = this.game.getWidth() - 320;
+        var y = 20;
 
-        for (StatusEffectInstance effectInstance : player.getActiveEffects()) {
+        for (var effectInstance : player.getActiveEffects()) {
             renderer.fill(x, y, 300, 50, Color.BLACK.withAlpha(0x80));
 
             // Format duration to string.
-            String time = effectInstance.getRemainingTime().toSimpleString();
+            var time = effectInstance.getRemainingTime().toSimpleString();
 
             try {
                 renderer.blit(effectInstance.getType().getIcon(), x + 5, y + 5, 40, 40);
@@ -187,13 +183,13 @@ public class ModernHud extends HudType {
                 renderer.fill(x + 5, y + 5, 40, 40, Color.WHITE.withAlpha(0x80));
             }
 
-            int finalY = y;
+            var finalY = y;
             renderer.scissored(x + 50, y + 2, 248, 46, () -> {
-                MutableText translation = effectInstance.getType().getTranslation();
+                var translation = effectInstance.getType().getTranslation();
                 translation.append(" " + RomanNumbers.toRoman(effectInstance.getStrength()));
                 renderer.drawTextLeft(Fonts.SANS_BOLD_16.get(), translation, x + 70, finalY + 15, Color.WHITE);
 
-                Color color = Color.WHITE.withAlpha(0x80);
+                var color = Color.WHITE.withAlpha(0x80);
                 if (effectInstance.getRemainingTime().getSeconds() <= SECS_BEFORE_RED_EFFECT_TIME.get()) color = Color.rgb(0xff0000);
                 renderer.drawTextLeft(Fonts.SANS_REGULAR_16.get(), TextObject.literal(time), x + 70, finalY + 35, color);
             });

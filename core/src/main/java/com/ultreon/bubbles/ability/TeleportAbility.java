@@ -50,27 +50,27 @@ public class TeleportAbility extends Ability<TeleportAbility> {
 
     @Override
     public void trigger(AbilityTrigger trigger) {
-        Entity entity = trigger.getEntity();
+        var entity = trigger.getEntity();
 
         // Check for player entity.
         if (entity instanceof Player) {
-            Player player = (Player) entity;
+            var player = (Player) entity;
             // Calculate delta time
-            long startTime = player.getTag().getLong("TeleportAbilityStartTime");
+            var startTime = player.getTag().getLong("TeleportAbilityStartTime");
             player.getTag().remove("TeleportAbilityStartTime");
 
-            long deltaTime = System.currentTimeMillis() - startTime;
+            var deltaTime = System.currentTimeMillis() - startTime;
             deltaTime = Mth.clamp(deltaTime, 0, 2500);  // 0 to 2.5 seconds.
 
             // Motion.
-            float deltaMotion = (float) deltaTime / 100 * ((float) deltaTime / 100);
+            var deltaMotion = (float) deltaTime / 100 * ((float) deltaTime / 100);
 
             // Calculate position difference from the player's rotation and position.
-            float angelRadians = player.getRotation() * MathUtils.degRad;
-            float tempVelX = MathUtils.cos(angelRadians) * deltaMotion;
-            float tempVelY = MathUtils.sin(angelRadians) * deltaMotion;
+            var angelRadians = player.getRotation() * MathUtils.degRad;
+            var tempVelX = MathUtils.cos(angelRadians) * deltaMotion;
+            var tempVelY = MathUtils.sin(angelRadians) * deltaMotion;
 
-            Vector2 pos = new Vector2(player.getX() + tempVelX, player.getY() + tempVelY);
+            var pos = new Vector2(player.getX() + tempVelX, player.getY() + tempVelY);
 
             // Teleport to that position.
             player.teleport(pos);
@@ -83,10 +83,10 @@ public class TeleportAbility extends Ability<TeleportAbility> {
 
     @Override
     public void onKeyTrigger(AbilityKeyTrigger trigger) {
-        Entity entity = trigger.getEntity();
+        var entity = trigger.getEntity();
 
         if (entity instanceof Player) {
-            Player player = (Player) entity;
+            var player = (Player) entity;
             player.getTag().putLong("TeleportAbilityStartTime", System.currentTimeMillis());
         }
     }

@@ -17,7 +17,7 @@ public final class KeyboardModifiers implements Cloneable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        KeyboardModifiers that = (KeyboardModifiers) o;
+        var that = (KeyboardModifiers) o;
         return this.shift == that.shift && this.ctrl == that.ctrl && this.alt == that.alt;
     }
 

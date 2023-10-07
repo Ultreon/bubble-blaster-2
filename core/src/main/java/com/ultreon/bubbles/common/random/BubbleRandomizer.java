@@ -2,7 +2,6 @@ package com.ultreon.bubbles.common.random;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.ultreon.bubbles.bubble.BubbleProperties;
-import com.ultreon.bubbles.bubble.BubbleType;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
@@ -33,14 +32,14 @@ public class BubbleRandomizer extends EntityRandomizer<Bubble> {
      */
     @Override
     public BubbleProperties randomProperties(Rectangle bounds, RandomSource random, int retry, World world, Bubble bubble) {
-        JavaRandom rng = new JavaRandom(random.nextLong() ^ retry);
+        var rng = new JavaRandom(random.nextLong() ^ retry);
 
-        BubbleType type = bubble.getBubbleType();
+        var type = bubble.getBubbleType();
 
         // Properties
-        double hardness = type.getHardness().getValue();
-        float speed = (float) type.getSpeed().getValue();
-        float radius = (float) type.getRadius().getValue();
+        var hardness = type.getHardness().getValue();
+        var speed = (float) type.getSpeed().getValue();
+        var radius = (float) type.getRadius().getValue();
 
         int x, y;
         if (bounds.getX() == bounds.getX() + bounds.getWidth() || bounds.getY() == bounds.getY() + bounds.getHeight()) {
@@ -51,10 +50,10 @@ public class BubbleRandomizer extends EntityRandomizer<Bubble> {
             y = rng.nextInt((int) bounds.getY(), (int) bounds.getY() + (int) bounds.getHeight());
         }
 
-        int rad = (int) (radius + (type.getColors().size() * 3) + 4);
-        float defense = (float) type.getDefense().getValue();
-        float attack = (float) type.getAttack().getValue();
-        float score = (float) type.getScore().getValue();
+        var rad = (int) (radius + (type.getColors().size() * 3) + 4);
+        var defense = (float) type.getDefense().getValue();
+        var attack = (float) type.getAttack().getValue();
+        var score = (float) type.getScore().getValue();
 
         return new BubbleProperties(type, radius, speed, rad, x, y, defense, attack, score);
     }

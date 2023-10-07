@@ -9,7 +9,6 @@ import com.ultreon.bubbles.world.World;
 import com.ultreon.libs.collections.v0.exceptions.ValueExistsException;
 import com.ultreon.libs.collections.v0.list.SizedList;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public class BubbleSystem {
     }
 
     public static double getDefaultPriority(BubbleType bubble) {
-        int index = defaults.indexOf(bubble);
+        var index = defaults.indexOf(bubble);
         if (index == -1) {
             return 0d;
         }
@@ -47,7 +46,7 @@ public class BubbleSystem {
     }
 
     public static double getPriority(BubbleType bubble) {
-        int index = priorities.indexOf(bubble);
+        var index = priorities.indexOf(bubble);
         if (index == -1) {
             return 0d;
         }
@@ -71,7 +70,7 @@ public class BubbleSystem {
      * @see Registries#BUBBLES
      */
     public static void init() {
-        Collection<BubbleType> bubbleTypes = Registries.BUBBLES.values();
+        var bubbleTypes = Registries.BUBBLES.values();
         BubbleSystem.bubblePriorities = new HashMap<>();
         BubbleSystem.maxPriority = 0;
 
@@ -81,7 +80,7 @@ public class BubbleSystem {
         defaults.clear();
         priorities.clear();
 
-        for (BubbleType bubbleType : bubbleTypes) {
+        for (var bubbleType : bubbleTypes) {
             try {
                 priorities.add(bubbleType.getPriority(), bubbleType);
                 defaults.add(bubbleType.getPriority(), bubbleType);
@@ -101,7 +100,7 @@ public class BubbleSystem {
         double localDifficulty = world.getLocalDifficulty();
         priorities.editLengths((bubbleType2) -> bubbleType2.getModifiedPriority(localDifficulty));
 
-        double index = random.nextDouble(0, priorities.getTotalSize());
+        var index = random.nextDouble(0, priorities.getTotalSize());
         return priorities.getValue(index);
     }
 }

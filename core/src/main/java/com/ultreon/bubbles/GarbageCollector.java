@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 class GarbageCollector {
     private static final Marker MARKER = MarkerFactory.getMarker("GC");
     private final ScheduledExecutorService service = Executors.newScheduledThreadPool(3, r -> {
-        Thread thread = new Thread(r);
+        var thread = new Thread(r);
         thread.setPriority(1);
         return thread;
     });

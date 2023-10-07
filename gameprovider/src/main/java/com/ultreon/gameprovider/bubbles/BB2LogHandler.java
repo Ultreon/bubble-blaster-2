@@ -14,7 +14,7 @@ public class BB2LogHandler implements LogHandler {
 
     @Override
     public void log(long time, LogLevel level, LogCategory category, String msg, Throwable exc, boolean fromReplay, boolean wasSuppressed) {
-        Marker marker = this.markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
+        var marker = this.markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
         LOGGER.log(BB2LogHandler.getLevel(level), marker, msg, exc);
     }
 

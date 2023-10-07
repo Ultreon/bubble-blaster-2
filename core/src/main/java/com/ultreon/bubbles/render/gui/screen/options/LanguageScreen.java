@@ -38,7 +38,7 @@ public final class LanguageScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        int calcWidth = this.calculateWidth();
+        var calcWidth = this.calculateWidth();
 
         this.languageList = this.add(new ObjectList<>(this.languages, 40, 2, (this.width - calcWidth) / 2, 0, calcWidth, this.height - 60));
         this.languageList.setSelectable(true);
@@ -53,11 +53,11 @@ public final class LanguageScreen extends Screen {
     }
 
     private void renderEntry(Renderer renderer, float width, float height, float y, Language entry, boolean selected, boolean hovered) {
-        Locale locale = entry.getLocale();
-        String language = locale.getDisplayLanguage(Locale.ENGLISH);
-        String country = locale.getDisplayCountry(Locale.ENGLISH);
+        var locale = entry.getLocale();
+        var language = locale.getDisplayLanguage(Locale.ENGLISH);
+        var country = locale.getDisplayCountry(Locale.ENGLISH);
 
-        int x = this.languageList.getX();
+        var x = this.languageList.getX();
 
         renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
 

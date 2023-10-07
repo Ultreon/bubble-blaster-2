@@ -34,7 +34,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
     }
 
     public void play() {
-        MusicEvent music = this.music;
+        var music = this.music;
         if (music != null) {
             music.play();
         }
@@ -44,14 +44,14 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
 
     public void pause() {
         this.paused = true;
-        MusicEvent music = this.music;
+        var music = this.music;
         if (music != null) {
             music.pause();
         }
     }
 
     public void stop() {
-        MusicEvent music = this.music;
+        var music = this.music;
         if (music != null) {
             music.stop();
         }
@@ -70,7 +70,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
         if (this.music != null) {
             this.music.stop();
         }
-        MusicEvent old = this.music;
+        var old = this.music;
         this.music = this.nextMusic;
         this.nextMusic = this.choose(old);
         this.music.play();
@@ -80,8 +80,8 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
 
     @NotNull
     private MusicEvent choose(MusicEvent old) {
-        int reties = 3;
-        MusicEvent chosen = this.nextMusic;
+        var reties = 3;
+        var chosen = this.nextMusic;
         while (reties > 0) {
             chosen = Randomizer.choose(this.musicList);
             if (chosen != old || this.musicList.size() == 1) return chosen;
@@ -101,7 +101,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
         if (!this.enabled) return;
         if (this.paused) return;
 
-        MusicEvent music = this.music;
+        var music = this.music;
         if (music != null && music.isStopped()) {
             this.untilNext = this.timeBetween.getValue();
         }

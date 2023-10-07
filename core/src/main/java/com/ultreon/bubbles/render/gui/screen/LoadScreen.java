@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.GamePlatform;
@@ -16,7 +15,6 @@ import com.ultreon.bubbles.registry.RegisterHandler;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
-import com.ultreon.bubbles.render.TextureCollection;
 import com.ultreon.bubbles.render.gui.hud.HudType;
 import com.ultreon.bubbles.settings.GameSettings;
 import com.ultreon.libs.commons.v0.Identifier;
@@ -30,7 +28,6 @@ import com.ultreon.libs.translations.v1.LanguageManager;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -82,7 +79,7 @@ public final class LoadScreen extends InternalScreen {
 
     @Override
     public boolean close(Screen to) {
-        boolean done = LoadScreen.isDone();
+        var done = LoadScreen.isDone();
         if (done) {
             return super.close(to);
         }
@@ -99,12 +96,12 @@ public final class LoadScreen extends InternalScreen {
 
         this.renderBackground(renderer);
 
-        int i = 0;
+        var i = 0;
 
         // Draw progress components.
         if (this.progressMain != null) {
-            int progress = this.progressMain.getProgress();
-            int max = this.progressMain.getMax();
+            var progress = this.progressMain.getProgress();
+            var max = this.progressMain.getMax();
 
             renderer.setLineThickness(9.0f);
 
@@ -116,14 +113,14 @@ public final class LoadScreen extends InternalScreen {
             renderer.fill(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 19 + 2, PROGRESS_BAR_WIDTH, 1, PROGRESSBAR_BG);
 
             renderer.setColor(Color.rgb(0x0040ff));
-            int effectWidth = (int) (PROGRESS_BAR_WIDTH * (double) (progress + 1) / (double) max);
+            var effectWidth = (int) (PROGRESS_BAR_WIDTH * (double) (progress + 1) / (double) max);
             if (effectWidth >= 1)
                 renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, (float) this.height / 2 + 19, effectWidth, 5);
 
             // Draw 2nd progress components.
             if (this.progressAlt != null) {
-                int progressSub = this.progressAlt.getProgress();
-                int maxSub = this.progressAlt.getMax();
+                var progressSub = this.progressAlt.getProgress();
+                var maxSub = this.progressAlt.getMax();
 
                 // Draw current 2nd line message.
                 if (this.curAltMsg != null) {
@@ -132,7 +129,7 @@ public final class LoadScreen extends InternalScreen {
 
                 renderer.fill(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 94 + 2, PROGRESS_BAR_WIDTH, 1, PROGRESSBAR_BG);
 
-                int effectWidthSub = (int) (PROGRESS_BAR_WIDTH * (double) (progressSub + 1) / (double) maxSub);
+                var effectWidthSub = (int) (PROGRESS_BAR_WIDTH * (double) (progressSub + 1) / (double) maxSub);
                 if (effectWidthSub >= 1)
                     renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, (float) this.height / 2 + 94, effectWidthSub, 5);
             }
@@ -150,7 +147,7 @@ public final class LoadScreen extends InternalScreen {
         this.progressMain = new ProgressMessenger(this.msgMain, 10);
 
         // Get game directory in Java's File format.
-        FileHandle dataDir = GamePlatform.get().getDataDirectory();
+        var dataDir = GamePlatform.get().getDataDirectory();
 
         // Check game directory exists, if not, create it!
         if (!dataDir.exists()) {
@@ -159,7 +156,7 @@ public final class LoadScreen extends InternalScreen {
 
         LOGGER.info("Loading resources...");
         this.progressMain.sendNext("Loading resources...");
-        AtomicReference<ProgressMessenger> progressAltAtomic = new AtomicReference<>(this.progressAlt);
+        var progressAltAtomic = new AtomicReference<ProgressMessenger>(this.progressAlt);
         GamePlatform.get().loadGameResources(progressAltAtomic, this.msgAlt);
         GamePlatform.get().loadModResources(progressAltAtomic, this.msgAlt);
         this.progressAlt = progressAltAtomic.get();
@@ -201,13 +198,13 @@ public final class LoadScreen extends InternalScreen {
         Gdx.graphics.setForegroundFPS(fps == 240 ? 0 : fps);
 
         try {
-            Identifier hudId = Identifier.tryParse(BubbleBlasterConfig.GAME_HUD.getOrDefault());
+            var hudId = Identifier.tryParse(BubbleBlasterConfig.GAME_HUD.getOrDefault());
             if (hudId != null) {
-                HudType hud = Registries.HUD.getValue(hudId);
+                var hud = Registries.HUD.getValue(hudId);
                 HudType.setCurrent(hud);
             } else {
                 HudType.setCurrent(HudTypes.MODERN.get());
-                Identifier id = HudTypes.MODERN.id();
+                var id = HudTypes.MODERN.id();
                 BubbleBlasterConfig.GAME_HUD.set(id.toString());
                 BubbleBlasterConfig.save();
             }
@@ -223,9 +220,9 @@ public final class LoadScreen extends InternalScreen {
     }
 
     private void setupTextureCollections() {
-        Collection<TextureCollection> values = Registries.TEXTURE_COLLECTIONS.values();
+        var values = Registries.TEXTURE_COLLECTIONS.values();
         this.progressAlt = new ProgressMessenger(this.msgAlt, values.size());
-        for (TextureCollection collection : values) {
+        for (var collection : values) {
             GameEvents.COLLECT_TEXTURES.factory().onCollectTextures(collection);
             this.progressAlt.sendNext(String.valueOf(Registries.TEXTURE_COLLECTIONS.getKey(collection)));
         }
@@ -260,19 +257,19 @@ public final class LoadScreen extends InternalScreen {
     }
 
     private void registerLanguage(String code) {
-        String[] s = code.split("_", 2);
+        var s = code.split("_", 2);
         if (s.length == 0) throw new IllegalArgumentException("Language requires a non-empty string.");
         if (s.length == 1) throw new IllegalArgumentException("Language code needs to include country.");
-        Locale locale = new Locale(s[0], s[1]);
+        var locale = new Locale(s[0], s[1]);
         LanguageManager.INSTANCE.register(locale, BubbleBlaster.id(code));
         LanguageManager.INSTANCE.load(locale, BubbleBlaster.id(code), BubbleBlaster.getInstance().getResourceManager());
     }
 
     private void registerLanguage(Identifier code) {
-        String[] s = code.path().split("_", 2);
+        var s = code.path().split("_", 2);
         if (s.length == 0) throw new IllegalArgumentException("Language requires a non-empty string.");
         if (s.length == 1) throw new IllegalArgumentException("Language code needs to include country.");
-        Locale locale = new Locale(s[0], s[1]);
+        var locale = new Locale(s[0], s[1]);
         LanguageManager.INSTANCE.register(locale, code);
         LanguageManager.INSTANCE.load(locale, code, BubbleBlaster.getInstance().getResourceManager());
     }
@@ -283,15 +280,15 @@ public final class LoadScreen extends InternalScreen {
     }
 
     private void registerComponents() {
-        Collection<Registry<?>> registries = Registry.getRegistries();
+        var registries = Registry.getRegistries();
         this.progressAlt = new ProgressMessenger(this.msgAlt, registries.size());
-        for (Registry<?> registry : registries) {
+        for (var registry : registries) {
             this.progressAlt.send(registry.id().toString());
             this.progressAlt.increment();
             RegistryEvents.AUTO_REGISTER.factory().onAutoRegister(registry);
             registry.entries().forEach(e -> {
                  if (e.getValue() instanceof RegisterHandler) {
-                     RegisterHandler handler = (RegisterHandler) e.getValue();
+                     var handler = (RegisterHandler) e.getValue();
                      handler.onRegister(e.getKey());
                  }
             });
@@ -313,7 +310,7 @@ public final class LoadScreen extends InternalScreen {
     }
 
     public void setupCommandsAndGlobalData() {
-        BubbleBlaster main = this.game;
+        var main = this.game;
 
         // Commands
         CommandConstructor.add("tp", new TeleportCommand());

@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.common.gamestate;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.LoadedGame;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
@@ -24,7 +23,7 @@ public abstract class GameplayEvent implements Translatable {
         @Nullable Screen currentScreen = this.game.getCurrentScreen();
         if (currentScreen != null) return false;
 
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
+        var loadedGame = BubbleBlaster.getInstance().getLoadedGame();
         return loadedGame != null;
     }
 
@@ -58,7 +57,7 @@ public abstract class GameplayEvent implements Translatable {
 
     @Override
     public String getTranslationPath() {
-        Identifier id = this.getId();
+        var id = this.getId();
         return id.location() + ".gameplayEvent." + id.path().replaceAll("/", ".");
     }
 

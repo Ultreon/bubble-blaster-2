@@ -31,7 +31,7 @@ public final class BubbleSpawnContext {
 
     public static <T> T inContext(RandomSource randomSource, int retry, Supplier<T> run) {
         value = new BubbleSpawnContext(randomSource, retry);
-        T t = run.get();
+        var t = run.get();
         value = null;
         return t;
     }
@@ -48,7 +48,7 @@ public final class BubbleSpawnContext {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        BubbleSpawnContext that = (BubbleSpawnContext) obj;
+        var that = (BubbleSpawnContext) obj;
         return Objects.equals(this.randomSource, that.randomSource) &&
                 this.retry == that.retry;
     }

@@ -2,7 +2,6 @@ package com.ultreon.bubbles.common.versioning;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Deprecated
@@ -19,13 +18,13 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
      */
     public UltreonOldVersion(String s) {
         // String to be scanned to find the pattern.
-        String pattern = "([0-9]*)\\.([0-9]*)-(alpha|beta|pre|release)([0-9]*)"; // 1.0-alpha4 // 5.4-release-7
+        var pattern = "([0-9]*)\\.([0-9]*)-(alpha|beta|pre|release)([0-9]*)"; // 1.0-alpha4 // 5.4-release-7
 
         // Create a Pattern object
-        Pattern r = Pattern.compile(pattern);
+        var r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(s);
+        var m = r.matcher(s);
         if (m.find()) {
             this.version = Integer.parseInt(m.group(1));
             this.subversion = Integer.parseInt(m.group(2));
@@ -87,11 +86,11 @@ public class UltreonOldVersion extends AbstractVersion<UltreonOldVersion> {
 
     @Override
     public int compareTo(@NotNull UltreonOldVersion o) {
-        int cmp = Integer.compare(this.version, o.version);
+        var cmp = Integer.compare(this.version, o.version);
         if (cmp == 0) {
-            int cmp1 = Integer.compare(this.subversion, o.subversion);
+            var cmp1 = Integer.compare(this.subversion, o.subversion);
             if (cmp1 == 0) {
-                int cmp2 = this.type.compareTo(o.type);
+                var cmp2 = this.type.compareTo(o.type);
                 if (cmp2 == 0) {
                     return Integer.compare(this.release, o.release);
                 } else {

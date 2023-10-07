@@ -63,7 +63,7 @@ public class Progress implements Cloneable, Comparable<Progress>, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Progress progress1 = (Progress) o;
+        var progress1 = (Progress) o;
         return this.getProgress() == progress1.getProgress() && this.getMax() == progress1.getMax();
     }
 

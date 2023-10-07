@@ -86,7 +86,7 @@ public abstract class Ability<T extends Ability<T>> implements StateHolder {
      */
     @Override
     public @NotNull MapType save() {
-        MapType data = new MapType();
+        var data = new MapType();
         data.putInt("cooldown", this.cooldown);
         data.putInt("value", this.value);
 

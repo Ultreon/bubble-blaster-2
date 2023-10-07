@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
@@ -74,7 +73,7 @@ public class Bullet extends Entity {
     public void onCollision(Entity other, double deltaTime) {
         if (this.owner == null) return;
         if (other instanceof LivingEntity && ((LivingEntity) other).isInvincible()) {
-            LivingEntity livingEntity = (LivingEntity) other;
+            var livingEntity = (LivingEntity) other;
             return;
         }
 
@@ -83,27 +82,27 @@ public class Bullet extends Entity {
 
         // Modifiers
         if (other instanceof AbstractBubbleEntity) {
-            AbstractBubbleEntity bubble = (AbstractBubbleEntity) other;
+            var bubble = (AbstractBubbleEntity) other;
             // Attributes
-            AttributeContainer attributeMap = bubble.getAttributes();
-            double bubScore = attributeMap.getBase(Attribute.SCORE);
-            double attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
-            double defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
-            double scoreModifier = this.owner.getAttributes().getBase(Attribute.SCORE_MODIFIER);
+            var attributeMap = bubble.getAttributes();
+            var bubScore = attributeMap.getBase(Attribute.SCORE);
+            var attack = attributeMap.getBase(Attribute.ATTACK);  // Maybe used.
+            var defense = attributeMap.getBase(Attribute.DEFENSE);  // Maybe used.
+            var scoreModifier = this.owner.getAttributes().getBase(Attribute.SCORE_MODIFIER);
 
             // Properties
-            float radius = bubble.getRadius();
-            float speed = bubble.getSpeed();
+            var radius = bubble.getRadius();
+            var speed = bubble.getSpeed();
 
             // Calculate score value.
-            double props = (radius * (speed + 1)) * (attack + defense + 1);
-            double attrs = props * bubScore * bubScore * scoreModifier;
-            double scoreValue = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION.get();
+            var props = (radius * (speed + 1)) * (attack + defense + 1);
+            var attrs = props * bubScore * bubScore * scoreModifier;
+            var scoreValue = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION.get();
 
             // Add score.
             this.owner.awardScore(scoreValue);
         } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
-            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             this.owner.awardScore(score);
         }
         if (--this.popsRemaining <= 0) {

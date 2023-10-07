@@ -28,31 +28,31 @@ public class MatrixStack {
     }
 
     public Matrix4 pop() {
-        Matrix4 matrix4 = this.stack.removeLast();
+        var matrix4 = this.stack.removeLast();
         this.onEdit.accept(this.stack.getLast());
         return matrix4;
     }
 
     public void translate(float x, float y) {
-        Matrix4 matrix = this.stack.getLast();
+        var matrix = this.stack.getLast();
         matrix.translate(x, y, 0);
         this.onEdit.accept(matrix);
     }
 
     public void translate(float x, float y, float z) {
-        Matrix4 matrix = this.stack.getLast();
+        var matrix = this.stack.getLast();
         matrix.translate(x, y, z);
         this.onEdit.accept(matrix);
     }
 
     public void scale(float x, float y) {
-        Matrix4 matrix = this.stack.getLast();
+        var matrix = this.stack.getLast();
         matrix.scale(x, y, 0);
         this.onEdit.accept(matrix);
     }
 
     public void rotate(Quaternion quaternion) {
-        Matrix4 matrix = this.stack.getLast();
+        var matrix = this.stack.getLast();
         matrix.rotate(quaternion);
         this.onEdit.accept(matrix);
     }

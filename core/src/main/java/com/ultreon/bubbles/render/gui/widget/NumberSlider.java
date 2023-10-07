@@ -35,7 +35,7 @@ public class NumberSlider extends TextEntry {
         super(x, y, width, height);
         this.setValueAndRange(value, min, max);
         this.setResponder(s -> {
-            Integer i = Numbers.tryParseInt(s);
+            var i = Numbers.tryParseInt(s);
             return i != null && i >= min && i <= max;
         });
 
@@ -92,8 +92,8 @@ public class NumberSlider extends TextEntry {
 
         if (keyCode == Input.Keys.BACKSPACE) {
             if (this.cursorIndex == 0) return false;
-            String leftText = this.text.substring(0, this.cursorIndex - 1);
-            String rightText = this.text.substring(this.cursorIndex);
+            var leftText = this.text.substring(0, this.cursorIndex - 1);
+            var rightText = this.text.substring(this.cursorIndex);
 
             this.text = leftText + rightText;
 
@@ -106,8 +106,8 @@ public class NumberSlider extends TextEntry {
 
         if (keyCode == Input.Keys.FORWARD_DEL) {
             if (this.cursorIndex >= this.text.length()) return false;
-            String leftText = this.text.substring(0, this.cursorIndex);
-            String rightText = this.text.substring(this.cursorIndex + 1);
+            var leftText = this.text.substring(0, this.cursorIndex);
+            var rightText = this.text.substring(this.cursorIndex + 1);
 
             this.text = leftText + rightText;
             this.validate();
@@ -159,7 +159,7 @@ public class NumberSlider extends TextEntry {
     }
 
     protected void validateNumber() {
-        Integer parsed = Numbers.tryParseInt(this.text);
+        var parsed = Numbers.tryParseInt(this.text);
         if (parsed == null) {
             this.validText = Integer.toString(this.value);
             return;
@@ -191,8 +191,8 @@ public class NumberSlider extends TextEntry {
             return true;
         }
 
-        String leftText = this.text.substring(0, this.cursorIndex);
-        String rightText = this.text.substring(this.cursorIndex);
+        var leftText = this.text.substring(0, this.cursorIndex);
+        var rightText = this.text.substring(this.cursorIndex);
 
         this.text = leftText + character + rightText;
         this.cursorIndex = Mth.clamp(this.cursorIndex + 1, 0, this.text.length());
@@ -247,10 +247,10 @@ public class NumberSlider extends TextEntry {
         this.downButton.setUp(false);
         this.downButton.render(renderer, mouseX, mouseY, deltaTime);
 
-        final int entryX = Math.max(this.x + this.width - this.entryWidth, this.x);
-        final int entryW = Math.max(Math.min(this.entryWidth, this.width) - 25, 0);
-        final int labelX = this.x;
-        final int labelW = Math.max(this.width - 25 - entryW, 0);
+        final var entryX = Math.max(this.x + this.width - this.entryWidth, this.x);
+        final var entryW = Math.max(Math.min(this.entryWidth, this.width) - 25, 0);
+        final var labelX = this.x;
+        final var labelW = Math.max(this.width - 25 - entryW, 0);
 
         this.drawBackground(renderer, labelX, labelW, entryX, entryW);
         this.drawText(renderer, entryX, entryW, labelX, labelW);
@@ -325,7 +325,7 @@ public class NumberSlider extends TextEntry {
             if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating number slider.");
             if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
 
-            NumberSlider numberSlider = new NumberSlider(this.bounds, this.value, this.min, this.max);
+            var numberSlider = new NumberSlider(this.bounds, this.value, this.min, this.max);
             numberSlider.setEntryWidth(this.entryWidth);
             numberSlider.setLabel(this.label);
             numberSlider.setCallback(this.callback);
@@ -412,9 +412,9 @@ public class NumberSlider extends TextEntry {
 
         @Override
         public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-            Rectangle bounds = this.getBounds();
-            boolean pressed = this.isPressed();
-            boolean hovered = this.isHovered();
+            var bounds = this.getBounds();
+            var pressed = this.isPressed();
+            var hovered = this.isHovered();
 
             Color iconColor;
             if (pressed) {
@@ -434,12 +434,12 @@ public class NumberSlider extends TextEntry {
                 iconColor = Color.WHITE.withAlpha(0x80);
             }
 
-            int mx = this.x + this.width / 2;
-            int my = this.x + this.height / 2;
+            var mx = this.x + this.width / 2;
+            var my = this.x + this.height / 2;
 
             renderer.setLineThickness(3);
-            int outer = this.up ? my + 3 : my - 3;
-            int inner = this.up ? my - 3 : my + 3;
+            var outer = this.up ? my + 3 : my - 3;
+            var inner = this.up ? my - 3 : my + 3;
             renderer.line(mx - 3, inner, mx, outer, Color.WHITE);
             renderer.line(mx, outer, mx + 3, outer, Color.WHITE);
         }

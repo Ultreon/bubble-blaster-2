@@ -7,7 +7,6 @@ import de.jcm.discordgamesdk.GameSDKException;
 import de.jcm.discordgamesdk.Result;
 import de.jcm.discordgamesdk.activity.Activity;
 
-import java.io.File;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -26,7 +25,7 @@ public class DiscordRPC {
 
     public DiscordRPC() {
         this.setActivity(() -> {
-            Activity activity = new Activity();
+            var activity = new Activity();
             activity.setState("Loading the game...");
             return activity;
         });
@@ -47,12 +46,12 @@ public class DiscordRPC {
         try {
             while (this.running) {
                 // Set parameters for the Core
-                try (CreateParams params = new CreateParams()) {
+                try (var params = new CreateParams()) {
                     params.setClientID(933147296311427144L);
                     params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
 
                     // Create the Core
-                    try (Core core = new Core(params)) {
+                    try (var core = new Core(params)) {
                         if (this.callbackLoop(core)) break;
                     }
                 }
@@ -69,7 +68,7 @@ public class DiscordRPC {
      */
     private boolean download() {
         try {
-            DiscordSDKDownloader sdkDownloader = new DiscordSDKDownloader();
+            var sdkDownloader = new DiscordSDKDownloader();
             sdkDownloader.downloadSync();
 
             if (sdkDownloader.isFailed()) {
@@ -77,7 +76,7 @@ public class DiscordRPC {
                 return false;
             }
 
-            File sdkFile = sdkDownloader.getFile();
+            var sdkFile = sdkDownloader.getFile();
             if (sdkFile == null || !sdkFile.exists()) {
                 System.err.println("Discord SDK file is missing");
                 return false;
@@ -147,9 +146,9 @@ public class DiscordRPC {
         this.updateLock.lock();
         if (this.dirty) {
             this.dirty = false;
-            Activity activity = this.activity.get();
+            var activity = this.activity.get();
             core.activityManager().updateActivity(activity, this::handleResult);
-            Activity cur = this.currentActivity;
+            var cur = this.currentActivity;
             if (cur != null) cur.close();
             this.currentActivity = activity;
         }
@@ -177,8 +176,8 @@ public class DiscordRPC {
     public void setActivity(Supplier<Activity> activity) {
         this.updateLock.lock();
         this.activity = () -> {
-            Activity ret = activity.get();
-            String state = ret.getState();
+            var ret = activity.get();
+            var state = ret.getState();
             BubbleBlaster.invoke(() -> Gdx.graphics.setTitle("Bubble Blaster 2 - " + this.gameVersion + " - " + state));
             ret.assets().setLargeImage("icon");
             ret.assets().setLargeText(this.gameVersion);

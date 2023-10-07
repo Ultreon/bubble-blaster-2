@@ -77,32 +77,32 @@ public class Color {
     }
 
     public static Color rgb(int color) {
-        long rgb = ((long) color) % 0x100000000L;
+        var rgb = ((long) color) % 0x100000000L;
         return new Color((rgb & 0xff0000L) >> 16, (rgb & 0x00ff00L) >> 8, rgb & 0x0000ffL, 255);
     }
 
     public static Color rgba(int color) {
-        long rgba = ((long) color) % 0x100000000L;
+        var rgba = ((long) color) % 0x100000000L;
         return new Color((rgba & 0xff000000L) >> 24, (rgba & 0x00ff0000L) >> 16, (rgba & 0x0000ff00L) >> 8, rgba & 0x000000ffL);
     }
 
     public static Color argb(int color) {
-        long argb = ((long) color) % 0x100000000L;
+        var argb = ((long) color) % 0x100000000L;
         return new Color((argb & 0x00ff0000L) >> 16, (argb & 0x0000ff00L) >> 8, argb & 0x000000ffL, (argb & 0xff000000L) >> 24);
     }
 
     public static Color bgr(int color) {
-        long bgr = ((long) color) % 0x100000000L;
+        var bgr = ((long) color) % 0x100000000L;
         return new Color(bgr & 0x0000ffL, (bgr & 0x00ff00L) >> 8, (bgr & 0xff0000L) >> 16, 255);
     }
 
     public static Color bgra(int color) {
-        long bgra = ((long) color) % 0x100000000L;
+        var bgra = ((long) color) % 0x100000000L;
         return new Color((bgra & 0x0000ff00L) >> 8, (bgra & 0x00ff0000L) >> 16, (bgra & 0xff000000L) >> 24, bgra & 0x000000ffL);
     }
 
     public static Color abgr(int color) {
-        long abgr = ((long) color) % 0x100000000L;
+        var abgr = ((long) color) % 0x100000000L;
         return new Color(abgr & 0x000000ffL, (abgr & 0x0000ff00L) >> 8, (abgr & 0x00ff0000L) >> 16, (abgr & 0xff000000L) >> 24);
     }
 

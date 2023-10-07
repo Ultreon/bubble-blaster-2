@@ -26,7 +26,7 @@ public final class BubbleCircle {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        BubbleCircle that = (BubbleCircle) obj;
+        var that = (BubbleCircle) obj;
         return this.index == that.index &&
                 Objects.equals(this.color, that.color);
     }

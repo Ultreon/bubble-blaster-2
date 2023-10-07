@@ -34,7 +34,7 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         }
 
         public CrashButton build() {
-            CrashButton button = new CrashButton((int) this._bounds.x, (int) this._bounds.y, (int) this._bounds.width, (int) this._bounds.height);
+            var button = new CrashButton((int) this._bounds.x, (int) this._bounds.y, (int) this._bounds.width, (int) this._bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);

@@ -65,7 +65,7 @@ public final class Range {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        Range that = (Range) obj;
+        var that = (Range) obj;
         return Double.doubleToLongBits(this.start) == Double.doubleToLongBits(that.start) &&
                 Double.doubleToLongBits(this.end) == Double.doubleToLongBits(that.end) &&
                 Double.doubleToLongBits(this.step) == Double.doubleToLongBits(that.step);

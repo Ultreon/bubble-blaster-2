@@ -38,7 +38,7 @@ public final class Identifier {
     }
 
     public Identifier(@MinLen(3) @NotNull String name) {
-        String[] split = name.split(":", 2);
+        var split = name.split(":", 2);
         if (split.length == 2) {
             this.location = Identifier.testLocation(split[0]);
             this.path = Identifier.testPath(split[1]);
@@ -89,7 +89,7 @@ public final class Identifier {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        Identifier that = (Identifier) o;
+        var that = (Identifier) o;
         return this.location.equals(that.location) && this.path.equals(that.path);
     }
 

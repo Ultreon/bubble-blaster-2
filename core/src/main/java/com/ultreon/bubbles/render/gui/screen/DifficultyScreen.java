@@ -2,7 +2,6 @@ package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.common.Difficulty;
 import com.ultreon.bubbles.render.gui.widget.Button;
-import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
 
 import java.math.BigDecimal;
@@ -20,15 +19,15 @@ public class DifficultyScreen extends Screen {
     public void init() {
         this.clearWidgets();
 
-        Difficulty[] values = Difficulty.values();
-        int gap = 2;
-        int width = 300;
-        int height = 50;
-        int totalHeight = (height + gap) * values.length - gap;
-        int y = (this.height - totalHeight) / 2;
-        int x = (this.width - width) / 2;
-        for (Difficulty difficulty : values) {
-            MutableText text = difficulty.getTranslation();
+        var values = Difficulty.values();
+        var gap = 2;
+        var width = 300;
+        var height = 50;
+        var totalHeight = (height + gap) * values.length - gap;
+        var y = (this.height - totalHeight) / 2;
+        var x = (this.width - width) / 2;
+        for (var difficulty : values) {
+            var text = difficulty.getTranslation();
             this.add(Button.builder()
                     .text(text.append(" (" + DifficultyScreen.fullNumberString(difficulty.getPlainModifier()) + "x)"))
                     .bounds(x, y, width, height)

@@ -57,10 +57,10 @@ public class SaveLoader {
         if (!this.savesDir.exists())
             this.savesDir.mkdirs();
 
-        FileHandle[] dirs = this.savesDir.list();
+        var dirs = this.savesDir.list();
         this.saves.clear();
 
-        for (FileHandle dir : Objects.requireNonNull(dirs)) {
+        for (var dir : Objects.requireNonNull(dirs)) {
             Supplier<GameSave> saveSupplier = () -> GameSave.fromFile(dir);
             this.saves.put(dir.name(), saveSupplier);
         }

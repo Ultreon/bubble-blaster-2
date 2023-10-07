@@ -6,14 +6,14 @@ import com.ultreon.data.types.MapType;
 
 public class DataManager {
     public MapType storeEntity(Entity entity) {
-        MapType nbt = new MapType();
+        var nbt = new MapType();
         nbt.put("position", this.storePosition(entity.getPos()));
         nbt.put("data", entity.save());
         return nbt;
     }
 
     private MapType storePosition(Vector2 pos) {
-        MapType nbt = new MapType();
+        var nbt = new MapType();
         nbt.putFloat("x", pos.x);
         nbt.putFloat("y", pos.y);
         return nbt;

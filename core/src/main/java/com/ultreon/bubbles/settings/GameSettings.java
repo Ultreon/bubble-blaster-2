@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.settings;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ultreon.bubbles.BubbleBlaster;
@@ -49,7 +48,7 @@ public final class GameSettings implements Serializable {
     }
 
     public synchronized static boolean reload() {
-        Gson gson = new Gson();
+        var gson = new Gson();
 
         instance = new GameSettings();
         if (!GameFolders.SETTINGS_FILE.exists()) {
@@ -57,8 +56,8 @@ public final class GameSettings implements Serializable {
         }
 
         try {
-            String json = GameFolders.SETTINGS_FILE.readString();
-            GameSettings instance = gson.fromJson(json, GameSettings.class);
+            var json = GameFolders.SETTINGS_FILE.readString();
+            var instance = gson.fromJson(json, GameSettings.class);
             if (!Registries.GAMEMODES.contains(instance.gamemode)) {
                 instance.gamemode = Gamemodes.NORMAL.id();
                 GameSettings.save();
@@ -73,9 +72,9 @@ public final class GameSettings implements Serializable {
     }
 
     public synchronized static boolean save() {
-        FileHandle settingsFile = GameFolders.SETTINGS_FILE;
+        var settingsFile = GameFolders.SETTINGS_FILE;
 
-        String json = GSON.toJson(instance);
+        var json = GSON.toJson(instance);
         try {
             settingsFile.writeString(json, false, "UTF-8");
         } catch (Exception e) {
@@ -102,17 +101,17 @@ public final class GameSettings implements Serializable {
     @Deprecated(forRemoval = true)
     public void setLanguage(String language) {
         this.language = language;
-        String oldLang = this.language;
-        Locale oldLocale = Locale.forLanguageTag(oldLang);
-        Locale newLocale = Locale.forLanguageTag(language);
+        var oldLang = this.language;
+        var oldLocale = Locale.forLanguageTag(oldLang);
+        var newLocale = Locale.forLanguageTag(language);
         LanguageManager.setCurrentLanguage(newLocale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, newLocale);
     }
 
     @Deprecated(forRemoval = true)
     public void setLanguage(Locale locale) {
-        String oldLang = this.language;
-        Locale oldLocale = Locale.forLanguageTag(oldLang);
+        var oldLang = this.language;
+        var oldLocale = Locale.forLanguageTag(oldLang);
         this.language = locale.toLanguageTag();
         LanguageManager.setCurrentLanguage(locale);
         GameEvents.LANGUAGE_CHANGED.factory().onLanguageChanged(oldLocale, locale);

@@ -1,9 +1,6 @@
 package com.ultreon.bubbles.input;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerMapping;
-import com.badlogic.gdx.math.Vector2;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.LoadedGame;
@@ -25,19 +22,19 @@ public class ControllerInputHandler extends InputHandler<ControllerInput> {
 
     @Override
     public boolean tickScreen(Screen screen) {
-        Controller controller = this.input.controller;
+        var controller = this.input.controller;
 
         if (controller == null || !controller.isConnected()) return false;
 
-        ControllerMapping mapping = controller.getMapping();
+        var mapping = controller.getMapping();
 
-        float moveX = controller.getAxis(mapping.axisLeftX);
-        float moveY = controller.getAxis(mapping.axisLeftY);
+        var moveX = controller.getAxis(mapping.axisLeftX);
+        var moveY = controller.getAxis(mapping.axisLeftY);
 
         if (moveX > -DEAD_ZONE && moveX < DEAD_ZONE) moveX = 0f;
         if (moveY > -DEAD_ZONE && moveY < DEAD_ZONE) moveY = 0f;
 
-        Vector2 cursorPos = DesktopInput.getMousePos();
+        var cursorPos = DesktopInput.getMousePos();
         if (moveX > 0 || moveY > 0) {
             cursorPos.add(moveX * MOUSE_SPEED / TPS, moveY * MOUSE_SPEED / TPS);
             cursorPos.x = Mth.clamp(cursorPos.x, 0, Gdx.graphics.getWidth());
@@ -58,18 +55,18 @@ public class ControllerInputHandler extends InputHandler<ControllerInput> {
 
     @Override
     public boolean tickPlayer(Player player) {
-        Controller controller = this.input.controller;
+        var controller = this.input.controller;
 
         if (controller == null || !controller.isConnected()) return false;
 
-        ControllerMapping mapping = controller.getMapping();
+        var mapping = controller.getMapping();
 
-        float moveX = controller.getAxis(mapping.axisLeftX);
-        float moveY = controller.getAxis(mapping.axisLeftY);
+        var moveX = controller.getAxis(mapping.axisLeftX);
+        var moveY = controller.getAxis(mapping.axisLeftY);
 
         if (GamePlatform.get().isDesktop()) {
-            float triggerL = controller.getAxis(4);
-            float triggerR = controller.getAxis(5);
+            var triggerL = controller.getAxis(4);
+            var triggerR = controller.getAxis(5);
             if (triggerL < DEAD_ZONE) triggerL = 0;
             if (triggerR < DEAD_ZONE) triggerR = 0;
             if (triggerL > 0) {

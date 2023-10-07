@@ -61,7 +61,7 @@ public class PlayerItemCollection extends ItemCollection {
 
     @Override
     public void tick() {
-        for (Item item : this.items) {
+        for (var item : this.items) {
             if (item != null) {
                 item.onEntityTick(this.player);
                 item.tick();

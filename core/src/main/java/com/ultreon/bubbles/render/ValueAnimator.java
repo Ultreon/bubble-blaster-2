@@ -25,7 +25,7 @@ public class ValueAnimator {
 
     public double animate() {
         if (this.active) {
-            double currentTime = (double) System.nanoTime() / 1000000000d;
+            var currentTime = (double) System.nanoTime() / 1000000000d;
 
             double now;
             if (this.timeEnd - this.timeStart != 0) {
@@ -43,8 +43,8 @@ public class ValueAnimator {
     }
 
     public boolean isEnded() {
-        double currentTime = (double) System.nanoTime() / 1000000000d;
-        double now = (((currentTime - this.timeEnd) / (this.timeEnd - this.timeStart)) + 1) / 2;
+        var currentTime = (double) System.nanoTime() / 1000000000d;
+        var now = (((currentTime - this.timeEnd) / (this.timeEnd - this.timeStart)) + 1) / 2;
 
         return now >= 1;
     }

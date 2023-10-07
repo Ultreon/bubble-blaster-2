@@ -28,7 +28,7 @@ public class ExtraModuleInfoPluginExtension {
      * Add full module information, including exported packages and dependencies, for a given Jar file.
      */
     public void module(String jarName, String moduleName, String moduleVersion, @Nullable Action<? super ModuleInfo> conf) {
-        ModuleInfo moduleInfo = new ModuleInfo(moduleName, moduleVersion);
+        var moduleInfo = new ModuleInfo(moduleName, moduleVersion);
         if (conf != null) {
             conf.execute(moduleInfo);
         }

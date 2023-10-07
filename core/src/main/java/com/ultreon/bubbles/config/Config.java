@@ -59,14 +59,14 @@ public class Config {
                 configEntry.reset();
             });
         } catch (ParsingException e) {
-            String fileName = this.file.getName();
+            var fileName = this.file.getName();
             BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
             BubbleBlaster.getInstance().notifications.notify(
                     Notification.builder("Config Failed to Load!", "Failed to load '" + fileName + "'")
                             .subText("Configuration Manager")
                             .build()
             );
-            File backupFile = new File(this.file.getParentFile(), fileName + ".bak");
+            var backupFile = new File(this.file.getParentFile(), fileName + ".bak");
             if (backupFile.exists()) {
                 BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
             }
@@ -99,7 +99,7 @@ public class Config {
         this.unwatch();
         if (ConfigEvents.CONFIG_SAVING.factory().onConfigSaving(this).isCanceled()) return;
 
-        BubbleBlaster game = BubbleBlaster.getInstance();
+        var game = BubbleBlaster.getInstance();
 
         try {
             WRITER.write(this.config, this.file, WritingMode.REPLACE);
@@ -410,9 +410,9 @@ public class Config {
         }
 
         public T get() {
-            T value0 = this.get0();
+            var value0 = this.get0();
             if (value0 != null) return value0;
-            T value = this.value;
+            var value = this.value;
             this.config.set(this.path, value);
             if (value == null) return this.defaultValue;
             return value;
@@ -505,69 +505,69 @@ public class Config {
             }
 
             public ByteEntry withinRange(byte min, byte max, byte def) {
-                ByteEntry entry = new ByteEntry(this.builder.config, this.path, min, max, def);
+                var entry = new ByteEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public ShortEntry withinRange(short min, short max, short def) {
-                ShortEntry entry = new ShortEntry(this.builder.config, this.path, min, max, def);
+                var entry = new ShortEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public IntEntry withinRange(int min, int max, int def) {
-                IntEntry entry = new IntEntry(this.builder.config, this.path, min, max, def);
+                var entry = new IntEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public LongEntry withinRange(long min, long max, long def) {
-                LongEntry longEntry = new LongEntry(this.builder.config, this.path, min, max, def);
+                var longEntry = new LongEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, longEntry);
                 return longEntry;
             }
 
             public FloatEntry withinRange(float min, float max, float def) {
-                FloatEntry entry = new FloatEntry(this.builder.config, this.path, min, max, def);
+                var entry = new FloatEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public DoubleEntry withinRange(double min, double max, double def) {
-                DoubleEntry entry = new DoubleEntry(this.builder.config, this.path, min, max, def);
+                var entry = new DoubleEntry(this.builder.config, this.path, min, max, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public CharEntry value(char def) {
-                CharEntry entry = new CharEntry(this.builder.config, this.path, def);
+                var entry = new CharEntry(this.builder.config, this.path, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public BooleanEntry value(boolean def) {
-                BooleanEntry entry = new BooleanEntry(this.builder.config, this.path, def);
+                var entry = new BooleanEntry(this.builder.config, this.path, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public StringEntry value(String def) {
-                StringEntry entry = new StringEntry(this.builder.config, this.path, def);
+                var entry = new StringEntry(this.builder.config, this.path, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;
             }
 
             public <T extends Enum<T>> EnumEntry<T> value(T def) {
-                EnumEntry<T> entry = new EnumEntry<>(this.builder.config, this.path, def);
+                var entry = new EnumEntry<T>(this.builder.config, this.path, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;

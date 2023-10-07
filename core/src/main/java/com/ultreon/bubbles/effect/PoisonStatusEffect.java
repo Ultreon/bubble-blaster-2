@@ -6,7 +6,6 @@ import com.ultreon.bubbles.entity.damage.DamageType;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import com.ultreon.commons.exceptions.InvalidValueException;
-import com.ultreon.data.types.MapType;
 
 import java.util.UUID;
 
@@ -19,12 +18,12 @@ public class PoisonStatusEffect extends StatusEffect {
 
     @Override
     public void buildVfx(StatusEffectInstance appliedEffect, VfxEffectBuilder builder) {
-        VignettingEffect effect = new VignettingEffect(true);
-        long timeActive = appliedEffect.getTimeActive();
+        var effect = new VignettingEffect(true);
+        var timeActive = appliedEffect.getTimeActive();
         if (timeActive < 100) {
             effect.setIntensity(timeActive / 100f);
         }
-        long remainingTime = appliedEffect.getRemainingTime().toMillis();
+        var remainingTime = appliedEffect.getRemainingTime().toMillis();
         if (remainingTime < 1500) {
             effect.setIntensity((1500f - remainingTime) / 1500f);
         }
@@ -39,14 +38,14 @@ public class PoisonStatusEffect extends StatusEffect {
     @Override
     public void execute(Entity entity, StatusEffectInstance appliedEffect) {
         entity.getWorld().attack(entity, (double) appliedEffect.getStrength() / 2, new EntityDamageSource(null, DamageType.POISON));
-        MapType tag = appliedEffect.getTag();
-        long nextDamage = tag.getLong("nextDamage");
+        var tag = appliedEffect.getTag();
+        var nextDamage = tag.getLong("nextDamage");
         tag.putLong("nextDamage", nextDamage + 2000L);
     }
 
     @Override
     public void onStart(StatusEffectInstance appliedEffect, Entity entity) {
-        MapType tag = appliedEffect.getTag();
+        var tag = appliedEffect.getTag();
         tag.putLong("nextDamage", System.currentTimeMillis() + 2000);
         tag.putLong("startTime", System.currentTimeMillis());
     }

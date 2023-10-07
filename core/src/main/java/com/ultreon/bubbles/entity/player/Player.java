@@ -4,18 +4,15 @@ import com.badlogic.gdx.math.*;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.BubbleBlasterConfig;
 import com.ultreon.bubbles.LoadedGame;
-import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.entity.Bullet;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.entity.LivingEntity;
 import com.ultreon.bubbles.entity.ammo.AmmoType;
 import com.ultreon.bubbles.entity.attribute.Attribute;
-import com.ultreon.bubbles.entity.attribute.AttributeContainer;
 import com.ultreon.bubbles.entity.damage.EntityDamageSource;
 import com.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import com.ultreon.bubbles.entity.spawning.SpawnInformation;
-import com.ultreon.bubbles.entity.types.EntityType;
 import com.ultreon.bubbles.event.v1.PlayerEvents;
 import com.ultreon.bubbles.init.AmmoTypes;
 import com.ultreon.bubbles.init.Entities;
@@ -131,7 +128,7 @@ public class Player extends LivingEntity implements InputController {
 
         this.health = 30f;
 
-        for (EntityType<?> entityType : Registries.ENTITIES.values()) {
+        for (var entityType : Registries.ENTITIES.values()) {
             this.markAsAttackable(entityType);
         }
 
@@ -162,8 +159,8 @@ public class Player extends LivingEntity implements InputController {
     @Override
     public void preSpawn(SpawnInformation information) {
         super.preSpawn(information);
-        BubbleBlaster game = this.world.game();
-        Rectangle gameBounds = game.getGameBounds();
+        var game = this.world.game();
+        var gameBounds = game.getGameBounds();
         this.pos.x = Mth.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
         this.pos.y = Mth.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
         this.make();
@@ -234,7 +231,7 @@ public class Player extends LivingEntity implements InputController {
         //***********************//
         // Spawn and load checks //
         //***********************//
-        LoadedGame loadedGame = BubbleBlaster.getInstance().getLoadedGame();
+        var loadedGame = BubbleBlaster.getInstance().getLoadedGame();
 
         if (loadedGame == null) {
             return;
@@ -262,8 +259,8 @@ public class Player extends LivingEntity implements InputController {
         //****************//
         // Player motion. //
         //****************//
-        float motion = 0.0f;
-        float rotate = 0.0f;
+        var motion = 0.0f;
+        var rotate = 0.0f;
 
         // Check each direction, to create velocity
         this.moving = Mth.clamp(this.moving, -1, 1);
@@ -278,9 +275,9 @@ public class Player extends LivingEntity implements InputController {
         }
 
         // Calculate Velocity X and Y.
-        float angelRadians = this.rotation * MathUtils.degRad;
-        float tempVelX = MathUtils.cos(angelRadians) * motion;
-        float tempVelY = MathUtils.sin(angelRadians) * motion;
+        var angelRadians = this.rotation * MathUtils.degRad;
+        var tempVelX = MathUtils.cos(angelRadians) * motion;
+        var tempVelY = MathUtils.sin(angelRadians) * motion;
         this.tempVel.set(tempVelX, tempVelY);
 
         if (this.canMove) {
@@ -318,7 +315,7 @@ public class Player extends LivingEntity implements InputController {
         }
 
         // Game border collision.
-        Rectangle bounds = loadedGame.getGamemode().getGameBounds();
+        var bounds = loadedGame.getGamemode().getGameBounds();
 
         // Leveling up.
         if (this.score / BubbleBlasterConfig.LEVEL_THRESHOLD.get() > this.level) {
@@ -335,7 +332,7 @@ public class Player extends LivingEntity implements InputController {
             this.invincible = false;
         }
 
-        for (StatusEffectInstance appliedEffect : this.statusEffects) {
+        for (var appliedEffect : this.statusEffects) {
             appliedEffect.tick(this);
         }
 
@@ -366,13 +363,13 @@ public class Player extends LivingEntity implements InputController {
         this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
         this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
 
-        float pixelsPerTick = this.prevPos.dst(this.pos);
+        var pixelsPerTick = this.prevPos.dst(this.pos);
         this.currentSpeed = pixelsPerTick * TPS;
     }
 
     @Override
     public void damage(double value, EntityDamageSource source) {
-        double defense = this.attributes.getBase(Attribute.DEFENSE);
+        var defense = this.attributes.getBase(Attribute.DEFENSE);
         if (defense <= 0.0d) {
             this.destroy();
             return;
@@ -405,23 +402,23 @@ public class Player extends LivingEntity implements InputController {
 
         // Modifiers
         if (other instanceof Bubble && !((Bubble) other).isInvincible()) {
-            Bubble bubble = (Bubble) other;
-            AttributeContainer bubbleAttrs = bubble.getAttributes();
-            double bubbleScore = bubbleAttrs.get(Attribute.SCORE);
-            double bubbleDefense = bubbleAttrs.get(Attribute.DEFENSE);
-            double scoreModifier = this.attributes.get(Attribute.SCORE_MODIFIER);
+            var bubble = (Bubble) other;
+            var bubbleAttrs = bubble.getAttributes();
+            var bubbleScore = bubbleAttrs.get(Attribute.SCORE);
+            var bubbleDefense = bubbleAttrs.get(Attribute.DEFENSE);
+            var scoreModifier = this.attributes.get(Attribute.SCORE_MODIFIER);
 
             // Attributes
-            float props = bubble.getRadius() * (bubble.getSpeed() + 1);
-            double attrs = props * bubbleDefense * bubbleScore * bubbleScore * scoreModifier;
+            var props = bubble.getRadius() * (bubble.getSpeed() + 1);
+            var attrs = props * bubbleDefense * bubbleScore * bubbleScore * scoreModifier;
 
             // Calculate score value.
-            double award = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
+            var award = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
 
             // Add score.
             this.awardScore(award);
         } else if (other.getAttributes().has(Attribute.SCORE_MODIFIER)) {
-            double score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
+            var score = other.getAttributes().get(Attribute.SCORE_MODIFIER);
             this.awardScore(score);
         }
     }
@@ -715,8 +712,8 @@ public class Player extends LivingEntity implements InputController {
         if (force || this.canShoot()) {
             this.shootCooldown = TimeProcessor.millisToTicks(BubbleBlasterConfig.SHOOT_COOLDOWN.get());
 
-            Vector2 bulletPos = this.pos.cpy();
-            Bullet bullet = new Bullet(this.currentAmmo, bulletPos, this.rotation, this.world);
+            var bulletPos = this.pos.cpy();
+            var bullet = new Bullet(this.currentAmmo, bulletPos, this.rotation, this.world);
             bullet.setOwner(this);
             this.world.spawn(bullet, SpawnInformation.triggeredSpawn(this, this.world));
         }

@@ -320,7 +320,7 @@ public abstract class BubbleType implements Serializable, Translatable {
         }
 
         public BubbleType build() {
-            BubbleType bubbleType = new BubbleType() {
+            var bubbleType = new BubbleType() {
                 @Override
                 public double getModifiedPriority(double localDifficulty) {
                     if (Builder.this.difficulty == -1) return this.getPriority();
@@ -351,7 +351,7 @@ public abstract class BubbleType implements Serializable, Translatable {
 
             bubbleType.colors = List.of(this.colors);
 
-            for (Pair<Integer, AiTask> aiTask : this.aiTasks) {
+            for (var aiTask : this.aiTasks) {
                 bubbleType.addAiTask(aiTask.getFirst(), aiTask.getSecond());
             }
 
@@ -591,11 +591,11 @@ public abstract class BubbleType implements Serializable, Translatable {
     ///////////////////////
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof LivingEntity && ((LivingEntity) target).isInvincible()) {
-            LivingEntity livingEntity = (LivingEntity) target;
+            var livingEntity = (LivingEntity) target;
             return;
         }
 
-        StatusEffectInstance appliedEffect = this.getEffect(source, target);
+        var appliedEffect = this.getEffect(source, target);
         if (appliedEffect == null) {
             return;
         }
@@ -603,7 +603,7 @@ public abstract class BubbleType implements Serializable, Translatable {
         if (source.isEffectApplied()) return;
 
         if (target instanceof Player) {
-            Player player = (Player) target;
+            var player = (Player) target;
             try {
                 source.setEffectApplied(true);
                 player.addEffect(appliedEffect);
@@ -615,13 +615,13 @@ public abstract class BubbleType implements Serializable, Translatable {
 
     @Override
     public String getTranslationPath() {
-        Identifier registryName = Registries.BUBBLES.getKey(this);
+        var registryName = Registries.BUBBLES.getKey(this);
         assert registryName != null;
         return registryName.location() + ".bubble." + registryName.path();
     }
 
     public String getDescriptionTranslationPath() {
-        Identifier registryName = Registries.BUBBLES.getKey(this);
+        var registryName = Registries.BUBBLES.getKey(this);
         assert registryName != null;
         return registryName.location() + ".bubble." + registryName.path() + ".desc";
     }
