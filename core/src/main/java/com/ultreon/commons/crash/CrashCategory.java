@@ -52,7 +52,7 @@ public class CrashCategory {
         sb.append(this.details).append(": \r\n");
 
         if (!this.entries.isEmpty()) {
-            var simpleEntries = new ArrayList<AbstractMap.SimpleEntry<String, String>>(this.entries);
+            var simpleEntries = new ArrayList<>(this.entries);
             for (var i = 0; i < simpleEntries.size() - 1; i++) {
                 var entry = simpleEntries.get(i);
                 sb.append("   ");

@@ -118,7 +118,7 @@ public class CycleButton<T extends Enum<T>> extends Button implements GuiStateLi
 
         @Override
         public CycleButton<T> build() {
-            var button = new CycleButton<T>(this.componentType, (int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
+            var button = new CycleButton<>(this.componentType, (int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
 
             button.setText(this.text);
             button.setCommand(this.command);

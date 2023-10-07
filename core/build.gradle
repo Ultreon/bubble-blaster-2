@@ -23,8 +23,8 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
-        classpath "com.google.code.gson:gson:2.8.9"
+        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath "com.google.code.gson:gson:2.10.1"
     }
 }
 
@@ -38,7 +38,6 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'bubbles-gradle'
 
@@ -54,15 +53,13 @@ archivesBaseName = archives_base_name + "-core"
 
 java {
     withSourcesJar()
-    withJavadocJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("11")
+    }
 }
 
 bubbles {
     versionType(VersionType.DEV)
-}
-
-compileJava {
-    sourceCompatibility = "11"
 }
 
 //**********************//
@@ -130,6 +127,7 @@ dependencies {
     api "com.github.Ultreon.corelibs:corelibs-translations-v1:$corelibs_version"
 
     // Apis
+    api "com.google.code.gson:gson:$gson_version"
     api "commons-io:commons-io:$commons_io_version"
     api "commons-net:commons-net:$commons_net_version"
     api "org.apache.commons:commons-lang3:$commons_lang_version"

@@ -33,8 +33,11 @@ archivesBaseName = archives_base_name + "-gameprovider"
 //GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
 //shell.run(file, arguments);
 
-compileJava {
-    sourceCompatibility = "11"
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("11")
+    }
 }
 
 println("Current version: $project_version")

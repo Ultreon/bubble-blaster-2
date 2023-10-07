@@ -56,7 +56,9 @@ public interface GameWindow {
         return BubbleBlaster.getInstance();
     }
 
-    void finalSetup();
+    default void finalSetup() {
+
+    }
 
     default boolean toggleFullscreen() {
         return this.setFullscreen(!this.isFullscreen());

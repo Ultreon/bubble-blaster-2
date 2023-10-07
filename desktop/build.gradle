@@ -36,7 +36,6 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'java-library'
 //apply plugin: 'maven-publish'
 
 //****************************//
@@ -51,11 +50,9 @@ archivesBaseName = archives_base_name + "-desktop"
 
 java {
     withSourcesJar()
-    withJavadocJar()
-}
-
-compileJava {
-    sourceCompatibility = "11"
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("11")
+    }
 }
 
 evaluationDependsOn(":core")
@@ -154,7 +151,7 @@ dependencies {
     implementation "net.java.dev.jna:jna-platform:$jna_version"
 
     // SLF4J
-    api "org.slf4j:slf4j-api:$slf4j_version"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
 
     // Google
     implementation "com.google.code.gson:gson:2.10.1"
@@ -199,6 +196,7 @@ dependencies {
     implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
+        exclude module: 'gson'
     }
 
     implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'

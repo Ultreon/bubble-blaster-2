@@ -579,7 +579,7 @@ public class Config {
             }
 
             public <T extends Enum<T>> EnumEntry<T> value(T def) {
-                var entry = new EnumEntry<T>(this.builder.config, this.path, def);
+                var entry = new EnumEntry<>(this.builder.config, this.path, def);
                 this.builder.entries.put(this.path, entry);
                 entry.setComment(this.comment);
                 return entry;

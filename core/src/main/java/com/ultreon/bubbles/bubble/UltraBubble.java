@@ -25,7 +25,7 @@ public class UltraBubble extends BubbleType {
 
     @Override
     public ArrayList<Object> getFilters(Bubble bubble) {
-        var filters = new ArrayList<Object>();
+        var filters = new ArrayList<>();
 
 //        HSBAdjustFilter filter = new HSBAdjustFilter();
 //        filter.setHFactor((float) (System.currentTimeMillis() / 3) % 1);

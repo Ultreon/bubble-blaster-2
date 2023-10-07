@@ -90,11 +90,6 @@ public class DesktopGameWindow implements GameWindow {
     }
 
     @Override
-    public void finalSetup() {
-        // TODO: Use final setup in game window.
-    }
-
-    @Override
     public boolean toggleFullscreen() {
         this.setFullscreen(!this.isFullscreen());
         return false;

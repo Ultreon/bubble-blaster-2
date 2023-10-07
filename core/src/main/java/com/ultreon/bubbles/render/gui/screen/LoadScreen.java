@@ -21,16 +21,13 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.MessengerImpl;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
-import com.ultreon.libs.commons.v0.tuple.Pair;
 import com.ultreon.libs.registries.v0.Registry;
 import com.ultreon.libs.registries.v0.event.RegistryEvents;
 import com.ultreon.libs.translations.v1.LanguageManager;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class LoadScreen extends InternalScreen {
@@ -40,13 +37,8 @@ public final class LoadScreen extends InternalScreen {
     public static final float PROGRESS_BAR_WIDTH = 500f;
 
     private static final Logger LOGGER = GamePlatform.get().getLogger("Game-Loader");
-    private static final float FADE_IN = 1000f;
     private static LoadScreen instance = null;
     private static volatile boolean languagesLoaded = false;
-    private final List<Pair<String, Long>> messages = new CopyOnWriteArrayList<>();
-    private Thread loadThread;
-    private final String title = "";
-    private final String description = "";
     private static boolean done;
     private volatile ProgressMessenger progressMain = null;
     private volatile ProgressMessenger progressAlt = null;
@@ -95,8 +87,6 @@ public final class LoadScreen extends InternalScreen {
         renderer.hideCursor();
 
         this.renderBackground(renderer);
-
-        var i = 0;
 
         // Draw progress components.
         if (this.progressMain != null) {
@@ -156,7 +146,7 @@ public final class LoadScreen extends InternalScreen {
 
         LOGGER.info("Loading resources...");
         this.progressMain.sendNext("Loading resources...");
-        var progressAltAtomic = new AtomicReference<ProgressMessenger>(this.progressAlt);
+        var progressAltAtomic = new AtomicReference<>(this.progressAlt);
         GamePlatform.get().loadGameResources(progressAltAtomic, this.msgAlt);
         GamePlatform.get().loadModResources(progressAltAtomic, this.msgAlt);
         this.progressAlt = progressAltAtomic.get();

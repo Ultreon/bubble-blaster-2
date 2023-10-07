@@ -90,8 +90,9 @@ public class AndroidGameWindow implements GameWindow {
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public void finalSetup() {
-        // TODO: Use final setup in game window.
+
     }
 
     @Override

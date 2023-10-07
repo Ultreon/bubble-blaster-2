@@ -14,7 +14,7 @@ public class SaveData {
     public final HashMap<List<String>, Object> saveData = new HashMap<>();
 
     public String getString(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -29,7 +29,7 @@ public class SaveData {
     }
 
     public Integer getInt(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -44,7 +44,7 @@ public class SaveData {
     }
 
     public Float getFloat(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -59,7 +59,7 @@ public class SaveData {
     }
 
     public Double getDouble(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -74,7 +74,7 @@ public class SaveData {
     }
 
     public Boolean getBoolean(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -89,7 +89,7 @@ public class SaveData {
     }
 
     public Object getObject(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;
@@ -105,7 +105,7 @@ public class SaveData {
 
     @SuppressWarnings("unchecked")
     public <T> ArrayList<? extends T> getArrayList(String... path) {
-        var stringArray = new ArrayList<String>(Arrays.asList(path));
+        var stringArray = new ArrayList<>(Arrays.asList(path));
 
         if (!this.saveData.containsKey(Arrays.asList(path))) {
             return null;

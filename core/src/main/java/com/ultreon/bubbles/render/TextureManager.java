@@ -36,7 +36,7 @@ public final class TextureManager {
             var byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
             out.close();
             return byteArrayInputStream;
-        }); // TODO: Replace with mem:// url.
+        });
 
         DEFAULT_TEX = new Texture(new ByteArrayFileHandle(".png", DEFAULT_TEX_RESOURCE.loadOrGet()));
     }

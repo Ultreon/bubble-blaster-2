@@ -149,7 +149,7 @@ public abstract class Screen extends Container implements CrashFiller {
     }
 
     public void onChildFocusChanged() {
-        var clone = new CopyOnWriteArrayList<GuiComponent>(this.children);
+        var clone = new CopyOnWriteArrayList<>(this.children);
         if (clone.isEmpty()) return;
         if (this.focusIndex >= clone.size()) {
             this.focusIndex = 0;

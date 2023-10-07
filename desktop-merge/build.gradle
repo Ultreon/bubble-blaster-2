@@ -1,4 +1,5 @@
 //file:noinspection GroovyUnusedCatchParameter
+//file:noinspection JavaPluginLanguageLevel
 
 
 import org.panteleyev.jpackage.ImageType
@@ -33,16 +34,14 @@ buildscript {
 //     Plugins     //
 //*****************//
 plugins {
-    id 'java'
-    id 'java-library'
+    //noinspection JavaPluginLanguageLevel
+    id "java"
+    //noinspection JavaPluginLanguageLevel
+    id "java-library"
     id "org.panteleyev.jpackageplugin" version "1.5.0"
-//    id 'maven-publish'
-//    id "org.panteleyev.jpackageplugin"
 }
 
-apply plugin: 'java'
-apply plugin: 'java-library'
-//apply plugin: 'maven-publish'
+apply plugin: 'maven-publish'
 
 //****************************//
 // Setting up main properties //
@@ -95,8 +94,8 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdx_version:natives-desktop"
 
     // Apache Log4J
+    annotationProcessor "org.apache.logging.log4j:log4j-core:$log4j_version"
     implementation "org.apache.logging.log4j:log4j:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
 
@@ -105,7 +104,7 @@ dependencies {
     implementation "net.java.dev.jna:jna-platform:$jna_version"
 
     // SLF4J
-    api "org.slf4j:slf4j-api:$slf4j_version"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
 
     // Google
     implementation "com.google.code.gson:gson:2.10.1"
@@ -129,9 +128,6 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
 
     implementation "org.xbib.elasticsearch:joptsimple:6.3.2.1"
-    implementation "org.apache.logging.log4j:log4j:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
-    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
 
     // fabric-loader dependencies
     implementation "org.ow2.asm:asm:${project.asm_version}"
@@ -143,10 +139,13 @@ dependencies {
     implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
+        exclude module: 'gson'
     }
 
+    //noinspection GradleDynamicVersion
     implementation 'net.fabricmc:tiny-mappings-parser:0.3.0+build.17'
-    implementation 'net.fabricmc:tiny-remapper:0.8.5'
+    implementation 'net.fabricmc:tiny-remapper:0.8.7'
+    //noinspection GradleDynamicVersion
     implementation 'net.fabricmc:dev-launch-injector:0.2.1+build.8'
     implementation 'net.fabricmc:access-widener:2.1.0'
 
@@ -216,8 +215,10 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-compileJava {
-    sourceCompatibility = "11"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("11")
+    }
 }
 
 delete "$buildDir/jars"

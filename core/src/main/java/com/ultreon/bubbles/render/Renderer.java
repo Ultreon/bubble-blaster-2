@@ -112,8 +112,6 @@ public class Renderer {
     private boolean hovering;
     private boolean hideCursor;
     private final List<Disposable> toDispose = new ArrayList<>();
-    private final VfxFrameBuffer.Renderer shapesAdapter;
-    private final VfxFrameBuffer.Renderer batchAdapter;
     private final FilmGrainEffect vfxNoise;
     private boolean noising;
 
@@ -130,9 +128,6 @@ public class Renderer {
         this.matrixStack.stack.removeLast();
         this.sides = new DefaultSideEstimator(20, 4000, 3600f);
 
-        this.shapesAdapter = new VfxFrameBuffer.ShapeRendererAdapter(shapes);
-        this.batchAdapter = new VfxFrameBuffer.BatchRendererAdapter(batch);
-
         // Projection matrix.
         this.matrixStack.onEdit = m -> {
             this.shapes.setTransformMatrix(m);
@@ -144,14 +139,14 @@ public class Renderer {
         // Visual Effects setup.
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
         this.vfxManager.setBlendingEnabled(false);
-        this.vfxBlur = new com.crashinvaders.vfx.effects.GaussianBlurEffect(com.crashinvaders.vfx.effects.GaussianBlurEffect.BlurType.Gaussian5x5);
+        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.Gaussian5x5);
         this.vfxBlur.setPasses(10);
 //        this.vfxBlur.setAmount(15);
         this.vfxNfaa = new NfaaEffect(true);
         this.vfxNoise = new FilmGrainEffect();
         this.vfxNoise.setNoiseAmount(0.25f);
 
-        this.fboPool = new FboPool(Pixmap.Format.RGBA8888, (int) this.getWidth(), (int) this.getHeight(), 10);
+        this.fboPool = new FboPool(Pixmap.Format.RGBA8888, this.getWidth(), this.getHeight(), 10);
         this.fboPool.setTextureParams(TextureWrap.Repeat, TextureWrap.Repeat, TextureFilter.Linear, TextureFilter.Linear);
     }
 
@@ -1880,7 +1875,7 @@ public class Renderer {
         public void freeAll() {
             this.cleanupInvalid();
 
-            var copy = new Array<VfxFrameBuffer>(this.managedBuffers);
+            var copy = new Array<>(this.managedBuffers);
             for (var fbo : copy)
                 this.free(fbo);
 

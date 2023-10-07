@@ -91,7 +91,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
 
     @CanIgnoreReturnValue
     public <C extends T> ListEntry<T, C> addItem(C item) {
-        var entry = new ListEntry<T, C>(this, item, 0, (int) (this.getViewport().getViewportSize().y + this.gap), this.width, this.height, this.entries.size());
+        var entry = new ListEntry<>(this, item, 0, (int) (this.getViewport().getViewportSize().y + this.gap), this.width, this.height, this.entries.size());
         this.entries.add(entry);
         this.listContent.add(entry);
         this.recalculateViewport();

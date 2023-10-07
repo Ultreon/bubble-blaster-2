@@ -15,8 +15,8 @@ buildscript {
         google()
     }
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.8.0'
-        classpath "com.google.code.gson:gson:2.8.+"
+        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath "com.google.code.gson:gson:2.10.1"
     }
 }
 
@@ -30,11 +30,11 @@ group project_group // http://maven.apache.org/guides/mini/guide-naming-conventi
 
 archivesBaseName = archives_base_name + "-minimal"
 
-//GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
-//shell.run(file, arguments);
-
-compileJava {
-    sourceCompatibility = "11"
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("11")
+    }
 }
 
 println("Current version: $project_version")
@@ -73,6 +73,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdx_version:natives-desktop"
 
     implementation "com.google.guava:guava:$guava_version"
+    implementation "com.google.code.gson:gson:$gson_version"
     implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
     
     // Fabric
@@ -85,6 +86,7 @@ dependencies {
     implementation("net.fabricmc:sponge-mixin:${project.mixin_version}") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
+        exclude module: 'gson'
     }
 
     implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
