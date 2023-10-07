@@ -7,7 +7,7 @@ import com.ultreon.data.types.MapType;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@SuppressWarnings({"DuplicatedCode", "unused"})
+@SuppressWarnings({"DuplicatedCode"})
 public class AttributeContainer implements ListDataHolder<MapType> {
     private final Map<Attribute, Double> map = new HashMap<>();
     private final Map<Attribute, List<AttributeModifier>> modifierMap = new HashMap<>();

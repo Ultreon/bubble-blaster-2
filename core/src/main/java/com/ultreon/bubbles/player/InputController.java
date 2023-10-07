@@ -1,7 +1,7 @@
 package com.ultreon.bubbles.player;
 
 
-@SuppressWarnings({"RedundantSuppression", "unused"})
+@SuppressWarnings({"RedundantSuppression"})
 public interface InputController {
     void moving(float moving);
 

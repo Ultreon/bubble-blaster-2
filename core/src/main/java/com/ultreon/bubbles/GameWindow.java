@@ -121,7 +121,7 @@ public interface GameWindow {
         Gdx.graphics.setTitle(title);
     }
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"FieldCanBeLocal"})
     class Properties {
         public final int width;
         public final int height;

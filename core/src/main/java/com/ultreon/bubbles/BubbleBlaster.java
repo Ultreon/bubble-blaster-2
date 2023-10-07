@@ -96,7 +96,7 @@ import java.util.function.Supplier;
  * @since 0.0.1
  */
 @ParametersAreNonnullByDefault
-@SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "RedundantSuppression"})
+@SuppressWarnings({"ResultOfMethodCallIgnored", "RedundantSuppression"})
 public final class BubbleBlaster extends ApplicationAdapter implements CrashFiller {
     public static final int TPS = 40;
     public static final String NAMESPACE = "bubbleblaster";

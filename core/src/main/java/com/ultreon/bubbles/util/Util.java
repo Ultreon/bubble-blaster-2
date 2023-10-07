@@ -5,18 +5,12 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.common.GameFolders;
 import com.ultreon.bubbles.save.GameSave;
-import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
-import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
 import com.ultreon.commons.io.filefilters.DirectoryFileFilter;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
-@FieldsAreNonnullByDefault
 @Deprecated(forRemoval = true)
 public class Util {
     @Deprecated(forRemoval = true)

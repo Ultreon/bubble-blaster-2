@@ -94,6 +94,7 @@
   "bubbleblaster.screen.saves.create.title": "Create a New Save",
   "bubbleblaster.screen.saves.create.seed": "Seed:",
   "bubbleblaster.screen.saves.create.gamemode": "Gamemode:",
+  "bubbleblaster.screen.saves.create.difficulty": "Difficulty:",
   "bubbleblaster.screen.saves.create.button": "Create",
   "bubbleblaster.screen.saves.new": "New",
   "bubbleblaster.screen.saves.duplicate": "Duplicate",

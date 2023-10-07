@@ -51,7 +51,7 @@ public class AndroidPlatform extends GamePlatform {
     public void handleCrash(CrashLog crashLog) {
         super.handleCrash(crashLog);
 
-        Intent intent = new Intent(this.launcher, CrashActivity.class);
+        var intent = new Intent(this.launcher, CrashActivity.class);
         intent.putExtra("CrashLog", crashLog.toString());
         this.launcher.startActivity(intent);
     }

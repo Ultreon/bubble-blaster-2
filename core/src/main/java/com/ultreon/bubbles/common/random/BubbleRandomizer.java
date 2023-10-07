@@ -6,10 +6,6 @@ import com.ultreon.bubbles.entity.Bubble;
 import com.ultreon.bubbles.random.JavaRandom;
 import com.ultreon.bubbles.random.RandomSource;
 import com.ultreon.bubbles.world.World;
-import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
-import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Random properties generator for bubbles.
@@ -17,9 +13,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @author XyperCode
  * @see Bubble
  */
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
-@FieldsAreNonnullByDefault
 public class BubbleRandomizer extends EntityRandomizer<Bubble> {
     /**
      * Generate random properties for a bubble.

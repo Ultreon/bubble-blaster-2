@@ -222,7 +222,7 @@ public final class LoadScreen extends InternalScreen {
 
     public void registerLanguages() {
         this.registerLanguage("en_us");
-        this.registerLanguage("en_uk");
+        this.registerLanguage("en_gb");
         this.registerLanguage("nl_be");
         this.registerLanguage("nl_nl");
         this.registerLanguage("fy_nl");

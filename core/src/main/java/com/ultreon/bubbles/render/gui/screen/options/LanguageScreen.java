@@ -77,7 +77,12 @@ public final class LanguageScreen extends Screen {
     }
 
     private void save() {
-        BubbleBlasterConfig.LANGUAGE.set(this.languageList.getSelected().value.getLocale().toLanguageTag());
+        var selected = this.languageList.getSelected();
+        if (selected == null) {
+            this.back();
+            return;
+        }
+        BubbleBlasterConfig.LANGUAGE.set(selected.value.getLocale().toLanguageTag());
         BubbleBlasterConfig.save();
         this.back();
     }

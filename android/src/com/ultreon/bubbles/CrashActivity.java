@@ -6,9 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -25,9 +23,9 @@ public class CrashActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_crash);
 
         this.editText = this.findViewById(R.id.crashLog);
-        Bundle extras = this.getIntent().getExtras();
+        var extras = this.getIntent().getExtras();
         if (extras != null) {
-            String crashLog = extras.getString("CrashLog");
+            var crashLog = extras.getString("CrashLog");
             this.editText.setHorizontallyScrolling(true);
             this.editText.setHorizontalScrollBarEnabled(true);
             this.editText.setVerticalScrollBarEnabled(true);
@@ -35,7 +33,7 @@ public class CrashActivity extends AppCompatActivity {
             this.editText.setText(crashLog);
         }
 
-        ActionBar supportActionBar = this.getSupportActionBar();
+        var supportActionBar = this.getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle("Game Crashed :(");
         }
@@ -52,10 +50,10 @@ public class CrashActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.getMenuInflater().inflate(R.menu.menu_crash, menu);
-        MenuItem item = menu.findItem(R.id.action_copy_crashlog);
+        var item = menu.findItem(R.id.action_copy_crashlog);
         item.setOnMenuItemClickListener(item1 -> {
             this.editText.getText();
-            ClipData clip = ClipData.newPlainText("Crash Log", this.editText.getText());
+            var clip = ClipData.newPlainText("Crash Log", this.editText.getText());
             this.clipboard.setPrimaryClip(clip);
             return true;
         });

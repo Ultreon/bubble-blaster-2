@@ -258,8 +258,8 @@ public class TextEntry extends GuiComponent {
         }
 
         public TextEntry build() {
-            if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating OptionsTextEntry.");
-            if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating number slider.");
+            if (this.bounds == null) throw new IllegalArgumentException("Missing bounds for creating text entry.");
+            if (this.entryWidth == -1) throw new IllegalArgumentException("Missing entry width for creating text entry.");
 
             var entry = new TextEntry((int) this.bounds.x, (int) this.bounds.y, (int) this.bounds.width, (int) this.bounds.height);
             entry.setText(this.text == null ? "" : this.text);

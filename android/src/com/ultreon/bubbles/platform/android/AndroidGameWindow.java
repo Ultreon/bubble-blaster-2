@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.platform.android;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
@@ -113,7 +112,7 @@ public class AndroidGameWindow implements GameWindow {
             if (!WindowEvents.WINDOW_FULLSCREEN.factory().onWindowFullscreen(this, true).isCanceled()) {
                 this.setVisible(true);
                 Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                Graphics.DisplayMode mode = Gdx.graphics.getDisplayMode();
+                var mode = Gdx.graphics.getDisplayMode();
                 this.game().resize(mode.width, mode.height);
                 this.requestFocus();
             }
@@ -173,7 +172,7 @@ public class AndroidGameWindow implements GameWindow {
 
     }
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"FieldCanBeLocal"})
     public static class Properties {
         private final int width;
         private final int height;

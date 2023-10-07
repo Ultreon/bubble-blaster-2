@@ -2,6 +2,7 @@ package com.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
                 }
             }
         });
+        this.listContent.setBackgroundColor(Color.TRANSPARENT);
+        this.getViewport().setBackgroundColor(Color.TRANSPARENT);
+        this.setBackgroundColor(Color.BLACK.withAlpha(0x40));
 
         items.forEach(this::addItem);
     }
@@ -194,7 +198,7 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         @Override
         public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
             this.x = this.list.x;
-            this.y = (int) (-this.list.getViewport().yScroll + (this.list.entryHeight + this.list.gap) * this.index);
+            this.y = this.list.y + (int) (-this.list.getViewport().yScroll + (this.list.entryHeight + this.list.gap) * this.index);
             this.width = this.list.width - SCROLLBAR_WIDTH;
             this.height = this.list.entryHeight;
             renderer.scissored(this.getBounds(), bounds -> {

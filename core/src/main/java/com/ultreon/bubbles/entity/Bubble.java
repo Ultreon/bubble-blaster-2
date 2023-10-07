@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see AbstractBubbleEntity
  */
-@SuppressWarnings({"SameParameterValue", "unused"})
+@SuppressWarnings({"SameParameterValue"})
 public class Bubble extends AbstractBubbleEntity {
     // Rarities
     public static final int GIANT_BUBBLE_RARITY = 3000;

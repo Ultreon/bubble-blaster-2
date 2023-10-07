@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
-@SuppressWarnings({"rawtypes", "unused"})
+@SuppressWarnings({"rawtypes"})
 public final class DebugFormatters {
     public static final Formatter<Number> NUMBER = FormatterRegistry.register(new Formatter<>(Number.class, new Identifier("java/number")) {
         @Override

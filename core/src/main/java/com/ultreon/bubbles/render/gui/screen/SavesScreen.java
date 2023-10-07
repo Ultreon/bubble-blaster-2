@@ -1,7 +1,6 @@
 package com.ultreon.bubbles.render.gui.screen;
 
 import com.ultreon.bubbles.BubbleBlaster;
-import com.ultreon.bubbles.Either;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Insets;
@@ -11,12 +10,10 @@ import com.ultreon.bubbles.render.gui.widget.ObjectList;
 import com.ultreon.bubbles.save.GameSave;
 import com.ultreon.bubbles.save.GameSaveInfo;
 import com.ultreon.bubbles.save.SaveLoader;
-import com.ultreon.commons.annotation.FieldsAreNonnullByDefault;
-import com.ultreon.commons.annotation.MethodsReturnNonnullByDefault;
+import com.ultreon.bubbles.util.Result;
 import com.ultreon.libs.text.v1.TextObject;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -24,22 +21,18 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
-@FieldsAreNonnullByDefault
-@SuppressWarnings({"FieldCanBeLocal", "unused"})
+@SuppressWarnings({"FieldCanBeLocal"})
 public class SavesScreen extends Screen {
     @Nullable
     private static SavesScreen instance;
-    private final Map<GameSave, Either<GameSaveInfo, Exception>> cache = new HashMap<>();
+    private final Map<GameSave, Result<GameSaveInfo>> cache = new HashMap<>();
     private final List<GameSave> saves;
     private final SaveLoader loader;
-    @Nullable
     private ObjectList<GameSave> saveList;
-    @Nullable private Button newSaveBtn;
-    @Nullable private Button openSaveBtn;
-    @Nullable private Button delSaveBtn;
-    @Nullable private Button editSaveBtn;
+    private Button newSaveBtn;
+    private Button openSaveBtn;
+    private Button delSaveBtn;
+    private Button editSaveBtn;
 
     public SavesScreen(Screen backScreen) {
         super(backScreen);
@@ -125,43 +118,46 @@ public class SavesScreen extends Screen {
 
     private void renderEntry(Renderer renderer, float width, float height, float y, GameSave save, boolean selected, boolean hovered) {
         var cachedInfo = this.cache.get(save);
+        var x = this.saveList.getX();
+
         try {
             if (cachedInfo == null) {
-                cachedInfo = Either.left(save.getInfo());
+                cachedInfo = Result.success(save.getInfo());
                 this.cache.put(save, cachedInfo);
             }
         } catch (Exception e) {
             BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getHandle().name() + ":", e);
-            cachedInfo = Either.right(e);
+            cachedInfo = Result.failure(e);
             this.cache.put(save, cachedInfo);
         }
 
-        if (cachedInfo.isRightPresent()) {
+        if (cachedInfo.isFailure()) {
             var name = "Loading Error";
             var description = String.format("Save filename: %s", save.getHandle().name());
 
-            renderer.fill(0, 0, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
-            if (selected) {
-                renderer.drawErrorEffectBox(10, 10, (int) (width - 20), (int) (height - 20), new Insets(2, 2, 2, 2));
-            }
+            renderer.fill(x, y, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
+            if (selected)
+                renderer.drawErrorEffectBox(x, (int) y, (int) (width), (int) (height), new Insets(1, 1, 4, 1));
+            else if (hovered)
+                renderer.drawErrorEffectBox(x, (int) (y), (int) (width), (int) (height), new Insets(1, 1, 1, 1));
 
-            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20, Color.WHITE.withAlpha(0xc0));
-            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+            renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
+            renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
             return;
         }
 
-        var info = cachedInfo.getLeft();
-        var name = info.getName();
-        var description = info.getGamemode().getName().getText();
-        description += ", " + info.getSavedTimeFormatted();
+        final var info = cachedInfo.getValue();
+        final var name = info.getName();
+        final var description = info.getGamemode().getName().getText() + (", " + info.getSavedTimeFormatted());
 
-        renderer.fill(0, 0, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
-        if (selected) {
-            renderer.drawEffectBox(10, 10, width - 20, height - 20, new Insets(2, 2, 2, 2));
-        }
+        renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
+        if (selected)
+            renderer.drawEffectBox(x, (int) y, (int) (width), (int) (height), new Insets(1, 1, 4, 1));
+        else if (hovered)
+            renderer.drawEffectBox(x, (int) (y), (int) (width), (int) (height), new Insets(1, 1, 1, 1));
 
-        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, 20, 20, Color.WHITE.withAlpha(0xc0));
-        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, 20, 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+        renderer.drawText(Fonts.SANS_BOLD_20.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
+        renderer.drawText(Fonts.SANS_BOLD_14.get(), description, x + 20, y + 20 + Fonts.SANS_BOLD_20.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
     }
 
     private int calculateWidth() {
