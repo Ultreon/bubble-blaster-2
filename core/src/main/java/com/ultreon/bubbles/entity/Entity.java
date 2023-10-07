@@ -90,7 +90,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     // Abilities.
     private final HashMap<AbilityType<?>, MapType> abilities = new HashMap<>();
     private boolean willBeDeleted;
-    private final RandomSource random = new JavaRandom();
+    protected final RandomSource random = new JavaRandom();
     protected final BubbleBlaster game = BubbleBlaster.getInstance();
     private Entity target;
     @Nullable
@@ -521,10 +521,20 @@ public abstract class Entity extends GameObject implements StateHolder {
     public void addEffect(StatusEffectInstance instance) {
         for (var effectInstance : this.statusEffects) {
             if (effectInstance.getType() == instance.getType()) {
+                var changed = false;
                 if (effectInstance.getRemainingTime().toMillis() < instance.getRemainingTime().toMillis()) {
-                    EffectEvents.UPDATE.factory().onUpdate(effectInstance);
+                    changed = true;
                     effectInstance.setRemainingTime(instance.getRemainingTime());
                 }
+
+                if (effectInstance.getStrength() < instance.getStrength()) {
+                    changed = true;
+                    effectInstance.setStrength(instance.getStrength());
+                }
+
+                if (changed)
+                    EffectEvents.UPDATE.factory().onUpdate(effectInstance);
+
                 return;
             }
         }

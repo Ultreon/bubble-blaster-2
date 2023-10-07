@@ -84,8 +84,6 @@ public final class LoadScreen extends InternalScreen {
             this.startTime = System.currentTimeMillis();
         }
 
-        renderer.hideCursor();
-
         this.renderBackground(renderer);
 
         // Draw progress components.
@@ -134,7 +132,7 @@ public final class LoadScreen extends InternalScreen {
 
         LifecycleEvents.LOADING.factory().onLoading(this.game, this);
 
-        this.progressMain = new ProgressMessenger(this.msgMain, 10);
+        this.progressMain = new ProgressMessenger(this.msgMain, GamePlatform.get().allowsMods() ? 10 : 9);
 
         // Get game directory in Java's File format.
         var dataDir = GamePlatform.get().getDataDirectory();
@@ -149,11 +147,14 @@ public final class LoadScreen extends InternalScreen {
         var progressAltAtomic = new AtomicReference<>(this.progressAlt);
         GamePlatform.get().loadGameResources(progressAltAtomic, this.msgAlt);
         GamePlatform.get().loadModResources(progressAltAtomic, this.msgAlt);
+        GameEvents.RESOURCES_LOADED.factory().onResourcesLoaded(this.game().getResourceManager());
         this.progressAlt = progressAltAtomic.get();
 
-        LOGGER.info("Setting up mods...");
-        this.progressMain.sendNext("Setting up mods...");
-        GamePlatform.get().setupMods();
+        if (GamePlatform.get().allowsMods()) {
+            LOGGER.info("Setting up mods...");
+            this.progressMain.sendNext("Setting up mods...");
+            GamePlatform.get().setupMods();
+        }
 
         // Set up components in registry.
         this.progressMain.sendNext("Registering components...");
@@ -288,7 +289,7 @@ public final class LoadScreen extends InternalScreen {
     }
 
     private void addModIcon(String modId, Identifier path) {
-        GamePlatform.get().addModIcon(modId, path);
+        GamePlatform.get().setCustomIcon(modId, path);
     }
 
     private BubbleBlaster game() {

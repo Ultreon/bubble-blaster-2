@@ -7,6 +7,7 @@ import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.random.valuesource.ConstantValueSource;
 import com.ultreon.bubbles.random.valuesource.RandomValueSource;
+import com.ultreon.libs.datetime.v0.Duration;
 
 import java.util.ArrayList;
 
@@ -39,10 +40,12 @@ public class UltraBubble extends BubbleType {
         super.onCollision(source, target);
         if (target instanceof Player) {
             var player = (Player) target;
-            player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, 10, 3));
-            player.addEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 3));
-            player.addEffect(new StatusEffectInstance(StatusEffects.SCORE, 12, 10));
-            player.addEffect(new StatusEffectInstance(StatusEffects.LUCK, 8, 1));
+            player.addEffect(new StatusEffectInstance(StatusEffects.ATTACK_BOOST, Duration.ofSeconds(10), 10));
+            player.addEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, Duration.ofSeconds(10), 10));
+            player.addEffect(new StatusEffectInstance(StatusEffects.SCORE, Duration.ofSeconds(12), 10));
+            player.addEffect(new StatusEffectInstance(StatusEffects.LUCK, Duration.ofSeconds(8), 5));
+            player.addEffect(new StatusEffectInstance(StatusEffects.SWIFTNESS, Duration.ofSeconds(10), 8));
+            player.addEffect(new StatusEffectInstance(StatusEffects.INVINCIBILITY, Duration.ofSeconds(10), 8));
 
             player.getWorld().freezeBubblesSecs(8);
         }

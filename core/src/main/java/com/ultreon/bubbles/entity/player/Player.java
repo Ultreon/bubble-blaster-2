@@ -68,6 +68,7 @@ public class Player extends LivingEntity implements InputController {
 
     private final Circle shipShape;
     private final Polygon arrowShape;
+    private boolean joinInvincibility;
     private int invincibilityTicks;
 
     // Types
@@ -132,7 +133,8 @@ public class Player extends LivingEntity implements InputController {
             this.markAsAttackable(entityType);
         }
 
-        this.invincibilityTicks = 40;
+        this.invincibilityTicks = TPS * 5;
+        this.joinInvincibility = true;
         this.invincible = true;
     }
 
@@ -327,9 +329,9 @@ public class Player extends LivingEntity implements InputController {
         this.shootCooldown = Math.max(this.shootCooldown - 1, 0);
 
         // Invincibility ticks after spawn.
-        if (this.invincibilityTicks-- < 0) {
-            this.invincibilityTicks = 0;
+        if (this.joinInvincibility && this.invincibilityTicks-- < 0) {
             this.invincible = false;
+            this.joinInvincibility = false;
         }
 
         for (var appliedEffect : this.statusEffects) {
@@ -369,6 +371,8 @@ public class Player extends LivingEntity implements InputController {
 
     @Override
     public void damage(double value, EntityDamageSource source) {
+        if (this.invincible) return;
+
         var defense = this.attributes.getBase(Attribute.DEFENSE);
         if (defense <= 0.0d) {
             this.destroy();
@@ -432,7 +436,11 @@ public class Player extends LivingEntity implements InputController {
     public void render(Renderer renderer) {
         if (this.isNotSpawned()) return;
 
-        renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.CRIMSON);
+        if (this.invincible)
+            renderer.withEffect(1.5f, () -> renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.WHITE));
+        else
+            renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.CRIMSON);
+
         renderer.fillPolygon(this.getArrowShape(), Color.WHITE);
     }
 

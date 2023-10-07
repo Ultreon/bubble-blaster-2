@@ -180,7 +180,14 @@ processResources {
     from(file("NOTICE.txt")) { into "META-INF/" }
     from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
 
-    exclude "*.pdn", "*.xcf", "*.ps"
+    exclude("**/*.pdn")
+    exclude("**/*.xcf")
+    exclude("**/*.ps")
+    exclude("**/*.tmp")
+    exclude("**/*.bak")
+    exclude("**/*.temp")
+    exclude("**/*.cache")
+    exclude("**/.cache")
 }
 
 compileJava.dependsOn processResources

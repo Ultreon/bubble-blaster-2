@@ -8,6 +8,8 @@ import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.DesktopGameWindow;
 import com.ultreon.bubbles.GamePlatform;
 import com.ultreon.bubbles.GameWindow;
+import com.ultreon.bubbles.event.v1.GameEvents;
+import com.ultreon.bubbles.notification.Notification;
 import com.ultreon.bubbles.platform.desktop.imgui.ImGuiRenderer;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.TextureManager;
@@ -19,6 +21,7 @@ import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Messenger;
 import com.ultreon.libs.commons.v0.ProgressMessenger;
 import com.ultreon.libs.crash.v0.CrashLog;
+import com.ultreon.libs.datetime.v0.Duration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -39,10 +42,12 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.ultreon.bubbles.BubbleBlaster.LOGGER;
 import static com.ultreon.bubbles.BubbleBlaster.NAMESPACE;
 
 public class DesktopPlatform extends GamePlatform {
@@ -60,6 +65,11 @@ public class DesktopPlatform extends GamePlatform {
     private final boolean debug;
     private final FileHandle dataDir;
     private final URL gameFile;
+    private boolean unknownResources = false;
+    private final Notification notify = Notification.builder("Missing Resources Detected!", "Check the log for more information.")
+            .subText("Resource Manager")
+            .duration(Duration.ofSeconds(5))
+            .build();
 
     public DesktopPlatform(Arguments arguments) {
         this.arguments = arguments;
@@ -125,30 +135,58 @@ public class DesktopPlatform extends GamePlatform {
             var metadata = container.getMetadata();
             metadata.getIconPath(256).flatMap(container::findPath).ifPresentOrElse(path1 -> ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> {
                 try {
-                    return new Texture(new Pixmap(FileHandles.imageBytes(path1.toUri().toURL())));
+                    return new Texture(this.setFilter(new Pixmap(FileHandles.imageBytes(path1.toUri().toURL()))));
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    LOGGER.error("Can't load mod icon: ", e);
+                    var resource = this.game().getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
+                    if (resource == null) {
+                        return TextureManager.DEFAULT_TEX;
+                    }
+                    return new Texture(this.setFilter(new Pixmap(FileHandles.imageBytes(resource.loadOrGet()))));
                 }
             })), () -> {
-                var resource = this.game().getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
-                if (resource == null) {
-                    resource = TextureManager.DEFAULT_TEX_RESOURCE;
+                var identifier = Identifier.tryParse(NAMESPACE + ":textures/mods/" + container.getMetadata().getId() + ".png");
+                if (identifier == null) {
+                    identifier = Identifier.tryParse(NAMESPACE + ":textures/mods/" + container.getMetadata().getId().split("-")[0] + ".png");
                 }
+                var resource = this.game().getResourceManager().getResource(identifier);
+                if (resource == null)
+                    resource = this.game().getResourceManager().getResource(BubbleBlaster.id("textures/mods/missing.png"));
+                if (resource == null)
+                    resource = TextureManager.DEFAULT_TEX_RESOURCE;
                 var finalResource = resource;
-                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
+                ModDataManager.setIcon(container, BubbleBlaster.invokeAndWait(() -> new Texture(this.setFilter(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet()))))));
             });
         }
 
-        this.addModIcon("java", BubbleBlaster.id("textures/mods/java.png"));
-        this.addModIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
+        this.setCustomIcon("java", BubbleBlaster.id("textures/mods/java.png"));
+        this.setCustomIcon("libgdx", BubbleBlaster.id("textures/mods/libgdx.png"));
+        this.setCustomIcon("bubbleblaster", BubbleBlaster.id("icon.png"));
     }
 
     @Override
-    public void addModIcon(String modId, Identifier location) {
-        var resource = this.game().getResourceManager().getResource(location);
-        if (resource == null) resource = TextureManager.DEFAULT_TEX_RESOURCE;
-        var finalResource = resource;
-        ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> new Texture(new Pixmap(FileHandles.imageBytes(finalResource.loadOrGet())))));
+    public void setCustomIcon(String modId, Identifier location) {
+        GameEvents.RESOURCES_LOADED.listen(resourceManager -> {
+            final var resource = resourceManager.getResource(location);
+            if (resource == null) {
+                this.logUnknownResource("Custom mod icon for " + modId + " wasn't found!");
+                return;
+            }
+            ModDataManager.setIcon(modId, BubbleBlaster.invokeAndWait(() -> new Texture(this.setFilter(new Pixmap(FileHandles.imageBytes(resource.loadOrGet()))))));
+        });
+    }
+
+    private Pixmap setFilter(Pixmap pixmap) {
+        pixmap.setFilter(Pixmap.Filter.BiLinear);
+        return pixmap;
+    }
+
+    private void logUnknownResource(String message) {
+        if (!this.unknownResources) {
+            this.unknownResources = true;
+            BubbleBlaster.whenLoaded(UUID.fromString("f8000df9-f94b-4106-bd26-c7ba48338a23"), () -> BubbleBlaster.getInstance().notifications.notify(this.notify));
+        }
+        LOGGER.error("Unknown resource: " + message);
     }
 
     @Override

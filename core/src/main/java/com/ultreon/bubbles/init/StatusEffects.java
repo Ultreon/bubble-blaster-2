@@ -30,6 +30,7 @@ public class StatusEffects {
     public static final ParalyzeStatusEffect PARALYZE = StatusEffects.register("paralyze", new ParalyzeStatusEffect());
     public static final PoisonStatusEffect POISON = StatusEffects.register("poison", new PoisonStatusEffect());
     public static final LuckStatusEffect LUCK = StatusEffects.register("luck", new LuckStatusEffect());
+    public static final InvincibilityEffect INVINCIBILITY = StatusEffects.register("invincibility", new InvincibilityEffect());
 
     private static <T extends StatusEffect> T register(String name, T effect) {
         Registries.EFFECTS.register(new Identifier(name), effect);

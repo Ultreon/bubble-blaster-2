@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
+import com.ultreon.bubbles.render.Insets;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.render.gui.GuiComponent;
 import com.ultreon.bubbles.render.gui.screen.Screen;
@@ -73,14 +74,14 @@ public class ModListScreen extends Screen {
 
         renderer.fill(0, y, width, height, Color.argb(hovered ? 0x40ffffff : 0x20ffffff));
         if (selected)
-            renderer.drawEffectBox(this.modList.getX() + 5, (int) (y + 5), width - 10, height - 10);
+            renderer.drawEffectBox(this.modList.getX(), (int) (y), width, height, new Insets(1, 1, 4, 1));
+        else if (hovered)
+            renderer.drawEffectBox(this.modList.getX(), (int) (y), width, height, new Insets(1, 1, 1, 1));
 
         renderer.scissored(this.modList.getX(), y, width, height, () -> {
             var iconSize = ENTRY_HEIGHT - 40;
-            metadata.getIconPath(256).flatMap(entry::findPath).ifPresent(path1 -> {
-                var tex = ModDataManager.getIcon(entry);
-                renderer.blit(tex, this.modList.getX() + 20, y + 20, iconSize, iconSize);
-            });
+            var tex = ModDataManager.getIcon(entry);
+            renderer.blit(tex, this.modList.getX() + 20, y + 20, iconSize, iconSize);
 
             var textX = this.modList.getX() + 20 + iconSize + 20;
             renderer.drawText(Fonts.MONOSPACED_BOLD_12.get(), metadata.getId(), textX, y + 20, Color.WHITE.withAlpha(0x80));
@@ -114,15 +115,13 @@ public class ModListScreen extends Screen {
         }
 
         private void drawIcon(Renderer renderer, ModMetadata metadata, ObjectList.ListEntry<ModContainer, ? extends ModContainer> selected, AtomicInteger textX, int textY) {
-            metadata.getIconPath(256).flatMap(selected.value::findPath).ifPresent(path1 -> {
-                try {
-                    var tex = ModDataManager.getIcon(selected.value);
-                    renderer.blit(tex, textX.get(), textY, 64, 64);
-                    textX.addAndGet(80);
-                } catch (RuntimeException e) {
-                    BubbleBlaster.LOGGER.warn("Can't load and draw mod icon for '" + selected.value.getMetadata().getId() + "': " + e);
-                }
-            });
+            try {
+                var tex = ModDataManager.getIcon(selected.value);
+                renderer.blit(tex, textX.get(), textY, 64, 64);
+                textX.addAndGet(80);
+            } catch (RuntimeException e) {
+                BubbleBlaster.LOGGER.warn("Can't load and draw mod icon for '" + selected.value.getMetadata().getId() + "': " + e);
+            }
         }
 
         private void drawModDetails(Renderer renderer, ModMetadata metadata, AtomicInteger textX, int textY) {

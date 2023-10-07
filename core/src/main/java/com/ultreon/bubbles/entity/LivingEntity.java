@@ -114,4 +114,9 @@ public abstract class LivingEntity extends Entity {
     public void setInvincible(boolean invincible) {
         this.invincible = invincible;
     }
+
+    @Override
+    public boolean canBeAttackedBy(Entity other) {
+        return !this.invincible && super.canBeAttackedBy(other);
+    }
 }

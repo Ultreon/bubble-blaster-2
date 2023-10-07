@@ -124,7 +124,14 @@ processResources {
         expand "bubbles_version": project(":core").version, "libgdx_version": gdx_version
     }
 
-    exclude "*.pdn", "*.xcf", "*.ps"
+    exclude("**/*.pdn")
+    exclude("**/*.xcf")
+    exclude("**/*.ps")
+    exclude("**/*.tmp")
+    exclude("**/*.bak")
+    exclude("**/*.temp")
+    exclude("**/*.cache")
+    exclude("**/.cache")
 }
 
 repositories {

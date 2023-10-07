@@ -595,6 +595,21 @@ public class Renderer {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     }
 
+    private void drawMasked(float speed) {
+        /* Enable RGBA color writing. */
+        Gdx.gl.glColorMask(true, true, true, true);
+
+        /* Set the depth function to EQUAL. */
+        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
+        /* Render masked elements. */
+        this.fillEffect(0, 0, this.getWidth(), this.getHeight(), speed);
+        this.shapes.flush();
+
+        /* Disable depth writing. */
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+    }
+
     public void withEffect(Runnable func) {
         this.toShapes();
         this.flush();
@@ -602,6 +617,18 @@ public class Renderer {
         this.disableDepthTest();
         this.drawMasks(func);
         this.drawMasked();
+        this.enableDepthTest();
+        this.enableStateChange();
+        this.flush();
+    }
+
+    public void withEffect(float speed, Runnable func) {
+        this.toShapes();
+        this.flush();
+        this.disableStateChange();
+        this.disableDepthTest();
+        this.drawMasks(func);
+        this.drawMasked(speed);
         this.enableDepthTest();
         this.enableStateChange();
         this.flush();

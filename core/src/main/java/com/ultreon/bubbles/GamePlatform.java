@@ -72,7 +72,7 @@ public abstract class GamePlatform {
         return BubbleBlaster.getInstance();
     }
 
-    public void addModIcon(String modId, Identifier path) {
+    public void setCustomIcon(String modId, Identifier path) {
 
     }
 

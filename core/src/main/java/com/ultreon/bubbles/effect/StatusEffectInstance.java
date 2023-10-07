@@ -182,11 +182,11 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public Duration getRemainingTime() {
-        return Duration.ofMilliseconds(this.remainingTicks / (double) TPS * 1000.0);
+        return Duration.ofMilliseconds((double) (this.remainingTicks * 1000) / TPS);
     }
 
-    public void setRemainingTime(Duration time) {
-        this.endTime = System.currentTimeMillis() + time.toMillis();
+    public void setRemainingTime(Duration duration) {
+        this.remainingTicks = duration.toMillis() * TPS / 1000;
     }
 
     public void prolong(Duration time) {

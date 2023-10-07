@@ -53,6 +53,7 @@
   "bubbleblaster.statusEffect.bubble_freeze": "Frozen Bubbles",
   "bubbleblaster.statusEffect.attack": "Attack Boost",
   "bubbleblaster.statusEffect.resistance": "Resistance",
+  "bubbleblaster.statusEffect.invincibility": "Invincibility",
 
   "bubbleblaster.info.score": "Score",
   "bubbleblaster.info.level": "Level",
