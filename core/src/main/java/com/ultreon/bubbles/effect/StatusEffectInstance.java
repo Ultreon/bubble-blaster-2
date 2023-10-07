@@ -10,11 +10,11 @@ import com.ultreon.commons.exceptions.InvalidValueException;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Identifier;
 import com.ultreon.libs.commons.v0.Mth;
+import com.ultreon.libs.datetime.v0.Duration;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.time.Duration;
 import java.util.Objects;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
@@ -182,7 +182,7 @@ public class StatusEffectInstance implements TagHolder {
     }
 
     public Duration getRemainingTime() {
-        return Duration.ofMillis((long) (this.remainingTicks / (double) TPS * 1000.0));
+        return Duration.ofMilliseconds(this.remainingTicks / (double) TPS * 1000.0);
     }
 
     public void setRemainingTime(Duration time) {

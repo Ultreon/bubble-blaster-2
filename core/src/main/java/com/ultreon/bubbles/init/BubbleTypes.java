@@ -5,9 +5,8 @@ import com.ultreon.bubbles.effect.StatusEffectInstance;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.libs.commons.v0.Identifier;
+import com.ultreon.libs.datetime.v0.Duration;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.time.Duration;
 
 /**
  * Bubble Initialization

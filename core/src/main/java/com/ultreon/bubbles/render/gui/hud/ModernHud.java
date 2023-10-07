@@ -14,7 +14,6 @@ import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.util.RomanNumbers;
 import com.ultreon.bubbles.world.World;
-import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.text.v1.MutableText;
 import com.ultreon.libs.text.v1.TextObject;
@@ -173,7 +172,7 @@ public class ModernHud extends HudType {
             renderer.fill(x, y, 300, 50, Color.BLACK.withAlpha(0x80));
 
             // Format duration to string.
-            String time = TimeUtils.formatDuration(effectInstance.getRemainingTime());
+            String time = effectInstance.getRemainingTime().toSimpleString();
 
             try {
                 renderer.blit(effectInstance.getType().getIcon(), x + 5, y + 5, 40, 40);

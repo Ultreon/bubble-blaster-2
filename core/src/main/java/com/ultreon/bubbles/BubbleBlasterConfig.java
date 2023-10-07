@@ -136,7 +136,7 @@ public class BubbleBlasterConfig {
         CONFIG.save();
 
         BubbleBlaster.invoke(() -> {
-            Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());;
+            Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());
         });
     }
 

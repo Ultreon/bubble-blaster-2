@@ -1,9 +1,9 @@
 package com.ultreon.bubbles.notification;
 
+import com.ultreon.libs.datetime.v0.Duration;
 import org.checkerframework.common.reflection.qual.NewInstance;
 import org.checkerframework.common.returnsreceiver.qual.This;
 
-import java.time.Duration;
 import java.util.Locale;
 
 public class Notification {

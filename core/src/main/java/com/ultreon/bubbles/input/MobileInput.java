@@ -8,10 +8,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.event.v1.InputEvents;
 import com.ultreon.commons.exceptions.OneTimeUseException;
+import com.ultreon.libs.datetime.v0.Duration;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

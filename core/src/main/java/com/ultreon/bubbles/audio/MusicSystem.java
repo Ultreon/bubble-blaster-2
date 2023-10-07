@@ -4,10 +4,10 @@ import com.badlogic.gdx.utils.Disposable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.ultreon.bubbles.random.valuesource.ValueSource;
 import com.ultreon.bubbles.util.Randomizer;
+import com.ultreon.libs.datetime.v0.Duration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,7 +118,7 @@ public class MusicSystem implements Iterator<@Nullable MusicEvent>, Disposable {
     }
 
     public Duration getUntilNext() {
-        return Duration.ofMillis((long) (this.untilNext * 1000.0));
+        return Duration.ofMilliseconds((long) (this.untilNext * 1000.0));
     }
 
     @Override

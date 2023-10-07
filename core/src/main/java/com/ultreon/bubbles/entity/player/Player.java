@@ -30,10 +30,9 @@ import com.ultreon.commons.time.TimeProcessor;
 import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.data.types.MapType;
 import com.ultreon.libs.commons.v0.Mth;
+import com.ultreon.libs.datetime.v0.Duration;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
@@ -101,7 +100,7 @@ public class Player extends LivingEntity implements InputController {
     private final PlayerItemCollection inventory = new PlayerItemCollection(this);
     private int shootCooldown;
     public final Vector2 tempVel = new Vector2();
-    public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+    public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
     public long boostAccelTimer = 0;
     private int successRate;
     private boolean brake;
@@ -254,7 +253,7 @@ public class Player extends LivingEntity implements InputController {
             this.boostAccelTimer--;
             this.accelerate(15f, true);
         } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
-            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
         }
 
         this.abilityContainer.onEntityTick();
@@ -729,7 +728,7 @@ public class Player extends LivingEntity implements InputController {
 
     public void boost(boolean force) {
         if (force || this.canBoost()) {
-            this.boostAccelTimer = TimeUtils.toTicks(Duration.ofMillis(BubbleBlasterConfig.BOOST_DURATION.get()));
+            this.boostAccelTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_DURATION.get()));
             if (!force) this.boostRefillTimer = -1;
         }
     }

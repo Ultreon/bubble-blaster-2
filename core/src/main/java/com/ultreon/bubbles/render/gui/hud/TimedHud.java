@@ -6,9 +6,7 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.world.World;
-import com.ultreon.commons.util.TimeUtils;
-
-import java.time.Duration;
+import com.ultreon.libs.datetime.v0.Duration;
 
 public class TimedHud extends ModernHud {
     @Override
@@ -18,14 +16,14 @@ public class TimedHud extends ModernHud {
         if (!(gamemode instanceof TimedMode)) return;
         TimedMode timedGamemode = (TimedMode) gamemode;
 
-        Duration duration = Duration.ofMillis(timedGamemode.getTimeRemaining());
+        Duration duration = Duration.ofMilliseconds(timedGamemode.getTimeRemaining());
         int x = 20;
         int y = 120;
 
         long seconds = duration.toSeconds();
         if (!duration.isNegative()) {
             renderer.fill(x, y, 300, 80, Color.BLACK.withAlpha(0x80));
-            renderer.drawTextCenter(Fonts.SANS_BOLD_60.get(), TimeUtils.formatDuration(duration), x + 150, y + 31, seconds <= 5 ? Color.CRIMSON : Color.WHITE);
+            renderer.drawTextCenter(Fonts.SANS_BOLD_60.get(), duration.toSimpleString(), x + 150, y + 31, seconds <= 5 ? Color.CRIMSON : Color.WHITE);
         }
     }
 }

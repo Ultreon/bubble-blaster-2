@@ -5,8 +5,8 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderable;
 import com.ultreon.bubbles.render.Renderer;
+import com.ultreon.libs.datetime.v0.Duration;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

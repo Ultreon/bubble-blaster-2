@@ -12,7 +12,6 @@ import com.ultreon.bubbles.init.Fonts;
 import com.ultreon.bubbles.render.Color;
 import com.ultreon.bubbles.render.Renderer;
 import com.ultreon.bubbles.world.World;
-import com.ultreon.commons.util.TimeUtils;
 import com.ultreon.libs.commons.v0.Mth;
 import com.ultreon.libs.translations.v1.Language;
 import org.jetbrains.annotations.NotNull;
@@ -223,7 +222,7 @@ public class BetaHud extends HudType {
 
                 renderer.scissored(x, y, 192, 38, () -> {
                     // Format duration to string.
-                    String time = TimeUtils.formatDuration(appliedEffect.getRemainingTime());
+                    String time = appliedEffect.getRemainingTime().toSimpleString();
 
                     // EffectInstance bar.
                     renderer.blit(x, y, 192, 38);

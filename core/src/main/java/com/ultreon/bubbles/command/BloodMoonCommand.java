@@ -3,9 +3,7 @@ package com.ultreon.bubbles.command;
 import com.ultreon.bubbles.BubbleBlaster;
 import com.ultreon.bubbles.entity.player.Player;
 import com.ultreon.bubbles.init.GameplayEvents;
-import com.ultreon.commons.util.TimeUtils;
-
-import java.time.Duration;
+import com.ultreon.libs.datetime.v0.Duration;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
@@ -25,7 +23,7 @@ public class BloodMoonCommand implements CommandExecutor {
                     if (nextInMs < 0) {
                         player.sendSystemMessage("Blood moon is active right now.");
                     } else {
-                        player.sendSystemMessage("Next blood moon in " + TimeUtils.formatDuration(Duration.ofMillis(nextInMs)) + ".");
+                        player.sendSystemMessage("Next blood moon in " + Duration.ofMilliseconds(nextInMs).toSimpleString() + ".");
                     }
                     break;
                 }
@@ -34,7 +32,7 @@ public class BloodMoonCommand implements CommandExecutor {
                     if (nextInMs < 0) {
                         player.sendSystemMessage("Blood moon is inactive right now.");
                     } else {
-                        player.sendSystemMessage("Blood moon will end in " + TimeUtils.formatDuration(Duration.ofMillis(nextInMs)) + ".");
+                        player.sendSystemMessage("Blood moon will end in " + Duration.ofMilliseconds(nextInMs).toSimpleString() + ".");
                     }
                     break;
                 }

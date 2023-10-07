@@ -4,7 +4,6 @@ import com.ultreon.bubbles.effect.*;
 import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.registry.Registries;
 import com.ultreon.libs.commons.v0.Identifier;
-import com.ultreon.libs.registries.v0.DelayedRegister;
 
 /**
  * Effect Initialization
@@ -12,7 +11,6 @@ import com.ultreon.libs.registries.v0.DelayedRegister;
  * For example, the {@link ResistanceStatusEffect} instance is assigned here.
  *
  * @see StatusEffect
- * @see DelayedRegister<StatusEffect>
  */
 public class StatusEffects {
     public static final StatusEffect NONE = StatusEffects.register("none", new StatusEffect() {

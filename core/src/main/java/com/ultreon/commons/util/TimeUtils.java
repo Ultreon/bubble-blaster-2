@@ -1,9 +1,8 @@
 package com.ultreon.commons.util;
 
 import com.ultreon.libs.commons.v0.UtilityClass;
+import com.ultreon.libs.datetime.v0.Duration;
 import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
 
 import static com.ultreon.bubbles.BubbleBlaster.TPS;
 
@@ -15,7 +14,7 @@ public class TimeUtils extends UtilityClass {
     }
 
     public static Duration ofTicks(long ticks) {
-        return Duration.ofMillis(ticks * MSPT);
+        return Duration.ofMilliseconds(ticks * MSPT);
     }
 
     public static long toTicks(Duration duration) {
@@ -26,39 +25,24 @@ public class TimeUtils extends UtilityClass {
      * @param seconds the desired seconds to format.
      * @return the formatted seconds.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static String formatDuration(long seconds) {
-        return TimeUtils.formatDuration(Duration.ofSeconds(seconds));
+        return Duration.ofSeconds(seconds).toSimpleString();
     }
 
     /**
      * @param duration the desired duration to format.
      * @return the formatted duration.
+     * @deprecated use {@link Duration#toSimpleString()}
      */
+    @SuppressWarnings("UnstableApiUsage")
+    @Deprecated(forRemoval = true)
     public static String formatDuration(Duration duration) {
-        long day = duration.toDays();
-        int hour = duration.toHoursPart();
-        int minute = duration.toMinutesPart();
-        int second = duration.toSecondsPart();
-
-        if (day == 0) {
-            if (hour == 0)
-                return minute + ":" + TimeUtils.pad(second);
-
-            return hour + ":" + TimeUtils.pad(minute) + ":" + TimeUtils.pad(second);
-        }
-
-        return day + ":" + TimeUtils.pad(hour) + ":" + TimeUtils.pad(minute) + ":" + TimeUtils.pad(second);
-    }
-
-    private static String pad(int value) {
-        if (value < 10) return value > -10 && value < 0 ? "-0" + Math.abs(value) : "0" + value;
-
-        return String.valueOf(value);
+        return duration.toSimpleString();
     }
 
     @NotNull
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static String formatDuration(int minute, int second, double hourDouble) {
         hourDouble -= (double) minute / 60;
         hourDouble -= (double) second / 60 / 60;

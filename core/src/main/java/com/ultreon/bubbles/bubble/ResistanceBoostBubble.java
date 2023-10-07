@@ -6,8 +6,7 @@ import com.ultreon.bubbles.entity.Entity;
 import com.ultreon.bubbles.init.StatusEffects;
 import com.ultreon.bubbles.random.valuesource.ConstantValueSource;
 import com.ultreon.bubbles.random.valuesource.RandomValueSource;
-
-import java.time.Duration;
+import com.ultreon.libs.datetime.v0.Duration;
 
 public class ResistanceBoostBubble extends BubbleType {
     public ResistanceBoostBubble() {
