@@ -32,7 +32,7 @@ public class MobileInputHandler extends InputHandler<MobileInput> {
 
         var game = BubbleBlaster.getInstance();
         if (MobileInput.isTouchDown() && this.getPauseBtnRegion().contains(MobileInput.getTouchPos()))
-            game.pause();
+            game.pauseGame();
 
         return true;
     }

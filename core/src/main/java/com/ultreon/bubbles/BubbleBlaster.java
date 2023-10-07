@@ -493,16 +493,14 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return filePath;
     }
 
-    @Override
-    public void pause() {
+    public void pauseGame() {
         if (this.isInGame() && !(this.getCurrentScreen() instanceof PauseScreen)) {
             this.showScreen(new PauseScreen());
             this.gameplayMusic.pause();
         }
     }
 
-    @Override
-    public void resume() {
+    public void resumeGame() {
         if (this.isInGame() && this.getCurrentScreen() instanceof PauseScreen) {
             this.showScreen(null);
             this.gameplayMusic.play();

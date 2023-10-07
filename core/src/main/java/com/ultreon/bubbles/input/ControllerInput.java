@@ -33,9 +33,9 @@ public class ControllerInput extends ControllerAdapter implements InputObject {
 
         if (this.game.isInGame()) {
             if (this.game.hasScreenOpen() && mapping.buttonStart == buttonIndex)
-                this.game.resume();
+                this.game.resumeGame();
             if (!this.game.hasScreenOpen() && mapping.buttonStart == buttonIndex)
-                this.game.pause();
+                this.game.pauseGame();
         }
 
         return super.buttonDown(controller, buttonIndex);

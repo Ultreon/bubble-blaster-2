@@ -36,12 +36,12 @@ public class GameLibGDXWrapper implements ApplicationListener {
 
     @Override
     public void pause() {
-        if (this.game != null) this.game.pause();
+        if (this.game != null) this.game.pauseGame();
     }
 
     @Override
     public void resume() {
-        if (this.game != null) this.game.resume();
+        if (this.game != null) this.game.resumeGame();
     }
 
     @Override
