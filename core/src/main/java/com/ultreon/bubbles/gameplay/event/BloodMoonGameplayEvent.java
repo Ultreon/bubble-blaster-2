@@ -83,19 +83,27 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public final boolean shouldActivate(GameplayContext context) {
         if (!super.shouldActivate(context)) return false;
 
-        if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
+        var curDate = Date.current();
+        if (curDate.equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
         if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
+        if (this.isFridayTheThirteenth(curDate)) return true;
 
         var storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
+    }
+
+    private boolean isFridayTheThirteenth(Date date) {
+        return date.getDayOfWeek() == DayOfWeek.FRIDAY && date.getDay() == 13;
     }
 
     @Override
     public final boolean shouldContinue(GameplayContext context) {
         if (!super.shouldContinue(context)) return false;
 
+        var curDate = Date.current();
         if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
         if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
+        if (this.isFridayTheThirteenth(curDate)) return true;
 
         if (this.deactivateTicks > 0) return true;
 
