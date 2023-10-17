@@ -10,6 +10,7 @@ jobs:
       image: 'windows-server-2022-gui:current'
       resource_class: windows.large
       shell: powershell.exe -ExecutionPolicy Bypass
+    description: "Build Windows EXE and MSI installers"
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -31,6 +32,7 @@ jobs:
   build-macos:
     macos:
       xcode: "14.2.0"
+    description: "Build macOS PKG installers and DMG file"
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -53,6 +55,7 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
       - image: gradle:jdk17
+    description: "Build Linux DEB package"
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -66,7 +69,42 @@ jobs:
       - run:
             name: "Build Project"
             command: |
-              ./gradlew jpackage jpackageAlt --no-daemon
+              ./gradlew jpackage --no-daemon
+            environment:
+              CIRCLE_CI: "true"
+      - store_artifacts:
+          name: "Store Artifacts"
+          path: desktop-merge/build/dist
+
+  build-linux-rpm:
+    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    docker:
+      - image: gradle:jdk17
+    description: "Build Linux RPM package"
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+            name: "Make gradlew executable"
+            command: "chmod +x gradlew"
+      - run:
+            name: "Download and install JDK 17"
+            command: |
+              dnf -y install wget fakeroot
+              wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm
+              rpm -Uvh jdk-17_linux-x64_bin.rpm
+              java -version
+              cat \<<EOF | sudo tee /etc/profile.d/jdk.sh
+              export JAVA_HOME=/usr/java/default
+              export PATH=\$PATH:\$JAVA_HOME/bin
+              EOF
+              source /etc/profile.d/jdk.sh
+      - run:
+            name: "Build Project"
+            command: |
+              ./gradlew jpackage --no-daemon
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
@@ -81,3 +119,4 @@ workflows:
       - build-windows
       - build-macos
       - build-linux
+      - build-linux-rpm
