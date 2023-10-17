@@ -1,11 +1,11 @@
 plugins {
     id 'java-gradle-plugin' // so we can assign and ID to our plugin
-    id 'org.jetbrains.kotlin.jvm' version "1.7.10"
+    id 'org.jetbrains.kotlin.jvm' version "1.9.0"
 }
 
 dependencies {
-    api 'org.ow2.asm:asm:9.1'
-    api 'com.google.code.gson:gson:2.8.+'
+    api 'org.ow2.asm:asm:9.6'
+    api 'com.google.code.gson:gson:2.10.1'
 }
 
 repositories {
