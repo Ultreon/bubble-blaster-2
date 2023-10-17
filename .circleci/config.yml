@@ -21,10 +21,12 @@ jobs:
             Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
             refreshenv
       - run:
-            name: "Build Project"
-            command: "cmd /c gradlew.bat jpackage --info"
-            environment:
-              CIRCLE_CI: "true"
+          name: "Build Project"
+          command: |
+            cmd /c gradlew.bat jpackageAlt --info
+            exit
+          environment:
+            CIRCLE_CI: "true"
       - store_artifacts:
           name: "Store Artifacts"
           path: desktop-merge/build/dist
@@ -47,10 +49,12 @@ jobs:
             Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
             refreshenv
       - run:
-            name: "Build Project"
-            command: "cmd /c gradlew.bat jpackageAlt --info"
-            environment:
-              CIRCLE_CI: "true"
+          name: "Build Project"
+          command: |
+            cmd /c gradlew.bat jpackageAlt --info
+            exit
+          environment:
+            CIRCLE_CI: "true"
       - store_artifacts:
           name: "Store Alternate Artifacts"
           path: desktop-merge/build/dist
