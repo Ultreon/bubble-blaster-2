@@ -53,9 +53,8 @@ archivesBaseName = archives_base_name + "-core"
 
 java {
     withSourcesJar()
-    toolchain {
-        languageVersion = JavaLanguageVersion.of("11")
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 bubbles {

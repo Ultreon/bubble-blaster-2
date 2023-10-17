@@ -35,9 +35,8 @@ archivesBaseName = archives_base_name + "-gameprovider"
 
 java {
     withSourcesJar()
-    toolchain {
-        languageVersion = JavaLanguageVersion.of("11")
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 println("Current version: $project_version")
