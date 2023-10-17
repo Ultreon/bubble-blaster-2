@@ -22,7 +22,7 @@ jobs:
             refreshenv
       - run:
             name: "Build Project"
-            command: ".\\gradlew.bat jpackage --info"
+            command: ".\\gradlew-ci.bat jpackage --info"
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
@@ -48,7 +48,7 @@ jobs:
             refreshenv
       - run:
             name: "Build Project"
-            command: ".\\gradlew.bat jpackageAlt --info"
+            command: ".\\gradlew-ci.bat jpackageAlt --info"
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
