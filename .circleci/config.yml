@@ -8,7 +8,7 @@ jobs:
   build-windows:
     machine:
       image: 'windows-server-2022-gui:current'
-      resource_class: windows.medium
+      resource_class: windows.large
       shell: powershell.exe -ExecutionPolicy Bypass
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
