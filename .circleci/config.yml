@@ -9,7 +9,7 @@ jobs:
     machine:
       image: 'windows-server-2022-gui:current'
       resource_class: windows.medium
-      shell: cmd.exe
+      shell: powershell.exe -ExecutionPolicy Bypass
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -18,9 +18,11 @@ jobs:
           name: Set up JDK 17
           command: |
             choco install wixtoolset --allow-downgrade --params '/64 /m' -y
+            Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+            refreshenv
       - run:
             name: "Build Project"
-            command: "gradlew.bat jpackage --info"
+            command: "cmd /c ./gradlew.bat jpackage --info"
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
@@ -33,7 +35,7 @@ jobs:
     machine:
       image: 'windows-server-2022-gui:current'
       resource_class: windows.medium
-      shell: cmd.exe
+      shell: powershell.exe -ExecutionPolicy Bypass
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -42,9 +44,11 @@ jobs:
           name: Set up JDK 17
           command: |
             choco install wixtoolset --allow-downgrade --params '/64 /m' -y
+            Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+            refreshenv
       - run:
             name: "Build Project"
-            command: "gradlew.bat jpackageAlt --info"
+            command: "cmd /c ./gradlew.bat jpackageAlt --info"
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
