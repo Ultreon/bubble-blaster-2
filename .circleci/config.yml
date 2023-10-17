@@ -18,6 +18,7 @@ jobs:
           name: Set up JDK 17
           command: |
             choco install openjdk17 --params '/64 /m' -y
+            refreshenv
       - run:
             name: "Build Project"
             command: ".\\gradlew.bat jpackage --info"
@@ -42,6 +43,7 @@ jobs:
           name: Set up JDK 17
           command: |
             choco install openjdk17 --params '/64 /m' -y
+            refreshenv
       - run:
             name: "Build Project"
             command: ".\\gradlew.bat jpackageAlt --info"
