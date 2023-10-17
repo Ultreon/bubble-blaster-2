@@ -18,8 +18,6 @@ jobs:
           name: Set up WiX Toolset
           command: |
             choco install wixtoolset --params '/64 /m' -y
-            Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-            refreshenv
       - run:
           name: "Build Project"
           command: |
