@@ -92,7 +92,8 @@ jobs:
       - run:
           name: "Download and install JDK 17"
           command: |
-            dnf -y install wget fakeroot coreutils
+            dnf update
+            dnf -y install wget fakeroot coreutils uname
             wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm
             rpm -Uvh jdk-17_linux-x64_bin.rpm
             java -version
