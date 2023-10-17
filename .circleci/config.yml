@@ -21,7 +21,7 @@ jobs:
       - run:
           name: "Build Project"
           command: |
-            ./gradlew.bat jpackage jpackageAlt
+            ./gradlew.bat jpackage jpackageAlt --no-daemom
           environment:
             CIRCLE_CI: "true"
       - store_artifacts:
@@ -41,7 +41,7 @@ jobs:
       - run:
             name: "Build Project"
             command: |
-              ./gradlew jpackage jpackageAlt
+              ./gradlew jpackage jpackageAlt --no-daemom
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
@@ -66,7 +66,7 @@ jobs:
       - run:
             name: "Build Project"
             command: |
-              ./gradlew jpackage jpackageAlt
+              ./gradlew jpackage jpackageAlt --no-daemom
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
