@@ -84,4 +84,3 @@ workflows:
       - build-windows
       - build-macos
       - build-linux
-      - build-linux-rpm
