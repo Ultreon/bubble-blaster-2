@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Set up JDK 17
           command: |
-            choco install openjdk17 --params '/64 /m' -y
+            choco install openjdk --version=17.0 --params '/64 /m' -y
             Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
             refreshenv
       - run:
@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Set up JDK 17
           command: |
-            choco install openjdk17 --params '/64 /m' -y
+            choco install openjdk --version=17.0 --params '/64 /m' -y
             Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
             refreshenv
       - run:
