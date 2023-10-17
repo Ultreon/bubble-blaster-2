@@ -6,10 +6,8 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build-windows:
-    machine:
-      image: 'windows-server-2022-gui:current'
-      resource_class: windows.medium
-      shell: powershell.exe -ExecutionPolicy Bypass
+    docker:
+      - image: openjdk:17-windowsservercore
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -26,10 +24,8 @@ jobs:
   build-windows-alt:
     # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    machine:
-      image: 'windows-server-2022-gui:current'
-      resource_class: windows.medium
-      shell: powershell.exe -ExecutionPolicy Bypass
+    docker:
+      - image: openjdk:17-windowsservercore
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
