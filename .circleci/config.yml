@@ -15,48 +15,19 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set up JDK 17
+          name: Set up WiX Toolset
           command: |
-            choco install wixtoolset --allow-downgrade --params '/64 /m' -y
+            choco install wixtoolset --params '/64 /m' -y
             Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
             refreshenv
       - run:
           name: "Build Project"
           command: |
-            cmd /c gradlew.bat jpackageAlt --info
-            exit
+            ./gradlew.bat jpackage jpackageAlt
           environment:
             CIRCLE_CI: "true"
       - store_artifacts:
           name: "Store Artifacts"
-          path: desktop-merge/build/dist
-
-  build-windows-alt:
-    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    machine:
-      image: 'windows-server-2022-gui:current'
-      resource_class: windows.medium
-      shell: powershell.exe -ExecutionPolicy Bypass
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: Set up JDK 17
-          command: |
-            choco install wixtoolset --allow-downgrade --params '/64 /m' -y
-            Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-            refreshenv
-      - run:
-          name: "Build Project"
-          command: |
-            cmd /c gradlew.bat jpackageAlt --info
-            exit
-          environment:
-            CIRCLE_CI: "true"
-      - store_artifacts:
-          name: "Store Alternate Artifacts"
           path: desktop-merge/build/dist
 
   build-macos:
@@ -71,32 +42,12 @@ jobs:
             command: "chmod +x gradlew"
       - run:
             name: "Build Project"
-            command: "./gradlew jpackage --info"
+            command: |
+              ./gradlew jpackage jpackageAlt
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
           name: "Store Artifacts"
-          path: desktop-merge/build/dist
-
-  build-macos-alt:
-    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    macos:
-      xcode: "14.2.0"
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-            name: "Make gradlew executable"
-            command: "chmod +x gradlew"
-      - run:
-            name: "Build Project"
-            command: "./gradlew jpackageAlt"
-            environment:
-              CIRCLE_CI: "true"
-      - store_artifacts:
-          name: "Store Alternate Artifacts"
           path: desktop-merge/build/dist
 
   build-linux:
@@ -116,31 +67,8 @@ jobs:
             command: "apt update -y && apt install fakeroot -y"
       - run:
             name: "Build Project"
-            command: "./gradlew jpackage --info"
-            environment:
-              CIRCLE_CI: "true"
-      - store_artifacts:
-          name: "Store Artifacts"
-          path: desktop-merge/build/dist
-
-  build-linux-alt:
-    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: gradle:jdk17
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-            name: "Make gradlew executable"
-            command: "chmod +x gradlew"
-      - run:
-            name: "Install APT Packages"
-            command: "apt update -y && apt install fakeroot -y"
-      - run:
-            name: "Build Project"
-            command: "./gradlew jpackage --info"
+            command: |
+              ./gradlew jpackage jpackageAlt
             environment:
               CIRCLE_CI: "true"
       - store_artifacts:
@@ -153,8 +81,5 @@ workflows:
   build-workflow:
     jobs:
       - build-windows
-      - build-windows-alt
       - build-macos
-      - build-macos-alt
       - build-linux
-      - build-linux-alt
