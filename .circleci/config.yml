@@ -5,7 +5,87 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build:
+  build-windows:
+    machine:
+      image: windows-server-2019-cuda:current
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+            name: "Make gradlew executable"
+            command: "chmod +x gradlew"
+      - run:
+            name: "Install APT Packages"
+            command: "apt update -y && apt install fakeroot -y"
+      - run:
+            name: "Build Project"
+            command: ".\\gradlew.bat jpackage --info"
+            environment:
+              CIRCLE_CI: "true"
+      - store_artifacts:
+          name: "Store Artifacts"
+          path: desktop-merge/build/dist
+
+  build-windows-alt:
+    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    machine:
+      image: windows-server-2019-cuda:current
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+            name: "Build Project"
+            command: ".\\gradlew.bat jpackageAlt --info"
+            environment:
+              CIRCLE_CI: "true"
+      - store_artifacts:
+          name: "Store Alternate Artifacts"
+          path: desktop-merge/build/dist
+
+  build-macos:
+    macos:
+      xcode: "14.2.0"
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+            name: "Make gradlew executable"
+            command: "chmod +x gradlew"
+      - run:
+            name: "Build Project"
+            command: "./gradlew jpackage --info"
+            environment:
+              CIRCLE_CI: "true"
+      - store_artifacts:
+          name: "Store Artifacts"
+          path: desktop-merge/build/dist
+
+  build-macos-alt:
+    # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    macos:
+      xcode: "14.2.0"
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+            name: "Make gradlew executable"
+            command: "chmod +x gradlew"
+      - run:
+            name: "Build Project"
+            command: "./gradlew jpackageAlt"
+            environment:
+              CIRCLE_CI: "true"
+      - store_artifacts:
+          name: "Store Alternate Artifacts"
+          path: desktop-merge/build/dist
+
+  build-linux:
     # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -24,12 +104,12 @@ jobs:
             name: "Build Project"
             command: "./gradlew jpackage --info"
             environment:
-              CIRCLE_CI: true
+              CIRCLE_CI: "true"
       - store_artifacts:
           name: "Store Artifacts"
           path: desktop-merge/build/dist
 
-  buildAlt:
+  build-linux-alt:
     # Specify the execution environment. You can specify an image from Dockerhub, or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -46,11 +126,11 @@ jobs:
             command: "apt update -y && apt install fakeroot -y"
       - run:
             name: "Build Project"
-            command: "./gradlew jpackageAlt"
+            command: "./gradlew jpackage --info"
             environment:
-              CIRCLE_CI: true
+              CIRCLE_CI: "true"
       - store_artifacts:
-          name: "Store Alternate Artifacts"
+          name: "Store Artifacts"
           path: desktop-merge/build/dist
 
 # Invoke jobs via workflows
@@ -58,5 +138,9 @@ jobs:
 workflows:
   build-workflow:
     jobs:
-      - build
-      - buildAlt
+      - build-windows
+      - build-windows-alt
+      - build-macos
+      - build-macos-alt
+      - build-linux
+      - build-linux-alt
