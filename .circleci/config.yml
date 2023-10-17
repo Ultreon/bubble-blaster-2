@@ -15,12 +15,6 @@ jobs:
     steps:
       - checkout
       - run:
-            name: "Make gradlew executable"
-            command: "chmod +x gradlew"
-      - run:
-            name: "Install APT Packages"
-            command: "apt update -y && apt install fakeroot -y"
-      - run:
             name: "Build Project"
             command: ".\\gradlew.bat jpackage --info"
             environment:
@@ -144,3 +138,7 @@ workflows:
     jobs:
       - build-windows
       - build-windows-alt
+      - build-macos
+      - build-macos-alt
+      - build-linux
+      - build-linux-alt
