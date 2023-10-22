@@ -1,7 +1,7 @@
 //file:noinspection GroovyUnusedCatchParameter
 
 
-import com.ultreon.bubbles.gradle.VersionType
+//import com.ultreon.gameutils.ProjectType
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -23,7 +23,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'commons-io', name: 'commons-io', version: '2.11.0'
+        classpath group: 'commons-io', name: 'commons-io', version: '2.13.0'
         classpath "com.google.code.gson:gson:2.10.1"
     }
 }
@@ -32,71 +32,32 @@ buildscript {
 //     Plugins     //
 //*****************//
 plugins {
-    id 'java'
-    id 'java-library'
-    id 'maven-publish'
+//    id 'java'
+//    id 'java-library'
+//    id 'maven-publish'
+//    id "org.panteleyev.jpackageplugin"
 }
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'bubbles-gradle'
+apply plugin: 'java-library'
+//apply plugin: 'gameutils'
 
 //****************************//
 // Setting up main properties //
 //****************************//
 
-// Project properties.
-version project_version
-group project_group
-
-archivesBaseName = archives_base_name + "-core"
+//projectConfig {
+//    type ProjectType.Common
+//}
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    withJavadocJar()
+
+    sourceCompatibility("17")
+    targetCompatibility("17")
 }
 
-bubbles {
-    versionType(VersionType.DEV)
-}
-
-//**********************//
-//     Repositories     //
-//**********************//
-repositories {
-    mavenCentral()
-    mavenLocal()
-    google()
-    maven {
-        name "JitPack"
-        url 'https://jitpack.io'
-    }
-    maven {
-        name "Atlassian"
-        url "https://maven.atlassian.com/3rdparty/"
-    }
-    maven {
-        name "Maven Central"
-        url "https://repo1.maven.org/maven2/"
-    }
-    maven {
-        name "RuneLite"
-        url "https://repo.runelite.net/"
-    }
-    maven {
-        name "FabricMC"
-        url "https://maven.fabricmc.net/"
-    }
-    flatDir {
-        name "Project Libraries"
-        dirs "${projectDir}/libs"
-    }
-}
-
-/***************
- * Dependencies
- */
 dependencies {
     api "it.unimi.dsi:fastutil:$fastutil_version"
     api "org.checkerframework:checker:$checker_framework_version"
@@ -124,6 +85,7 @@ dependencies {
     api "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
     api "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
     api "com.github.Ultreon.corelibs:corelibs-translations-v1:$corelibs_version"
+    api "com.github.Ultreon:ultreon-data:$ultreon_data_version"
 
     // Apis
     api "com.google.code.gson:gson:$gson_version"
@@ -144,9 +106,6 @@ dependencies {
     api "com.google.guava:guava:$guava_version"
     api "com.google.code.gson:gson:$gson_version"
 
-    // SLF4J
-    api "org.slf4j:slf4j-api:$slf4j_version"
-
     // OSHi (For system info in crash reports)
     api "com.github.oshi:oshi-core:$oshi_version"
 
@@ -162,45 +121,49 @@ dependencies {
     api "com.badlogicgames.gdx:gdx-freetype:$gdx_version"
     api "com.badlogicgames.gdx:gdx-tools:$gdx_version"
     api "com.badlogicgames.box2dlights:box2dlights:$box_2d_lights_version"
+    api "com.badlogicgames.gdx-video:gdx-video:1.3.2-SNAPSHOT"
+
+    // SLF4J
+    api "org.slf4j:slf4j-api:$slf4j_version"
+
+    // Google
+    api "com.google.code.gson:gson:2.10.1"
+    api 'com.google.guava:guava:32.0.0-jre'
+
+    // Misc. Libraries
+    api 'it.unimi.dsi:fastutil:8.5.12'
+    api 'com.raylabz:opensimplex:1.0.3'
+    api 'org.jetbrains:annotations:24.0.1'
+
     api "space.earlygrey:shapedrawer:$shapedrawer_version"
 
     // GDX Visual Effects
     api 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
     api 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
+
+    api "org.quiltmc:quilt-loader:$quilt_version"
 }
 
 processResources {
+    from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
+    exclude "*.pdn", "*.xcf", "*.ps"
+
     inputs.property "version", version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": version
+    filesMatching("metadata.json") {
+        expand(["version": version])
     }
-
-    from(file("NOTICE.txt")) { into "META-INF/" }
-    from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
-
-    exclude("**/*.pdn")
-    exclude("**/*.xcf")
-    exclude("**/*.ps")
-    exclude("**/*.tmp")
-    exclude("**/*.bak")
-    exclude("**/*.temp")
-    exclude("**/*.cache")
-    exclude("**/.cache")
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-compileJava.dependsOn processResources
-
 jar {
-    dependsOn ":gameprovider:jar"
-
     //noinspection GroovyAssignabilityCheck
     manifest {
         //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'Bubble Blaster 2',
+        attributes 'Implementation-Title': 'Bubble Blaster',
                 'Implementation-Vendor': 'Ultreon Team',
-                project_version: project.project_version,
-                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
+                project_version: project.version,
+                'Main-Class': 'com.ultreon.bubbles.DesktopLauncher',
                 'Multi-Release': 'true'
     }
 
@@ -215,21 +178,9 @@ jar {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-processResources {
-}
-
-test {
-    useJUnitPlatform()
-}
-
-tasks.create('prepareRun', {
+tasks.register('prepareRun', {
     Files.createDirectories(Paths.get(rootProject.projectDir.getAbsolutePath(), "run"))
 })
-
-tasks.withType(JavaCompile).configureEach {
-    options.fork = true
-    options.incremental = true
-}
 
 tasks.withType(ProcessResources).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
@@ -239,42 +190,14 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-build {
-//    mustRunAfter ":packedJar"
+tasks.register('copyDependencies', Copy) {
+    from(configurations.runtimeClasspath)
+    into("$projectDir/build/jars")
 }
 
-task createExec {
-    doFirst {
-        if (!file("build").exists()) {
-            mkdir "build"
-        }
-        mkdir "build/exec/"
-        if (file("build/exec/lib/").exists()) {
-            delete fileTree("build/exec/lib/")
-        }
-        copy {
-            from file("bin/start.bat")
-            into file("build/exec/")
-        }
-        copy {
-            from file("bin/start-unix.sh")
-            into file("build/exec/")
-        }
-        copy {
-            from file("bin/start-mac.sh")
-            into file("build/exec/")
-        }
-        copy {
-            from jar.outputs.files.singleFile
-            into file("build/exec/")
-            rename ".*", "bubbles.jar"
-        }
-        mkdir "build/exec/lib/"
-        copy {
-            from fileTree("build/dependencies/")
-            into file("build/exec/lib/")
-        }
-    }
+tasks.register('copyJar', Copy) {
+    from(tasks.jar)
+    into("$projectDir/build/jars")
 }
 
 publishing {
@@ -285,26 +208,6 @@ publishing {
     }
 }
 
-jar.finalizedBy(retrieveUrls)
-publish.finalizedBy(retrieveUrls)
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+compileJava {
+    options.encoding = "UTF-8"
 }
-
-task("copyDependencies", type: Copy) {
-    from(configurations.runtimeClasspath)
-    into("$buildDir/jars")
-}
-
-task("copyJar", type: Copy) {
-    from(tasks.jar)
-    into("$buildDir/jars")
-}
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
-
-println("Current version: " + project_version)
-println("Project: " + group + ":" + archivesBaseName)
-println("Bulding a Java " + compileJava.targetCompatibility + " project...")
