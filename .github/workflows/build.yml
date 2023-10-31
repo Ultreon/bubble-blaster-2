@@ -35,5 +35,5 @@ jobs:
       - name: Capture the build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Bubble Blaster Linux Build ${{ github.run_number }} (DEB)
+          name: Bubble Blaster Build ${{ github.run_number }}
           path: desktop-merge/build/dist
