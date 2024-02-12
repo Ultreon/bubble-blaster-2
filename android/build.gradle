@@ -99,7 +99,7 @@ android {
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
-tasks.register('copyAndroidNatives') {
+task copyAndroidNatives {
     doFirst {
         file("libs/armeabi-v7a/").mkdirs()
         file("libs/arm64-v8a/").mkdirs()
@@ -110,9 +110,9 @@ tasks.register('copyAndroidNatives') {
             def outputDir = null
             if (jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
             if (jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
-            if (jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
-            if (jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
-            if (outputDir != null) {
+            if(jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
+            if(jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
+            if(outputDir != null) {
                 copy {
                     from zipTree(jar)
                     into outputDir
@@ -127,7 +127,7 @@ tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") 
     packageTask.dependsOn 'copyAndroidNatives'
 }
 
-tasks.register('run', Exec) {
+task run(type: Exec) {
     def path
     def localProperties = project.file("../local.properties")
     if (localProperties.exists()) {
@@ -149,19 +149,19 @@ tasks.register('run', Exec) {
     commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.ultreon.bubbles/com.ultreon.bubbles.AndroidLauncher'
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = project_group
-            artifactId = project_id
-            version = project_version
-
-            afterEvaluate {
-                println(components.properties)
-                from components.release_aab
-            }
-        }
-    }
-}
+//publishing {
+//    publications {
+//        release(MavenPublication) {
+//            groupId = project_group
+//            artifactId = project_id
+//            version = project_version
+//
+//            afterEvaluate {
+//                println(components.properties)
+//                from components.release_aab
+//            }
+//        }
+//    }
+//}
 
 //eclipse.project.name = project_name + "-android"

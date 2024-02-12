@@ -104,11 +104,15 @@ beforeEvaluate {
         // Projects
         configurations["implementation"](project(":core"))
         configurations["implementation"](project(":desktop"))
+        configurations["implementation"](project(":desktop-merge"))
+        configurations["implementation"](project(":gameprovider"))
     }
 }
 
 allprojects {
-    apply(plugin = "maven-publish")
+    if (project.name != ":android") {
+        apply(plugin = "maven-publish")
+    }
 
     ext.also {
         it["app_name"] = "Bubble Blaster"
@@ -166,7 +170,7 @@ println("Project: $group:$name")
 fun setupIdea() {
     mkdir("$projectDir/build/gameutils")
 
-    val ps = System.getProperty("path.separator")!!
+    val ps = File.pathSeparator!!
     val files = configurations["runtimeClasspath"]!!
 
     val classPath = files.asSequence()
@@ -213,7 +217,7 @@ commonProperties
                         Application::class.java
                     ) {                       // Create new run configuration "MyApp" that will run class foo.App
                         jvmArgs =
-                            "-Xmx2g -Dloader.skipMcProvider=true -Dfabric.dli.config=${launchFile.path} -Dfabric.dli.env=CLIENT -Dfabric.dli.main=org.quiltmc.loader.impl.launch.knot.KnotClient"
+                            "-Xmx4G -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
                         mainClass = "net.fabricmc.devlaunchinjector.Main"
                         moduleName = idea.module.name + ".desktop.main"
                         workingDirectory = "$projectDir/run/"

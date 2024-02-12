@@ -34,7 +34,7 @@ buildscript {
 plugins {
 //    id 'java'
 //    id 'java-library'
-//    id 'maven-publish'
+    id 'maven-publish'
 //    id "org.panteleyev.jpackageplugin"
 }
 
@@ -58,6 +58,42 @@ java {
     targetCompatibility("17")
 }
 
+//**********************//
+//     Repositories     //
+//**********************//
+repositories {
+    mavenCentral()
+    mavenLocal()
+    google()
+    maven {
+        name "JitPack"
+        url 'https://jitpack.io'
+    }
+    maven {
+        name "Atlassian"
+        url "https://maven.atlassian.com/3rdparty/"
+    }
+    maven {
+        name "Maven Central"
+        url "https://repo1.maven.org/maven2/"
+    }
+    maven {
+        name "RuneLite"
+        url "https://repo.runelite.net/"
+    }
+    maven {
+        name "FabricMC"
+        url "https://maven.fabricmc.net/"
+    }
+    flatDir {
+        name "Project Libraries"
+        dirs "${projectDir}/libs"
+    }
+}
+
+/***************
+ * Dependencies
+ */
 dependencies {
     api "it.unimi.dsi:fastutil:$fastutil_version"
     api "org.checkerframework:checker:$checker_framework_version"
@@ -105,6 +141,9 @@ dependencies {
     api "com.google.guava:guava:$guava_version"
     api "com.google.code.gson:gson:$gson_version"
 
+    // SLF4J
+    api "org.slf4j:slf4j-api:$slf4j_version"
+
     // OSHi (For system info in crash reports)
     api "com.github.oshi:oshi-core:$oshi_version"
 
@@ -139,8 +178,6 @@ dependencies {
     // GDX Visual Effects
     api 'com.crashinvaders.vfx:gdx-vfx-core:0.5.0'
     api 'com.crashinvaders.vfx:gdx-vfx-effects:0.5.0'    // Optional, if you need standard filter/effects.
-
-    api "org.quiltmc:quilt-loader:$quilt_version"
 }
 
 processResources {
@@ -149,20 +186,28 @@ processResources {
 
     inputs.property "version", version
 
-    filesMatching("metadata.json") {
-        expand(["version": version])
+    filesMatching("fabric.mod.json") {
+        expand "version": version
     }
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
+
+    from(file("NOTICE.txt")) { into "META-INF/" }
+    from(file("$rootProject.projectDir/LICENSE")) { into "META-INF/" }
+
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
+compileJava.dependsOn processResources
+
 jar {
+    dependsOn ":gameprovider:jar"
+
     //noinspection GroovyAssignabilityCheck
     manifest {
         //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'Bubble Blaster',
+        attributes 'Implementation-Title': 'Bubble Blaster 2',
                 'Implementation-Vendor': 'Ultreon Team',
-                project_version: project.version,
-                'Main-Class': 'com.ultreon.bubbles.DesktopLauncher',
+                project_version: project.project_version,
+                'Main-Class': 'net.fabricmc.impl.launch.knot.KnotClient',
                 'Multi-Release': 'true'
     }
 
@@ -177,9 +222,21 @@ jar {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-tasks.register('prepareRun', {
+processResources {
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.create('prepareRun', {
     Files.createDirectories(Paths.get(rootProject.projectDir.getAbsolutePath(), "run"))
 })
+
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    options.incremental = true
+}
 
 tasks.withType(ProcessResources).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
@@ -189,14 +246,42 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-tasks.register('copyDependencies', Copy) {
-    from(configurations.runtimeClasspath)
-    into("$projectDir/build/jars")
+build {
+//    mustRunAfter ":packedJar"
 }
 
-tasks.register('copyJar', Copy) {
-    from(tasks.jar)
-    into("$projectDir/build/jars")
+task createExec {
+    doFirst {
+        if (!file("build").exists()) {
+            mkdir "build"
+        }
+        mkdir "build/exec/"
+        if (file("build/exec/lib/").exists()) {
+            delete fileTree("build/exec/lib/")
+        }
+        copy {
+            from file("bin/start.bat")
+            into file("build/exec/")
+        }
+        copy {
+            from file("bin/start-unix.sh")
+            into file("build/exec/")
+        }
+        copy {
+            from file("bin/start-mac.sh")
+            into file("build/exec/")
+        }
+        copy {
+            from jar.outputs.files.singleFile
+            into file("build/exec/")
+            rename ".*", "bubbles.jar"
+        }
+        mkdir "build/exec/lib/"
+        copy {
+            from fileTree("build/dependencies/")
+            into file("build/exec/lib/")
+        }
+    }
 }
 
 publishing {
@@ -207,6 +292,11 @@ publishing {
     }
 }
 
-compileJava {
-    options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+task("copyDependencies", type: Copy) {
+    from(configurations.runtimeClasspath)
+    into("$buildDir/jars")
 }

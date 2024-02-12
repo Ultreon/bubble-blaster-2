@@ -1,8 +1,8 @@
 package com.ultreon.gameprovider.bubbles;
 
-import org.quiltmc.loader.impl.util.log.LogCategory;
-import org.quiltmc.loader.impl.util.log.LogHandler;
-import org.quiltmc.loader.impl.util.log.LogLevel;
+import net.fabricmc.loader.impl.util.log.LogCategory;
+import net.fabricmc.loader.impl.util.log.LogHandler;
+import net.fabricmc.loader.impl.util.log.LogLevel;
 import org.apache.logging.log4j.*;
 
 import java.util.HashMap;
@@ -15,22 +15,29 @@ public class BB2LogHandler implements LogHandler {
     @Override
     public void log(long time, LogLevel level, LogCategory category, String msg, Throwable exc, boolean fromReplay, boolean wasSuppressed) {
         var marker = this.markerMap.computeIfAbsent(category, logCategory -> MarkerManager.getMarker(logCategory.name));
-        BB2LogHandler.LOGGER.log(BB2LogHandler.getLevel(level), marker, msg, exc);
+        LOGGER.log(BB2LogHandler.getLevel(level), marker, msg, exc);
     }
 
     @Override
     public boolean shouldLog(LogLevel level, LogCategory category) {
-        return BB2LogHandler.LOGGER.isEnabled(BB2LogHandler.getLevel(level));
+        return LOGGER.isEnabled(BB2LogHandler.getLevel(level));
     }
 
     private static Level getLevel(LogLevel level) {
-        return switch (level) {
-            case INFO -> Level.INFO;
-            case WARN -> Level.WARN;
-            case DEBUG -> Level.DEBUG;
-            case ERROR -> Level.ERROR;
-            case TRACE -> Level.TRACE;
-        };
+        switch (level) {
+            case INFO:
+                return Level.INFO;
+            case WARN:
+                return Level.WARN;
+            case DEBUG:
+                return Level.DEBUG;
+            case ERROR:
+                return Level.ERROR;
+            case TRACE:
+                return Level.TRACE;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     @Override

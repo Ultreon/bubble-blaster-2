@@ -17,11 +17,14 @@
 package com.ultreon.gameprovider.bubbles;
 
 import net.fabricmc.api.EnvType;
-import org.quiltmc.loader.impl.game.LibClassifier.LibraryType;
+import net.fabricmc.loader.impl.game.LibClassifier.LibraryType;
 
 enum GameLibrary implements LibraryType {
 	BB_DESKTOP("com/ultreon/bubbles/DesktopLauncher.class"),
-	BB_CORE("com/ultreon/bubbles/UltreonCraft.class"),
+	BB_CORE("com/ultreon/bubbles/BubbleBlaster.class"),
+	BB_DEV("com/ultreon/dev/GameDevMain.class"),
+	BB_PRELOADER("com/ultreon/gameprovider/bubbles/PreGameLoader.class"),
+	BB_PREMAIN("com/ultreon/premain/PreMain.class"),
 	LIBGDX("com/badlogic/gdx/Gdx.class"),
 	LOG4J_API("org/apache/logging/log4j/LogManager.class"),
 	LOG4J_CORE("META-INF/services/org.apache.logging.log4j.spi.Provider", "META-INF/log4j-provider.properties"),
@@ -30,8 +33,8 @@ enum GameLibrary implements LibraryType {
 	SLF4J_API("org/slf4j/Logger.class"),
 	SLF4J_CORE("META-INF/services/org.slf4j.spi.SLF4JServiceProvider");
 
-	static final GameLibrary[] GAME = {GameLibrary.BB_DESKTOP, GameLibrary.BB_CORE};
-	static final GameLibrary[] LOGGING = {GameLibrary.LOG4J_API, GameLibrary.LOG4J_CORE, GameLibrary.LOG4J_CONFIG, GameLibrary.GSON, GameLibrary.SLF4J_API, GameLibrary.SLF4J_CORE};
+	static final GameLibrary[] GAME = { BB_DESKTOP, BB_CORE, BB_DEV, BB_PRELOADER, BB_PREMAIN };
+	static final GameLibrary[] LOGGING = { LOG4J_API, LOG4J_CORE, LOG4J_CONFIG, GSON, SLF4J_API, SLF4J_CORE };
 
 	private final EnvType env;
 	private final String[] paths;
@@ -56,6 +59,6 @@ enum GameLibrary implements LibraryType {
 
 	@Override
 	public String[] getPaths() {
-		return paths;
+		return this.paths;
 	}
 }
