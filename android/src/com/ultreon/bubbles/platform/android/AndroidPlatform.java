@@ -68,12 +68,12 @@ public class AndroidPlatform extends GamePlatform {
 
     @Override
     public String getGameVersion() {
-        return BuildConfig.VERSION_NAME;
+        return "0.1.0";
     }
 
     @Override
     public boolean isDevelopmentEnvironment() {
-        return BuildConfig.DEBUG;
+        return false;
     }
 
     @Override

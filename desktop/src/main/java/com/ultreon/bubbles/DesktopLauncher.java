@@ -4,8 +4,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.ultreon.bubbles.platform.desktop.DesktopPlatform;
 import com.ultreon.libs.crash.v0.CrashLog;
-import net.fabricmc.loader.impl.util.Arguments;
 import org.jetbrains.annotations.NotNull;
+import org.quiltmc.loader.impl.util.Arguments;
 
 import java.util.ArrayList;
 import java.util.List;

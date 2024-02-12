@@ -46,6 +46,8 @@ apply plugin: 'java'
 version project_version
 group project_group
 
+evaluationDependsOn(":core")
+
 archivesBaseName = archives_base_name + "-desktop"
 
 java {
@@ -53,8 +55,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
-
-evaluationDependsOn(":core")
 
 dependencies {
     implementation project(":gameprovider")
@@ -74,24 +74,24 @@ dependencies {
     implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
 
     // UBO
-    implementation "com.github.Ultreon:ultreon-data:$ultreon_data_version"
+    implementation "io.github.ultreon:ubo:$ultreon_data_version"
 
     // Misc
     implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
     implementation "com.electronwill.night-config:toml_android:$nightconfig_version"
 
     // CoreLibs
-    implementation "com.github.Ultreon.corelibs:corelibs-collections-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-commons-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-crash-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-datetime-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-events-v1:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-functions-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-registries-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-resources-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-text-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-translations-v0:$corelibs_version"
-    implementation "com.github.Ultreon.corelibs:corelibs-translations-v1:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:collections-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:commons-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:crash-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:datetime-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:events-v1:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:functions-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:registries-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:resources-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:text-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:translations-v0:$corelibs_version"
+    implementation "io.github.ultreon.corelibs:translations-v1:$corelibs_version"
 
     // Apis
     implementation "commons-io:commons-io:$commons_io_version"

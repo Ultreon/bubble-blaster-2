@@ -29,9 +29,9 @@ import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
-import net.fabricmc.loader.impl.util.Arguments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.loader.impl.util.Arguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
