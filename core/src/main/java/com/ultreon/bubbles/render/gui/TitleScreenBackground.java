@@ -62,13 +62,13 @@ public class TitleScreenBackground {
     }
 
     public void render(Renderer renderer) {
-        renderer.enableBlur(15);
-        renderer.fillGradient(0, 0, this.width, this.height, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM);
+        renderer.blurred(true, () -> {
+            renderer.fillGradient(0, 0, this.width, this.height, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM);
 
-        for (var fakeBubble : this.bubbles)
-            WorldRenderer.drawBubble(renderer, fakeBubble.position.x, fakeBubble.position.y, fakeBubble.radius, 0, TYPE);
+            for (var fakeBubble : this.bubbles)
+                WorldRenderer.drawBubble(renderer, fakeBubble.position.x, fakeBubble.position.y, fakeBubble.radius, 0, TYPE);
+        });
 
-        renderer.disableBlur();
         renderer.fillGradient(0, 0, this.width, this.height, Color.BLACK.withAlpha(0x80), Color.BLACK.withAlpha(0x90));
     }
 

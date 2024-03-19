@@ -22,6 +22,10 @@ import java.util.Set;
 public class Config {
     private static final TomlParser PARSER = TomlFormat.instance().createParser();
     private static final TomlWriter WRITER = TomlFormat.instance().createWriter();
+    public static String hexagonColor = "#ffffff";
+    public static float hexagonTransparency = 0.2f;
+    public static float blurRadius = 14f;
+
     static {
         WRITER.setNewline(NewlineStyle.system());
         WRITER.setIndent(IndentStyle.SPACES_2);

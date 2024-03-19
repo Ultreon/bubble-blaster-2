@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
@@ -214,6 +215,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private BubbleBlaster() {
         if (instance != null)
             throw new UnsupportedOperationException("Can't open the game twice.");
+
+        ShaderProgram.pedantic = false;
 
         renderingThread = Thread.currentThread();
 
@@ -1560,11 +1563,17 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Render world.
         this.profiler.section("Render World", () -> {
             if (world != null && worldRenderer != null) {
-                if (screen != null) renderer.enableBlur(15);
-                RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
-                worldRenderer.render(renderer, mouseX, mouseY, frameTime);
-                RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
-                if (screen != null) renderer.disableBlur();
+                if (screen != null) {
+                    renderer.blurred(true, () -> {
+                        RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
+                        worldRenderer.render(renderer, mouseX, mouseY, frameTime);
+                        RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
+                    });
+                } else {
+                    RenderEvents.RENDER_WORLD_BEFORE.factory().onRenderWorldBefore(world, worldRenderer, renderer);
+                    worldRenderer.render(renderer, mouseX, mouseY, frameTime);
+                    RenderEvents.RENDER_WORLD_AFTER.factory().onRenderWorldAfter(world, worldRenderer, renderer);
+                }
             }
         });
 

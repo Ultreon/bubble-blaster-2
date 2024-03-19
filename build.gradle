@@ -135,6 +135,8 @@ allprojects {
             name "FabricMC"
             url "https://maven.fabricmc.net/"
         }
+        maven { url "https://github.com/Ultreon/ultreon-data/raw/main/.mvnrepo/" }
+        maven { url "https://github.com/Ultreon/corelibs/raw/main/.mvnrepo/" }
         flatDir {
             name "Project Libraries"
             dirs "${projectDir}/libs"

@@ -118,3 +118,4 @@ Thumbs.db
 .idea/modules/*
 !.idea/inspectionProfiles/*.xml
 !.idea/inspectionProfiles
+/layout.json
