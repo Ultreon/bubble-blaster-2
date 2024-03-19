@@ -840,32 +840,34 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private void executeDevCommand(int keyCode, World world, Player player) {
-        switch (keyCode) {
-            case Keys.F1:
-                LOGGER.warn("Triggering developer command: TRIGGER_BLOOD_MOON");
-                world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
-                break;
-            case Keys.F3:
-                LOGGER.warn("Triggering developer command: SELF_DESTRUCT");
-                player.destroy();
-                break;
-            case Keys.F4:
-                LOGGER.warn("Triggering developer command: LEVEL_UP");
-                player.levelUp();
-                break;
-            case Keys.F5:
-                LOGGER.warn("Triggering developer command: SCORE_1000");
-                player.awardScore(1000);
-                break;
-            case Keys.F6:
-                LOGGER.warn("Triggering developer command: RESET_HP");
-                player.setHealth(player.getMaxHealth());
-                break;
-            case Keys.F7:
-                LOGGER.warn("Triggering developer command: GLITCH");
-                this.isGlitched = true;
-                break;
-        }
+        BubbleBlaster.invokeTick(() -> {
+            switch (keyCode) {
+                case Keys.F1:
+                    LOGGER.warn("Triggering developer command: TRIGGER_BLOOD_MOON");
+                    world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, true);
+                    break;
+                case Keys.F3:
+                    LOGGER.warn("Triggering developer command: SELF_DESTRUCT");
+                    player.destroy();
+                    break;
+                case Keys.F4:
+                    LOGGER.warn("Triggering developer command: LEVEL_UP");
+                    player.levelUp();
+                    break;
+                case Keys.F5:
+                    LOGGER.warn("Triggering developer command: SCORE_1000");
+                    player.awardScore(1000);
+                    break;
+                case Keys.F6:
+                    LOGGER.warn("Triggering developer command: RESET_HP");
+                    player.setHealth(player.getMaxHealth());
+                    break;
+                case Keys.F7:
+                    LOGGER.warn("Triggering developer command: GLITCH");
+                    this.isGlitched = true;
+                    break;
+            }
+        });
     }
 
     private void onMouseClick(int x, int y, int button, int clicks) {

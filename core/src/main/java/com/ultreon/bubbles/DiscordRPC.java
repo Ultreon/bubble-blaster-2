@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 import static com.ultreon.bubbles.BubbleBlaster.LOGGER;
 
+// TODO Replace this with Discord IPC (inter process communication) instead.
 public class DiscordRPC {
     private final Lock updateLock = new ReentrantLock(true);
     private final Thread thread;
