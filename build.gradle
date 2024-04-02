@@ -62,8 +62,6 @@ extensions.getByType(GameUtilsExt).with {
     projectId = "bubble-blaster"
     production = true
 
-    coreProject = project(":core")
-    desktopProject = project(":desktop")
     packageProject = project(":desktop-merge")
 
     mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient"

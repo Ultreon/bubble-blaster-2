@@ -8,8 +8,6 @@ class GameUtilsExt {
     String projectVersion = "dev"
     String projectGroup = "com.example"
     String projectId = "example-project"
-    Project coreProject
-    Project desktopProject
     Project packageProject
     int javaVersion = -1
     boolean production = false
