@@ -257,17 +257,20 @@ public class DesktopPlatform extends GamePlatform {
 
     @Override
     public void initImGui() {
-        ImGuiRenderer.init();
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            ImGuiRenderer.init();
     }
 
     @Override
     public void renderImGui(Renderer renderer) {
-        ImGuiRenderer.render(renderer);
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            ImGuiRenderer.render(renderer);
     }
 
     @Override
     public void dispose() {
-        ImGuiRenderer.dispose();
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            ImGuiRenderer.dispose();
     }
 
     @Override
@@ -293,17 +296,24 @@ public class DesktopPlatform extends GamePlatform {
 
     @Override
     public void toggleDebugGui() {
-        ImGuiRenderer.DEBUG_GUI_OPEN.set(!ImGuiRenderer.DEBUG_GUI_OPEN.get());
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            ImGuiRenderer.DEBUG_GUI_OPEN.set(!ImGuiRenderer.DEBUG_GUI_OPEN.get());
     }
 
     @Override
     public boolean isDebugGuiOpen() {
-        return ImGuiRenderer.DEBUG_GUI_OPEN.get();
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            return ImGuiRenderer.DEBUG_GUI_OPEN.get();
+
+        return false;
     }
 
     @Override
     public boolean isCollisionShapesShown() {
-        return ImGuiRenderer.SHOW_COLLISIONS_SHAPES.get();
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            return ImGuiRenderer.SHOW_COLLISIONS_SHAPES.get();
+
+        return false;
     }
 
     @Override
