@@ -148,20 +148,3 @@ task run(type: Exec) {
     def adb = path + "/platform-tools/adb"
     commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.ultreon.bubbles/com.ultreon.bubbles.AndroidLauncher'
 }
-
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = project_group
-            artifactId = project_id
-            version = project_version
-
-            afterEvaluate {
-                println(components.properties)
-                from components.release_aab
-            }
-        }
-    }
-}
-
-//eclipse.project.name = project_name + "-android"

@@ -25,10 +25,7 @@ plugins {
     id "eclipse"
 }
 
-version project_version
 group project_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
-archivesBaseName = archives_base_name + "-gameprovider"
 
 //GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), this.binding);
 //shell.run(file, arguments);
@@ -39,7 +36,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-println("Current version: $project_version")
+println("Current version: $version")
 println("Project: $group:$archivesBaseName")
 println("Bulding a Java $compileJava.targetCompatibility project...")
 
@@ -132,6 +129,18 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            groupId = project.group
+            artifactId = "bubble-blaster-" + project.name
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
+            credentials {
+                username = project.findProperty("gpr.user") == null ? System.getenv("USERNAME") : project.findProperty("gpr.user")
+                password = project.findProperty("gpr.key") == null ? System.getenv("TOKEN") : project.findProperty("gpr.key")
+            }
         }
     }
 }

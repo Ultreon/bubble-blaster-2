@@ -25,10 +25,7 @@ plugins {
     id "eclipse"
 }
 
-version project_version
 group project_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
-archivesBaseName = archives_base_name + "-minimal"
 
 java {
     withSourcesJar()
@@ -36,7 +33,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-println("Current version: $project_version")
+println("Current version: $version")
 println("Project: $group:$archivesBaseName")
 println("Bulding a Java $compileJava.targetCompatibility project...")
 

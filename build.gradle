@@ -1,6 +1,7 @@
 //file:noinspection GroovyUnusedCatchParameter
 
 
+import com.ultreon.gameutils.GameUtilsExt
 import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
@@ -39,18 +40,35 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'java-library'
+    id 'application'
 //    id 'com.github.johnrengelman.shadow' version '7.+'
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
 }
+apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
+apply plugin: "gameutils"
 
 //apply plugin: 'maven-publish'
 
 //****************************//
 // Setting up main properties //
 //****************************//
-
-version project_version
+version project_version + "+snapshot." + new Date().format("yyyy.MM.dd.HH.mm")
 group project_group
+
+extensions.getByType(GameUtilsExt).with {
+    projectName = "Bubble Blaster"
+
+    projectVersion = "$project_version"
+    projectGroup = "io.github.ultreon.bubbles"
+    projectId = "bubble-blaster"
+    production = true
+
+    coreProject = project(":core")
+    desktopProject = project(":desktop")
+    packageProject = project(":desktop-merge")
+
+    mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient"
+    javaVersion = 11
+}
 
 //**********************//
 //     Repositories     //
@@ -75,6 +93,11 @@ repositories {
     maven {
         name "JitPack"
         url 'https://jitpack.io'
+
+        content {
+            includeGroup "com.github.JnCrMx"
+            includeGroup "space.earlygrey"
+        }
     }
     flatDir {
         name "Project Libraries"
@@ -82,42 +105,53 @@ repositories {
     }
 }
 
+beforeEvaluate {
+
 /*****************
  * Configurations
  */
-configurations {
-    // configuration that holds jars to include in the jar
-    implementation {
-        canBeResolved true
+    configurations {
+        // configuration that holds jars to include in the jar
+        implementation {
+            canBeResolved true
+        }
+        include {
+            canBeResolved true
+        }
+        addToJar {
+            canBeResolved true
+        }
     }
-    include {
-        canBeResolved true
-    }
-    addToJar {
-        canBeResolved true
-    }
-}
 
 /***************
  * Dependencies
  */
-dependencies {
-    // Projects
-    implementation(project(":core"))
-    implementation(project(":desktop"))
+    dependencies {
+        // Projects
+        implementation(project(":core"))
+        implementation(project(":desktop"))
+        implementation(project(":gameprovider"))
+    }
+
+    dependencies {
+        implementation project(":core")
+        implementation project(":desktop")
+        implementation project(":desktop-merge")
+        implementation project(":gameprovider")
+        implementation project(":minimal")
+    }
+}
+
+base {
+    archivesName = project.archivesBaseName
 }
 
 allprojects {
     apply plugin: "maven-publish"
 
-    publishing {
-        publications {
+    version project_version + "+snapshot." + new Date().format("yyyy.MM.dd.HH.mm")
 
-        }
-        repositories {
-
-        }
-    }
+    group project_group
 
     repositories {
         mavenLocal()
@@ -126,6 +160,11 @@ allprojects {
         maven {
             name "JitPack"
             url 'https://jitpack.io'
+
+            content {
+                includeGroup "com.github.JnCrMx"
+                includeGroup "space.earlygrey"
+            }
         }
         maven {
             name "Maven Central"
@@ -135,8 +174,6 @@ allprojects {
             name "FabricMC"
             url "https://maven.fabricmc.net/"
         }
-        maven { url "https://github.com/Ultreon/ultreon-data/raw/main/.mvnrepo/" }
-        maven { url "https://github.com/Ultreon/corelibs/raw/main/.mvnrepo/" }
         flatDir {
             name "Project Libraries"
             dirs "${projectDir}/libs"
@@ -145,18 +182,21 @@ allprojects {
             name "Project Libraries"
             dirs "${rootProject.projectDir}/libs"
         }
+
+        maven {
+            name = "BubbleBlasterMaven"
+            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
     }
 
     dependencies {
 
     }
-
-//    publish.dependsOn build
 }
-
-tasks.create('prepareRun', {
-    Files.createDirectories(Paths.get(projectDir.getAbsolutePath(), "run"))
-})
 
 tasks.withType(JavaCompile).configureEach {
     options.fork = true
@@ -209,14 +249,6 @@ artifacts {
 //    packedJar
 }
 
-dependencies {
-    runtimeOnly project(":core")
-    runtimeOnly project(":desktop")
-    runtimeOnly project(":desktop-merge")
-    runtimeOnly project(":gameprovider")
-    runtimeOnly project(":minimal")
-}
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
@@ -253,6 +285,13 @@ def cp = "$rcl"
 def cpFile = file("$buildDir.absolutePath/bubbles/classpath.txt")
 Files.writeString(cpFile.toPath(), cp, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
 
+application {
+    applicationDefaultJvmArgs = ["-Xmx2g", "-Dfabric.dli.config=$launchFile.path", "-Dfabric.dli.env=CLIENT", "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"]
+    mainClass = 'net.fabricmc.devlaunchinjector.Main'
+}
+
+run.workingDir("$rootProject.projectDir/run")
+
 idea{
     project{
         settings {
@@ -268,6 +307,25 @@ idea{
                     workingDirectory = "$projectDir/run/"
                     programParameters = "--gameDir=."
                 }
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "bubble-blaster"
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
+            credentials {
+                username = project.findProperty("gpr.user") == null ? System.getenv("USERNAME") : project.findProperty("gpr.user")
+                password = project.findProperty("gpr.key") == null ? System.getenv("TOKEN") : project.findProperty("gpr.key")
             }
         }
     }
