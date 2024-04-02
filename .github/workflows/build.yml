@@ -31,6 +31,8 @@ jobs:
       - name: Build
         run: ./gradlew :android:packageRelease
         env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
         uses: actions/upload-artifact@v2
@@ -61,6 +63,8 @@ jobs:
       - name: Build
         run: ./gradlew :pack
         env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
         uses: actions/upload-artifact@v2
