@@ -175,7 +175,7 @@ jar {
         attributes 'Implementation-Title': 'Bubble Blaster',
                 'Implementation-Vendor': 'Ultreon Team',
                 project_version: project.project_version,
-                'Main-Class': 'com.ultreon.craft.DesktopLauncher',
+                'Main-Class': 'dev.ultreon.craft.DesktopLauncher',
                 'Multi-Release': 'true'
     }
 
@@ -265,7 +265,7 @@ jpackage {
 
 //    mainJar = "fabric-loader-${fabric_loader_version}.jar"
     mainJar = jar.archiveFileName.get()
-    mainClass = "com.ultreon.bubbles.premain.PreMain"
+    mainClass = "dev.ultreon.bubbles.premain.PreMain"
 
     destination = "$buildDir/dist"
 
@@ -324,7 +324,7 @@ tasks.register('jpackageAlt', JPackageTask) {
     runtimeImage = System.getProperty("java.home")
 
     mainJar = jar.archiveFileName.get()
-    mainClass = "com.ultreon.bubbles.premain.PreMain"
+    mainClass = "dev.ultreon.bubbles.premain.PreMain"
 
     destination = "$buildDir/dist"
 

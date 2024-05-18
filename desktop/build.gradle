@@ -71,24 +71,24 @@ dependencies {
     implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
 
     // UBO
-    implementation "io.github.ultreon:ubo:$ultreon_data_version"
+    implementation "dev.ultreon:ubo:$ubo_version"
 
     // Misc
     implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
     implementation "com.electronwill.night-config:toml_android:$nightconfig_version"
 
     // CoreLibs
-    implementation "io.github.ultreon.corelibs:collections-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:commons-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:crash-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:datetime-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:events-v1:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:functions-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:registries-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:resources-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:text-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:translations-v0:$corelibs_version"
-    implementation "io.github.ultreon.corelibs:translations-v1:$corelibs_version"
+    implementation "dev.ultreon.corelibs:collections-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:commons-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:crash-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:datetime-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:events-v1:$corelibs_version"
+    implementation "dev.ultreon.corelibs:functions-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:registries-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:resources-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:text-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:translations-v0:$corelibs_version"
+    implementation "dev.ultreon.corelibs:translations-v1:$corelibs_version"
 
     // Apis
     implementation "commons-io:commons-io:$commons_io_version"
@@ -229,7 +229,7 @@ jar {
         attributes 'Implementation-Title': 'Bubble Blaster',
                 'Implementation-Vendor': 'Ultreon Team',
                 project_version: project.project_version,
-                'Main-Class': 'com.ultreon.craft.DesktopLauncher',
+                'Main-Class': 'dev.ultreon.craft.DesktopLauncher',
                 'Multi-Release': 'true'
     }
 

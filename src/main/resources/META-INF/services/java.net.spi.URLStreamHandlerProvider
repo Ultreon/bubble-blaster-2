@@ -1,2 +1,2 @@
-com.ultreon.premain.ClasspathURLStreamHandlerProvider
-com.ultreon.premain.LibraryJarURLStreamHandlerProvider
+dev.ultreon.premain.ClasspathURLStreamHandlerProvider
+dev.ultreon.premain.LibraryJarURLStreamHandlerProvider

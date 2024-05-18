@@ -1,7 +1,7 @@
 //file:noinspection GroovyUnusedCatchParameter
 
 
-import com.ultreon.gameutils.GameUtilsExt
+import dev.ultreon.gameutils.GameUtilsExt
 import org.jetbrains.gradle.ext.Application
 
 import java.nio.file.Files
@@ -94,6 +94,8 @@ repositories {
 
         content {
             includeGroup "com.github.JnCrMx"
+            includeGroup "dev.ultreon"
+            includeGroup "dev.ultreon.corelibs"
             includeGroup "space.earlygrey"
         }
     }
@@ -171,6 +173,17 @@ allprojects {
         maven {
             name "FabricMC"
             url "https://maven.fabricmc.net/"
+        }
+        maven {
+            name "JitPack"
+            url "https://jitpack.io/"
+
+            content {
+                includeGroup "com.github.JnCrMx"
+                includeGroup "dev.ultreon"
+                includeGroup "dev.ultreon.corelibs"
+                includeGroup "space.earlygrey"
+            }
         }
         flatDir {
             name "Project Libraries"

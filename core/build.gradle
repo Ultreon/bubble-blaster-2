@@ -86,7 +86,7 @@ dependencies {
     api "it.unimi.dsi:fastutil:$fastutil_version"
     api "org.checkerframework:checker:$checker_framework_version"
 
-    api "io.github.ultreon:ubo:$ultreon_data_version"
+    api "dev.ultreon:ubo:$ubo_version"
     api "org.jetbrains:annotations:$jetbrains_annotations_version"
 
     // Test dependencies
@@ -98,17 +98,17 @@ dependencies {
     api "com.electronwill.night-config:toml_android:$nightconfig_version"
 
     // CoreLibs
-    api "io.github.ultreon.corelibs:collections-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:commons-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:crash-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:datetime-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:events-v1:$corelibs_version"
-    api "io.github.ultreon.corelibs:functions-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:registries-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:resources-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:text-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:translations-v0:$corelibs_version"
-    api "io.github.ultreon.corelibs:translations-v1:$corelibs_version"
+    api "dev.ultreon.corelibs:collections-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:commons-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:crash-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:datetime-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:events-v1:$corelibs_version"
+    api "dev.ultreon.corelibs:functions-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:registries-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:resources-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:text-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:translations-v0:$corelibs_version"
+    api "dev.ultreon.corelibs:translations-v1:$corelibs_version"
 
     // Apis
     api "com.google.code.gson:gson:$gson_version"
