@@ -48,7 +48,7 @@ jobs:
         ]
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} (DEB)
+    name: Build on ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -78,7 +78,7 @@ jobs:
         ]
         os: [macOS-11]
     runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} (APP)
+    name: Build on ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -108,7 +108,7 @@ jobs:
         ]
         os: [windows-2022]
     runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} (EXE)
+    name: Build on ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -127,7 +127,7 @@ jobs:
         with:
           name: Bubble Blaster Windows Build ${{ github.run_number }} (EXE)
           path: desktop-merge/build/dist
-  build-linux-alt:
+  build-linux-appimage:
     strategy:
       matrix:
         # Use these Java versions
@@ -157,7 +157,7 @@ jobs:
         with:
           name: Bubble Blaster Linux Build ${{ github.run_number }} (PORTABLE)
           path: desktop-merge/build/dist
-  build-macos-alt:
+  build-macos-appimage:
     strategy:
       matrix:
         # Use these Java versions
@@ -166,7 +166,7 @@ jobs:
         ]
         os: [macOS-11]
     runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} (PKG)
+    name: Build on ${{ matrix.os }} (PORTABLE)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -187,7 +187,7 @@ jobs:
         with:
           name: Bubble Blaster MacOS Build ${{ github.run_number }} (PKG)
           path: desktop-merge/build/dist
-  build-windows-msi:
+  build-windows-appimage:
     strategy:
       matrix:
         # Use these Java versions
@@ -196,7 +196,7 @@ jobs:
         ]
         os: [windows-2022]
     runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} (MSI)
+    name: Build on ${{ matrix.os }} (PORTABLE)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

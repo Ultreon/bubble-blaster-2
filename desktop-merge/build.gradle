@@ -311,6 +311,7 @@ jpackage {
         winConsole = false
         javaOptions = javaOptions + ["-Dbubbles.packageFormat=exe"]
         appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
+        type = ImageType.MSI
     }
 }
 
@@ -333,26 +334,20 @@ tasks.register('jpackageAlt', JPackageTask) {
 
     destination = "$buildDir/dist"
 
-    licenseFile = "$rootProject.projectDir/package/LICENSE.txt"
-
     javaOptions = vmArgs
     arguments = ["--packaged"]
-
-    aboutUrl = "https://github.com/Ultreon/bubble-blaster"
 
     mac {
         icon = "$rootProject.projectDir/icons/icon.icns"
         macPackageIdentifier = project_id
         macPackageName = project_name
         appVersion = packageVersion
-        javaOptions = javaOptions + ["-XstartOnFirstThread", "-Dbubbles.packageFormat=pkg"]
-        type = ImageType.PKG
+        javaOptions = javaOptions + ["-XstartOnFirstThread", "-Dbubbles.packageFormat=appimage"]
+        type = ImageType.APP_IMAGE
     }
 
     linux {
         icon = "$rootProject.projectDir/icons/icon.png"
-        aboutUrl = null
-        licenseFile = null
         appVersion = project.version.toString()
         javaOptions = javaOptions + ["-Dbubbles.packageFormat=appimage"]
         type = ImageType.APP_IMAGE
@@ -360,18 +355,10 @@ tasks.register('jpackageAlt', JPackageTask) {
 
     windows {
         icon = "$rootProject.projectDir/icons/icon.ico"
-        winMenu = true
-        winDirChooser = true
-        winConsole = false
-        winPerUserInstall = true
-        winShortcutPrompt = true
-        winShortcut = false
-        winUpgradeUuid = "a539b496-ae50-4df2-9a1b-8a089e44f7ce"
-        winMenuGroup = "Ultreon Team"
         winConsole = false
         appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
-        javaOptions = javaOptions + ["-Dbubbles.packageFormat=msi"]
-        type = ImageType.MSI
+        javaOptions = javaOptions + ["-Dbubbles.packageFormat=appimage"]
+        type = ImageType.APP_IMAGE
     }
 }
 
