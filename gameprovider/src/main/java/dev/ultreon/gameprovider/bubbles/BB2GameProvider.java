@@ -91,8 +91,8 @@ public class BB2GameProvider implements GameProvider {
                 new BuiltinMod(this.gameJars, new BuiltinModMetadata.Builder("bubbleblaster", this.versions.getProperty("bubbleblaster"))
                         .setName("Bubble Blaster")
                         .setDescription("A game by Ultreon, the game you are now playing.")
-                        .addLicense("Ultreon-API-v1.1") // Pls choose correct license <3
-                        .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.github,io/", "github", "https://github.com/Ultreon", "youtube", "https://youtube.com/@ultreon"))
+                        .addLicense("Ultreon-PSL-1.0") // Pls choose correct license <3
+                        .addAuthor("Ultreon Team", Map.of("homepage", "http://ultreon.dev/", "github", "https://github.com/Ultreon", "youtube", "https://youtube.com/@ultreon"))
                         .addAuthor("XyperCode", Map.of("homepage", "http://xypercode.github,io/", "github", "https://github.com/XyperCode", "youtube", "https://youtube.com/@xypercode"))
                         .setContact(new ContactInformationImpl(Map.of("homepage", "https://github.com/Ultreon/bubble-blaster-2/", "issues", "https://github.com/Ultreon/bubble-blaster-2/issues", "discord", "https://discord.gg/WePT9v2CmQ")))
                         .addIcon(200, "assets/bubbles/icon.png")
