@@ -1,4 +1,4 @@
-package generated_bcfb74d8fef4c8a73600.gl;
+package dev.ultreon.bubbles.injections.gl;
 
 import com.badlogic.gdx.Gdx;
 import org.jetbrains.annotations.NotNull;
@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 public class GLScissorState {
-
     private static int currentX;
     private static int currentY;
     private static int currentW;

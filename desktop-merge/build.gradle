@@ -198,9 +198,9 @@ jar {
 
     doLast {
         println "DESK_MERGE FILE: ${file("$buildDir/libs/").list().toArrayString()}"
-        println "CORE FILE: ${file("${project(":core")buildDir}/libs/").list().toArrayString()}"
-        println "DESKTOP FILE: ${file("${project(":desktop")buildDir}/libs/").list().toArrayString()}"
-        println "GAMEPROVIDER FILE: ${file("${project(":gameprovider")buildDir}/libs/").list().toArrayString()}"
+        println "CORE FILE: ${file("${project(":core") buildDir}/libs/").list().toArrayString()}"
+        println "DESKTOP FILE: ${file("${project(":desktop") buildDir}/libs/").list().toArrayString()}"
+        println "GAMEPROVIDER FILE: ${file("${project(":gameprovider") buildDir}/libs/").list().toArrayString()}"
     }
 }
 
@@ -249,12 +249,15 @@ tasks.register('package', Zip) {
     destinationDir(file("$rootProject.buildDir/dist/"))
 }
 
+final vmArgs = ["-Dfile.encoding=UTF-8", "-Dfabric.skipMcProvider=true", "-Xmx4G", "-Xms256M",
+                "-Dbubbles.packaged=true", "-Dbubbles.packageType=jpackage", "-Dbubbles.version=${project.version}"
+]
 jpackage {
     dependsOn("build", ":gameprovider:build", ":desktop:build", ":core:build", "copyDependencies", "copyJar")
 
     inputs.files(fileTree("$buildDir/jars"))
 
-    input  = "$buildDir/jars"
+    input = "$buildDir/jars"
     destination = "$buildDir/bin"
 
     appName = project.property("app_name").toString()
@@ -271,8 +274,8 @@ jpackage {
 
     licenseFile = "$rootProject.projectDir/package/LICENSE.txt"
 
-    javaOptions = [ "-Dfile.encoding=UTF-8" ]
-    arguments = [ "--packaged" ]
+    javaOptions = vmArgs
+    arguments = ["--packaged"]
 
     aboutUrl = "https://github.com/Ultreon/bubble-blaster"
 
@@ -281,7 +284,7 @@ jpackage {
         macPackageIdentifier = project_id
         macPackageName = project_name
         appVersion = packageVersion
-        javaOptions = javaOptions + [ "-XstartOnFirstThread" ]
+        javaOptions = javaOptions + ["-XstartOnFirstThread", "-Dbubbles.packageFormat=dmg"]
     }
 
     linux {
@@ -291,6 +294,7 @@ jpackage {
         linuxRpmLicenseType = "Ultreon API License v1.1"
         linuxAppRelease = "2"
         linuxShortcut = true
+        javaOptions = javaOptions + ["-Dbubbles.packageFormat=deb"]
         appVersion = project.version.toString()
     }
 
@@ -305,6 +309,7 @@ jpackage {
         winUpgradeUuid = "a539b496-ae50-4df2-9a1b-8a089e44f7ce"
         winMenuGroup = "Ultreon Team"
         winConsole = false
+        javaOptions = javaOptions + ["-Dbubbles.packageFormat=exe"]
         appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
     }
 }
@@ -330,7 +335,7 @@ tasks.register('jpackageAlt', JPackageTask) {
 
     licenseFile = "$rootProject.projectDir/package/LICENSE.txt"
 
-    javaOptions = ["-Dfile.encoding=UTF-8"]
+    javaOptions = vmArgs
     arguments = ["--packaged"]
 
     aboutUrl = "https://github.com/Ultreon/bubble-blaster"
@@ -340,7 +345,7 @@ tasks.register('jpackageAlt', JPackageTask) {
         macPackageIdentifier = project_id
         macPackageName = project_name
         appVersion = packageVersion
-        javaOptions = javaOptions + [ "-XstartOnFirstThread" ]
+        javaOptions = javaOptions + ["-XstartOnFirstThread", "-Dbubbles.packageFormat=pkg"]
         type = ImageType.PKG
     }
 
@@ -349,6 +354,7 @@ tasks.register('jpackageAlt', JPackageTask) {
         aboutUrl = null
         licenseFile = null
         appVersion = project.version.toString()
+        javaOptions = javaOptions + ["-Dbubbles.packageFormat=appimage"]
         type = ImageType.APP_IMAGE
     }
 
@@ -364,6 +370,7 @@ tasks.register('jpackageAlt', JPackageTask) {
         winMenuGroup = "Ultreon Team"
         winConsole = false
         appVersion = (project.version).toString().replaceAll("-cb\\.\\d+", "").replace("+", ".")
+        javaOptions = javaOptions + ["-Dbubbles.packageFormat=msi"]
         type = ImageType.MSI
     }
 }

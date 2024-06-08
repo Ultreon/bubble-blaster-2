@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "name": "Internal Mod",
+  "name": "Bubble Blaster Injections",
   "id": "bubbles_internal",
   "description": "Fixes to external libs, using Mixins ofc!",
   "authors": [
     {
       "name": "Ultreon Team",
       "contact": {
-        "homepage": "https://ultreon.github.io/",
+        "homepage": "https://ultreon.dev/",
         "discord": "https://discord.gg/WePT9v2CmQ",
         "github": "https://github.com/Ultreon",
         "youtube": "https://youtube.com/@ultreon"
@@ -17,8 +17,9 @@
       "name": "XyperCode",
       "contact": {
         "homepage": "https://xypercode.github.io/",
+        "email": "xypercode@ultreon.dev",
         "github": "https://github.com/XyperCode",
-        "youtube": "https://youtube.com/@qboi"
+        "youtube": "https://youtube.com/@xypercode"
       }
     }
   ],
@@ -32,14 +33,17 @@
       "world": "*"
     }
   ],
-  "license": "Ultreon-API-v1.2",
+  "license": "Ultreon-PSL-1.0",
   "icon": "assets/bubbles_mixins/icon.png",
   "version": "${version}",
   "entrypoints": {
-    "main": [
-      {
-        "value": "generated_bcfb74d8fef4c8a73600.BubblesMinimal"
-      }
-    ]
+
+  },
+  "custom": {
+    "bubbles": {
+      "tags": [
+        "library"
+      ]
+    }
   }
 }

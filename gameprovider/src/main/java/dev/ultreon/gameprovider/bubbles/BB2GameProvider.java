@@ -17,6 +17,7 @@ import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.fabricmc.loader.impl.util.log.LogHandler;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -25,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BB2GameProvider implements GameProvider {
@@ -143,7 +145,7 @@ public class BB2GameProvider implements GameProvider {
         this.arguments.parse(args);
 
         try {
-            var classifier = new LibClassifier<GameLibrary>(GameLibrary.class, this.envType, this);
+            var classifier = new LibClassifier<>(GameLibrary.class, this.envType, this);
             var gameLib = GameLibrary.BB_DESKTOP;
             var gameJar = GameProviderHelper.getCommonGameJar();
             var commonGameJarDeclared = gameJar != null;
@@ -162,9 +164,11 @@ public class BB2GameProvider implements GameProvider {
                 Log.warn(LogCategory.GAME_PROVIDER, "The declared common game jar didn't contain any of the expected classes!");
             }
 
-            if (gameJar != null) {
-                this.gameJars.add(gameJar);
+            if (gameJar == null) {
+                throw new FormattedException("Game jar not found", "Game jar not found: " + gameLib, new Exception());
             }
+
+            this.gameJars.add(gameJar);
 
             if (coreJar != null) {
                 this.gameJars.add(coreJar);
@@ -228,7 +232,7 @@ public class BB2GameProvider implements GameProvider {
     }
 
     private void setupLogHandler(FabricLauncher launcher, boolean useTargetCl) {
-        System.setProperty("log4j2.formatMsgNoLookups", "true"); // lookups are not used by mc and cause issues with older log4j2 versions
+        System.setProperty("log4j2.formatMsgNoLookups", "true");
 
         try {
             final var logHandlerClsName = "dev.ultreon.gameprovider.bubbles.BB2LogHandler";
@@ -306,6 +310,22 @@ public class BB2GameProvider implements GameProvider {
 
     @Override
     public boolean canOpenErrorGui() {
+        var extracted = this.checkGuiAvailability();
+        if (extracted) {
+            if (OS.isLinux()) {
+                try {
+                    // Set GTK+ theme
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+                } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException |
+                         InstantiationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return extracted;
+    }
+
+    private boolean checkGuiAvailability() {
         if (this.arguments == null || this.envType == EnvType.CLIENT) {
             return true;
         }

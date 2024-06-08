@@ -1,6 +1,6 @@
-package generated_bcfb74d8fef4c8a73600.mixins;
+package dev.ultreon.bubbles.injections.mixins;
 
-import generated_bcfb74d8fef4c8a73600.gl.GLScissorState;
+import dev.ultreon.bubbles.injections.gl.GLScissorState;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -1,5 +1,5 @@
 {
-  "package": "generated_bcfb74d8fef4c8a73600.mixins",
+  "package": "dev.ultreon.bubbles.injections.mixins",
   "mixins": [
     "GL20Mixin"
   ],
