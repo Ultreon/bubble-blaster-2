@@ -161,7 +161,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public Player player;
 
     // Values
-    @IntRange(from = 0) int fps;
+    @IntRange(from = 0)
+    int fps;
     private int currentTps;
 
     // Game states.
@@ -231,8 +232,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             this.unsupportedGL = true;
         }
 
-        this.arrowCursor = this.createCursor("textures/cursor/arrow.png", 0, 0);
-        this.handCursor = this.createCursor("textures/cursor/pointer.png", 10, 10);
+        this.arrowCursor = this.createCursor("textures/cursor/arrow.png", 4, 5);
+        this.handCursor = this.createCursor("textures/cursor/pointer.png", 7, 5);
 
         instance = this;
         this.notifications = new Notifications();
@@ -1469,15 +1470,25 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Tick input
         var screen = this.screen;
         if (screen != null) {
-            this.controllerInput.tickScreen(screen);
-            this.desktopInput.tickScreen(screen);
-            this.mobileInput.tickScreen(screen);
+            try {
+                this.controllerInput.tickScreen(screen);
+                this.desktopInput.tickScreen(screen);
+                this.mobileInput.tickScreen(screen);
+            } catch (Throwable t) {
+                var crashLog = new CrashLog("Ticking screen.", t);
+                BubbleBlaster.crash(crashLog.createCrash());
+            }
         }
         final var player = this.player;
         if (player != null && screen == null) {
-            this.controllerInput.tickPlayer(player);
-            this.desktopInput.tickPlayer(player);
-            this.mobileInput.tickPlayer(player);
+            try {
+                this.controllerInput.tickPlayer(player);
+                this.desktopInput.tickPlayer(player);
+                this.mobileInput.tickPlayer(player);
+            } catch (Throwable t) {
+                var crashLog = new CrashLog("Ticking player.", t);
+                BubbleBlaster.crash(crashLog.createCrash());
+            }
         }
 
         if (this.isLoaded()) {

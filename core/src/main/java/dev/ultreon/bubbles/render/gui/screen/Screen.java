@@ -105,7 +105,7 @@ public abstract class Screen extends Container implements CrashFiller {
 
     @Override
     public boolean keyPress(int keyCode) {
-        if (keyCode == Input.Keys.ESCAPE) {
+        if (keyCode == Input.Keys.ESCAPE || keyCode == Input.Keys.BACK) {
             if (this.backScreen != null) {
                 this.game.showScreen(this.backScreen);
                 return true;

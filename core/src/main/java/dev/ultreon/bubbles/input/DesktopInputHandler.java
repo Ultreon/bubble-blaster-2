@@ -35,7 +35,7 @@ public class DesktopInputHandler extends InputHandler<DesktopInput> {
 
     @Override
     public boolean tickPlayer(Player player) {
-        if (!GamePlatform.get().isDesktop()) return false;
+        if (!GamePlatform.get().isDesktop() || BubbleBlaster.getInstance().controllerInput.input.controller != null) return false;
 
         var rotating = 0f;
         var moving = 0f;
@@ -43,7 +43,6 @@ public class DesktopInputHandler extends InputHandler<DesktopInput> {
         if (KeyBindings.FORWARD.isPressed()) moving += 1f;
         if (KeyBindings.ROTATE_LEFT.isPressed()) rotating -= 1f;
         if (KeyBindings.ROTATE_RIGHT.isPressed()) rotating += 1f;
-
         player.moving(moving);
         player.rotating(rotating);
 
