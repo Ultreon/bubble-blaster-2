@@ -40,7 +40,7 @@ public class SpawnCommand implements CommandExecutor {
                     }
 
                     var bubble = new Bubble(player.getWorld());
-                    player.getWorld().spawn(bubble, SpawnInformation.naturalSpawn(null, new JavaRandom(), SpawnUsage.BUBBLE_SPAWN, player.getWorld()));
+                    player.getWorld().spawn(bubble, SpawnInformation.naturalSpawn(null, new JavaRandom(), SpawnUsage.SPAWN, player.getWorld()));
                     bubble.setBubbleType(bubbleType);
                     player.sendSystemMessage("Spawned bubble with type " + bubble.getBubbleType().getTranslationText());
                     return true;
@@ -72,7 +72,7 @@ public class SpawnCommand implements CommandExecutor {
                     }
                     var finalBubbleType = bubbleType;
                     var bubble = new Bubble(player.getWorld(), variant);
-                    player.getWorld().spawn(bubble, SpawnInformation.naturalSpawn(null, new JavaRandom(), SpawnUsage.BUBBLE_SPAWN, player.getWorld()));
+                    player.getWorld().spawn(bubble, SpawnInformation.naturalSpawn(null, new JavaRandom(), SpawnUsage.SPAWN, player.getWorld()));
                     bubble.setBubbleType(finalBubbleType);
                     player.sendSystemMessage("Spawned bubble with type " + bubble.getBubbleType().getTranslationText());
                     return true;

@@ -7,8 +7,8 @@ public final class SpawnUsage implements Hashable {
 
     public static final SpawnUsage DEFAULT = new SpawnUsage();
     public static final SpawnUsage TRIGGERED = new SpawnUsage();
-    public static final SpawnUsage BUBBLE_INIT_SPAWN = new SpawnUsage();
-    public static final SpawnUsage BUBBLE_SPAWN = new SpawnUsage();
+    public static final SpawnUsage INIT_SPAWN = new SpawnUsage();
+    public static final SpawnUsage SPAWN = new SpawnUsage();
     private final int index;
 
     public SpawnUsage() {

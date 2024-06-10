@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.world;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import dev.ultreon.bubbles.BubbleBlaster;
@@ -14,10 +15,10 @@ import dev.ultreon.bubbles.common.Difficulty;
 import dev.ultreon.bubbles.common.gamestate.GameplayContext;
 import dev.ultreon.bubbles.common.gamestate.GameplayEvent;
 import dev.ultreon.bubbles.common.random.BubbleRandomizer;
-import dev.ultreon.bubbles.common.random.GameRandom;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.LivingEntity;
+import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.entity.bubble.BubbleSystem;
 import dev.ultreon.bubbles.entity.damage.EntityDamageSource;
 import dev.ultreon.bubbles.entity.player.Player;
@@ -32,8 +33,10 @@ import dev.ultreon.bubbles.event.v1.WorldEvents;
 import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.gameplay.GameplayStorage;
 import dev.ultreon.bubbles.gameplay.event.BloodMoonGameplayEvent;
+import dev.ultreon.bubbles.gameplay.event.GoldenSpawnEvent;
 import dev.ultreon.bubbles.init.Gamemodes;
 import dev.ultreon.bubbles.init.GameplayEvents;
+import dev.ultreon.bubbles.init.SoundEvents;
 import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.registry.Registries;
@@ -71,6 +74,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -114,7 +118,6 @@ public final class World implements CrashFiller, Closeable {
     private boolean initialized;
 
     // Locks
-    private final ReentrantLock gameOverLock = new ReentrantLock();
     private final ReentrantLock entitiesLock = new ReentrantLock();
     private final Long2ReferenceMap<Entity> entitiesById = Long2ReferenceMaps.synchronize(new Long2ReferenceArrayMap<>());
     private final Map<UUID, Entity> entitiesByUuid = new ConcurrentHashMap<>();
@@ -122,7 +125,6 @@ public final class World implements CrashFiller, Closeable {
     // Game
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private String name = "UNKNOWN WORLD";
-    private int bubblesFrozenTicks;
     boolean shuttingDown;
     private GameplayStorage gameplayStorage = new GameplayStorage();
     public final ReentrantLock saveLock = new ReentrantLock(true);
@@ -133,6 +135,8 @@ public final class World implements CrashFiller, Closeable {
     private final RandomSource randomSource;
     private int nextBloodMoon;
     private int maxBubbles;
+    private int freezeTicks;
+    private final ObjectMap<Object, RandomSource> subRandoms = new ObjectMap<>();
 
     /// Constructors.
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, int seed) {
@@ -142,7 +146,6 @@ public final class World implements CrashFiller, Closeable {
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, long seed) {
         this.gamemode = gamemode;
         this.difficulty = difficulty;
-        var random = new GameRandom(seed);
         this.bubbleRng = this.gamemode.createBubbleRandomizer();
         this.seed = seed;
         this.gameSave = save;
@@ -202,7 +205,7 @@ public final class World implements CrashFiller, Closeable {
             var idx = this.entitySeedIdx++;
             var random = new JavaRandom(this.getSeed() ^ idx).nextRandom(Randomizer.hash(retry));
             var bubble = new Bubble(this, Bubble.getRandomVariant(this, random));
-            this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_INIT_SPAWN, retry, this));
+            this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.INIT_SPAWN, retry, this));
 
             messenger.send("Spawning bubble " + i + "/" + maxBubbles);
         }
@@ -646,7 +649,7 @@ public final class World implements CrashFiller, Closeable {
             }
 
             if (information.getReason() instanceof NaturalSpawnReason
-                    && ((NaturalSpawnReason) information.getReason()).getUsage() == SpawnUsage.BUBBLE_SPAWN && this.bubblesFrozen) {
+                    && ((NaturalSpawnReason) information.getReason()).getUsage() == SpawnUsage.SPAWN && this.bubblesFrozen) {
                 var reason = (NaturalSpawnReason) information.getReason();
                 return;
             }
@@ -693,76 +696,74 @@ public final class World implements CrashFiller, Closeable {
     @ApiStatus.Internal
     public void tick() {
         if (this.initialized) {
-            entities: {
-                if (!this.entitiesLock.tryLock()) break entities;
-
-                // Tick entities
-                List<Entity> toRemove = new ArrayList<>();
-                for (var entity : this.entitiesById.values()) {
-                    if (entity.willBeDeleted()) {
-                        toRemove.add(entity);
-                        continue;
-                    }
-
-                    if (entity instanceof Player) {
-                        var p = (Player) entity;
-                        TickEvents.PRE_TICK_PLAYER.factory().onTickPlayer(p);
-                    }
-                    TickEvents.PRE_TICK_ENTITY.factory().onTickEntity(entity);
-                    entity.tick(this);
-                    TickEvents.POST_TICK_ENTITY.factory().onTickEntity(entity);
-                    if (entity instanceof Player) {
-                        var p = (Player) entity;
-                        TickEvents.POST_TICK_PLAYER.factory().onTickPlayer(p);
-                    }
-                }
-
-                for (var entity : toRemove) {
-                    this.entitiesById.remove(entity.getId());
-                    this.entitiesByUuid.remove(entity.getUuid());
-                }
-
-                this.entitiesLock.unlock();
-            }
-
+            this.tickEntities();
             this.tickSpawning();
             this.tickBloodMoon();
+            this.tickGameplayEvent();
 
-            // Tick gameplay events
-            gamePlayEvent: {
-                if (this.activeEvent != null) {
-                    if (!this.activeEvent.shouldContinue(this.createGameplayContext())) {
-                        if (!WorldEvents.GAMEPLAY_EVENT_DEACTIVATED.factory().onGameplayEventDeactivated(this, this.activeEvent).isCanceled()) {
-                            this.endEvent();
-                        }
-                    }
-
-                    var gameplayEvent = this.activeEvent;
-                    if (gameplayEvent != null) {
-                        gameplayEvent.tick();
-                    }
-
-                    break gamePlayEvent;
-                }
-
-                this.onlyTickEvery(5, () -> {
-                    var choices = Randomizer.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
-                    for (var gameplayEvent : choices) {
-                        if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
-                            if (!WorldEvents.GAMEPLAY_EVENT_TRIGGERED.factory().onGameplayEventTriggered(this, gameplayEvent).isCanceled()) {
-                                this.activeEvent = gameplayEvent;
-                                this.activeEvent.begin(this);
-
-                                break;
-                            }
-                        }
-                    }
-                });
+            if (this.bubblesFrozen && this.freezeTicks > 0) {
+                this.freezeTicks--;
+                if (this.freezeTicks == 0) this.bubblesFrozen = false;
+                return;
             }
 
             // Advance ticks
             this.ticks++;
         }
+    }
+
+    private void tickGameplayEvent() {
+        if (this.activeEvent != null) {
+            this.tickCurrentEvent();
+            return;
+        }
+
+        this.onlyTickEvery(5, this::tickNewEvent);
+    }
+
+    private void tickCurrentEvent() {
+        if (!this.activeEvent.shouldContinue(this.createGameplayContext())) {
+            if (!WorldEvents.GAMEPLAY_EVENT_DEACTIVATED.factory().onGameplayEventDeactivated(this, this.activeEvent).isCanceled()) {
+                this.endEvent();
+            }
+        }
+
+        var gameplayEvent = this.activeEvent;
+        if (gameplayEvent != null) {
+            gameplayEvent.tick();
+        }
+    }
+
+    private void tickEntities() {
+        if (!this.entitiesLock.tryLock()) return;
+
+        // Tick entities
+        List<Entity> toRemove = new ArrayList<>();
+        for (var entity : this.entitiesById.values()) {
+            if (entity.willBeDeleted()) {
+                toRemove.add(entity);
+                continue;
+            }
+
+            if (entity instanceof Player) {
+                var p = (Player) entity;
+                TickEvents.PRE_TICK_PLAYER.factory().onTickPlayer(p);
+            }
+            TickEvents.PRE_TICK_ENTITY.factory().onTickEntity(entity);
+            entity.tick(this);
+            TickEvents.POST_TICK_ENTITY.factory().onTickEntity(entity);
+            if (entity instanceof Player) {
+                var p = (Player) entity;
+                TickEvents.POST_TICK_PLAYER.factory().onTickPlayer(p);
+            }
+        }
+
+        for (var entity : toRemove) {
+            this.entitiesById.remove(entity.getId());
+            this.entitiesByUuid.remove(entity.getUuid());
+        }
+
+        this.entitiesLock.unlock();
     }
 
     private void tickSpawning() {
@@ -774,7 +775,7 @@ public final class World implements CrashFiller, Closeable {
             final var retry = 0;
             BubbleSpawnContext.inContext(random, retry, () -> {
                 var bubble = new Bubble(this, variant);
-                this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.BUBBLE_SPAWN, retry, this));
+                this.spawn(bubble, SpawnInformation.naturalSpawn(null, random, SpawnUsage.SPAWN, retry, this));
                 return bubble;
             });
         }
@@ -904,8 +905,8 @@ public final class World implements CrashFiller, Closeable {
     }
 
     public void freezeBubbles(int ticks) {
-        this.bubblesFrozenTicks = ticks;
         this.bubblesFrozen = true;
+        this.freezeTicks = ticks;
     }
 
     public boolean isSaving() {
@@ -945,5 +946,45 @@ public final class World implements CrashFiller, Closeable {
 
     public int getNextBloodMoon() {
         return this.nextBloodMoon;
+    }
+
+    public void popBubbles(int amount, Player player) {
+        List<Bubble> collect = this.getEntitiesByClass(Bubble.class).stream()
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < amount; i++) {
+            if (collect.isEmpty()) break;
+            int index = ThreadLocalRandom.current().nextInt(collect.size());
+            Bubble remove = collect.remove(index);
+            double v = remove.getAttributes().get(Attribute.SCORE);
+            player.awardScore(v);
+            remove.delete();
+        }
+
+        SoundEvents.BUBBLE_POP.play(0.3f);
+    }
+
+    private void tickNewEvent() {
+        var choices = Randomizer.choices(Registries.GAMEPLAY_EVENTS.values(), 3);
+        for (var gameplayEvent : choices) {
+            if (gameplayEvent.shouldActivate(this.createGameplayContext())) {
+                if (!WorldEvents.GAMEPLAY_EVENT_TRIGGERED.factory().onGameplayEventTriggered(this, gameplayEvent).isCanceled()) {
+                    this.activeEvent = gameplayEvent;
+                    this.activeEvent.begin(this);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    public RandomSource getSubRandom(Object goldenSpawnEvent) {
+        RandomSource random = this.subRandoms.get(goldenSpawnEvent);
+        if (random == null) {
+            random = this.randomSource.nextRandom();
+            this.subRandoms.put(goldenSpawnEvent, random);
+        }
+
+        return random;
     }
 }

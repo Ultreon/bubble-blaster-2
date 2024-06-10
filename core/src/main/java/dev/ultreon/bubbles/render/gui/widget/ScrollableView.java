@@ -93,17 +93,32 @@ public class ScrollableView extends Container {
         if (this.scrollBar.isWithinBounds(x, y) && this.scrollBar.mousePress(x, y, button)) {
             return true;
         }
+        if (this.viewport.isWithinBounds(x, y)) {
+            this.viewport.mousePress(x, y, button);
+            return true;
+        }
         return super.mousePress(x, y, button);
     }
 
     @Override
     public boolean mouseRelease(int x, int y, int button) {
+        if (this.scrollBar.mouseRelease(x, y, button)) {
+            return true;
+        }
+        if (this.viewport.isWithinBounds(x, y)) {
+            this.viewport.mouseRelease(x, y, button);
+            return true;
+        }
         return super.mouseRelease(x, y, button);
     }
 
     @Override
     public boolean mouseClick(int x, int y, int button, int count) {
         if (this.scrollBar.isWithinBounds(x, y) && this.scrollBar.mouseClick(x, y, button, count)) {
+            return true;
+        }
+        if (this.viewport.isHovered()) {
+            this.viewport.mouseClick(x, y, button, count);
             return true;
         }
         return super.mouseClick(x, y, button, count);

@@ -1379,8 +1379,13 @@ public class Renderer {
     public void blit(Texture tex, float x, float y, Color backgroundColor) {
         if (!this.rendering) return;
 
-        this.fill(x, y, tex.getWidth(), tex.getHeight(), backgroundColor);
+        if (tex == null) {
+            this.batch.draw(TextureManager.DEFAULT_TEX, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
+            return;
+        }
 
+        this.toShapes();
+        this.fill(x, y, tex.getWidth(), tex.getHeight(), backgroundColor);
         this.toBatch();
         this.batch.draw(tex, x, y + tex.getHeight(), tex.getWidth(), -tex.getHeight());
     }
@@ -1389,6 +1394,12 @@ public class Renderer {
         if (!this.rendering) return;
 
         this.toBatch();
+
+        if (tex == null) {
+            this.batch.draw(TextureManager.DEFAULT_TEX, x, y + height, width, -height);
+            return;
+        }
+
         this.batch.draw(tex, x, y + height, width, -height);
     }
 
@@ -2224,6 +2235,10 @@ public class Renderer {
 
     public int getManagedFrameBuffers() {
         return this.fboPool.getManagedCount();
+    }
+
+    public void blit(Texture texture, Rectangle bounds) {
+        this.blit(texture, bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
     public enum State {

@@ -3,10 +3,12 @@ package dev.ultreon.bubbles.gamemode;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.entity.AbstractBubbleEntity;
+import dev.ultreon.bubbles.entity.Coin;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
+import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
 import dev.ultreon.bubbles.entity.spawning.SpawnUsage;
+import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.render.gui.hud.ModernHud;
 import dev.ultreon.bubbles.save.GameSave;
@@ -24,8 +26,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class NormalMode extends Gamemode {
-    // Threads
-    private Thread spawner;
+    private final JavaRandom random = new JavaRandom();
+    private int nextCoin = this.random.nextInt(1000, 2000);
 
     public NormalMode() {
         super();
@@ -47,13 +49,29 @@ public class NormalMode extends Gamemode {
     }
 
     @Override
+    public void tick(World world) {
+        super.tick(world);
+
+        if (this.nextCoin <= 0) {
+            Coin coin = new Coin(world);
+            Vector2 spawnPos = this.getSpawnPos(coin, null, SpawnUsage.SPAWN, this.random, 0);
+            coin.setPos(spawnPos);
+            world.spawn(coin, SpawnInformation.naturalSpawn(spawnPos, this.random.nextRandom(), SpawnUsage.SPAWN, 0, world));
+            this.nextCoin = this.random.nextInt(1000, 2000);
+        }
+
+        this.nextCoin--;
+    }
+
+    @Override
     public Player getPlayer() {
         return this.game.player;
     }
 
     /**
      * Trigger Game Over
-     * Deletes player and set game over flag in ClassicHUD. Showing Game Over message.
+     * Deletes player and set the "game over" flag in ClassicHUD.
+     * Showing the "Game Over" message.
      *
      * @see ModernHud#gameOver()
      */
@@ -69,21 +87,10 @@ public class NormalMode extends Gamemode {
         var spawnRng = random.nextRandom(usage);
 
         var bounds = this.getGameBounds();
-        if (entity instanceof AbstractBubbleEntity) {
-            var bubble = (AbstractBubbleEntity) entity;
-            var radius = bubble.getRadius();
-            var x = usage == SpawnUsage.BUBBLE_INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
-            var y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
-            return new Vector2(x, y);
-        }
-
-        var x = spawnRng.nextFloat(bounds.x, bounds.x + bounds.width);
-        var y = spawnRng.nextFloat(bounds.y, bounds.y + bounds.height);
+        var radius = entity.radius();
+        var x = usage == SpawnUsage.INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
+        var y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
         return new Vector2(x, y);
-    }
-
-    public Thread getSpawner() {
-        return this.spawner;
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 
+import static dev.ultreon.bubbles.BubbleBlaster.id;
 import static dev.ultreon.bubbles.BubbleBlasterConfig.SECS_BEFORE_RED_EFFECT_TIME;
 
 /**
@@ -74,7 +75,7 @@ public class ModernHud extends HudType {
     }
 
     private void drawBadgeBackground(Renderer renderer) {
-        renderer.fill(20, 20, 300, 80, Color.BLACK.withAlpha(0x80));
+        renderer.fill(20, 20, 400, 80, Color.BLACK.withAlpha(0x80));
     }
 
     /**
@@ -93,7 +94,14 @@ public class ModernHud extends HudType {
         renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Score: ").append(Math.round(player.getScore())).append("    Level: ").append(player.getLevel()), x + 5, y + 25, Color.WHITE.withAlpha(0xa0));
         renderer.drawText(this.playerDetailsInfoFont, TextObject.literal("Speed: ").append(Math.round(player.getCurrentSpeed())).append(" px/s"), x + 5, y + 40, Color.WHITE.withAlpha(0xa0));
 
+        renderer.drawText(this.playerDetailsInfoFont, Integer.toString(player.getGoldCoins()), x + 325, y + 30, Color.WHITE.withAlpha(0xa0));
+        renderer.drawText(this.playerDetailsInfoFont, Integer.toString(player.getSilverCoins()), x + 325, y + 60, Color.WHITE.withAlpha(0xa0));
+
         renderer.line(x + 5, y + 75, x + 295, y + 75, Color.WHITE.withAlpha(0x40));
+        renderer.line(x + 300, y + 5, x + 300, y + 80, Color.WHITE.withAlpha(0x40));
+
+        renderer.blit(this.game.getTextureManager().getOrLoadTexture(id("ui/coin_gold")), x + 305, y + 30, 16, 16);
+        renderer.blit(this.game.getTextureManager().getOrLoadTexture(id("ui/coin_silver")), x + 305, y + 60, 16, 16);
 
         var hpText = TextObject.literal("HP: ").append((int) Math.floor(player.getHealth())).append(" / ").append((int) Math.floor(player.getMaxHealth()));
 

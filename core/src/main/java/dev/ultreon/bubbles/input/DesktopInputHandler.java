@@ -6,6 +6,7 @@ import dev.ultreon.bubbles.LoadedGame;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.render.gui.screen.CommandScreen;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
+import dev.ultreon.bubbles.shop.ShopScreen;
 import dev.ultreon.bubbles.world.World;
 
 public class DesktopInputHandler extends InputHandler<DesktopInput> {
@@ -24,6 +25,9 @@ public class DesktopInputHandler extends InputHandler<DesktopInput> {
 
         if (KeyBindings.COMMAND.isJustPressed()) {
             BubbleBlaster.getInstance().showScreen(new CommandScreen());
+            return true;
+        } else if (KeyBindings.SHOP.isJustPressed()) {
+            BubbleBlaster.getInstance().showScreen(new ShopScreen());
             return true;
         }
         return false;

@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.bubble;
 
+import dev.ultreon.bubbles.data.DataKeys;
 import dev.ultreon.bubbles.effect.StatusEffectInstance;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
@@ -7,9 +8,12 @@ import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.init.StatusEffects;
 import dev.ultreon.bubbles.random.valuesource.ConstantValueSource;
 import dev.ultreon.bubbles.random.valuesource.RandomValueSource;
+import dev.ultreon.bubbles.world.World;
 import dev.ultreon.libs.datetime.v0.Duration;
 
 import java.util.ArrayList;
+
+import static dev.ultreon.bubbles.BubbleBlaster.NAMESPACE;
 
 public class UltraBubble extends BubbleType {
     public UltraBubble() {
@@ -49,5 +53,14 @@ public class UltraBubble extends BubbleType {
 
             player.getWorld().freezeBubblesSecs(8);
         }
+    }
+
+    @Override
+    public double getModifiedPriority(double localDifficulty, World world) {
+        double modifiedPriority = super.getModifiedPriority(localDifficulty, world);
+        if (world.getGameplayStorage().get(NAMESPACE).getBoolean(DataKeys.GOLDEN_SPAWN_ACTIVE))
+            modifiedPriority *= 4.0;
+
+        return modifiedPriority;
     }
 }

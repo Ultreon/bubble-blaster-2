@@ -231,8 +231,27 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
         @Override
         public boolean mousePress(int x, int y, int button) {
             if (!this.list.selectable) return super.mousePress(x, y, button);
+            if (this.value instanceof GuiComponent) {
+                ((GuiComponent) this.value).mousePress(x, y, button);
+            }
             this.list.selected = this;
             this.list.selectHandlers.forEach(selectHandler -> selectHandler.onSelect(this));
+            return true;
+        }
+
+        @Override
+        public boolean mouseRelease(int x, int y, int button) {
+            if (this.value instanceof GuiComponent) {
+                ((GuiComponent) this.value).mouseRelease(x, y, button);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean mouseClick(int x, int y, int button, int count) {
+            if (this.value instanceof GuiComponent) {
+                ((GuiComponent) this.value).mouseClick(x, y, button, count);
+            }
             return true;
         }
     }

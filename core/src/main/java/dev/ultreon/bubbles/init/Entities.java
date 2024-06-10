@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Bullet;
+import dev.ultreon.bubbles.entity.Coin;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.entity.types.EntityType;
@@ -18,6 +19,7 @@ public class Entities {
     public static final EntityType<Bullet> BULLET = Entities.register("bullet", new EntityType<>(Bullet::new));
     public static final EntityType<Bubble> BUBBLE = Entities.register("bubble", new EntityType<>(Bubble::new));
     public static final EntityType<Player> PLAYER = Entities.register("player", new EntityType<>(Player::new));
+    public static final EntityType<Coin> COIN = Entities.register("coin", new EntityType<>(Coin::new));
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends EntityType<?>> T register(String name, T entityType) {

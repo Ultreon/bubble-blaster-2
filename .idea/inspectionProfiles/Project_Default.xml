@@ -2,18 +2,20 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="AutoCloseableResource" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,com.ultreon.bubbles.common.gamestate.GameplayContext,world" />
+      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,com.ultreon.bubbles.common.gamestate.GameplayContext,world,dev.ultreon.bubbles.common.gamestate.GameplayContext,world" />
     </inspection_tool>
     <inspection_tool class="BoundedWildcard" enabled="true" level="TEXT ATTRIBUTES" enabled_by_default="true" editorAttributes="CONSIDERATION_ATTRIBUTES" />
     <inspection_tool class="ClassCanBeRecord" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="ClassNewInstance" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="Deprecation" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="DEPRECATED_ATTRIBUTES" />
+    <inspection_tool class="GDXJavaFlushInsideLoop" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GDXJavaStaticResource" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MarkedForRemoval" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="MARKED_FOR_REMOVAL_ATTRIBUTES" />
     <inspection_tool class="MissingOverrideAnnotation" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES">
       <option name="ignoreObjectMethods" value="true" />
       <option name="ignoreAnonymousClassMethods" value="false" />
     </inspection_tool>
-    <inspection_tool class="RedundantExplicitVariableType" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
+    <inspection_tool class="RedundantExplicitVariableType" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="SimplifyStreamApiCallChains" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="UnqualifiedFieldAccess" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnqualifiedInnerClassAccess" enabled="false" level="WEAK WARNING" enabled_by_default="false" editorAttributes="INFO_ATTRIBUTES">

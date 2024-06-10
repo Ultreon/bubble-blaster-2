@@ -1,13 +1,11 @@
 package dev.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.ObjectIntMap;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.LoadedGame;
-import dev.ultreon.bubbles.entity.Bubble;
-import dev.ultreon.bubbles.entity.Bullet;
-import dev.ultreon.bubbles.entity.Entity;
-import dev.ultreon.bubbles.entity.LivingEntity;
+import dev.ultreon.bubbles.entity.*;
 import dev.ultreon.bubbles.entity.ammo.AmmoType;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.entity.damage.EntityDamageSource;
@@ -22,6 +20,8 @@ import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.CommandScreen;
+import dev.ultreon.bubbles.shop.entries.ShopEntry;
+import dev.ultreon.bubbles.shop.entries.ShopUpgrade;
 import dev.ultreon.bubbles.util.TimeProcessor;
 import dev.ultreon.bubbles.util.TimeUtils;
 import dev.ultreon.bubbles.world.World;
@@ -79,7 +79,7 @@ public class Player extends LivingEntity implements InputController {
     private float rotating = 0f;
 
     /**
-     * Amount of degrees to rotate in a second.
+     * Number of degrees to rotate in a second.
      */
     private float rotationSpeed = 120f;
 
@@ -103,10 +103,15 @@ public class Player extends LivingEntity implements InputController {
     private int successRate;
     private boolean brake;
     private float currentSpeed;
+    
+    // Coins
+    private int goldCoins;
+    private int silverCoins;
+    private final ObjectIntMap<ShopUpgrade> upgradeCounts = new ObjectIntMap<>();
 
     /**
      * Player entity.
-     * The player is controlled be the keyboard and is one create the important features create the game. (Almost any game).
+     * The player is controlled by the keyboard, and is one of the important features of the game (almost any game).
      *
      * @see LivingEntity
      */
@@ -136,6 +141,11 @@ public class Player extends LivingEntity implements InputController {
         this.invincibilityTicks = TPS * 5;
         this.joinInvincibility = true;
         this.invincible = true;
+    }
+
+    @Override
+    public boolean doesAttack(Entity other) {
+        return true;
     }
 
     /**
@@ -203,14 +213,14 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * @return the shape create the ship.
+     * @return the shape of the ship.
      */
     public Circle getShipShape() {
         return this.transformShip(this.shipShape);
     }
 
     /**
-     * @return the arrow shape create the ship.
+     * @return the arrow shape of the ship.
      */
     public Polygon getArrowShape() {
         return this.transformArrow(this.arrowShape);
@@ -244,16 +254,7 @@ public class Player extends LivingEntity implements InputController {
         //**************************//
         // Player component ticking //
         //**************************//
-        if (this.boostRefillTimer > 0) {
-            this.boostRefillTimer--;
-        }
-
-        if (this.boostAccelTimer > 0) {
-            this.boostAccelTimer--;
-            this.accelerate(15f, true);
-        } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
-            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
-        }
+        this.boostingTimer();
 
         this.abilityContainer.onEntityTick();
         this.inventory.tick();
@@ -261,10 +262,14 @@ public class Player extends LivingEntity implements InputController {
         //****************//
         // Player motion. //
         //****************//
+        this.motion(world, loadedGame);
+    }
+
+    private void motion(World world, LoadedGame loadedGame) {
         var motion = 0.0f;
         var rotate = 0.0f;
 
-        // Check each direction, to create velocity
+        // Check each direction.
         this.moving = Mth.clamp(this.moving, -1, 1);
         this.rotating = Mth.clamp(this.rotating, -1, 1);
 
@@ -286,35 +291,7 @@ public class Player extends LivingEntity implements InputController {
             this.accel.add(this.tempVel);
         }
 
-        // Velocity on X-axis.
-        if (this.velocity.x > 0) {
-            if (this.velocity.x + this.velocityDelta < 0) {
-                this.velocity.x = 0;
-            } else {
-                this.velocity.x += this.velocityDelta;
-            }
-        } else if (this.velocity.x < 0) {
-            if (this.velocity.x + this.velocityDelta > 0) {
-                this.velocity.x = 0;
-            } else {
-                this.velocity.x -= this.velocityDelta;
-            }
-        }
-
-        // Velocity on Y-axis.
-        if (this.velocity.y > 0) {
-            if (this.velocity.y + this.velocityDelta < 0) {
-                this.velocity.y = 0;
-            } else {
-                this.velocity.y += this.velocityDelta;
-            }
-        } else if (this.velocity.y < 0) {
-            if (this.velocity.y + this.velocityDelta > 0) {
-                this.velocity.y = 0;
-            } else {
-                this.velocity.y -= this.velocityDelta;
-            }
-        }
+        this.updateVelocity();
 
         // Game border collision.
         var bounds = loadedGame.getGamemode().getGameBounds();
@@ -347,26 +324,69 @@ public class Player extends LivingEntity implements InputController {
 
         this.pos.add((this.accel.x + this.velocity.x) / TPS, (this.accel.y + this.velocity.y) / TPS);
 
+        this.restrict(bounds);
+
+        var pixelsPerTick = this.prevPos.dst(this.pos);
+        this.currentSpeed = pixelsPerTick * TPS;
+    }
+
+    private void restrict(Rectangle bounds) {
         double minX = bounds.x + this.radius();
         double minY = bounds.y + this.radius();
         double maxX = bounds.x + bounds.width - this.radius();
         double maxY = bounds.y + bounds.height - this.radius();
 
-        if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
-        if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
-        if (this.pos.x > maxX && this.accel.x > 0) this.accel.x = 0;
-        if (this.pos.x < minX && this.accel.x < 0) this.accel.x = 0;
-
-        if (this.pos.y > maxY && this.velocity.y > 0) this.velocity.y = 0;
-        if (this.pos.y < minY && this.velocity.y < 0) this.velocity.y = 0;
-        if (this.pos.y > maxY && this.accel.y > 0) this.accel.y = 0;
-        if (this.pos.y < minY && this.accel.y < 0) this.accel.y = 0;
+        this.resetVelAccel(maxX, minX, maxY, minY);
 
         this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
         this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
+    }
 
-        var pixelsPerTick = this.prevPos.dst(this.pos);
-        this.currentSpeed = pixelsPerTick * TPS;
+    private void resetVelAccel(double maxX, double minX, double maxY, double minY) {
+        Vector2 velocity1 = this.velocity;
+        Vector2 accel1 = this.accel;
+        if (this.isWithinX(maxX, minX, velocity1)) velocity1.x = 0;
+        if (this.isWithinX(maxX, minX, accel1)) accel1.x = 0;
+
+        if (this.isWithinY(maxY, minY, velocity1)) velocity1.y = 0;
+        if (this.isWithinY(maxY, minY, accel1)) accel1.y = 0;
+    }
+
+    private boolean isWithinX(double maxX, double minX, Vector2 velocity1) {
+        return this.pos.x > maxX && velocity1.x > 0 || this.pos.x < minX && velocity1.x < 0;
+    }
+
+    private boolean isWithinY(double maxY, double minY, Vector2 velocity1) {
+        return this.pos.y > maxY && velocity1.y > 0 || this.pos.y < minY && velocity1.y < 0;
+    }
+
+    private void updateVelocity() {
+        // Velocity on X-axis.
+        if (this.velocity.x > 0) {
+            this.velocity.x += this.velocity.x + this.velocityDelta < 0 ? 0 : this.velocityDelta;
+        } else if (this.velocity.x < 0) {
+            this.velocity.x -= this.velocity.x + this.velocityDelta > 0 ? 0 : this.velocityDelta;
+        }
+
+        // Velocity on Y-axis.
+        if (this.velocity.y > 0) {
+            this.velocity.y += this.velocity.y + this.velocityDelta < 0 ? 0 : this.velocityDelta;
+        } else if (this.velocity.y < 0) {
+            this.velocity.y -= this.velocity.y + this.velocityDelta > 0 ? 0 : this.velocityDelta;
+        }
+    }
+
+    private void boostingTimer() {
+        if (this.boostRefillTimer > 0) {
+            this.boostRefillTimer--;
+        }
+
+        if (this.boostAccelTimer > 0) {
+            this.boostAccelTimer--;
+            this.accelerate(15f, true);
+        } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
+            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+        }
     }
 
     @Override
@@ -385,9 +405,9 @@ public class Player extends LivingEntity implements InputController {
         // Check health.
         this.checkHealth();
 
-        // Check if source has attack modifier.
+        // Check if damage was dealt, if it is, then request user attention.
         if (value > 0.0d) {
-            // Check if window is not focused.
+            // Check if the window is not focused.
             if (!BubbleBlaster.getInstance().getGameWindow().isFocused()) {
                 if (SystemUtils.IS_JAVA_9) {
                     // Let the taskbar icon flash. (Java 9+)
@@ -447,7 +467,7 @@ public class Player extends LivingEntity implements InputController {
     /**
      * Rotate the player.
      *
-     * @param deltaRotation amount of degrees to rotate.
+     * @param deltaRotation number of degrees to rotate.
      * @deprecated use {@link #rotate(float)} instead.
      */
     @Deprecated
@@ -500,6 +520,11 @@ public class Player extends LivingEntity implements InputController {
         return document;
     }
 
+    @Override
+    public boolean isCollidableWith(Entity other) {
+        return true;
+    }
+
     /**
      * Load the player data.
      *
@@ -537,7 +562,7 @@ public class Player extends LivingEntity implements InputController {
      * Rotate the player.<br>
      * NOTE: Rotation is in degrees.
      *
-     * @param rotation amount of degrees to rotate.
+     * @param rotation number of degrees to rotate.
      */
     public void rotate(float rotation) {
         this.rotation = (this.rotation + rotation) % 360;
@@ -625,7 +650,7 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Get the ability container create the entity.
+     * Get the ability container of the entity.
      *
      * @return the requested {@link AbilityContainer}.
      * @see AbilityContainer
@@ -635,7 +660,7 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Get current ammo type.
+     * Get the current ammo type.
      *
      * @return the current {@link AmmoType ammo type}.
      * @see AmmoType
@@ -646,7 +671,7 @@ public class Player extends LivingEntity implements InputController {
     }
 
     /**
-     * Set current ammo type.
+     * Set the current ammo type.
      *
      * @param currentAmmo the ammo to set.
      * @see AmmoType
@@ -772,5 +797,51 @@ public class Player extends LivingEntity implements InputController {
      */
     public float getCurrentSpeed() {
         return this.currentSpeed;
+    }
+
+    public int getGoldCoins() {
+        return this.goldCoins;
+    }
+
+    public void setGoldCoins(int goldCoins) {
+        this.goldCoins = goldCoins;
+    }
+    
+    public int getSilverCoins() {
+        return this.silverCoins;
+    }
+    
+    public void setSilverCoins(int silverCoins) {
+        this.silverCoins = silverCoins;
+    }
+
+    public void collectCoin(Coin coin) {
+        if (coin.getCoinType() == Coin.Type.GOLD) {
+            this.goldCoins++;
+        } else if (coin.getCoinType() == Coin.Type.SILVER) {
+            this.silverCoins++;
+        }
+        coin.delete();
+    }
+
+    public void resetCoins() {
+        this.goldCoins = 0;
+        this.silverCoins = 0;
+    }
+
+    public void buy(ShopEntry item) {
+        if (this.goldCoins >= item.getPrice().getGoldCoins() &&
+                this.silverCoins >= item.getPrice().getSilverCoins()) {
+            this.goldCoins -= item.getPrice().getGoldCoins();
+            this.silverCoins -= item.getPrice().getSilverCoins();
+        }
+    }
+
+    public void activateUpgrade(ShopUpgrade shopUpgrade) {
+        this.upgradeCounts.getAndIncrement(shopUpgrade, 0, 1);
+    }
+
+    public int getUpgradeCount(ShopUpgrade shopUpgrade) {
+        return this.upgradeCounts.get(shopUpgrade, 0);
     }
 }

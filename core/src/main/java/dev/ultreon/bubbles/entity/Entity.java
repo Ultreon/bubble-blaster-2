@@ -12,6 +12,7 @@ import dev.ultreon.bubbles.effect.StatusEffectInstance;
 import dev.ultreon.bubbles.entity.ai.AiTask;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.entity.attribute.AttributeContainer;
+import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.entity.player.ability.AbilityType;
 import dev.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
@@ -97,6 +98,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     protected AiTask currentAiTask;
     private final List<AiTask> aiTasks = new ArrayList<>();
     private boolean ghost = false;
+    private int outOfBoundsTicks;
 
     /**
      * The entity constructor.
@@ -356,6 +358,9 @@ public abstract class Entity extends GameObject implements StateHolder {
                     this.accel.y + this.velocity.y / TPS
             );
 
+        if (this.isOutOfBounds()) this.outOfBoundsTick();
+        else this.outOfBoundsReset();
+
         if (this.hasAi()) {
             this.nextAiTask();
 
@@ -370,6 +375,23 @@ public abstract class Entity extends GameObject implements StateHolder {
                 this.setRotation(angleTo);
             }
         }
+    }
+
+    public boolean isOutOfBounds() {
+        return this.world.getGamemode().isOutOfBounds(this.getBounds());
+    }
+
+    private void outOfBoundsTick() {
+        this.outOfBoundsTicks++;
+
+        if (this.outOfBoundsTicks >= 10) {
+            this.outOfBoundsTicks = 0;
+            this.delete();
+        }
+    }
+
+    private void outOfBoundsReset() {
+        this.outOfBoundsTicks = 0;
     }
 
     /**
@@ -855,7 +877,8 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param other the other entity.
      * @return true if collidable.
      */
-    public final boolean isCollidableWith(Entity other) {
+    public boolean isCollidableWith(Entity other) {
+        if (other instanceof Player) return true;
         return this.canCollideWith.contains(other.type);
     }
 
@@ -985,5 +1008,9 @@ public abstract class Entity extends GameObject implements StateHolder {
     @Nullable
     public StatusEffectInstance getActiveEffect(StatusEffect type) {
         return this.statusEffects.stream().filter(statusEffectInstance -> statusEffectInstance.getType() == type).findAny().orElse(null);
+    }
+
+    public void setPos(Vector2 spawnPos) {
+        this.pos.set(spawnPos);
     }
 }

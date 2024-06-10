@@ -13,6 +13,7 @@ public class KeyBindings {
     public static KeyBinding BOOST = KeyBindings.register("boost", new KeyBinding(Keys.SHIFT_RIGHT, Type.KEYBOARD));
     public static KeyBinding BRAKE = KeyBindings.register("brake", new KeyBinding(Keys.S, Type.KEYBOARD));
     public static KeyBinding COMMAND = KeyBindings.register("command", new KeyBinding(Keys.SLASH, Type.KEYBOARD));
+    public static KeyBinding SHOP = KeyBindings.register("shop", new KeyBinding(Keys.Q, Type.KEYBOARD));
 
     private static KeyBinding register(String name, KeyBinding value) {
         Registries.KEY_BINDINGS.register(BubbleBlaster.id(name), value);

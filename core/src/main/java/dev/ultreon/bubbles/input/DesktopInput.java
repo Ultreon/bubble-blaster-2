@@ -124,8 +124,11 @@ public class DesktopInput implements InputProcessor, InputObject {
         this.dragStarts.remove(button);
 
         InputEvents.MOUSE_RELEASE.factory().onMouseRelease(screenX, screenY, button);
+        InputEvents.MOUSE_CLICK.factory().onMouseClick(screenX, screenY, button, 1);
 
-        return this.game.mouseRelease(screenX, screenY, pointer, button);
+        boolean b = this.game.mouseRelease(screenX, screenY, pointer, button);
+        b |= this.game.mouseClick(screenX, screenY, pointer, 1);
+        return b;
     }
 
     @Override

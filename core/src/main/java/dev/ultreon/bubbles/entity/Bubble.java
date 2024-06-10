@@ -122,7 +122,7 @@ public class Bubble extends AbstractBubbleEntity {
 
             this.rotation = 180;
 
-            if (reason.getUsage() == SpawnUsage.BUBBLE_INIT_SPAWN) {
+            if (reason.getUsage() == SpawnUsage.INIT_SPAWN) {
                 this.pos.set(random.nextFloat(-this.radius, Gdx.graphics.getWidth() + this.radius), random.nextFloat(-this.radius, Gdx.graphics.getHeight() + this.radius));
             }
         }
@@ -188,7 +188,7 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public Rectangle getBounds() {
         var circle = this.getShape();
-        var rectangle = new Rectangle(this.pos.x - circle.radius / 2, this.pos.y - circle.radius / 2, circle.radius, circle.radius);
+        var rectangle = new Rectangle(this.pos.x - circle.radius, this.pos.y - circle.radius, circle.radius * 2, circle.radius * 2);
         rectangle.width += 4;
         rectangle.height += 4;
         return rectangle;
@@ -349,7 +349,11 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     public void pop() {
-        if (this.isValid() && this.isVisible())
+        this.pop(true);
+    }
+
+    public void pop(boolean playSound) {
+        if (this.isValid() && this.isVisible() && playSound)
             SoundEvents.BUBBLE_POP.play(0.3f);
 
         this.delete();

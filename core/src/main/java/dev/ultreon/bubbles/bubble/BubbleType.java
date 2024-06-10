@@ -3,6 +3,7 @@ package dev.ultreon.bubbles.bubble;
 import com.badlogic.gdx.graphics.Texture;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.common.random.Rng;
+import dev.ultreon.bubbles.data.DataKeys;
 import dev.ultreon.bubbles.effect.StatusEffectInstance;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
@@ -28,6 +29,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static dev.ultreon.bubbles.BubbleBlaster.NAMESPACE;
 
 /**
  * @see EntityType
@@ -161,6 +164,10 @@ public abstract class BubbleType implements Serializable, Translatable {
     }
 
     public double getModifiedPriority(double localDifficulty) {
+        return this.getModifiedPriority(localDifficulty, BubbleBlaster.getInstance().world);
+    }
+
+    public double getModifiedPriority(double localDifficulty, World world) {
         return this.getPriority();
     }
 
@@ -315,6 +322,7 @@ public abstract class BubbleType implements Serializable, Translatable {
         private boolean doesBounce = false;
         private int difficulty = -1;
         private final List<Pair<Integer, AiTask>> aiTasks = new ArrayList<>();
+        private boolean golden = false;
 
         private Builder() {
         }
@@ -325,6 +333,15 @@ public abstract class BubbleType implements Serializable, Translatable {
                 public double getModifiedPriority(double localDifficulty) {
                     if (Builder.this.difficulty == -1) return this.getPriority();
                     return this.getPriority() * (localDifficulty / 100.0f * Builder.this.difficulty);
+                }
+
+                @Override
+                public double getModifiedPriority(double localDifficulty, World world) {
+                    double modifiedPriority = super.getModifiedPriority(localDifficulty, world);
+                    if (Builder.this.golden && world.getGameplayStorage().get(NAMESPACE).getBoolean(DataKeys.GOLDEN_SPAWN_ACTIVE))
+                        modifiedPriority *= 4.0;
+                    
+                    return modifiedPriority;
                 }
             };
             if (this.priority == null) {
@@ -582,6 +599,11 @@ public abstract class BubbleType implements Serializable, Translatable {
 
         public Builder addAiTask(int i, AiTask aiAttack) {
             this.aiTasks.add(new Pair<>(i, aiAttack));
+            return this;
+        }
+
+        public Builder golden() {
+            this.golden = true;
             return this;
         }
     }

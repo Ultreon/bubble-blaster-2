@@ -17,6 +17,7 @@ import dev.ultreon.bubbles.input.KeyBinding;
 import dev.ultreon.bubbles.item.ItemType;
 import dev.ultreon.bubbles.render.TextureCollection;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
+import dev.ultreon.bubbles.shop.entries.ShopEntry;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.registries.v0.Registry;
 
@@ -40,4 +41,5 @@ public class Registries {
     public static final Registry<EntityFlag> ENTITY_FLAGS = Registry.create(new Identifier("entity_flag"));
     public static final Registry<HudType> HUD = Registry.create(new Identifier("hud"));
     public static final Registry<KeyBinding> KEY_BINDINGS = Registry.create(new Identifier("key_binding"));
+    public static final Registry<ShopEntry> SHOP_ENTRIES = Registry.create(new Identifier("shop_entry"));
 }

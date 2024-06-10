@@ -55,6 +55,7 @@ import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.render.*;
 import dev.ultreon.bubbles.render.gui.screen.*;
 import dev.ultreon.bubbles.save.GameSave;
+import dev.ultreon.bubbles.shop.entries.ShopEntries;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.world.WorldRenderer;
 import dev.ultreon.libs.collections.v0.maps.OrderedHashMap;
@@ -299,6 +300,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         GameplayEvents.register();
         Gamemodes.register();
         TextureCollections.register();
+        ShopEntries.register();
 
         // Load game with loading screen.
         this.load(new ProgressMessenger(this::log, 1000));
@@ -678,19 +680,24 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
      */
     @ApiStatus.Internal
     static BubbleBlaster launch(GamePlatform platform) {
-        System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
-        Identifier.setDefaultNamespace(NAMESPACE);
-        ResourceManager.logger = BubbleBlaster.getLogger("ResourceManager");
-        Registry.dumpLogger = BubbleBlaster.getLogger("RegistryDump");
-        LanguageManager.INSTANCE.logger = BubbleBlaster.getLogger("LanguageManager");
+        try {
+            System.setProperty("log4j2.formatMsgNoLookups", "true"); // Fix CVE-2021-44228 exploit.
+            Identifier.setDefaultNamespace(NAMESPACE);
+            ResourceManager.logger = BubbleBlaster.getLogger("ResourceManager");
+            Registry.dumpLogger = BubbleBlaster.getLogger("RegistryDump");
+            LanguageManager.INSTANCE.logger = BubbleBlaster.getLogger("LanguageManager");
 
-        // Get game-directory.
-        dataDir = platform.getDataDirectory();
-        debugMode = platform.isDebug();
+            // Get game-directory.
+            dataDir = platform.getDataDirectory();
+            debugMode = platform.isDebug();
 
-        BubbleBlaster.classLoader = BubbleBlaster.getClassLoader();
+            BubbleBlaster.classLoader = BubbleBlaster.getClassLoader();
 
-        return new BubbleBlaster();
+            return new BubbleBlaster();
+        } catch (Throwable e) {
+            BubbleBlaster.crash(e);
+            return null;
+        }
     }
 
     private static dev.ultreon.libs.commons.v0.Logger getLogger(String name) {
@@ -1943,5 +1950,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public Matrix4 getTransform() {
         return this.shapes.getTransformMatrix();
+    }
+
+    public boolean mouseClick(int screenX, int screenY, int pointer, int count) {
+        var screen = this.getCurrentScreen();
+        if (screen != null) screen.mouseClick(screenX, screenY, pointer, count);
+        return true;
     }
 }

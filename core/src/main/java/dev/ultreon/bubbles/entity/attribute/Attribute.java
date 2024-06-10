@@ -1,5 +1,7 @@
 package dev.ultreon.bubbles.entity.attribute;
 
+import dev.ultreon.libs.translations.v1.Language;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
@@ -62,4 +64,7 @@ public final class Attribute {
                 "name=" + this.name + ']';
     }
 
+    public String getDisplayName() {
+        return Language.translate("attribute." + this.name);
+    }
 }
