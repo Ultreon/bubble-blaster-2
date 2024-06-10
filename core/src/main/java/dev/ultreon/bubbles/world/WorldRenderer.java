@@ -171,6 +171,8 @@ public class WorldRenderer implements Renderable {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
+        renderer.enableBlend();
+
         var world = this.getWorld();
         if (world == null) return;
         if (world.shuttingDown) return;

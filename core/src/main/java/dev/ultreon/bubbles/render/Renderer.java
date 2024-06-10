@@ -258,6 +258,8 @@ public class Renderer {
 
     public void enableBlend() {
         this.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
+        Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         this.blendingEnabled = true;
     }
 
@@ -997,9 +999,12 @@ public class Renderer {
         this.toBatch();
 
         try {
-            var blurTargetA = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-            var blurTargetB = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+            var blurTargetA = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            var blurTargetB = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             var fboRegion = new TextureRegion(blurTargetA.getColorBufferTexture());
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
             //Start rendering to an offscreen color buffer
             blurTargetA.begin();
