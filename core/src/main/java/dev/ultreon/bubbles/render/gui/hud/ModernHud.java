@@ -59,7 +59,20 @@ public class ModernHud extends HudType {
         this.game.profiler.section("Draw Level Up Message", () -> this.drawLevelUpMessage(renderer, gamemode));
         if (GamePlatform.get().isMobile()) {
             this.game.profiler.section("Draw Mobile Overlay", () -> this.drawMobileOverlay(renderer));
+        } else {
+            this.game.profiler.section("Draw Keybind Overlay", () -> this.drawKeybindOverlay(renderer));
         }
+    }
+
+    private void drawKeybindOverlay(Renderer renderer) {
+        renderer.fill(10, this.height() - 120, 200, 115, Color.BLACK.withAlpha(0x80));
+        renderer.blit(this.game.getTextureManager().getOrLoadTexture(id("ui/binds/keyboard_space_icon")), 15, this.height() - 42, 32, 32);
+        renderer.blit(this.game.getTextureManager().getOrLoadTexture(id("ui/binds/keyboard_escape")), 15, this.height() - 77, 32, 32);
+        renderer.blit(this.game.getTextureManager().getOrLoadTexture(id("ui/binds/keyboard_q")), 15, this.height() - 112, 32, 32);
+
+        renderer.drawText(this.playerDetailsInfoFont, "Shoot", 50, this.height() - 30, Color.WHITE);
+        renderer.drawText(this.playerDetailsInfoFont, "Pause", 50, this.height() - 65, Color.WHITE);
+        renderer.drawText(this.playerDetailsInfoFont, "Shop", 50, this.height() - 100, Color.WHITE);
     }
 
     private void drawMobileOverlay(Renderer renderer) {
