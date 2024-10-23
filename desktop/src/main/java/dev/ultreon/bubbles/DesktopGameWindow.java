@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import javax.swing.*;
-
 /**
  * Window class for the game's window.
  *
@@ -176,7 +174,7 @@ public class DesktopGameWindow implements GameWindow {
     }
 
     public void showError(@NotNull String title, @Nullable String description) {
-        JOptionPane.showMessageDialog(null, description, title, JOptionPane.ERROR_MESSAGE);
+
     }
 
     private class GameWindowAdapter implements Lwjgl3WindowListener {

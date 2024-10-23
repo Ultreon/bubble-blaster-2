@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.VfxEffect;
@@ -212,6 +213,65 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private boolean unsupportedGL = false;
     private BitmapFont errorFont;
 
+    public static String toVert150(String vert120) {
+        vert120 = vert120.replace("\nattribute ", "\nin ");
+        vert120 = vert120.replace(" attribute ", " in ");
+
+        vert120 = vert120.replace("\nvarying ", "\nout ");
+        vert120 = vert120.replace(" varying ", " out ");
+
+        vert120 = vert120.replace("texture2D(", "texture(");
+
+        return vert120;
+    }
+
+    public static String toFrag150(String frag120) {
+        frag120 = frag120.replace("\nattribute ", "\nout ");
+        frag120 = frag120.replace(" attribute ", " out ");
+
+        frag120 = frag120.replace("\nvarying ", "\nin ");
+        frag120 = frag120.replace(" varying ", " in ");
+
+        if (frag120.contains("gl_FragColor")) {
+            frag120 = frag120.replace("void main()",
+                    "out vec4 fragColor; \nvoid main()");
+            frag120 = frag120.replace("gl_FragColor", "fragColor");
+        }
+
+        frag120 = frag120.replace("texture2D(", "texture(");
+        frag120 = frag120.replace("textureCube(", "texture(");
+
+        return frag120;
+    }
+
+    public static String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                          + "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                          + "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                          + "uniform mat4 u_projTrans;\n" //
+                          + "varying vec4 v_color;\n" //
+                          + "varying vec2 v_texCoords;\n" //
+                          + "\n" //
+                          + "void main()\n" //
+                          + "{\n" //
+                          + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                          + "   v_color.a = v_color.a * (255.0/254.0);\n" //
+                          + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                          + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                          + "}\n";
+    public static String fragmentShader = "#ifdef GL_ES\n" //
+                            + "#define LOWP lowp\n" //
+                            + "precision mediump float;\n" //
+                            + "#else\n" //
+                            + "#define LOWP \n" //
+                            + "#endif\n" //
+                            + "varying LOWP vec4 v_color;\n" //
+                            + "varying vec2 v_texCoords;\n" //
+                            + "uniform sampler2D u_texture;\n" //
+                            + "void main()\n"//
+                            + "{\n" //
+                            + "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+                            + "}";
+
     private BubbleBlaster() {
         if (instance != null)
             throw new UnsupportedOperationException("Can't open the game twice.");
@@ -222,9 +282,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         renderExecutor = new PollingExecutorService();
 
-        this.batch = new SpriteBatch();
-        this.shapes = new ShapeRenderer();
-
+        this.batch = new SpriteBatch(1000, new ShaderProgram(toVert150(toVert150(vertexShader)), toFrag150(toFrag150(fragmentShader))));
+        this.shapes = new ShapeRenderer(5000, new ShaderProgram(toVert150(toVert150(vertexShader)), toFrag150(toFrag150(fragmentShader))));
         if (Gdx.gl20 == null) {
             this.errorFont = this.loadFont(new Identifier("roboto/roboto_mono_bold"), 40);
             this.unsupportedGL = true;
@@ -577,7 +636,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
                 this.fps = Gdx.graphics.getFramesPerSecond();
                 this.notifications.render(this.renderer, mouseX, mouseY, deltaTime);
 
-//                GamePlatform.get().renderImGui(this.renderer);
+                GamePlatform.get().renderImGui(this.renderer);
 
                 if (this.isGlitched && BubbleBlasterConfig.ENABLE_ANNOYING_EASTER_EGGS.get()) {
                     this.glitchRenderer.render(this.renderer);

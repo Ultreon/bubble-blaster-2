@@ -9,7 +9,7 @@ import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.entity.types.EntityType;
 import dev.ultreon.bubbles.settings.GameSettings;
-import dev.ultreon.libs.commons.v0.Color;
+import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.size.FloatSize;
 import dev.ultreon.libs.commons.v0.vector.*;

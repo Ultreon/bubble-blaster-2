@@ -42,22 +42,18 @@ public class Color {
     public static final Color ROSE = Color.rgb(0xff0080);
     public static final Color TRANSPARENT = Color.rgba(0x00000000);
     public static final Color CRIMSON = Color.rgb(0xdc143c);
-    private final java.awt.Color awtColor;
+    private final com.badlogic.gdx.graphics.Color awtColor;
 
     private Color(long red, long green, long blue, long alpha) {
-        this.awtColor = new java.awt.Color((int) red, (int) green, (int) blue, (int) alpha);
+        this.awtColor = new com.badlogic.gdx.graphics.Color((int) red, (int) green, (int) blue, (int) alpha);
     }
 
     private Color(int red, int green, int blue, int alpha) {
-        this.awtColor = new java.awt.Color(red, green, blue, alpha);
+        this.awtColor = new com.badlogic.gdx.graphics.Color(red, green, blue, alpha);
     }
 
-    private Color(java.awt.Color color) {
+    private Color(com.badlogic.gdx.graphics.Color color) {
         this.awtColor = color;
-    }
-
-    public static Color hsb(float h, float s, float b) {
-        return new Color(java.awt.Color.getHSBColor(h, s, b));
     }
 
     public static Color rgb(int red, int green, int blue) {
@@ -149,49 +145,40 @@ public class Color {
         }
     }
 
-    @ApiStatus.Internal
-    public static Color awt(java.awt.Color awt) {
-        return new Color(awt);
-    }
-
     public static Color gdx(com.badlogic.gdx.graphics.Color color) {
         return new Color((int) (color.r * 255), (int) (color.g * 255), (int) (color.b * 255), (int) (color.a * 255));
     }
 
-    public java.awt.Color toAwt() {
-        return this.awtColor;
-    }
-
     public Color brighter() {
-        return new Color(this.awtColor.brighter());
+        return new Color(this.awtColor.add(0.2f, 0.2f, 0.2f, 0f));
     }
 
     public Color darker() {
-        return new Color(this.awtColor.darker());
+        return new Color(this.awtColor.sub(0.2f, 0.2f, 0.2f, 0f));
     }
 
     public int getRed() {
-        return this.awtColor.getRed();
+        return (int) (this.awtColor.r * 255);
     }
 
     public int getGreen() {
-        return this.awtColor.getGreen();
+        return (int) (this.awtColor.g * 255);
     }
 
     public int getBlue() {
-        return this.awtColor.getBlue();
+        return (int) (this.awtColor.b * 255);
     }
 
     public int getAlpha() {
-        return this.awtColor.getAlpha();
+        return (int) (this.awtColor.a * 255);
     }
 
     public int getTransparency() {
-        return this.awtColor.getTransparency();
+        return (int) (this.awtColor.a * 255);
     }
 
     public int getRgb() {
-        return this.awtColor.getRGB();
+        return (int) (this.awtColor.r * 255) << 16 | (int) (this.awtColor.g * 255) << 8 | (int) (this.awtColor.b * 255);
     }
 
     public Color withRed(int red) {

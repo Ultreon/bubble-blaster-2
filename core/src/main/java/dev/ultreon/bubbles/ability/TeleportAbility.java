@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.ability;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.ability.triggers.AbilityKeyTrigger;
@@ -12,7 +13,6 @@ import dev.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
 import dev.ultreon.bubbles.init.Abilities;
 import dev.ultreon.libs.commons.v0.Mth;
 
-import java.awt.event.KeyEvent;
 import java.util.Objects;
 
 /**
@@ -35,7 +35,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
 
     @Override
     public int getTriggerKey() {
-        return KeyEvent.VK_SHIFT;
+        return Input.Keys.SHIFT_LEFT;
     }
 
     @Override

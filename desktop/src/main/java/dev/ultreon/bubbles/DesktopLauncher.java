@@ -2,10 +2,15 @@ package dev.ultreon.bubbles;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.glutils.HdpiMode;
+import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import dev.ultreon.bubbles.platform.desktop.DesktopPlatform;
 import dev.ultreon.libs.crash.v0.CrashLog;
 import net.fabricmc.loader.impl.util.Arguments;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.Configuration;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +26,13 @@ public class DesktopLauncher {
     public static void main(String[] argv) {
         var config = DesktopLauncher.createConfig();
 
-
         var arguments = new Arguments();
         arguments.parse(argv);
         var platform = new DesktopPlatform(arguments);
+
+        if (SharedLibraryLoader.os == Os.MacOsX) {
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+        }
 
         GameLibGDXWrapper game;
         try {
@@ -51,16 +59,18 @@ public class DesktopLauncher {
         }
 
         var config = new Lwjgl3ApplicationConfiguration();
-        config.setBackBufferConfig(8, 8, 8, 8, 32, 0, 16);
-        config.setResizable(false);
-        config.useVsync(true);
-        config.setForegroundFPS(60);
-        config.setIdleFPS(5);
+        config.useVsync(false);
+        config.setBackBufferConfig(4, 4, 4, 4, 8, 4, 0);
+        config.setHdpiMode(HdpiMode.Logical);
+        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 4, 1);
         config.setInitialVisible(false);
-        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL32, 3, 2);
-        config.setWindowedMode(Constants.DEFAULT_SIZE.x, Constants.DEFAULT_SIZE.y);
-        config.setTitle("Bubble Blaster 2");
-        config.setWindowIcon(icons.toArray(new String[]{}));
+        config.setTitle("Quantum Voxel");
+        config.setWindowIcon(icons.toArray(String[]::new));
+        config.setWindowedMode(1280, 720);
+
+        org.lwjgl.glfw.GLFW.glfwWindowHint(org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT, org.lwjgl.glfw.GLFW.GLFW_TRUE);
+        org.lwjgl.glfw.GLFW.glfwWindowHint(org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE, org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE);
+
         return config;
     }
 }

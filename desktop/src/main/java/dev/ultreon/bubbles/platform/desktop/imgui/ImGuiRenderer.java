@@ -2,6 +2,8 @@ package dev.ultreon.bubbles.platform.desktop.imgui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.bubbles.render.Renderer;
@@ -40,6 +42,9 @@ public class ImGuiRenderer {
     public static void init() {
         // Pre-init ImGui
         GLFWErrorCallback.createPrint(System.err).set();
+        if (SharedLibraryLoader.os == Os.MacOsX) {
+            return;
+        }
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
         // Initialize ImGui
@@ -51,17 +56,22 @@ public class ImGuiRenderer {
         var windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
 
         INSTANCE.imGuiGlfw.init(windowHandle, true);
-        INSTANCE.imGuiGl3.init("#version 150");
-
+        INSTANCE.imGuiGl3.init("#version 410 core");
     }
 
     public static void dispose() {
-        INSTANCE.imGuiGl3.dispose();
-        INSTANCE.imGuiGlfw.dispose();
+        if (SharedLibraryLoader.os == Os.MacOsX) {
+            return;
+        }
+        INSTANCE.imGuiGl3.shutdown();
+        INSTANCE.imGuiGlfw.shutdown();
         ImGui.destroyContext();
     }
 
     private void renderImGui(Renderer renderer) {
+        if (SharedLibraryLoader.os == Os.MacOsX) {
+            return;
+        }
         // render 3D scene
         this.imGuiGlfw.newFrame();
 

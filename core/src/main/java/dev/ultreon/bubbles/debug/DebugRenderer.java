@@ -89,8 +89,8 @@ public class DebugRenderer {
         this.left(renderer, "Scaled Size", new FloatSize(this.game.getScaledWidth(), this.game.getScaledHeight()));
         this.left(renderer, "Window Size", new FloatSize(this.game.getGameWindow().getWidth(), this.game.getGameWindow().getHeight()));
         this.left(renderer, "Canvas Size", new FloatSize(this.game.getWidth(), this.game.getHeight()));
-        this.left(renderer, "Free FBOs", renderer.getFreeFrameBuffers());
-        this.left(renderer, "Managed FBOs", renderer.getManagedFrameBuffers());
+//        this.left(renderer, "Free FBOs", renderer.getFreeFrameBuffers());
+//        this.left(renderer, "Managed FBOs", renderer.getManagedFrameBuffers());
         var world = this.game.world;
         if (world != null) {
             var curGe = world.getActiveEvent();
@@ -140,19 +140,19 @@ public class DebugRenderer {
             threads.sort(Comparator.comparing(Thread::getName));
 
             var selInputText = TextObject.literal(this.selectInput);
-            selInputText.setColor(Color.rgb(0xff4040).toAwt());
+            selInputText.setColor(Color.rgb(0xff4040).toGdx());
             var typingText = TextObject.literal("Typing ");
-            typingText.setColor(Color.rgb(0xffa040).toAwt());
+            typingText.setColor(Color.rgb(0xffa040).toGdx());
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
 
             for (int i = 0, threadsSize = threads.size(); i < threadsSize; i++) {
                 var e = threads.get(i);
                 var literal = TextObject.literal(" [" + e.getName() + "]");
-                literal.setColor(Color.rgb(0xff4040).toAwt());
+                literal.setColor(Color.rgb(0xff4040).toGdx());
                 var thread = TextObject.literal("Thread");
                 var index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(Color.rgb(0x30ff30).toAwt());
+                index.setColor(Color.rgb(0x30ff30).toGdx());
                 this.right(renderer, index.append(thread), literal);
             }
         } else {
@@ -172,23 +172,23 @@ public class DebugRenderer {
             }
 
             var curMillisText = TextObject.literal(" (" + millis + "ms)");
-            curMillisText.setColor(Color.rgb(0xff4040).toAwt());
+            curMillisText.setColor(Color.rgb(0xff4040).toGdx());
             var curSectionText = TextObject.literal("Current Section: ");
-            curSectionText.setColor(Color.rgb(0xffa040).toAwt());
+            curSectionText.setColor(Color.rgb(0xffa040).toGdx());
             this.right(renderer, curSectionText, curMillisText);
             var selInputText = TextObject.literal(this.selectInput);
-            selInputText.setColor(Color.rgb(0xff4040).toAwt());
+            selInputText.setColor(Color.rgb(0xff4040).toGdx());
             var typingText = TextObject.literal("Typing ");
-            typingText.setColor(Color.rgb(0xffa040).toAwt());
+            typingText.setColor(Color.rgb(0xffa040).toGdx());
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
             for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
                 var e = entries.get(i);
                 var millisText = TextObject.literal(" (" + e.getValue().getMillis() + "ms)");
-                millisText.setColor(Color.rgb(0xff4040).toAwt());
+                millisText.setColor(Color.rgb(0xff4040).toGdx());
                 var name = TextObject.literal(e.getKey());
                 var index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(Color.rgb(0x30ff30).toAwt());
+                index.setColor(Color.rgb(0x30ff30).toGdx());
                 this.right(renderer, index.append(name), millisText);
             }
         }

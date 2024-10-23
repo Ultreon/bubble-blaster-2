@@ -1,8 +1,8 @@
 package dev.ultreon.bubbles.world;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Circle;
-import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.bubble.BubbleType;
@@ -22,7 +22,7 @@ import java.util.List;
 public class WorldRenderer implements Renderable {
     public static final Color BG_TOP = Color.argb(0xff008EDA);
     public static final Color BG_BOTTOM = Color.argb(0xff004BA1);
-    private static VfxFrameBuffer worldFbo;
+    private static FrameBuffer worldFbo;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = this.game.profiler;
 
@@ -158,7 +158,7 @@ public class WorldRenderer implements Renderable {
         return new Circle(x, y, r - i * 2f);
     }
 
-    public static VfxFrameBuffer getWorldFbo() {
+    public static FrameBuffer getWorldFbo() {
         return worldFbo;
     }
 

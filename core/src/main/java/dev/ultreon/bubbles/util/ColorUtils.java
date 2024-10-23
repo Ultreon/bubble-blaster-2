@@ -37,8 +37,8 @@ public final class ColorUtils {
      * Converts a color hex code (e.g. "#FFFFFF ) to a color instance.
      *
      * @param hex e.g. "#FFFFFF" or with alpha "#FFFFFF00"
-     * @return a new java.awt.Color instance based on the color hex code
-     * @see java.awt.Color
+     * @return a new dev.ultreon.bubbles.render.Color instance based on the color hex code
+     * @see dev.ultreon.bubbles.render.Color
      */
     public static Color unpackHex(String hex) {
         if (Pattern.matches("#[0-9a-fA-F]{6}", hex)) {

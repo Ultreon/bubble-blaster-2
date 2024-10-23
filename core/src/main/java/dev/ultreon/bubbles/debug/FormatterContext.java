@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.debug;
 
 import dev.ultreon.bubbles.settings.GameSettings;
-import dev.ultreon.libs.commons.v0.Color;
+import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.libs.text.v1.MutableText;
 import dev.ultreon.libs.text.v1.TextObject;
 
@@ -339,7 +339,7 @@ public class FormatterContext implements IFormatterContext {
 
     private void colored(String text, String keywordColor) {
         var hex = Color.hex(keywordColor);
-        var color = hex.toAwt();
+        var color = hex.toGdx();
         var o = TextObject.literal(text);
         o.setColor(color);
         this.builder = this.builder.append(o);

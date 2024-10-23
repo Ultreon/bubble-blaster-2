@@ -1,11 +1,10 @@
 package dev.ultreon.libs.text.v1;
 
+import com.badlogic.gdx.graphics.Color;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import java.awt.*;
-import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.List;
 import java.util.*;
@@ -16,6 +15,18 @@ public abstract class MutableText extends TextObject implements Cloneable {
     final List<TextObject> extras = new ArrayList<>();
     private final Map<Attribute, Object> attrs = new HashMap<>();
     private Color color;
+    private boolean underlined;
+    private boolean italic;
+    private boolean bold;
+    private boolean strikethrough;
+    private boolean obfuscated;
+    private boolean ligaturesEnabled;
+    private boolean kerningEnabled;
+    private double size;
+    private FontWidth fontWidth;
+    private float weight;
+    private @NotNull FontWeight fontWeight = FontWeight.REGULAR;
+    private @Range(from = -7, to = 7) int superscript;
 
     protected MutableText() {
 
@@ -44,93 +55,94 @@ public abstract class MutableText extends TextObject implements Cloneable {
     }
 
     public Color getColor() {
-        return (Color) this.attrs.get(TextAttribute.FOREGROUND);
+        return this.color;
     }
 
     public MutableText setColor(Color color) {
-        this.attrs.put(TextAttribute.FOREGROUND, color);
+        this.color = color;
         return this;
     }
 
     public boolean isUnderlined() {
-        return this.attrs.get(TextAttribute.UNDERLINE) != null;
+        return this.underlined;
     }
 
     public MutableText setUnderlined(boolean underlined) {
-        this.attrs.put(TextAttribute.FOREGROUND, underlined ? TextAttribute.UNDERLINE_LOW_ONE_PIXEL : null);
+        this.underlined = underlined;
         return this;
     }
 
     public boolean isStrikethrough() {
-        return (boolean) this.attrs.get(TextAttribute.STRIKETHROUGH);
+        return this.strikethrough;
     }
 
     public MutableText setStrikethrough(boolean strikethrough) {
-        this.attrs.put(TextAttribute.STRIKETHROUGH, strikethrough);
+        this.strikethrough = strikethrough;
         return this;
     }
 
     public boolean isLigaturesEnabled() {
-        return Objects.equals(this.attrs.get(TextAttribute.LIGATURES), 1);
+        return this.ligaturesEnabled;
     }
 
     public MutableText setLigaturesEnabled(boolean ligaturesEnabled) {
-        this.attrs.put(TextAttribute.LIGATURES, ligaturesEnabled ? 1 : 0);
+        this.ligaturesEnabled = ligaturesEnabled;
         return this;
     }
 
     public double getSize() {
-        return ((Number) this.attrs.get(TextAttribute.SIZE)).doubleValue();
+        return this.size;
     }
 
     public MutableText setSize(double size) {
-        this.attrs.put(TextAttribute.SIZE, size);
+        this.size = size;
         return this;
     }
 
+    @Deprecated
     public float getWidth() {
-        return (float) this.attrs.get(TextAttribute.SIZE);
+        return 1;
     }
 
+    @Deprecated
     public MutableText setWidth(float size) {
-        this.attrs.put(TextAttribute.WIDTH, size);
         return this;
     }
 
     public FontWidth getFontWidth() {
-        return FontWidth.closestTo((float) this.attrs.get(TextAttribute.SIZE));
+        return this.fontWidth;
     }
 
     public MutableText setFontWidth(FontWidth width) {
-        this.attrs.put(TextAttribute.WIDTH, width.getWidth());
+        this.fontWidth = width;
         return this;
     }
 
     public float getWeight() {
-        return (float) this.attrs.get(TextAttribute.WEIGHT);
+        return this.weight;
     }
 
     public MutableText setWeight(float weight) {
-        this.attrs.put(TextAttribute.WEIGHT, weight);
+        this.weight = weight;
         return this;
     }
 
     public @NotNull FontWeight getFontWeight() {
-        return FontWeight.closestTo((float) this.attrs.get(TextAttribute.WEIGHT));
+        return this.fontWeight;
     }
 
     public MutableText setFontWeight(@NotNull FontWeight weight) {
-        this.attrs.put(TextAttribute.WEIGHT, weight.getWeight());
+        this.fontWeight = weight;
         return this;
     }
 
     @Range(from = -7, to = 7)
     public int getSuperscript() {
-        return (int) this.attrs.get(TextAttribute.SUPERSCRIPT);
+        return this.superscript;
     }
 
     public MutableText setFontWeight(@Range(from = -7, to = 7) int superscript) {
-        this.attrs.put(TextAttribute.SUPERSCRIPT, superscript);
+        this.superscript = superscript;
         return this;
     }
 
@@ -161,5 +173,37 @@ public abstract class MutableText extends TextObject implements Cloneable {
     @Override
     protected MutableText clone() throws CloneNotSupportedException {
         return (MutableText) super.clone();
+    }
+
+    public boolean isItalic() {
+        return this.italic;
+    }
+
+    public void setItalic(boolean italic) {
+        this.italic = italic;
+    }
+
+    public boolean isBold() {
+        return this.bold;
+    }
+
+    public void setBold(boolean bold) {
+        this.bold = bold;
+    }
+
+    public boolean isObfuscated() {
+        return this.obfuscated;
+    }
+
+    public void setObfuscated(boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    public boolean isKerningEnabled() {
+        return this.kerningEnabled;
+    }
+
+    public void setKerningEnabled(boolean kerningEnabled) {
+        this.kerningEnabled = kerningEnabled;
     }
 }

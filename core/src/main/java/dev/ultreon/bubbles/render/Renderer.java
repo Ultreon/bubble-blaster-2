@@ -5,26 +5,17 @@ package dev.ultreon.bubbles.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+//import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.crashinvaders.vfx.VfxManager;
-import com.crashinvaders.vfx.effects.FilmGrainEffect;
-import com.crashinvaders.vfx.effects.GaussianBlurEffect;
-import com.crashinvaders.vfx.effects.NfaaEffect;
-import com.crashinvaders.vfx.framebuffer.VfxFrameBuffer;
-import com.crashinvaders.vfx.framebuffer.VfxFrameBufferPool;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
 import dev.ultreon.bubbles.Axis2D;
@@ -32,7 +23,6 @@ import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.config.Config;
 import dev.ultreon.bubbles.debug.Debug;
-import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.render.gui.border.Border;
 import dev.ultreon.bubbles.util.StringUtils;
 import dev.ultreon.libs.commons.v0.Anchor;
@@ -43,14 +33,9 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
 import space.earlygrey.shapedrawer.DefaultSideEstimator;
 
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -60,13 +45,9 @@ import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.*;
  * Renderer class.
  *
  * @author XyperCode
- * @see FontRenderContext
  * @see Color
  * @see String
- * @see ImageObserver
- * @see AffineTransform
  * @see AttributedCharacterIterator
- * @see GlyphVector
  * @see Polygon
  * @see Rectangle
  */
@@ -84,9 +65,9 @@ public class Renderer {
     private final ShapeRenderer shapes;
     private final OrthographicCamera camera;
     private final DefaultSideEstimator sides;
-    private final VfxManager vfxManager;
-    private final GaussianBlurEffect vfxBlur;
-    private final NfaaEffect vfxNfaa;
+//    private final VfxManager vfxManager;
+//    private final GaussianBlurEffect vfxBlur;
+//    private final NfaaEffect vfxNfaa;
     private float lineThickness;
     private final MatrixStack matrixStack;
     private final MatrixStack globalMatrixStack;
@@ -109,17 +90,14 @@ public class Renderer {
     private State state;
     private boolean stateChange = true;
     private boolean blendingEnabled = true;
-    private final Stack<VfxFrameBuffer> fboStack = new Stack<>();
-    private final FboPool fboPool;
+//    private final FboPool fboPool;
     private boolean depthEnabled;
     private boolean blurring;
     private final GlyphLayout layout = new GlyphLayout();
     private boolean hovering;
     private boolean hideCursor;
     private final List<Disposable> toDispose = new ArrayList<>();
-    private final FilmGrainEffect vfxNoise;
-    private boolean noising;
-    private FrameBuffer grid;
+//    private FrameBuffer grid;
     private int width;
     private int height;
     private ShaderProgram gridShader;
@@ -149,17 +127,17 @@ public class Renderer {
         this.shapes.setAutoShapeType(true);
 
         // Visual Effects setup.
-        this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
-        this.vfxManager.setBlendingEnabled(false);
-        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.Gaussian5x5);
-        this.vfxBlur.setPasses(10);
+//        this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
+//        this.vfxManager.setBlendingEnabled(false);
+//        this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.Gaussian5x5);
+//        this.vfxBlur.setPasses(10);
 //        this.vfxBlur.setAmount(15);
-        this.vfxNfaa = new NfaaEffect(true);
-        this.vfxNoise = new FilmGrainEffect();
-        this.vfxNoise.setNoiseAmount(0.25f);
+//        this.vfxNfaa = new NfaaEffect(true);
+//        this.vfxNoise = new FilmGrainEffect();
+//        this.vfxNoise.setNoiseAmount(0.25f);
 
-        this.fboPool = new FboPool(Pixmap.Format.RGBA8888, this.getWidth(), this.getHeight(), 10);
-        this.fboPool.setTextureParams(TextureWrap.Repeat, TextureWrap.Repeat, TextureFilter.Linear, TextureFilter.Linear);
+//        this.fboPool = new FboPool(Pixmap.Format.RGBA8888, this.getWidth(), this.getHeight(), 10);
+//        this.fboPool.setTextureParams(TextureWrap.Repeat, TextureWrap.Repeat, TextureFilter.Linear, TextureFilter.Linear);
 
         this.gridShader = new ShaderProgram(this.VERT, this.GRID_FRAG);
         this.blurShader = new ShaderProgram(this.VERT, this.FRAG);
@@ -207,19 +185,19 @@ public class Renderer {
         if (!this.rendering)
             throw new IllegalStateException("Renderer isn't rendering yet");
 
-        if (this.vfxManager.isCapturing())
-            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still capturing.");
-
-        if (this.vfxManager.isApplyingEffects())
-            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still applying effects.");
+//        if (this.vfxManager.isCapturing())
+//            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still capturing.");
+//
+//        if (this.vfxManager.isApplyingEffects())
+//            throw new IllegalStateException("Can´t end renderer while " + this.vfxManager.getClass().getSimpleName() + " is still applying effects.");
 
         if (this.blurring)
             throw new IllegalStateException("Can´t end renderer while blurring mode is still enabled.");
 
-        if (VfxFrameBuffer.getBufferNesting() != 0)
-            throw new IllegalStateException("Renderer hasn't ended with FBO nesting cleared.");
+//        if (VfxFrameBuffer.getBufferNesting() != 0)
+//            throw new IllegalStateException("Renderer hasn't ended with FBO nesting cleared.");
 
-        this.fboPool.freeAll();
+//        this.fboPool.freeAll();
 
         this.shapes.setTransformMatrix(this.backupMatrix);
         this.batch.setTransformMatrix(this.backupMatrix);
@@ -384,187 +362,6 @@ public class Renderer {
         }
     }
 
-    private void enableEffect() {
-        /* Clear our depth buffer info from previous frame. */
-        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-
-        /* Set the depth function to LESS. */
-        Gdx.gl.glDepthFunc(GL20.GL_LESS);
-
-        /* Enable depth writing. */
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-
-        /* Disable RGBA color writing. */
-        Gdx.gl.glColorMask(false, false, false, false);
-    }
-
-    private void disableEffect() {
-        /* Enable RGBA color writing. */
-        Gdx.gl.glColorMask(true, true, true, true);
-
-        /* Set the depth function to EQUAL. */
-        Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
-
-        /* Render masked elements. */
-        this.fillEffect(0, 0, this.getWidth(), this.getHeight());
-
-        /* Disable depth writing. */
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-    }
-
-    @ApiStatus.Experimental
-    public void enableBlur(int radius) {
-        if (this.blurring) {
-            throw new IllegalStateException("Can't enable blur while already enabled!");
-        }
-
-        this.toBatch();
-        this.batch.flush();
-        this.batch.end();
-
-        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
-        this.fboStack.push(this.beginCapture());
-        var b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
-        this.blurring = true;
-
-        this.batch.begin();
-    }
-
-    @ApiStatus.Experimental
-    public void disableBlur() {
-        this.toBatch();
-        this.batch.end();
-
-        this.blurring = false;
-        this.popScissor();
-
-        // Add blur effect.
-        this.vfxManager.addEffect(this.vfxBlur);
-
-        this.vfxManager.useAsInput(this.endCapture(this.fboStack.pop()));
-
-        this.batch.begin();
-
-        // Apply the effects chain to the captured frame.
-        // In our case, only one effect (gaussian blur) will be applied.
-        this.vfxManager.applyEffects();
-
-        // Render result to the screen.
-        this.vfxManager.renderToScreen();
-
-        // Add blur effect.
-        this.vfxManager.removeAllEffects();
-
-        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
-            Gdx.gl20.glEnable(GL20.GL_BLEND);
-            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
-            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
-        }
-    }
-
-    @ApiStatus.Experimental
-    public void enableNoise() {
-        if (this.noising) {
-            throw new IllegalStateException("Can't enable blur while already enabled!");
-        }
-
-        this.toBatch();
-        this.batch.flush();
-        this.batch.end();
-        this.vfxNoise.setSeed(new JavaRandom().nextFloat(-Float.MAX_VALUE, Float.MAX_VALUE));
-
-        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
-        this.fboStack.push(this.beginCapture());
-        var b = this.pushScissor(0, 0, this.getWidth(), this.getHeight());
-        this.noising = true;
-
-        this.batch.begin();
-    }
-
-    @ApiStatus.Experimental
-    public void disableNoise() {
-        this.toBatch();
-        this.batch.end();
-
-        this.noising = false;
-        this.popScissor();
-
-        // Add blur effect.
-        this.vfxManager.addEffect(this.vfxNoise);
-
-        this.vfxManager.useAsInput(this.endCapture(this.fboStack.pop()));
-
-        this.batch.begin();
-
-        // Apply the effects chain to the captured frame.
-        // In our case, only one effect (gaussian blur) will be applied.
-        this.vfxManager.applyEffects();
-
-        // Render result to the screen.
-        this.vfxManager.renderToScreen();
-
-        // Add blur effect.
-        this.vfxManager.removeAllEffects();
-
-        if (this.blendingEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_BLEND)) {
-            Gdx.gl20.glEnable(GL20.GL_BLEND);
-            Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        if (this.depthEnabled && !Gdx.gl20.glIsEnabled(GL20.GL_DEPTH_TEST)) {
-            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-            Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
-        }
-    }
-
-    @ApiStatus.Experimental
-    private void blur(VfxFrameBuffer fbo, int x, int y, int width, int height) {
-        this.toBatch();
-
-        // Add blur effect.
-        this.vfxManager.addEffect(this.vfxBlur);
-        this.vfxManager.useAsInput(fbo);
-
-        // Apply the effects chain to the captured frame.
-        // In our case, only one effect (gaussian blur) will be applied.
-        this.vfxManager.applyEffects();
-
-        // Render result to the screen.
-        this.flush();
-        this.scissored(x, y, width, height, this.vfxManager::renderToScreen);
-
-        // Add blur effect.
-        this.vfxManager.removeEffect(this.vfxBlur);
-    }
-
-    @CheckReturnValue
-    @ApiStatus.Experimental
-    public VfxFrameBuffer beginCapture() {
-        var fbo = this.fboPool.obtain();
-        fbo.begin();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
-        return fbo;
-    }
-
-    @CanIgnoreReturnValue
-    @ApiStatus.Experimental
-    public VfxFrameBuffer endCapture(VfxFrameBuffer fbo) {
-        fbo.end();
-        return fbo;
-    }
-
-    @CheckReturnValue
-    @ApiStatus.Experimental
-    public VfxFrameBuffer capture(Runnable func) {
-        var fbo = this.beginCapture();
-        func.run();
-        return this.endCapture(fbo);
-    }
-
     public void resize(int width, int height) {
         this.width = width;
         this.height = height;
@@ -574,17 +371,17 @@ public class Renderer {
         this.shapes.setProjectionMatrix(this.shapes.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1000000));
 
         // Resize the FBO pool.
-        this.fboPool.resize(width, height);
+//        this.fboPool.resize(width, height);
 
         // VfxManager manages internal off-screen buffers,
         // which should always match the required viewport (whole screen in our case).
-        this.vfxManager.resize(width, height);
+//        this.vfxManager.resize(width, height);
 
         this.resizeGrid(width, height);
     }
 
     public void update(float deltaTime) {
-        this.vfxManager.update(deltaTime);
+//        this.vfxManager.update(deltaTime);
     }
 
     private void drawMasks(Runnable func) {
@@ -797,21 +594,6 @@ public class Renderer {
         this.shapes.rect(x, y, width, height);
     }
 
-    @ApiStatus.Experimental
-    public void fillBlurred(VfxFrameBuffer fbo, int x, int y, int width, int height, Color color) {
-        if (!this.rendering) return;
-
-        this.flush();
-
-        this.blur(fbo, x, y, width, height);
-        this.flush();
-
-        this.toShapes();
-        this.setFilled();
-        this.shapes.setColor(color.toGdx());
-        this.shapes.rect(x, y, width, height);
-    }
-
     @Language("GLSL")
     final String VERT =
             "attribute vec4 a_position;\n" +
@@ -957,150 +739,138 @@ public class Renderer {
 
     @ApiStatus.Experimental
     public void blurred(Runnable block) {
-        blurred(true, block);
+        this.blurred(true, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(float radius, Runnable block) {
-        blurred(radius, true, block);
+        this.blurred(radius, true, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(boolean grid, Runnable block) {
-        blurred(grid, 1, block);
+        this.blurred(grid, 1, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(float radius, boolean grid, Runnable block) {
-        blurred(radius, grid, 1, block);
+        this.blurred(radius, grid, 1, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(boolean grid, int guiScale, Runnable block) {
-        blurred(Config.blurRadius, grid, guiScale, block);
+        this.blurred(Config.blurRadius, grid, guiScale, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(float radius, boolean grid, int guiScale, Runnable block) {
-        blurred(1.0F, radius, grid, guiScale, block);
+        this.blurred(1.0F, radius, grid, guiScale, block);
     }
 
     @ApiStatus.Experimental
     public void blurred(float overlayOpacity, float radius, boolean grid, int guiScale, Runnable block) {
-        if (this.blurred) {
-            block.run();
-            return;
-        }
-
-        this.blurred = true;
-
-        this.toBatch();
-
-        try {
-            var blurTargetA = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-            var blurTargetB = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-            var fboRegion = new TextureRegion(blurTargetA.getColorBufferTexture());
-
-            //Start rendering to an offscreen color buffer
-            blurTargetA.begin();
-
-            //before rendering, ensure we are using the default shader
-            this.batch.setShader(null);
-
-            this.batch.flush();
-
-            //render the batch contents to the offscreen buffer
-            this.flush();
-
-            block.run();
-
-            this.toBatch();
-
-            //finish rendering to the offscreen buffer
-            this.batch.flush();
-
-            //finish rendering to the offscreen buffer
-            blurTargetA.end();
-
-            //now let's start blurring the offscreen image
-            this.batch.setShader(blurShader);
-
-            //since we never called batch.end(), we should still be drawing
-            //which means are blurShader should now be in use
-
-            // set the shader uniforms
-            blurShader.setUniformf("iBlurDirection", 1f, 0f);
-            blurShader.setUniformf("iResolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            blurShader.setUniformf("iBlurRadius", radius / guiScale);
-            blurShader.setUniformf("iTime", System.currentTimeMillis() / 1000.0f);
-
-            //our first blur pass goes to target B
-            blurTargetB.begin();
-
-            //we want to render FBO target A into target B
-            fboRegion.setTexture(blurTargetA.getColorBufferTexture());
-
-            //draw the scene to target B with a horizontal blur effect
-            this.batch.setColor(1f, 1f, 1f, overlayOpacity);
-            this.batch.draw(fboRegion, 0, 0);
-
-            //flush the batch before ending the FBO
-            this.batch.flush();
-
-            //finish rendering target B
-            blurTargetB.end();
-
-            //now we can render to the screen using the vertical blur shader
-
-            //update the blur only along Y-axis
-            blurShader.setUniformf("iBlurDirection", 0f, 1f);
-
-            //update the resolution of the blur along Y-axis
-            blurShader.setUniformf("iResolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-            //update the Y-axis blur radius
-            blurShader.setUniformf("radius", radius);
-
-            //draw target B to the screen with a vertical blur effect
-            fboRegion.setTexture(blurTargetB.getColorBufferTexture());
-            this.batch.setColor(1f, 1f, 1f, overlayOpacity);
-            this.batch.draw(fboRegion, 0, 0);
-
-            //reset to default shader without blurs
-            this.batch.setShader(null);
-
-            this.flush();
-
-            if (grid) {
-                //getConfig the texture for the hexagon grid
-                var colorBufferTexture = this.grid.getColorBufferTexture();
-
-                //render the grid to the screen
-                this.batch.setColor(1, 1, 1, 1);
-                blurred(32, false, 1, () -> {
-                    this.batch.setColor(1f, 1f, 1f, overlayOpacity);
-                    this.batch.draw(colorBufferTexture, 0, 0, (float) Gdx.graphics.getWidth() / guiScale, (float) Gdx.graphics.getHeight() / guiScale);
-                });
-            }
-
-            //dispose of the FBOs
-            blurTargetA.dispose();
-            blurTargetB.dispose();
-        } finally {
-            this.blurred = false;
-        }
-    }
-
-    public void blurred(Texture texture) {
-        if (this.blurred) {
-            return;
-        }
-
-        this.vfxManager.useAsInput(texture);
-        this.vfxManager.applyEffects();
-        this.vfxManager.renderToScreen(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        this.flush();
+//        if (this.blurred) {
+//            block.run();
+//            return;
+//        }
+//
+//        this.blurred = true;
+//
+//        this.toBatch();
+//
+//        try {
+//            var blurTargetA = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+//            var blurTargetB = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+//            var fboRegion = new TextureRegion(blurTargetA.getColorBufferTexture());
+//
+//            //Start rendering to an offscreen color buffer
+//            blurTargetA.begin();
+//
+//            //before rendering, ensure we are using the default shader
+//            this.batch.setShader(null);
+//
+//            this.batch.flush();
+//
+//            //render the batch contents to the offscreen buffer
+//            this.flush();
+//
+//            block.run();
+//
+//            this.toBatch();
+//
+//            //finish rendering to the offscreen buffer
+//            this.batch.flush();
+//
+//            //finish rendering to the offscreen buffer
+//            blurTargetA.end();
+//
+//            //now let's start blurring the offscreen image
+//            this.batch.setShader(blurShader);
+//
+//            //since we never called batch.end(), we should still be drawing
+//            //which means are blurShader should now be in use
+//
+//            // set the shader uniforms
+//            blurShader.setUniformf("iBlurDirection", 1f, 0f);
+//            blurShader.setUniformf("iResolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//            blurShader.setUniformf("iBlurRadius", radius / guiScale);
+//            blurShader.setUniformf("iTime", System.currentTimeMillis() / 1000.0f);
+//
+//            //our first blur pass goes to target B
+//            blurTargetB.begin();
+//
+//            //we want to render FBO target A into target B
+//            fboRegion.setTexture(blurTargetA.getColorBufferTexture());
+//
+//            //draw the scene to target B with a horizontal blur effect
+//            this.batch.setColor(1f, 1f, 1f, overlayOpacity);
+//            this.batch.draw(fboRegion, 0, 0);
+//
+//            //flush the batch before ending the FBO
+//            this.batch.flush();
+//
+//            //finish rendering target B
+//            blurTargetB.end();
+//
+//            //now we can render to the screen using the vertical blur shader
+//
+//            //update the blur only along Y-axis
+//            blurShader.setUniformf("iBlurDirection", 0f, 1f);
+//
+//            //update the resolution of the blur along Y-axis
+//            blurShader.setUniformf("iResolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//
+//            //update the Y-axis blur radius
+//            blurShader.setUniformf("radius", radius);
+//
+//            //draw target B to the screen with a vertical blur effect
+//            fboRegion.setTexture(blurTargetB.getColorBufferTexture());
+//            this.batch.setColor(1f, 1f, 1f, overlayOpacity);
+//            this.batch.draw(fboRegion, 0, 0);
+//
+//            //reset to default shader without blurs
+//            this.batch.setShader(null);
+//
+//            this.flush();
+//
+//            if (grid) {
+//                //getConfig the texture for the hexagon grid
+//                var colorBufferTexture = this.grid.getColorBufferTexture();
+//
+//                //render the grid to the screen
+//                this.batch.setColor(1, 1, 1, 1);
+//                this.blurred(32, false, 1, () -> {
+//                    this.batch.setColor(1f, 1f, 1f, overlayOpacity);
+//                    this.batch.draw(colorBufferTexture, 0, 0, (float) Gdx.graphics.getWidth() / guiScale, (float) Gdx.graphics.getHeight() / guiScale);
+//                });
+//            }
+//
+//            //dispose of the FBOs
+//            blurTargetA.dispose();
+//            blurTargetB.dispose();
+//        } finally {
+//            this.blurred = false;
+//        }
     }
 
     public void resetGrid() {
@@ -1108,46 +878,40 @@ public class Renderer {
     }
 
     private void resizeGrid(int width, int height) {
-        if (width == 0 || height == 0) return;
-
-        if (this.grid != null) this.grid.dispose();
-
-        this.grid = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
-        this.grid.begin();
-        Gdx.gl.glClearColor(1, 1, 1, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        Color hexagonColor;
-        try {
-            var hexagonColorHex = Config.hexagonColor;
-            if (hexagonColorHex == null) hexagonColorHex = "#ffffff";
-            if (hexagonColorHex.length() > 7) hexagonColorHex = hexagonColorHex.substring(0, 7);
-            if (hexagonColorHex.length() < 7 && hexagonColorHex.length() > 4)
-                hexagonColorHex = hexagonColorHex.substring(0, 4);
-            if (hexagonColorHex.length() < 4) hexagonColorHex = "#ffffff";
-            hexagonColor = Color.hex(hexagonColorHex);
-        } catch (dev.ultreon.bubbles.util.exceptions.InvalidValueException e) {
-            hexagonColor = Color.WHITE;
-        }
-
-        var hexagonTransparency = Config.hexagonTransparency;
-
-        this.batch.begin();
-        this.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        this.batch.setShader(this.gridShader);
-        this.gridShader.setUniformf("iResolution", width, height);
-
-        this.batch.draw(this.white, 0, 0, width, height);
-
-        this.batch.setShader(null);
-        this.batch.end();
-        this.grid.end();
-    }
-
-    public void renderToScreen(VfxFrameBuffer fbo) {
-        this.toBatch();
-        this.batch.draw(fbo.getTexture(), 0, 0, this.getWidth(), this.getHeight());
-        this.flush();
+//        if (width == 0 || height == 0) return;
+//
+//        if (this.grid != null) this.grid.dispose();
+//
+//        this.grid = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+//        this.grid.begin();
+//        Gdx.gl.glClearColor(1, 1, 1, 0);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//
+//        Color hexagonColor;
+//        try {
+//            var hexagonColorHex = Config.hexagonColor;
+//            if (hexagonColorHex == null) hexagonColorHex = "#ffffff";
+//            if (hexagonColorHex.length() > 7) hexagonColorHex = hexagonColorHex.substring(0, 7);
+//            if (hexagonColorHex.length() < 7 && hexagonColorHex.length() > 4)
+//                hexagonColorHex = hexagonColorHex.substring(0, 4);
+//            if (hexagonColorHex.length() < 4) hexagonColorHex = "#ffffff";
+//            hexagonColor = Color.hex(hexagonColorHex);
+//        } catch (dev.ultreon.bubbles.util.exceptions.InvalidValueException e) {
+//            hexagonColor = Color.WHITE;
+//        }
+//
+//        var hexagonTransparency = Config.hexagonTransparency;
+//
+//        this.batch.begin();
+//        this.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        this.batch.setShader(this.gridShader);
+//        this.gridShader.setUniformf("iResolution", width, height);
+//
+//        this.batch.draw(this.white, 0, 0, width, height);
+//
+//        this.batch.setShader(null);
+//        this.batch.end();
+//        this.grid.end();
     }
 
     public void arcLine(float x, float y, float radius, float startAngle, float angle, float lineWidth) {
@@ -1582,7 +1346,7 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         // Clean up internal buffers, as we don't need any information from the last render.
-        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
+//        this.vfxManager.cleanUpBuffers(Color.BLACK.toGdx());
 
         ScreenUtils.clear(this.clearColor.toGdx(), true);
     }
@@ -1811,10 +1575,10 @@ public class Renderer {
     public void drawEffectBox(float x, float y, float width, float height, Insets insets, float speed) {
         if (!this.rendering) return;
 
-        var border = new Border(insets);
-        border.setRenderType(Border.RenderType.EFFECT);
-        border.setEffectSpeed(speed);
-        border.drawBorder(this, x, y, width, height);
+//        var border = new Border(insets);
+//        border.setRenderType(Border.RenderType.EFFECT);
+//        border.setEffectSpeed(speed);
+//        border.drawBorder(this, x, y, width, height);
     }
 
     public void drawRoundEffectBox(float x, float y, float width, float height) {
@@ -2218,54 +1982,54 @@ public class Renderer {
         this.hideCursor = true;
     }
 
-    public int getFreeFrameBuffers() {
-        return this.fboPool.getFreeCount();
-    }
-
-    public int getManagedFrameBuffers() {
-        return this.fboPool.getManagedCount();
-    }
+//    public int getFreeFrameBuffers() {
+//        return this.fboPool.getFreeCount();
+//    }
+//
+//    public int getManagedFrameBuffers() {
+//        return this.fboPool.getManagedCount();
+//    }
 
     public enum State {
         BATCH, SHAPES
     }
 
-    private class FboPool extends VfxFrameBufferPool {
-        private final int capacity;
-
-        public FboPool(Pixmap.Format format, int width, int height) {
-            this(format, width, height, 16);
-        }
-
-        public FboPool(Pixmap.Format format, int width, int height, int capacity) {
-            super(format, width, height, capacity);
-            this.capacity = capacity;
-        }
-
-        @Override
-        protected VfxFrameBuffer createBuffer() {
-            if (this.managedBuffers.size >= this.getCapacity()) throw new IllegalStateException("Frame buffer pool capacity reached: " + this.managedBuffers.size);
-            return super.createBuffer();
-        }
-
-        public int getCapacity() {
-            return this.capacity;
-        }
-
-        public int getManagedCount() {
-            return this.managedBuffers.size;
-        }
-
-        public void freeAll() {
-            this.cleanupInvalid();
-
-            var copy = new Array<>(this.managedBuffers);
-            for (var fbo : copy)
-                this.free(fbo);
-
-            copy.clear(); // Todo: Check performance.
-
-            this.clearFree();
-        }
-    }
+//    private class FboPool extends VfxFrameBufferPool {
+//        private final int capacity;
+//
+//        public FboPool(Pixmap.Format format, int width, int height) {
+//            this(format, width, height, 16);
+//        }
+//
+//        public FboPool(Pixmap.Format format, int width, int height, int capacity) {
+//            super(format, width, height, capacity);
+//            this.capacity = capacity;
+//        }
+//
+//        @Override
+//        protected VfxFrameBuffer createBuffer() {
+//            if (this.managedBuffers.size >= this.getCapacity()) throw new IllegalStateException("Frame buffer pool capacity reached: " + this.managedBuffers.size);
+//            return super.createBuffer();
+//        }
+//
+//        public int getCapacity() {
+//            return this.capacity;
+//        }
+//
+//        public int getManagedCount() {
+//            return this.managedBuffers.size;
+//        }
+//
+//        public void freeAll() {
+//            this.cleanupInvalid();
+//
+//            var copy = new Array<>(this.managedBuffers);
+//            for (var fbo : copy)
+//                this.free(fbo);
+//
+//            copy.clear(); // Todo: Check performance.
+//
+//            this.clearFree();
+//        }
+//    }
 }

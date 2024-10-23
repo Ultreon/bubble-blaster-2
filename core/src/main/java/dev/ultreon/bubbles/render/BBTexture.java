@@ -1,6 +1,5 @@
 package dev.ultreon.bubbles.render;
 
-import java.awt.image.Raster;
 
 public abstract class BBTexture {
     public void draw(Renderer renderer, int x, int y, int width, int height) {
@@ -12,6 +11,4 @@ public abstract class BBTexture {
     protected abstract int getHeight();
 
     public abstract void draw(Renderer renderer, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight);
-
-    public abstract Raster getRaster();
 }

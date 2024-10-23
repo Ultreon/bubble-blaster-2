@@ -1,44 +1,32 @@
 package dev.ultreon.bubbles.render;
 
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.resources.ByteArrayFileHandle;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.resources.v0.Resource;
 import dev.ultreon.libs.resources.v0.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class TextureManager {
     private static final TextureManager instance = new TextureManager();
-    public static final Resource DEFAULT_TEX_RESOURCE;
+
+    @SuppressWarnings("GDXJavaStaticResource")
     public static final Texture DEFAULT_TEX;
 
     static {
-        DEFAULT_TEX_RESOURCE = new Resource(() -> {
-            var image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            var graphics = image.getGraphics();
-            graphics.setColor(Color.rgb(0xffbb00).toAwt());
-            graphics.fillRect(0, 0, 16, 16);
-            graphics.setColor(Color.rgb(0x333333).toAwt());
-            graphics.fillRect(0, 8, 8, 8);
-            graphics.fillRect(8, 0, 8, 8);
-            var out = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", out);
-            graphics.dispose();
-            out.flush();
-            var byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
-            out.close();
-            return byteArrayInputStream;
-        });
+        var pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 1);
+        pixmap.fill();
+        pixmap.setColor(1, 0, 1, 1);
+        pixmap.drawPixel(0, 0, 0xff00ffff);
+        pixmap.drawPixel(1, 1, 0xff00ffff);
 
-        DEFAULT_TEX = new Texture(new ByteArrayFileHandle(".png", DEFAULT_TEX_RESOURCE.loadOrGet()));
+        DEFAULT_TEX = new Texture(pixmap);
+
+        pixmap.dispose();
     }
     private final Map<Identifier, Texture> textureMap = new ConcurrentHashMap<>();
 
@@ -65,7 +53,9 @@ public final class TextureManager {
             public Texture create() {
                 @NotNull ResourceManager resourceManager = BubbleBlaster.getInstance().getResourceManager();
                 var resource = resourceManager.getResource(entry.withPath("textures/" + entry.path() + ".png"));
-                if (resource == null) resource = DEFAULT_TEX_RESOURCE;
+                if (resource == null) {
+                    return DEFAULT_TEX;
+                }
                 return new NativeImage(resource);
             }
         });

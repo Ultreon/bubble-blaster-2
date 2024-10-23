@@ -57,7 +57,6 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-ai:$ai_version"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdx_controllers_version"
     implementation "com.badlogicgames.gdx:gdx-freetype:$gdx_version"
-    implementation "com.badlogicgames.gdx:gdx-tools:$gdx_version"
     implementation "com.badlogicgames.box2dlights:box2dlights:$box_2d_lights_version"
     implementation "space.earlygrey:shapedrawer:$shapedrawer_version"
 

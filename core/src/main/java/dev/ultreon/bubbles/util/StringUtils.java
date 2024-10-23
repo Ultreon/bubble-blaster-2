@@ -3,8 +3,6 @@ package dev.ultreon.bubbles.util;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
-import java.awt.font.TextAttribute;
-import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,33 +168,6 @@ public class StringUtils {
             strings.add(str.substring(lineStart));
 
         return strings;
-    }
-
-    public static AttributedString createFallbackString(String text, BitmapFont mainFont, BitmapFont fallbackFont) {
-        var result = new AttributedString(text);
-
-        var textLength = text.length();
-        if (textLength == 0) {
-            return new AttributedString("");
-        }
-        result.addAttribute(TextAttribute.FONT, mainFont, 0, textLength);
-
-        var fallback = false;
-        var fallbackBegin = 0;
-        for (var i = 0; i < text.length(); i++) {
-            var curFallback = !mainFont.getData().hasGlyph(text.charAt(i));
-            if (curFallback != fallback) {
-                System.out.println("curFallback = " + curFallback);
-                System.out.println("fallbackFont = " + fallbackFont);
-                fallback = curFallback;
-                if (fallback) {
-                    fallbackBegin = i;
-                } else {
-                    result.addAttribute(TextAttribute.FONT, fallbackFont, fallbackBegin, i);
-                }
-            }
-        }
-        return result;
     }
 
     public static String join(List<String> strings, String s) {
