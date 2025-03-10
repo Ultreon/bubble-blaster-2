@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.world;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Circle;
@@ -10,7 +11,7 @@ import dev.ultreon.bubbles.debug.Profiler;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.event.v1.RenderEvents;
 import dev.ultreon.bubbles.init.StatusEffects;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderable;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
@@ -20,8 +21,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class WorldRenderer implements Renderable {
-    public static final Color BG_TOP = Color.argb(0xff008EDA);
-    public static final Color BG_BOTTOM = Color.argb(0xff004BA1);
+    public static final Color BG_TOP = Colors.argb(0xff008EDA);
+    public static final Color BG_BOTTOM = Colors.argb(0xff004BA1);
     private static FrameBuffer worldFbo;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = this.game.profiler;
@@ -189,7 +190,7 @@ public class WorldRenderer implements Renderable {
         if (blindness != null) {
             var strength = blindness.getStrength();
             var alpha = Mth.clamp((strength + 1) * 0x10 + 0x60, 0, 255);
-            renderer.fill(0, 0, this.game.getWidth(), this.game.getHeight(), Color.BLACK.withAlpha(alpha));
+            renderer.fill(0, 0, this.game.getWidth(), this.game.getHeight(), Colors.rgba(0, 0, 0, alpha));
         }
 
         this.profiler.section("Render HUD", () -> hud.renderHudOverlay(renderer, world, world.getGamemode(), deltaTime));
@@ -226,9 +227,9 @@ public class WorldRenderer implements Renderable {
             if (this.game.isCollisionShapesShown()) {
                 var shape = entity.getShape();
                 renderer.setLineThickness(6.0f);
-                renderer.outline(shape, Color.BLACK);
+                renderer.outline(shape, Colors.BLACK);
                 renderer.setLineThickness(2.0f);
-                renderer.outline(shape, Color.WHITE);
+                renderer.outline(shape, Colors.WHITE);
             }
         }
     }

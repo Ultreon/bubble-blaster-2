@@ -158,7 +158,12 @@ dependencies {
 
     // ImGui
     implementation "io.github.spair:imgui-java-binding:$imgui_version"
-    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version", {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+        exclude group: 'org.lwjgl', module: 'lwjgl-bom'
+        exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
+        exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
+    }
     implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
@@ -175,7 +180,12 @@ dependencies {
 
     // ImGui
     implementation "io.github.spair:imgui-java-binding:$imgui_version"
-    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imgui_version", {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+        exclude group: 'org.lwjgl', module: 'lwjgl-bom'
+        exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
+        exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
+    }
     implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"

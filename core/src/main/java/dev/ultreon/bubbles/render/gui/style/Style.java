@@ -1,21 +1,25 @@
 package dev.ultreon.bubbles.render.gui.style;
 
 
-import dev.ultreon.bubbles.render.Color;
+import com.badlogic.gdx.graphics.Color;
+import dev.ultreon.bubbles.render.Colors;
+
+import static dev.ultreon.bubbles.render.Colors.brighter;
+import static dev.ultreon.bubbles.render.Colors.darker;
 
 public class Style {
-    public static final Color DEFAULT_ACCENT = Color.rgb(0, 96, 128);
-    public static final Color DEFAULT_BACKGROUND = Color.rgb(96, 96, 96);
-    public static final Color DEFAULT_FOREGROUND = Color.rgb(160, 160, 160);
+    public static final Color DEFAULT_ACCENT = Colors.rgb(0, 96, 128);
+    public static final Color DEFAULT_BACKGROUND = Colors.rgb(96, 96, 96);
+    public static final Color DEFAULT_FOREGROUND = Colors.rgb(160, 160, 160);
 
     public static final StateBundle<Float> DEFAULT_BORDER_WIDTHS = new StateBundle<>(1f, 1f, 1f);
-    public static final StateBundle<Color> DEFAULT_BORDER_COLORS = new StateBundle<>(DEFAULT_BACKGROUND.brighter().brighter(), DEFAULT_BACKGROUND.brighter(), DEFAULT_BACKGROUND.darker());
-    public static final StateBundle<Color> DEFAULT_BACKGROUND_COLORS = new StateBundle<>(DEFAULT_BACKGROUND.brighter().brighter(), DEFAULT_BACKGROUND.brighter(), DEFAULT_BACKGROUND.darker());
-    public static final StateBundle<Color> DEFAULT_FOREGROUND_COLORS = new StateBundle<>(DEFAULT_FOREGROUND.brighter().brighter(), DEFAULT_FOREGROUND.brighter(), DEFAULT_FOREGROUND.darker());
+    public static final StateBundle<Color> DEFAULT_BORDER_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_BACKGROUND)), brighter(DEFAULT_BACKGROUND), darker(DEFAULT_BACKGROUND));
+    public static final StateBundle<Color> DEFAULT_BACKGROUND_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_BACKGROUND)), brighter(DEFAULT_BACKGROUND), darker(DEFAULT_BACKGROUND));
+    public static final StateBundle<Color> DEFAULT_FOREGROUND_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_FOREGROUND)), brighter(DEFAULT_FOREGROUND), darker(DEFAULT_FOREGROUND));
     public static final StateBundle<Float> DEFAULT_ACTIVE_BORDER_WIDTHS = new StateBundle<>(1f, 1f, 1f);
-    public static final StateBundle<Color> DEFAULT_ACTIVE_BORDER_COLORS = new StateBundle<>(DEFAULT_ACCENT.brighter().brighter(), DEFAULT_ACCENT.brighter(), DEFAULT_ACCENT.darker());
-    public static final StateBundle<Color> DEFAULT_ACTIVE_BACKGROUND_COLORS = new StateBundle<>(DEFAULT_BACKGROUND.brighter().brighter(), DEFAULT_BACKGROUND.brighter(), DEFAULT_BACKGROUND.darker());
-    public static final StateBundle<Color> DEFAULT_ACTIVE_FOREGROUND_COLORS = new StateBundle<>(DEFAULT_FOREGROUND.brighter().brighter(), DEFAULT_FOREGROUND.brighter(), DEFAULT_FOREGROUND.darker());
+    public static final StateBundle<Color> DEFAULT_ACTIVE_BORDER_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_ACCENT)), brighter(DEFAULT_ACCENT), darker(DEFAULT_ACCENT));
+    public static final StateBundle<Color> DEFAULT_ACTIVE_BACKGROUND_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_BACKGROUND)), brighter(DEFAULT_BACKGROUND), darker(DEFAULT_BACKGROUND));
+    public static final StateBundle<Color> DEFAULT_ACTIVE_FOREGROUND_COLORS = new StateBundle<>(brighter(brighter(DEFAULT_FOREGROUND)), brighter(DEFAULT_FOREGROUND), darker(DEFAULT_FOREGROUND));
 
     protected StateBundle<Float> borderWidths;
     protected StateBundle<Color> borderColors;
@@ -27,11 +31,6 @@ public class Style {
     protected StateBundle<Color> activeForegroundColors;
 
     public Style() {
-//        StateBundle<Color> backgroundColors, StateBundle<Color> foregroundColors, StateBundle<Color> borderColors, StateBundle<Float> borderWidths
-//        this.backgroundColors = backgroundColors;
-//        this.foregroundColors = foregroundColors;
-//        this.borderColors = borderColors;
-//        this.borderWidths = borderWidths;
         this.borderWidths = DEFAULT_BORDER_WIDTHS;
         this.borderColors = DEFAULT_BORDER_COLORS;
         this.backgroundColors = DEFAULT_BACKGROUND_COLORS;

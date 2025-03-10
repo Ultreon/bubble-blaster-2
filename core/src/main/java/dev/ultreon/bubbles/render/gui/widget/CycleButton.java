@@ -3,7 +3,7 @@ package dev.ultreon.bubbles.render.gui.widget;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.input.DesktopInput;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
 import dev.ultreon.bubbles.util.Enums;
@@ -67,7 +67,7 @@ public class CycleButton<T extends Enum<T>> extends Button implements GuiStateLi
 
     @Override
     protected void drawText(Renderer renderer) {
-        AbstractButton.drawText(renderer, Color.WHITE, this.getPos(), this.getSize(), this.getFullText(), this.getFont());
+        AbstractButton.drawText(renderer, Colors.WHITE, this.getPos(), this.getSize(), this.getFullText(), this.getFont());
     }
 
     public static class Builder<T extends Enum<T>> extends Button.Builder {

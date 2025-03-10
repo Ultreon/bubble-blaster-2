@@ -3,7 +3,7 @@ package dev.ultreon.bubbles.init;
 import dev.ultreon.bubbles.bubble.*;
 import dev.ultreon.bubbles.effect.StatusEffectInstance;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.datetime.v0.Duration;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,21 +21,21 @@ public class BubbleTypes {
             .priority(150_000_000L)
             .radius(12, 105)
             .speed(4.0, 8.7)
-            .colors(Color.WHITE)
+            .colors(Colors.WHITE)
             .score(1)
             .build());
     public static final BubbleType DOUBLE = BubbleTypes.register("double", BubbleType.builder()
             .priority(4_600_000L)
             .radius(24, 75)
             .speed(8.0, 17.4)
-            .colors(Color.GOLD, Color.GOLD)
+            .colors(Colors.GOLD, Colors.GOLD)
             .score(2)
             .build());
     public static final BubbleType TRIPLE = BubbleTypes.register("triple", BubbleType.builder()
             .priority(1_150_000L)
             .radius(48, 60)
             .speed(12.0, 38.8)
-            .colors(Color.CYAN, Color.CYAN, Color.CYAN)
+            .colors(Colors.CYAN, Colors.CYAN, Colors.CYAN)
             .score(3)
             .build());
     public static final BubbleType DOUBLE_STATE = BubbleTypes.register("double_state", BubbleType.builder()

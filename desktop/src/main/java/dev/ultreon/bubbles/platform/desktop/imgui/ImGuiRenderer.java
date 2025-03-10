@@ -5,7 +5,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import imgui.ImGui;
@@ -123,7 +123,7 @@ public class ImGuiRenderer {
 
         if (exactWidgetAt != null) {
             var bounds = exactWidgetAt.getBounds();
-            renderer.box(bounds.x, bounds.y, bounds.width, bounds.height, Color.RED);
+            renderer.box(bounds.x, bounds.y, bounds.width, bounds.height, Colors.RED);
         }
 
         ImGui.setNextWindowSize(400, 200, ImGuiCond.Once);

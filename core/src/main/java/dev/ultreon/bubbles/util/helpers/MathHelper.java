@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.util.helpers;
 
-import dev.ultreon.bubbles.render.Color;
+import com.badlogic.gdx.graphics.Color;
+import dev.ultreon.bubbles.render.Colors;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -84,11 +85,11 @@ public class MathHelper {
 
     public static Color mixColors(Color color1, Color color2, double percent) {
         var inverse_percent = 1.0 - percent;
-        var redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
-        var greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);
-        var bluePart = (int) (color1.getBlue() * percent + color2.getBlue() * inverse_percent);
-        var alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
-        return Color.rgba(redPart, greenPart, bluePart, alphaPart);
+        var redPart = (float) (color1.r * percent + color2.r * inverse_percent);
+        var greenPart = (float) (color1.g * percent + color2.g * inverse_percent);
+        var bluePart = (float) (color1.b * percent + color2.b * inverse_percent);
+        var alphaPart = (float) (color1.a * percent + color2.a * inverse_percent);
+        return Colors.rgba(redPart, greenPart, bluePart, alphaPart);
     }
 
     @Deprecated(forRemoval = true)

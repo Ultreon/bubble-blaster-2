@@ -39,7 +39,7 @@ public abstract class StatusEffect implements Translatable {
         var resId = this.getIconId();
         @Nullable Resource stream = BubbleBlaster.getInstance().getResourceManager().getResource(resId);
         if (stream == null) {
-            BubbleBlaster.getLogger().warn("Cannot find effect-icon: " + resId);
+            BubbleBlaster.getLogger().warn("Cannot find effect-icon: {}", resId);
         }
         return stream;
     }

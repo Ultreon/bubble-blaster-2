@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.libs.commons.v0.Mth;
@@ -30,8 +30,8 @@ public class ScrollBar extends GuiComponent {
         this.setWidth(SIZE);
 
         var thumbBounds = this.getThumbBounds();
-        renderer.fill(this.x, this.y, this.width, this.height, Color.BLACK.withAlpha(0x40));
-        renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Color.WHITE.withAlpha(0x60));
+        renderer.fill(this.x, this.y, this.width, this.height, Colors.rgba(0x00, 0x00, 0x00, 0x40));
+        renderer.fill((int) thumbBounds.x, (int) thumbBounds.y, (int) thumbBounds.width, (int) thumbBounds.height, Colors.rgba(0xff, 0xff, 0xff, 0x60));
     }
 
     private Rectangle getThumbBounds() {

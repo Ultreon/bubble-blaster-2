@@ -3,7 +3,7 @@ package dev.ultreon.bubbles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderable;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.crash.v0.CrashCategory;
@@ -30,14 +30,14 @@ public class ManualCrashOverlay implements Renderable {
 
             var secondsLeft = this.timer.getEpochSecond() - Instant.now().getEpochSecond();
 
-            renderer.fill(0, 0, width, height, Color.GRAY_4);
-            renderer.fill(0, 0, (int) width, 10, Color.CRIMSON);
-            renderer.fill(0, (int) (height - 10), (int) width, 10, Color.CRIMSON);
+            renderer.fill(0, 0, width, height, Colors.GRAY_4);
+            renderer.fill(0, 0, (int) width, 10, Colors.CRIMSON);
+            renderer.fill(0, (int) (height - 10), (int) width, 10, Colors.CRIMSON);
 
-            renderer.drawText(Fonts.DONGLE_TITLE.get(), "Manually Initiating Crash", 50, 60, Color.CRIMSON);
-            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "You have activated the MIC sequence!", 50, 210, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240, Color.WHITE);
-            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270, Color.WHITE);
+            renderer.drawText(Fonts.DONGLE_TITLE.get(), "Manually Initiating Crash", 50, 60, Colors.CRIMSON);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "You have activated the MIC sequence!", 50, 210, Colors.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "If you didn't meant to activate this, stop holding any CTRL/Shift/Alt keys.", 50, 240, Colors.WHITE);
+            renderer.drawText(Fonts.MONOSPACED_HEADING_2.get(), "The game will crash in " + secondsLeft + " if you continue holding this sequence.", 50, 270, Colors.WHITE);
 
             if (Instant.now().isAfter(this.timer))
                 BubbleBlaster.crash(ManualCrashOverlay.createMICLog().createCrash());

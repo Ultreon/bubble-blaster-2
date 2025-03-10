@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.Button;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"FieldCanBeLocal"})
 public class SavesScreen extends Screen {
+    @SuppressWarnings("GDXJavaStaticResource")
     @Nullable
     private static SavesScreen instance;
     private final Map<GameSave, Result<GameSaveInfo>> cache = new HashMap<>();
@@ -71,7 +72,7 @@ public class SavesScreen extends Screen {
                 try {
                     selected.value.delete();
                 } catch (IOException e) {
-                    BubbleBlaster.getLogger().error("Failed to delete save " + selected.value.getHandle().name() + ":", e);
+                    BubbleBlaster.getLogger().error("Failed to delete save {}:", selected.value.getHandle().name(), e);
                 }
                 this.refresh();
             }
@@ -126,7 +127,7 @@ public class SavesScreen extends Screen {
                 this.cache.put(save, cachedInfo);
             }
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for " + save.getHandle().name() + ":", e);
+            BubbleBlaster.getLogger().error(GameSave.MARKER, "Failed to load save information for {}:", save.getHandle().name(), e);
             cachedInfo = Result.failure(e);
             this.cache.put(save, cachedInfo);
         }
@@ -135,14 +136,14 @@ public class SavesScreen extends Screen {
             var name = "Loading Error";
             var description = String.format("Save filename: %s", save.getHandle().name());
 
-            renderer.fill(x, y, width, height, Color.RED.withAlpha(hovered ? 0x40 : 0x20));
+            renderer.fill(x, y, width, height, Colors.rgba(0xff, 0x00, 0x00, hovered ? 0x40 : 0x20));
             if (selected)
                 renderer.drawErrorEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 4, 1));
             else if (hovered)
                 renderer.drawErrorEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
-            renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
-            renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+            renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Colors.rgba(0xff, 0xff, 0xff, 0xc0));
+            renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Colors.rgba(0xff, 0xff, 0xff, 0x60));
             return;
         }
 
@@ -150,14 +151,14 @@ public class SavesScreen extends Screen {
         final var name = info.getName();
         final var description = info.getGamemode().getName().getText() + ", " + info.getSavedTimeFormatted();
 
-        renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
+        renderer.fill(x, y, width, height, Colors.rgba(0xff, 0xff, 0xff, hovered ? 0x40 : 0x20));
         if (selected)
             renderer.drawEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 4, 1));
         else if (hovered)
             renderer.drawEffectBox(x, (int) y, (int) width, (int) height, new Insets(1, 1, 1, 1));
 
-        renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Color.WHITE.withAlpha(0xc0));
-        renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Color.WHITE.withAlpha(0x60));
+        renderer.drawText(Fonts.SANS_HEADER_2.get(), name, x + 20, y + 20, Colors.rgba(0xff, 0xff, 0xff, 0xc0));
+        renderer.drawText(Fonts.SANS_PARAGRAPH_BOLD.get(), description, x + 20, y + 20 + Fonts.SANS_HEADER_2.get().getLineHeight() + 5, Colors.rgba(0xff, 0xff, 0xff, 0x60));
     }
 
     private int calculateWidth() {

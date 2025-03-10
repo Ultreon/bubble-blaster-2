@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.entity.bubble;
 
 
-import dev.ultreon.bubbles.render.Color;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.Objects;
 

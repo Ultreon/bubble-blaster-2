@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.init;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.debug.Formatter;
@@ -9,7 +10,6 @@ import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.entity.types.EntityType;
 import dev.ultreon.bubbles.settings.GameSettings;
-import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.size.FloatSize;
 import dev.ultreon.libs.commons.v0.vector.*;
@@ -200,19 +200,11 @@ public final class DebugFormatters {
             }
         }
     });
-    public static final Formatter<Color> AWT_COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
-        @Override
-        public void format(Color obj, IFormatterContext context) {
-            var s = Integer.toHexString(obj.getRgb());
 
-            context.operator("#");
-            context.hex("0".repeat(8 - s.length()) + s);
-        }
-    });
     public static final Formatter<Color> COLOR = FormatterRegistry.register(new Formatter<>(Color.class, new Identifier("color")) {
         @Override
         public void format(Color obj, IFormatterContext context) {
-            var s = Integer.toHexString(obj.getRgb());
+            var s = Integer.toHexString(obj.toIntBits());
 
             context.operator("#");
             context.hex("0".repeat(8 - s.length()) + s);

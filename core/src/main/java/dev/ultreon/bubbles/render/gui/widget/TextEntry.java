@@ -6,7 +6,7 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.config.Config;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
@@ -165,18 +165,18 @@ public class TextEntry extends GuiComponent {
 
     protected void drawBackground(Renderer renderer, int labelX, int labelW, int entryX, int entryW) {
         if (this.isFocused()) {
-            renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x40));
-            renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x80));
+            renderer.fill(labelX, this.y, labelW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x40));
+            renderer.fill(entryX, this.y, entryW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x80));
 
             if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1, 1, 4, 1));
             else renderer.drawEffectBox(this.x, this.y, this.width, this.height, new Insets(0, 0, 4, 0));
         } else if (!this.enabled) {
-            renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x10));
-            renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x30));
+            renderer.fill(labelX, this.y, labelW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x10));
+            renderer.fill(entryX, this.y, entryW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x30));
             if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1));
         } else {
-            renderer.fill(labelX, this.y, labelW, this.height, Color.WHITE.withAlpha(0x20));
-            renderer.fill(entryX, this.y, entryW, this.height, Color.WHITE.withAlpha(0x60));
+            renderer.fill(labelX, this.y, labelW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x20));
+            renderer.fill(entryX, this.y, entryW, this.height, Colors.rgba(0xff, 0xff, 0xff, 0x60));
             if (this.isError()) renderer.drawErrorEffectBox(this.x, this.y, this.width, this.height, new Insets(1));
         }
     }
@@ -184,9 +184,9 @@ public class TextEntry extends GuiComponent {
     protected void drawText(Renderer renderer, int entryX, int entryW, int labelX, int labelW) {
         renderer.scissored(entryX + 2, this.y, entryW - 4, this.height, () -> {
             if (this.enabled)
-                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE);
+                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Colors.WHITE);
             else
-                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Color.WHITE.withAlpha(0x60));
+                renderer.drawTextLeft(this.font, this.text, entryX + 10, this.y + this.getHeight() / 2f - 2f, Colors.rgba(0xff, 0xff, 0xff, 0x60));
 
             if (this.isFocused()) {
                 var cursorX = this.text.isEmpty() ? entryX + 10 : entryX + 10 + this.layout.width;
@@ -194,7 +194,7 @@ public class TextEntry extends GuiComponent {
             }
         });
 
-        renderer.scissored(labelX + 2, this.y, labelW - 4, this.isFocused() ? this.height - 4 : this.height, () -> renderer.drawTextCenter(this.font, this.label, labelX + labelW / 2f , this.y + this.getHeight() / 2f - 2f, Color.WHITE));
+        renderer.scissored(labelX + 2, this.y, labelW - 4, this.isFocused() ? this.height - 4 : this.height, () -> renderer.drawTextCenter(this.font, this.label, labelX + labelW / 2f , this.y + this.getHeight() / 2f - 2f, Colors.WHITE));
     }
 
     public void setText(@NotNull String text) {

@@ -1,9 +1,10 @@
 package dev.ultreon.bubbles.common.gamestate;
 
+import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.world.World;

@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.GamePlatform;
@@ -13,7 +14,7 @@ import dev.ultreon.bubbles.event.v1.LifecycleEvents;
 import dev.ultreon.bubbles.init.HudTypes;
 import dev.ultreon.bubbles.registry.RegisterHandler;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
 import dev.ultreon.bubbles.settings.GameSettings;
@@ -31,9 +32,9 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class LoadScreen extends InternalScreen {
-    public static final Color BACKGROUND = Color.rgb(0x484848);
-    private static final Color TEXT_COLOR = Color.rgb(0xc0c0c0);
-    public static final Color PROGRESSBAR_BG = Color.rgb(0x808080);
+    public static final Color BACKGROUND = Colors.rgb(0x484848);
+    private static final Color TEXT_COLOR = Colors.rgb(0xc0c0c0);
+    public static final Color PROGRESSBAR_BG = Colors.rgb(0x808080);
     public static final float PROGRESS_BAR_WIDTH = 500f;
 
     private static final Logger LOGGER = GamePlatform.get().getLogger("Game-Loader");
@@ -100,7 +101,7 @@ public final class LoadScreen extends InternalScreen {
 
             renderer.fill(this.width / 2f - PROGRESS_BAR_WIDTH / 2, this.height / 2 + 19 + 2, PROGRESS_BAR_WIDTH, 1, PROGRESSBAR_BG);
 
-            renderer.setColor(Color.rgb(0x0040ff));
+            renderer.setColor(Colors.rgb(0x0040ff));
             var effectWidth = (int) (PROGRESS_BAR_WIDTH * (double) (progress + 1) / (double) max);
             if (effectWidth >= 1)
                 renderer.fillEffect(this.width / 2f - PROGRESS_BAR_WIDTH / 2, (float) this.height / 2 + 19, effectWidth, 5);
@@ -333,10 +334,5 @@ public final class LoadScreen extends InternalScreen {
 
     private void logMain(String s) {
         this.curMainMsg = s;
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

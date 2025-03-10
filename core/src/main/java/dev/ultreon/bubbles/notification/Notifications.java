@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.notification;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderable;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.datetime.v0.Duration;
@@ -42,12 +42,12 @@ public class Notifications implements Renderable {
             var motionRatio = notification.getMotion();
             var motion = (NOTIFICATION_WIDTH + NOTIFICATION_OFFSET) * motionRatio;
 
-            renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT, Color.rgb(0x101010));
-            renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10, Color.rgb(0x505050));
+            renderer.fill(x + motion, y, NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT, Colors.rgb(0x101010));
+            renderer.box(x + motion + 5, y + 5, NOTIFICATION_WIDTH - 10, NOTIFICATION_HEIGHT - 10, Colors.rgb(0x505050));
 
-            renderer.drawText(Fonts.SANS_HEADER_3.get(), title, x + motion + 10, y + 13, Color.rgb(0xd0d0d0));
-            renderer.drawText(Fonts.SANS_PARAGRAPH.get(), summary, x + motion + 10, y + 40, Color.rgb(0xb0b0b0));
-            renderer.drawText(Fonts.SANS_SUBTITLE.get(), subText == null ? "" : subText, x + motion + 10, y + 60, Color.rgb(0x707070));
+            renderer.drawText(Fonts.SANS_HEADER_3.get(), title, x + motion + 10, y + 13, Colors.rgb(0xd0d0d0));
+            renderer.drawText(Fonts.SANS_PARAGRAPH.get(), summary, x + motion + 10, y + 40, Colors.rgb(0xb0b0b0));
+            renderer.drawText(Fonts.SANS_SUBTITLE.get(), subText == null ? "" : subText, x + motion + 10, y + 60, Colors.rgb(0x707070));
 
             y += NOTIFICATION_HEIGHT + NOTIFICATION_GAP;
         }

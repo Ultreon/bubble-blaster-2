@@ -1,7 +1,8 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
@@ -78,17 +79,17 @@ public class CrashButton extends AbstractButton implements GuiStateListener {
         if (this.isPressed()) {
             renderer.drawErrorEffectBox(this.getBounds(), new Insets(2));
 
-            textColor = Color.WHITE;
+            textColor = Colors.WHITE;
         } else if (this.isHovered()) {
             renderer.setLineThickness(4.0f);
             renderer.drawErrorEffectBox(this.x + 1, this.y + 1, this.width - 2, this.height - 2, new Insets(2));
 
-            textColor = Color.rgb(0xffffff);
+            textColor = Colors.rgb(0xffffff);
         } else {
             renderer.setLineThickness(1.0f);
-            renderer.box(this.getBounds(), Color.WHITE, new Insets(1));
+            renderer.box(this.getBounds(), Colors.WHITE, new Insets(1));
 
-            textColor = Color.rgb(0xffffff);
+            textColor = Colors.rgb(0xffffff);
         }
 
         AbstractButton.drawText(renderer, textColor, this.getPos(), this.getSize(), this.text, this.font);

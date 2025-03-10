@@ -19,7 +19,7 @@ public class ConfigManager extends UtilityClass {
     public static void registerConfig(String namespace, Config config) {
         var modLoaded = GamePlatform.get().isModLoaded(namespace);
         if (!modLoaded) {
-            BubbleBlaster.LOGGER.warn("Tried to register config for non-existing mod: " + namespace);
+            BubbleBlaster.LOGGER.warn("Tried to register config for non-existing mod: {}", namespace);
             return;
         }
 

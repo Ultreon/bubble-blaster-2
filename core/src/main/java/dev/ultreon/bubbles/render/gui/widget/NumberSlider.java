@@ -1,10 +1,11 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.config.Config;
 import dev.ultreon.bubbles.input.DesktopInput;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.util.Numbers;
@@ -418,20 +419,20 @@ public class NumberSlider extends TextEntry {
 
             Color iconColor;
             if (pressed) {
-                renderer.fill(bounds, Color.WHITE.withAlpha(0x80));
+                renderer.fill(bounds, Colors.rgba(0xff, 0xff, 0xff, 0x80));
                 renderer.drawEffectBox(bounds, new Insets(2));
 
-                iconColor = Color.WHITE;
+                iconColor = Colors.WHITE;
             } else if (hovered) {
                 renderer.hovered();
-                renderer.fill(bounds, Color.WHITE.withAlpha(0x60));
+                renderer.fill(bounds, Colors.rgba(0xff, 0xff, 0xff, 0x60));
                 renderer.drawEffectBox(bounds, new Insets(2));
 
-                iconColor = Color.WHITE;
+                iconColor = Colors.WHITE;
             } else {
-                renderer.fill(bounds, Color.WHITE.withAlpha(0x40));
+                renderer.fill(bounds, Colors.rgba(0xff, 0xff, 0xff, 0x40));
 
-                iconColor = Color.WHITE.withAlpha(0x80);
+                iconColor = Colors.rgba(0xff, 0xff, 0xff, 0x80);
             }
 
             var mx = this.x + this.width / 2;
@@ -440,8 +441,8 @@ public class NumberSlider extends TextEntry {
             renderer.setLineThickness(3);
             var outer = this.up ? my + 3 : my - 3;
             var inner = this.up ? my - 3 : my + 3;
-            renderer.line(mx - 3, inner, mx, outer, Color.WHITE);
-            renderer.line(mx, outer, mx + 3, outer, Color.WHITE);
+            renderer.line(mx - 3, inner, mx, outer, Colors.WHITE);
+            renderer.line(mx, outer, mx + 3, outer, Colors.WHITE);
         }
 
         @Override

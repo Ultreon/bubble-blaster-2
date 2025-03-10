@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.render.gui.hud;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
@@ -7,7 +8,7 @@ import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.libs.commons.v0.Mth;
@@ -16,7 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * The classic hud, the hud that's almost identical to older versions and editions create the game.
- * For example the Python versions. The only thing changed is how the status effects are shown.
+ * For example, the Python versions.
+ * The only thing changed is how the status effects are shown.
  *
  * @see HudType
  */
@@ -26,9 +28,9 @@ public class BetaHud extends HudType {
     private static final float HEALTH_LINE_WIDTH = 1.0f;
 
     // Colors
-    private static final Color LEVEL_UP_COLOR = Color.rgb(0xffbb00);
-    private static final Color TOP_BAR_BG_COLOR = Color.argb(0x7f000000);
-    private static final Color HEALTH_LINE_BG_COLOR = Color.argb(0x7ffffff);
+    private static final Color LEVEL_UP_COLOR = Colors.rgb(0xffbb00);
+    private static final Color TOP_BAR_BG_COLOR = Colors.argb(0x7f000000);
+    private static final Color HEALTH_LINE_BG_COLOR = Colors.argb(0x7ffffff);
     private boolean showLevelUp;
     private long hideLevelUpTime;
     private int level;
@@ -74,11 +76,11 @@ public class BetaHud extends HudType {
 
     public void drawFpsCounter(Renderer renderer, BubbleBlaster game) {
         // Render FPS text.
-        renderer.drawText(this.fpsFont, String.valueOf(game.getFps()), game.getWidth() - 10, 10, Color.argb(0x8000a5dc));
+        renderer.drawText(this.fpsFont, String.valueOf(game.getFps()), game.getWidth() - 10, 10, Colors.argb(0x8000a5dc));
     }
 
     /**
-     * Draw the game over message.
+     * Draw the game-over message.
      *
      * @param renderer the renderer to draw with.
      * @param gamemode the game type bound to this hud.
@@ -110,7 +112,7 @@ public class BetaHud extends HudType {
             renderer.fill(
                     gameBounds.getX() + gameBounds.getWidth() - width / 2,
                     gameBounds.getY() + gameBounds.getHeight() - height / 2,
-                    width, height, Color.BLACK.withAlpha(0x80)
+                    width, height, Colors.rgba(0x00, 0x00, 0x00, 0x80)
             );
 
             renderer.drawTextCenter(this.levelUpFont, text, gameBounds.getX() + gameBounds.getWidth() / 2, gameBounds.getY() + gameBounds.getHeight() / 2, LEVEL_UP_COLOR);
@@ -126,8 +128,8 @@ public class BetaHud extends HudType {
      */
     public void drawPlayerDetails(World world, @NotNull Renderer renderer, @NotNull BubbleBlaster game, @NotNull Player player) {
         // Assign colors for title and description.
-        var titleColor = Color.rgb(255, 128, 0);
-        var valueColor = Color.rgb(255, 255, 255);
+        var titleColor = Colors.rgb(255, 128, 0);
+        var valueColor = Colors.rgb(255, 255, 255);
 
         // As long the player isn't game over.
         if (world.isGameOver()) return;
@@ -141,7 +143,7 @@ public class BetaHud extends HudType {
     }
 
     /**
-     * Draws the foreground create the health line.
+     * Draws the foreground the health line.
      * It's mostly the colored part in this case.
      *
      * @param renderer renderer to draw with.
@@ -171,7 +173,7 @@ public class BetaHud extends HudType {
 
         // Render health bar.
         renderer.setLineThickness(HEALTH_LINE_WIDTH);
-        renderer.fill(0, 68, (int) (game.getWidth() * playerDamage / playerMaxDamage), 2, Color.rgb(redValue, greenValue, 0x20));
+        renderer.fill(0, 68, (int) (game.getWidth() * playerDamage / playerMaxDamage), 2, Colors.rgb(redValue, greenValue, 0x20));
     }
 
     /**
@@ -230,7 +232,7 @@ public class BetaHud extends HudType {
                     renderer.blit(x + 5, y + 3, 32, 32);
 
                     // Time. 0:00:00
-                    renderer.drawTextLeft(this.font, time, x + 56, y + 19.5f, Color.WHITE.withAlpha(0xC0));
+                    renderer.drawTextLeft(this.font, time, x + 56, y + 19.5f, Colors.rgba(0xff, 0xff, 0xff, 0xC0));
                 });
 
                 i++;
@@ -247,7 +249,7 @@ public class BetaHud extends HudType {
      * @param game     game instance.
      */
     public void drawTopShade(Renderer renderer, BubbleBlaster game) {
-        renderer.fillGradient(0, 71, game.getWidth(), 30, Color.argb(0x30000000), Color.TRANSPARENT);
+        renderer.fillGradient(0, 71, game.getWidth(), 30, Colors.argb(0x30000000), Colors.TRANSPARENT);
     }
 
     /**
@@ -262,17 +264,17 @@ public class BetaHud extends HudType {
     }
 
     /**
-     * Post-drawing create the top bar background.
+     * Post-drawing the top bar background.
      *
      * @param renderer renderer to draw with.
      * @param game     game instance.
      */
     public void postDrawTopBar(Renderer renderer, BubbleBlaster game) {
-        renderer.fillGradient(0, 0, game.getWidth(), 70, Color.TRANSPARENT, Color.argb(0x18000000));
+        renderer.fillGradient(0, 0, game.getWidth(), 70, Colors.TRANSPARENT, Colors.argb(0x18000000));
     }
 
     /**
-     * Draw health line background. (The grayish part)
+     * Draw the health line background. (The grayish part)
      *
      * @param renderer the renderer to draw with.
      * @param game     the game instance.
@@ -285,7 +287,7 @@ public class BetaHud extends HudType {
 
     /**
      * Sets Game Over flag
-     * Yes, as the title says: it sets the game over flag in the HUD.
+     * Yes, as the title says: it sets the game-over flag in the HUD.
      */
     public void gameOver() {
 

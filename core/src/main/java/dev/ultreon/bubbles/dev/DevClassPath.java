@@ -14,7 +14,7 @@ public class DevClassPath extends HashMap<String, List<String>> {
     }
 
     private List<File> parse(String s) {
-        return Stream.of(s.split(System.getProperty("path.separator"))).map(File::new).collect(Collectors.toList());
+        return Stream.of(s.split(File.pathSeparator)).map(File::new).collect(Collectors.toList());
     }
 
     @Deprecated

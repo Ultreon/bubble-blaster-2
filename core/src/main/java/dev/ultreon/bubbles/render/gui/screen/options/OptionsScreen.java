@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen.options;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
@@ -65,7 +65,7 @@ public class OptionsScreen extends Screen {
     }
 
     public void renderBackground(BubbleBlaster game, Renderer renderer) {
-        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Color.GRAY_6);
+        renderer.fill(0, 0, BubbleBlaster.getInstance().getWidth(), BubbleBlaster.getInstance().getHeight(), Colors.GRAY_6);
     }
 
     public Button getGeneric() {

@@ -64,7 +64,7 @@ public final class GameSettings implements Serializable {
             }
             GameSettings.instance = instance;
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error("Failed to load settings from " + GameFolders.SETTINGS_FILE.path() + ":", e);
+            BubbleBlaster.getLogger().error("Failed to load settings from {}:", GameFolders.SETTINGS_FILE.path(), e);
             return GameSettings.save();
         }
 
@@ -78,7 +78,7 @@ public final class GameSettings implements Serializable {
         try {
             settingsFile.writeString(json, false, "UTF-8");
         } catch (Exception e) {
-            BubbleBlaster.getLogger().error("Failed to save settings to " + settingsFile + ":", e);
+            BubbleBlaster.getLogger().error("Failed to save settings to {}:", settingsFile, e);
             return false;
         }
         return true;

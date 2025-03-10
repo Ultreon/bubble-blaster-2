@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.bubble;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.common.random.Rng;
@@ -14,10 +15,8 @@ import dev.ultreon.bubbles.random.valuesource.ConstantValueSource;
 import dev.ultreon.bubbles.random.valuesource.RandomValueSource;
 import dev.ultreon.bubbles.random.valuesource.ValueSource;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.exceptions.InvalidValueException;
-import dev.ultreon.bubbles.util.ColorUtils;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.tuple.Pair;
 import dev.ultreon.libs.text.v1.Translatable;
@@ -40,7 +39,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     private static final ValueSource DEFAULT_RADIUS = RandomValueSource.random(21, 80);
     private static final ValueSource DEFAULT_SPEED = RandomValueSource.random(1, 2.5);
     private static final ValueSource DEFAULT_HARDNESS = ConstantValueSource.of(1);
-    private List<Color> colors;
+    private List<@NotNull Color> colors;
     private double priority;
 
     private ValueSource radius = DEFAULT_RADIUS;
@@ -218,7 +217,7 @@ public abstract class BubbleType implements Serializable, Translatable {
         return this.hardness;
     }
 
-    public List<Color> getColors() {
+    public List<@NotNull Color> getColors() {
         return this.colors;
     }
 
@@ -271,7 +270,7 @@ public abstract class BubbleType implements Serializable, Translatable {
     }
 
     protected final void setColors(String hexList) {
-        this.colors = List.of(ColorUtils.parseHexList(hexList));
+        this.colors = List.of(dev.ultreon.bubbles.util.ColorUtils.parseHexList(hexList));
     }
 
     protected void setInvincible(boolean invincible) {
@@ -331,7 +330,7 @@ public abstract class BubbleType implements Serializable, Translatable {
                 throw new IllegalArgumentException("Priority must be specified");
             }
             if (this.colors == null) {
-                throw new IllegalArgumentException("Colors must be specified");
+                throw new IllegalArgumentException("Color must be specified");
             }
 
             bubbleType.setPriority(this.priority);
@@ -562,7 +561,7 @@ public abstract class BubbleType implements Serializable, Translatable {
         }
 
         public Builder colors(String hexList) {
-            this.colors = ColorUtils.parseHexList(hexList);
+            this.colors = dev.ultreon.bubbles.util.ColorUtils.parseHexList(hexList);
             return this;
         }
 
@@ -591,7 +590,6 @@ public abstract class BubbleType implements Serializable, Translatable {
     ///////////////////////
     public void onCollision(Bubble source, Entity target) {
         if (target instanceof LivingEntity && ((LivingEntity) target).isInvincible()) {
-            var livingEntity = (LivingEntity) target;
             return;
         }
 

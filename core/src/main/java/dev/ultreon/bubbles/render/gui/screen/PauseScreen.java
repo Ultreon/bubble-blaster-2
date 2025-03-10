@@ -1,12 +1,13 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.bubble.BubbleType;
 import dev.ultreon.bubbles.entity.bubble.BubbleSystem;
 import dev.ultreon.bubbles.event.v1.GameEvents;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.options.OptionsScreen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
@@ -20,8 +21,8 @@ import dev.ultreon.libs.translations.v1.Language;
 import java.util.ArrayList;
 
 public class PauseScreen extends Screen {
-    private static final Color DETAIL_NAME_COLOR = Color.WHITE.withAlpha(0x80);
-    private static final Color DETAIL_VALUE_COLOR = Color.WHITE.withAlpha(0x60);
+    private static final Color DETAIL_NAME_COLOR = Colors.rgba(0xff, 0xff, 0xff, 0x80);
+    private static final Color DETAIL_VALUE_COLOR = Colors.rgba(0xff, 0xff, 0xff, 0x60);
     private Button forfeitButton;
     private Button optionsButton;
     private Button prevButton;
@@ -131,7 +132,7 @@ public class PauseScreen extends Screen {
         this.renderBackground(renderer);
 
         // Pause text
-        renderer.drawTextCenter(Fonts.DONGLE_PAUSE.get(), this.title, this.width / 2f, 120f, Color.argb(0x80ffffff));
+        renderer.drawTextCenter(Fonts.DONGLE_PAUSE.get(), this.title, this.width / 2f, 120f, Colors.argb(0x80ffffff));
 
         // Render widgets.
         this.prevButton.visible = PauseScreen.helpIndex > 0;
@@ -140,7 +141,7 @@ public class PauseScreen extends Screen {
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
 
         // Border
-        renderer.box(this.middleX - 480, 300, 960, 300, Color.WHITE.withAlpha(0x80));
+        renderer.box(this.middleX - 480, 300, 960, 300, Colors.rgba(0xff, 0xff, 0xff, 0x80));
 
         // Bubble name.
         renderer.drawTextLeft(Fonts.SANS_HEADER_1.get(), this.bubble.getTranslation(), this.middleX - 470, 322, DETAIL_NAME_COLOR);

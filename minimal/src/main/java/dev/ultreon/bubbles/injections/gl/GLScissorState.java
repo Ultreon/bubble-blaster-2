@@ -32,8 +32,8 @@ public class GLScissorState {
             intialized = true;
             currentX = 0;
             currentY = 0;
-            currentW = Gdx.graphics.getBackBufferWidth();
-            currentH = Gdx.graphics.getBackBufferHeight();
+            currentW = Gdx.graphics.getWidth();
+            currentH = Gdx.graphics.getHeight();
         }
 
         var scissorEnabled = Gdx.gl.glIsEnabled(GL20.GL_SCISSOR_TEST);

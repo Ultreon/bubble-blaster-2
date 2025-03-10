@@ -19,7 +19,7 @@ import dev.ultreon.bubbles.init.Entities;
 import dev.ultreon.bubbles.item.collection.PlayerItemCollection;
 import dev.ultreon.bubbles.player.InputController;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.CommandScreen;
 import dev.ultreon.bubbles.util.TimeProcessor;
@@ -36,9 +36,9 @@ import static dev.ultreon.bubbles.BubbleBlaster.TPS;
 /**
  * <p>These are the vertex coordinates:</p>
  * <br>
- * <code>
- * |- Middle point<br>
- * |<br>
+ * <pre>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|- Middle point<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
  * 9876543210123456789<br>
  * --------------------,<br>
  * ....#*********#.....| -8<br>
@@ -54,7 +54,7 @@ import static dev.ultreon.bubbles.BubbleBlaster.TPS;
  * #..................#| 2<br>
  * .*................*.| 3<br>
  * ..#..............#..| 4<br>
- * </code>
+ * </pre>
  */
 public class Player extends LivingEntity implements InputController {
     private static final float[] ARROW_VERTICES = {
@@ -437,11 +437,11 @@ public class Player extends LivingEntity implements InputController {
         if (this.isNotSpawned()) return;
 
         if (this.invincible)
-            renderer.withEffect(1.5f, () -> renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.WHITE));
+            renderer.withEffect(1.5f, () -> renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Colors.WHITE));
         else
-            renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Color.CRIMSON);
+            renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Colors.CRIMSON);
 
-        renderer.fillPolygon(this.getArrowShape(), Color.WHITE);
+        renderer.fillPolygon(this.getArrowShape(), Colors.WHITE);
     }
 
     /**

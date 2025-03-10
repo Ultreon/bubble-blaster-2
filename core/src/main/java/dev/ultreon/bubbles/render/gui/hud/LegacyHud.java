@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.render.gui.hud;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
@@ -7,7 +8,7 @@ import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.World;
@@ -21,11 +22,11 @@ import org.jetbrains.annotations.NotNull;
  * @see HudType
  */
 public class LegacyHud extends HudType {
-    private static final Color BACKGROUND_COLOR = Color.rgb(0x00a7a7);
+    private static final Color BACKGROUND_COLOR = Colors.rgb(0x00a7a7);
 
     // Colors
-    private static final Color LEVEL_UP_COLOR = Color.ORANGE;
-    private static final Color TOP_BAR_BG_COLOR = Color.rgb(0x008b8b);
+    private static final Color LEVEL_UP_COLOR = Colors.ORANGE;
+    private static final Color TOP_BAR_BG_COLOR = Colors.rgb(0x008b8b);
     private boolean showLevelUp;
     private long hideLevelUpTime;
     private int level;
@@ -98,8 +99,8 @@ public class LegacyHud extends HudType {
      */
     public void drawPlayerDetails(@NotNull World world, @NotNull Renderer renderer, @NotNull Player player) {
         // Assign colors for title and description.
-        var titleColor = Color.WHITE;
-        var valueColor = Color.CYAN;
+        var titleColor = Colors.WHITE;
+        var valueColor = Colors.CYAN;
 
         // As long the player isn't game over.
         if (world.isGameOver()) return;
@@ -196,9 +197,9 @@ public class LegacyHud extends HudType {
                     // EffectInstance icon.
                     renderer.setTexture(appliedEffect.getType().getIconId());
                     renderer.blit(x + 5, y + 3, 32, 32);
-                    renderer.setColor(Color.rgba(255, 255, 255, 192));
+                    renderer.setColor(Colors.rgba(255, 255, 255, 192));
 
-                    renderer.drawTextLeft(this.font, time, 56, 19.5f, Color.WHITE.withAlpha(0xC0));
+                    renderer.drawTextLeft(this.font, time, 56, 19.5f, Colors.rgba(0xff, 0xff, 0xff, 0xC0));
                 });
                 // Next
                 i++;
@@ -217,9 +218,9 @@ public class LegacyHud extends HudType {
     public void drawTopBar(Renderer renderer, BubbleBlaster game) {
         var topBar = new Rectangle(0, 0, game.getWidth(), 70);
         renderer.fill(topBar, TOP_BAR_BG_COLOR);
-        renderer.setColor(Color.rgb(0xadd8e6));
+        renderer.setColor(Colors.rgb(0xadd8e6));
         renderer.setLineThickness(1);
-        renderer.box(0, 71, game.getWidth(), 1, Color.rgb(0xadd8e6), new Insets(1));
+        renderer.box(0, 71, game.getWidth(), 1, Colors.rgb(0xadd8e6), new Insets(1));
     }
 
     /**

@@ -7,7 +7,7 @@ import dev.ultreon.bubbles.Axis2D;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.CrashFiller;
 import dev.ultreon.bubbles.input.MobileInput;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.bubbles.render.gui.widget.Circle;
@@ -167,9 +167,9 @@ public abstract class Screen extends Container implements CrashFiller {
 
     public void renderBackground(Renderer renderer) {
         if (this.game.world != null)
-            renderer.fillGradient(0, 0, this.getWidth(), this.getHeight(), Color.BLACK.withAlpha(0xb0), Color.BLACK.withAlpha(0xc0), Axis2D.VERTICAL);
+            renderer.fillGradient(0, 0, this.getWidth(), this.getHeight(), Colors.rgba(0x00, 0x00, 0x00, 0xb0), Colors.rgba(0x00, 0x00, 0x00, 0xc0), Axis2D.VERTICAL);
         else
-            renderer.fill(0, 0, this.getWidth(), this.getHeight(), Color.grayscale(0x1e));
+            renderer.fill(0, 0, this.getWidth(), this.getHeight(), Colors.grayscale(0x1e));
     }
 
     /**
@@ -230,9 +230,9 @@ public abstract class Screen extends Container implements CrashFiller {
 
     public void renderCloseButton(Renderer renderer, int mouseX, int mouseY) {
         var circle = new Circle(this.width - 100, 100, 50);
-        renderer.fillCircle(this.width - 100, 100, 100, Color.WHITE.withAlpha(circle.contains(mouseX, mouseY) ? MobileInput.isTouchDown() ? 0x80 : 0x60 : 0x40));
+        renderer.fillCircle(this.width - 100, 100, 100, Colors.rgba(0xff, 0xff, 0xff, circle.contains(mouseX, mouseY) ? MobileInput.isTouchDown() ? 0x80 : 0x60 : 0x40));
         renderer.setLineThickness(3);
-        renderer.line(this.width - 125, 75, this.width - 75, 125, Color.WHITE);
-        renderer.line(this.width - 125, 125, this.width - 75, 75, Color.WHITE);
+        renderer.line(this.width - 125, 75, this.width - 75, 125, Colors.WHITE);
+        renderer.line(this.width - 125, 125, this.width - 75, 75, Colors.WHITE);
     }
 }

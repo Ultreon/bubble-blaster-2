@@ -64,7 +64,7 @@ public class Config {
             });
         } catch (ParsingException e) {
             var fileName = this.file.getName();
-            BubbleBlaster.LOGGER.error("Failed to load config '" + fileName + "'", e);
+            BubbleBlaster.LOGGER.error("Failed to load config '{}'", fileName, e);
             BubbleBlaster.getInstance().notifications.notify(
                     Notification.builder("Config Failed to Load!", "Failed to load '" + fileName + "'")
                             .subText("Configuration Manager")
@@ -72,7 +72,7 @@ public class Config {
             );
             var backupFile = new File(this.file.getParentFile(), fileName + ".bak");
             if (backupFile.exists()) {
-                BubbleBlaster.LOGGER.warn("Backup of config '" + fileName + "' already exists!");
+                BubbleBlaster.LOGGER.warn("Backup of config '{}' already exists!", fileName);
             }
 
             try {

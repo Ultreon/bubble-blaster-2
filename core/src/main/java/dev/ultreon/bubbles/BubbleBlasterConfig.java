@@ -124,12 +124,12 @@ public class BubbleBlasterConfig {
         if (!LoadScreen.isLanguagesLoaded()) return;
 
         if (locale == null || !LanguageManager.INSTANCE.getLocales().contains(locale)) {
-            BubbleBlaster.LOGGER.warn("Invalid language: " + languageTag);
-            BubbleBlaster.LOGGER.warn("Those are valid: " + LanguageManager.INSTANCE.getLocales().stream().map(Locale::toLanguageTag).collect(Collectors.joining(", ")));
+            BubbleBlaster.LOGGER.warn("Invalid language: {}", languageTag);
+            BubbleBlaster.LOGGER.warn("Those are valid: {}", LanguageManager.INSTANCE.getLocales().stream().map(Locale::toLanguageTag).collect(Collectors.joining(", ")));
             BubbleBlaster.getInstance().notifications.notify(Notification.builder("Invalid Language!", "Language Tag: " + languageTag).subText("Language Manager").build());
             LANGUAGE.reset();
         } else {
-            BubbleBlaster.LOGGER.debug("Setting language to " + locale.toLanguageTag());
+            BubbleBlaster.LOGGER.debug("Setting language to {}", locale.toLanguageTag());
             LanguageManager.setCurrentLanguage(locale);
         }
     }
@@ -137,7 +137,13 @@ public class BubbleBlasterConfig {
     public static void save() {
         CONFIG.save();
 
-        BubbleBlaster.invoke(() -> Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get()));
+        BubbleBlaster.invoke(() -> {
+            if (MAX_FRAMERATE.get() >= 240) {
+                Gdx.graphics.setForegroundFPS(0);
+            } else {
+                Gdx.graphics.setForegroundFPS(MAX_FRAMERATE.get());
+            }
+        });
     }
 
     public static void reload() {

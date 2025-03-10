@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.gameplay.event;
 
+import com.badlogic.gdx.graphics.Color;
 import com.crashinvaders.vfx.effects.FilmGrainEffect;
 import dev.ultreon.bubbles.Axis2D;
 import dev.ultreon.bubbles.BubbleBlaster;
@@ -11,7 +12,7 @@ import dev.ultreon.bubbles.data.DataKeys;
 import dev.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.random.RandomSource;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.world.WorldRenderer;
@@ -29,7 +30,7 @@ import static dev.ultreon.bubbles.BubbleBlaster.TPS;
 
 public class BloodMoonGameplayEvent extends GameplayEvent {
     private static final UUID NOISE_EFFECT_ID = UUID.fromString("7d6dfafe-bbe6-4795-bc09-8c778af55115");
-    private static final Color UPPER_COLOR = Color.rgb(0xff2010);
+    private static final Color UPPER_COLOR = Colors.rgb(0xff2010);
     private static final Difficulty.ModifierToken MODIFIER_TOKEN = new Difficulty.ModifierToken();
     private static final Marker MARKER = MarkerFactory.getMarker("BloodMoon");
     private final Date date = new Date(31, 10, 0);
@@ -52,7 +53,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         world.getGameplayStorage().get(NAMESPACE).putBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
 
         world.getDifficultyModifiers().set(MODIFIER_TOKEN, new Difficulty.Modifier(Difficulty.ModifierAction.MULTIPLY, 8));
-        BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for " + this.deactivateTicks + " ticks (" + this.deactivateTicks / TPS + " secs)");
+        BubbleBlaster.LOGGER.info(MARKER, "Blood moon started for {} ticks ({} secs)", this.deactivateTicks, this.deactivateTicks / TPS);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
 
         world.updateNextBloodMoon();
         world.getDifficultyModifiers().remove(MODIFIER_TOKEN);
-        BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, " + this.deactivateTicks + " ticks (" + this.deactivateTicks / TPS + " secs) left.");
+        BubbleBlaster.LOGGER.info(MARKER, "Blood moon ended, {} ticks ({} secs) left.", this.deactivateTicks, this.deactivateTicks / TPS);
     }
 
     @Override
@@ -117,7 +118,7 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         var bounds = instance.getBounds();
         renderer.fillGradient(bounds, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM, Axis2D.VERTICAL);
         bounds.height *= 5f / 4f;
-        renderer.fillGradient(bounds, UPPER_COLOR, Color.TRANSPARENT, Axis2D.VERTICAL);
+        renderer.fillGradient(bounds, UPPER_COLOR, Colors.TRANSPARENT, Axis2D.VERTICAL);
     }
 
     public final boolean wouldActive(DateTime dateTime) {

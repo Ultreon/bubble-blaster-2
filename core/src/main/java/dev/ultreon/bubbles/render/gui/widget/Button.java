@@ -3,7 +3,7 @@ package dev.ultreon.bubbles.render.gui.widget;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
@@ -86,14 +86,14 @@ public class Button extends AbstractButton implements GuiStateListener {
     @Override
     @SuppressWarnings("DuplicatedCode")
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        if (this.isPressed()) this.backgroundColor = Color.WHITE.withAlpha(0x40);
-        else if (this.isHovered()) this.backgroundColor = Color.WHITE.withAlpha(0x30);
-        else this.backgroundColor = Color.WHITE.withAlpha(0x20);
+        if (this.isPressed()) this.backgroundColor = Colors.rgba(0xff, 0xff, 0xff, 0x40);
+        else if (this.isHovered()) this.backgroundColor = Colors.rgba(0xff, 0xff, 0xff, 0x30);
+        else this.backgroundColor = Colors.rgba(0xff, 0xff, 0xff, 0x20);
 
         if (this.enabled)
             renderer.fill(this.getBounds(), this.backgroundColor);
         else
-            renderer.fill(this.getBounds(), Color.WHITE.withAlpha(0x10));
+            renderer.fill(this.getBounds(), Colors.rgba(0xff, 0xff, 0xff, 0x10));
 
         if (this.isHovered() && this.enabled) {
             renderer.hovered();
@@ -104,6 +104,6 @@ public class Button extends AbstractButton implements GuiStateListener {
     }
 
     protected void drawText(Renderer renderer) {
-        AbstractButton.drawText(renderer, this.enabled ? Color.WHITE : Color.WHITE.withAlpha(0x60), this.getPos(), this.getSize(), this.getText(), this.getFont());
+        AbstractButton.drawText(renderer, this.enabled ? Colors.WHITE : Colors.rgba(0xff, 0xff, 0xff, 0x60), this.getPos(), this.getSize(), this.getText(), this.getFont());
     }
 }

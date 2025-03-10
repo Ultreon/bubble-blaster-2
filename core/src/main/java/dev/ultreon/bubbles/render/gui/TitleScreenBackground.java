@@ -6,7 +6,7 @@ import dev.ultreon.bubbles.init.BubbleTypes;
 import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.random.valuesource.ValueSource;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.WorldRenderer;
 
@@ -69,7 +69,7 @@ public class TitleScreenBackground {
                 WorldRenderer.drawBubble(renderer, fakeBubble.position.x, fakeBubble.position.y, fakeBubble.radius, 0, TYPE);
         });
 
-        renderer.fillGradient(0, 0, this.width, this.height, Color.BLACK.withAlpha(0x80), Color.BLACK.withAlpha(0x90));
+        renderer.fillGradient(0, 0, this.width, this.height, Colors.rgba(0x00, 0x00, 0x00, 0x80), Colors.rgba(0x00, 0x00, 0x00, 0x90));
     }
 
     public void dispose() {

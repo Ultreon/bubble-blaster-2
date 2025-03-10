@@ -571,7 +571,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         if (type == null) return null;
         var entityType = Registries.ENTITIES.getValue(type);
         if (entityType == null) {
-            BubbleBlaster.LOGGER.warn("Unknown entity loaded: " + type);
+            BubbleBlaster.LOGGER.warn("Unknown entity loaded: {}", type);
             return null;
         }
         return entityType.create(world, tags);

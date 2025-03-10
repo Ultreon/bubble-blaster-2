@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen.options;
 
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
@@ -59,12 +59,12 @@ public final class LanguageScreen extends Screen {
 
         var x = this.languageList.getX();
 
-        renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
+        renderer.fill(x, y, width, height, Colors.rgba(0xff, 0xff, 0xff, hovered ? 0x40 : 0x20));
 
         if (selected)
             renderer.drawEffectBox(x, y, width, height, new Insets(0, 0, 4, 0));
 
-        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH.get(), language + " (" + country + ")", x + width / 2, y + (height - 4) / 2, Color.WHITE.withAlpha(0xc0));
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH.get(), language + " (" + country + ")", x + width / 2, y + (height - 4) / 2, Colors.rgba(0xff, 0xff, 0xff, 0xc0));
     }
 
     private int calculateWidth() {

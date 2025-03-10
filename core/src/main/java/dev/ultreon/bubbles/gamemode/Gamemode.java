@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.gamemode;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,6 @@ import dev.ultreon.bubbles.entity.spawning.SpawnUsage;
 import dev.ultreon.bubbles.init.BubbleTypes;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
 import dev.ultreon.bubbles.render.gui.screen.Screen;

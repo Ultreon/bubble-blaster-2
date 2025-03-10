@@ -1,9 +1,10 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.libs.commons.v0.vector.Vec2i;

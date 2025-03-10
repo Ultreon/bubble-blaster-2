@@ -1,13 +1,14 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.ChatMessage;
 import dev.ultreon.bubbles.command.CommandConstructor;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 
 import java.time.Instant;
@@ -93,9 +94,9 @@ public class CommandScreen extends Screen {
     }
 
     private static void drawMessage(Renderer renderer, int y, ChatMessage message) {
-        renderer.fill(2, y, 1000, 20, Color.BLACK.withAlpha(0x80));
+        renderer.fill(2, y, 1000, 20, Colors.rgba(0x00, 0x00, 0x00, 0x80));
 
-        renderer.scissored(2, y, 1000, 20, () -> renderer.drawText(Fonts.SANS_PARAGRAPH.get(), message.text(), 4, y + 2, message.system() ? Color.YELLOW.brighter() : Color.WHITE));
+        renderer.scissored(2, y, 1000, 20, () -> renderer.drawText(Fonts.SANS_PARAGRAPH.get(), message.text(), 4, y + 2, message.system() ? Colors.brighter(Color.YELLOW) : Colors.WHITE));
     }
 
     @Override
@@ -245,13 +246,13 @@ public class CommandScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.setColor(Color.argb(0x40000000));
-        renderer.fill(0, 0, this.width, this.height, Color.BLACK.withAlpha(0x40));
-        renderer.fill(0, this.height - 32, BubbleBlaster.getInstance().getWidth(), 32, Color.BLACK.withAlpha(0x80));
+        renderer.setColor(Colors.argb(0x40000000));
+        renderer.fill(0, 0, this.width, this.height, Colors.rgba(0x00, 0x00, 0x00, 0x40));
+        renderer.fill(0, this.height - 32, BubbleBlaster.getInstance().getWidth(), 32, Colors.rgba(0x00, 0x00, 0x00, 0x80));
 
         CommandScreen.drawMessages(renderer, this.height - 36, true);
 
-        renderer.drawText(this.textFont, this.currentText, 4, this.height - 26, Color.WHITE);
+        renderer.drawText(this.textFont, this.currentText, 4, this.height - 26, Colors.WHITE);
 
         float cursorX;
         if (this.cursorIndex >= this.currentText.length()) {

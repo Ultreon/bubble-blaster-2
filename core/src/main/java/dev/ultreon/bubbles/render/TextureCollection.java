@@ -22,7 +22,7 @@ public class TextureCollection {
 
     public void set(Index index, ITexture texture) {
         if (this.textures.containsKey(index)) {
-            LOGGER.warn("Texture override: " + index);
+            LOGGER.warn("Texture override: {}", index);
         }
 
         if (BubbleBlaster.isOnRenderingThread()) {

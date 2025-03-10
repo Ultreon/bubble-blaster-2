@@ -15,7 +15,7 @@ import dev.ultreon.bubbles.event.v1.InputEvents;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.input.DesktopInput;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.commons.v0.size.FloatSize;
 import dev.ultreon.libs.registries.v0.RegistrySupplier;
@@ -140,19 +140,19 @@ public class DebugRenderer {
             threads.sort(Comparator.comparing(Thread::getName));
 
             var selInputText = TextObject.literal(this.selectInput);
-            selInputText.setColor(Color.rgb(0xff4040).toGdx());
+            selInputText.setColor(Colors.rgb(0xff4040));
             var typingText = TextObject.literal("Typing ");
-            typingText.setColor(Color.rgb(0xffa040).toGdx());
+            typingText.setColor(Colors.rgb(0xffa040));
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
 
             for (int i = 0, threadsSize = threads.size(); i < threadsSize; i++) {
                 var e = threads.get(i);
                 var literal = TextObject.literal(" [" + e.getName() + "]");
-                literal.setColor(Color.rgb(0xff4040).toGdx());
+                literal.setColor(Colors.rgb(0xff4040));
                 var thread = TextObject.literal("Thread");
                 var index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(Color.rgb(0x30ff30).toGdx());
+                index.setColor(Colors.rgb(0x30ff30));
                 this.right(renderer, index.append(thread), literal);
             }
         } else {
@@ -172,23 +172,23 @@ public class DebugRenderer {
             }
 
             var curMillisText = TextObject.literal(" (" + millis + "ms)");
-            curMillisText.setColor(Color.rgb(0xff4040).toGdx());
+            curMillisText.setColor(Colors.rgb(0xff4040));
             var curSectionText = TextObject.literal("Current Section: ");
-            curSectionText.setColor(Color.rgb(0xffa040).toGdx());
+            curSectionText.setColor(Colors.rgb(0xffa040));
             this.right(renderer, curSectionText, curMillisText);
             var selInputText = TextObject.literal(this.selectInput);
-            selInputText.setColor(Color.rgb(0xff4040).toGdx());
+            selInputText.setColor(Colors.rgb(0xff4040));
             var typingText = TextObject.literal("Typing ");
-            typingText.setColor(Color.rgb(0xffa040).toGdx());
+            typingText.setColor(Colors.rgb(0xffa040));
             this.right(renderer, typingText, selInputText);
 //            right(renderer, "-----------------");
             for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
                 var e = entries.get(i);
                 var millisText = TextObject.literal(" (" + e.getValue().getMillis() + "ms)");
-                millisText.setColor(Color.rgb(0xff4040).toGdx());
+                millisText.setColor(Colors.rgb(0xff4040));
                 var name = TextObject.literal(e.getKey());
                 var index = TextObject.literal("[" + (i + 1) + "] ");
-                index.setColor(Color.rgb(0x30ff30).toGdx());
+                index.setColor(Colors.rgb(0x30ff30));
                 this.right(renderer, index.append(name), millisText);
             }
         }
@@ -281,8 +281,8 @@ public class DebugRenderer {
             y += (int) this.game.getGameBounds().y;
         }
 
-        renderer.fill(10, y, width + 4, height + 4, Color.BLACK.withAlpha(0x99));
-        renderer.drawTextLeft(this.font.get(), text1, 12, y + 1, Color.WHITE);
+        renderer.fill(10, y, width + 4, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
+        renderer.drawTextLeft(this.font.get(), text1, 12, y + 1, Colors.WHITE);
     }
 
     public void right(Renderer renderer, String text, Object o) {
@@ -310,8 +310,8 @@ public class DebugRenderer {
             y += (int) this.game.getGameBounds().y;
         }
 
-        renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4, Color.BLACK.withAlpha(0x99));
-        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1, Color.WHITE);
+        renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
+        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1, Colors.WHITE);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
@@ -332,10 +332,10 @@ public class DebugRenderer {
 
         var i = 400;
 
-        renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4, Color.BLACK.withAlpha(0x99));
-        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1, Color.WHITE);
+        renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
+        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1, Colors.WHITE);
         if (!text1.getText().isEmpty()) {
-            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1, Color.WHITE);
+            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1, Colors.WHITE);
         }
     }
 }

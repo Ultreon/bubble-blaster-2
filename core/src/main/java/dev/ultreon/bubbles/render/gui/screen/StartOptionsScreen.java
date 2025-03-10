@@ -1,8 +1,9 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.libs.text.v1.TextObject;
@@ -11,7 +12,7 @@ import java.util.Random;
 
 @Deprecated(forRemoval = true)
 public class StartOptionsScreen extends Screen {
-    private static final Color TEXT_COLOR = Color.WHITE.withAlpha(0xd0);
+    private static final Color TEXT_COLOR = Colors.rgba(0xff, 0xff, 0xff, 0xd0);
     private final Screen back;
     private final int seed;
 

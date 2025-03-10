@@ -1,14 +1,15 @@
 package dev.ultreon.bubbles.render.gui.border;
 
+import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 
 public class Border {
     private final Insets borderInsets;
     private boolean borderOpaque;
-    protected Color color = Color.WHITE;
+    protected Color color = Colors.WHITE;
     protected RenderType renderType = RenderType.COLOR;
     protected float effectSpeed = BubbleBlasterConfig.DEFAULT_EFFECT_SPEED.get();
 

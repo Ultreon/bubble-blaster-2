@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.widget;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import org.jetbrains.annotations.NotNull;
@@ -39,9 +39,9 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
                 }
             }
         });
-        this.listContent.setBackgroundColor(Color.TRANSPARENT);
-        this.getViewport().setBackgroundColor(Color.TRANSPARENT);
-        this.setBackgroundColor(Color.BLACK.withAlpha(0x40));
+        this.listContent.setBackgroundColor(Colors.TRANSPARENT);
+        this.getViewport().setBackgroundColor(Colors.TRANSPARENT);
+        this.setBackgroundColor(Colors.rgba(0x00, 0x00, 0x00, 0x40));
 
         items.forEach(this::addItem);
     }
@@ -214,7 +214,6 @@ public class ObjectList<T> extends ScrollableView implements Iterable<T> {
             this.width = this.list.width - SCROLLBAR_WIDTH;
             this.height = this.list.entryHeight;
             renderer.scissored(this.getBounds(), bounds -> {
-                if (bounds.width <= 0 || bounds.height <= 0) return;
                 this.list.entryRenderer.render(renderer, this.width, this.height, this.y, this.value, this.list.selected == this && this.list.selectable, this.isHovered());
             });
         }

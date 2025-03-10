@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.CrashButton;
@@ -37,9 +37,9 @@ public class CrashScreen extends Screen {
 
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.box(0, 0, this.width, game.getScaledHeight(), Color.CRIMSON, new Insets(10));
+        renderer.box(0, 0, this.width, game.getScaledHeight(), Colors.CRIMSON, new Insets(10));
 
-        renderer.drawTextCenter(Fonts.DONGLE_PAUSE.get(), "The game crashed!", this.width / 2f, 25, Color.CRIMSON);
+        renderer.drawTextCenter(Fonts.DONGLE_PAUSE.get(), "The game crashed!", this.width / 2f, 25, Colors.CRIMSON);
 
         this.crashButton.setX((int) (game.getScaledWidth() / 2 - this.crashButton.getBounds().width / 2));
     }

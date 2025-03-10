@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.entity.bubble;
 
-import dev.ultreon.bubbles.render.Color;
-import dev.ultreon.bubbles.util.ColorUtils;
+import com.badlogic.gdx.graphics.Color;
+import dev.ultreon.bubbles.render.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class BubbleSpec {
         }
 
         public void add(String hex) {
-            this.circles.add(new BubbleCircle(this.index, ColorUtils.unpackHex(hex)));
+            this.circles.add(new BubbleCircle(this.index, dev.ultreon.bubbles.util.ColorUtils.unpackHex(hex)));
             this.index++;
         }
 

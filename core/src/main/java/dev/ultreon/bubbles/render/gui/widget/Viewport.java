@@ -1,7 +1,10 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.commons.v0.Mth;
 import dev.ultreon.libs.commons.v0.size.IntSize;
@@ -20,11 +23,16 @@ public class Viewport extends Container {
 
     @Override
     public void renderChildren(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.scissored(this.x, this.y, (int) this.viewportRect.width, (int) this.viewportRect.height, () -> {
+        if (ScissorStack.pushScissors(new Rectangle(
+                HdpiUtils.toBackBufferX(this.x), HdpiUtils.toBackBufferY(Gdx.graphics.getHeight() - this.y - this.height),
+                HdpiUtils.toBackBufferX(this.width), HdpiUtils.toBackBufferY(this.height)
+        ))) {
             for (var child : this.children) {
                 renderer.scissored(child.getX(), child.getY(), child.getWidth(), child.getHeight(), () -> child.render(renderer, mouseX, mouseY, deltaTime));
             }
-        });
+
+            ScissorStack.popScissors();
+        }
     }
 
     @Override

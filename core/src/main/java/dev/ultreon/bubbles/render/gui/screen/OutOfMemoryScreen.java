@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.libs.text.v1.TextObject;
@@ -34,8 +34,8 @@ public final class OutOfMemoryScreen extends Screen {
 
     @Override
     public void render(Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.drawTextCenter(Fonts.SANS_TITLE.get(), Language.translate("bubbleblaster.screen.outOfMemory.title"), this.width / 2f, this.height / 3f, Color.WHITE);
-        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line1"), this.width / 2f, this.height / 3f + 60, Color.WHITE);
-        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line2"), this.width / 2f, this.height / 3f + 80, Color.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_TITLE.get(), Language.translate("bubbleblaster.screen.outOfMemory.title"), this.width / 2f, this.height / 3f, Colors.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line1"), this.width / 2f, this.height / 3f + 60, Colors.WHITE);
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH_BOLD.get(), Language.translate("bubbleblaster.screen.outOfMemory.line2"), this.width / 2f, this.height / 3f + 80, Colors.WHITE);
     }
 }

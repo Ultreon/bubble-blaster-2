@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.commons.v0.Messenger;
 import dev.ultreon.libs.commons.v0.MessengerImpl;
@@ -50,10 +50,10 @@ public class MessengerScreen extends Screen {
      */
     @Override
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
-        renderer.fill(0, 0, this.width, this.height, Color.grayscale(0x40));
+        renderer.fill(0, 0, this.width, this.height, Colors.grayscale(0x40));
 
-        renderer.drawTextCenter(Fonts.SANS_TITLE.get(), "Loading World...", BubbleBlaster.getMiddleX(), this.height / 2f + 8, Color.rgb(0x00c0ff));
-        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH.get(), this.description, BubbleBlaster.getMiddleX(), this.height / 2f + 65f, Color.rgb(0x7f7f7f));
+        renderer.drawTextCenter(Fonts.SANS_TITLE.get(), "Loading World...", BubbleBlaster.getMiddleX(), this.height / 2f + 8, Colors.rgb(0x00c0ff));
+        renderer.drawTextCenter(Fonts.SANS_PARAGRAPH.get(), this.description, BubbleBlaster.getMiddleX(), this.height / 2f + 65f, Colors.rgb(0x7f7f7f));
     }
 
     public String getDescription() {

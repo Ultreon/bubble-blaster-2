@@ -184,7 +184,7 @@ public class DesktopPlatform extends GamePlatform {
             this.unknownResources = true;
             BubbleBlaster.whenLoaded(UUID.fromString("f8000df9-f94b-4106-bd26-c7ba48338a23"), () -> BubbleBlaster.getInstance().notifications.notify(this.notify));
         }
-        LOGGER.error("Unknown resource: " + message);
+        LOGGER.error("Unknown resource: {}", message);
     }
 
     @Override

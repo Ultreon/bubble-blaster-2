@@ -3,7 +3,7 @@ package dev.ultreon.bubbles.render.gui.screen;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.GamePlatform;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.TitleScreenBackground;
 import dev.ultreon.bubbles.render.gui.screen.options.LanguageScreen;
@@ -124,23 +124,23 @@ public class TitleScreen extends Screen {
     public void render(BubbleBlaster game, Renderer renderer, int mouseX, int mouseY, float deltaTime) {
         this.background.render(renderer);
 
-        renderer.fill(0, 0, this.width, 175, Color.grayscale(0x1e));
+        renderer.fill(0, 0, this.width, 175, Colors.grayscale(0x1e));
 
         renderer.fillEffect(0, 175, this.width, 3);
-        renderer.fillGradient(0, 178, this.width, 20, Color.argb(0x20000000), Color.TRANSPARENT);
+        renderer.fillGradient(0, 178, this.width, 20, Colors.argb(0x20000000), Colors.TRANSPARENT);
 
-        renderer.drawTextCenter(Fonts.DONGLE_TITLE.get(), "Bubble Blaster", this.width / 2f, 87.5f, Color.WHITE);
+        renderer.drawTextCenter(Fonts.DONGLE_TITLE.get(), "Bubble Blaster", this.width / 2f, 87.5f, Colors.WHITE);
 
-        renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion(), 40, 40, Color.WHITE);
-        renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion(), 40, 52, Color.WHITE);
+        renderer.drawText(this.monospaced, "Game Version: " + BubbleBlaster.getGameVersion(), 40, 40, Colors.WHITE);
+        renderer.drawText(this.monospaced, "LibGDX Version: " + BubbleBlaster.getLibGDXVersion(), 40, 52, Colors.WHITE);
 
         if (GamePlatform.get().allowsMods()) {
-            renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion(), 40, 64, Color.WHITE);
-            renderer.drawText(this.monospaced, "Mods Loaded: " + GamePlatform.get().getModsCount(), 40, 76, Color.WHITE);
+            renderer.drawText(this.monospaced, "Loader Version: " + BubbleBlaster.getFabricLoaderVersion(), 40, 64, Colors.WHITE);
+            renderer.drawText(this.monospaced, "Mods Loaded: " + GamePlatform.get().getModsCount(), 40, 76, Colors.WHITE);
         }
 
-        renderer.drawTextRight(Fonts.SANS_HEADER_1.get(), "High Score", this.width - 40, 40, Color.WHITE);
-        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Color.WHITE);
+        renderer.drawTextRight(Fonts.SANS_HEADER_1.get(), "High Score", this.width - 40, 40, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Colors.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }

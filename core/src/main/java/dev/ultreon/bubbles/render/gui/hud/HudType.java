@@ -1,12 +1,13 @@
 package dev.ultreon.bubbles.render.gui.hud;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.common.Controllable;
 import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.CommandScreen;
 import dev.ultreon.bubbles.world.World;

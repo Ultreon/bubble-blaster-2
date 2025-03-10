@@ -2,6 +2,7 @@ package dev.ultreon.bubbles.render.gui;
 
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
@@ -10,7 +11,7 @@ import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.init.SoundEvents;
 import dev.ultreon.bubbles.input.DesktopInput;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.util.Functions;
 import dev.ultreon.libs.commons.v0.vector.Vec2i;
@@ -36,7 +37,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     protected volatile int width;
     protected volatile int height;
 
-    protected Color backgroundColor = Color.WHITE.withAlpha(0x20);
+    protected Color backgroundColor = new Color(1f, 1f, 1f, 0.1254902f);
 
     public boolean enabled = true;
     public boolean visible = true;
@@ -306,27 +307,27 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
     }
 
     public void setBackgroundColor(int color) {
-        this.backgroundColor = Color.argb(color);
+        this.backgroundColor = Colors.argb(color);
     }
 
     public void setBackgroundColor(int red, int green, int blue) {
-        this.backgroundColor = Color.rgb(red, green, blue);
+        this.backgroundColor = Colors.rgb(red, green, blue);
     }
 
     public void setBackgroundColor(int red, int green, int blue, int alpha) {
-        this.backgroundColor = Color.rgba(red, green, blue, alpha);
+        this.backgroundColor = Colors.rgba(red, green, blue, alpha);
     }
 
     public void setBackgroundColor(float red, float green, float blue) {
-        this.backgroundColor = Color.rgb(red, green, blue);
+        this.backgroundColor = Colors.rgb(red, green, blue);
     }
 
     public void setBackgroundColor(float red, float green, float blue, float alpha) {
-        this.backgroundColor = Color.rgba(red, green, blue, alpha);
+        this.backgroundColor = Colors.rgba(red, green, blue, alpha);
     }
 
     public void setBackgroundColor(String hex) {
-        this.backgroundColor = Color.hex(hex);
+        this.backgroundColor = Colors.hex(hex);
     }
 
     /**
@@ -401,7 +402,7 @@ public abstract class GuiComponent implements GuiStateListener, RenderableListen
 
     @Deprecated(forRemoval = true)
     public static void fill(Renderer renderer, int x, int y, int width, int height, int color) {
-        renderer.fill(x, y, width, height, Color.argb(color));
+        renderer.fill(x, y, width, height, Colors.argb(color));
     }
 
     @Deprecated(forRemoval = true)

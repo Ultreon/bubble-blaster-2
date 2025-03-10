@@ -60,16 +60,12 @@ public class DesktopLauncher {
 
         var config = new Lwjgl3ApplicationConfiguration();
         config.useVsync(false);
-        config.setBackBufferConfig(4, 4, 4, 4, 8, 4, 0);
         config.setHdpiMode(HdpiMode.Logical);
-        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 4, 1);
+        config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8);
         config.setInitialVisible(false);
-        config.setTitle("Quantum Voxel");
+        config.setTitle("Bubble Blaster");
         config.setWindowIcon(icons.toArray(String[]::new));
         config.setWindowedMode(1280, 720);
-
-        org.lwjgl.glfw.GLFW.glfwWindowHint(org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT, org.lwjgl.glfw.GLFW.GLFW_TRUE);
-        org.lwjgl.glfw.GLFW.glfwWindowHint(org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE, org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE);
 
         return config;
     }

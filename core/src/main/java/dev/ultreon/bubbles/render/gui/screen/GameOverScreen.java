@@ -1,10 +1,11 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.data.GlobalSaveData;
 import dev.ultreon.bubbles.init.Fonts;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.bubbles.util.helpers.MathHelper;
@@ -14,8 +15,8 @@ import java.io.IOException;
 import java.time.Instant;
 
 public class GameOverScreen extends Screen {
-    private static final Color GAME_OVER_COLOR_NORMAL = Color.argb(0x7fff3243);
-    private static final Color GAME_OVER_COLOR_FLASH = Color.argb(0x7fff8432);
+    private static final Color GAME_OVER_COLOR_NORMAL = Colors.argb(0x7fff3243);
+    private static final Color GAME_OVER_COLOR_FLASH = Colors.argb(0x7fff8432);
     public static final TextObject TITLE = TextObject.translation("bubbleblaster.screen.gameOver");
     private static final TextObject HIGH_SCORE = TextObject.translation("bubbleblaster.screen.gameOver.highScore");
     private final boolean isHighScore;
@@ -90,9 +91,9 @@ public class GameOverScreen extends Screen {
         renderer.drawTextCenter(this.gameOverTitleFont, this.title, this.width / 2f, 152, MathHelper.mixColors(GAME_OVER_COLOR_NORMAL, GAME_OVER_COLOR_FLASH, (double) cycled % 1000 / 1000.0));
 
         if (this.isHighScore)
-            renderer.drawTextCenter(this.gameOverDescriptionFont, HIGH_SCORE, this.width / 2f, 216, Color.WHITE);
+            renderer.drawTextCenter(this.gameOverDescriptionFont, HIGH_SCORE, this.width / 2f, 216, Colors.WHITE);
 
-        renderer.drawTextCenter(Fonts.SANS_BIG.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextCenter(Fonts.SANS_BIG.get(), Long.toString(this.score), this.game.getScaledWidth() / 2f, 280, Colors.rgba(0xff, 0xff, 0xff, 0x80));
     }
 
     @Override

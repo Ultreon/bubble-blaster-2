@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.render.gui.widget;
 
-import dev.ultreon.bubbles.render.Color;
+import com.badlogic.gdx.graphics.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.libs.text.v1.TextObject;
@@ -20,8 +21,8 @@ public class Label extends GuiComponent {
         super(x, y, width, height);
         this.text = text;
 
-        this.backgroundColor = Color.TRANSPARENT;
-        this.foregroundColor = Color.WHITE;
+        this.backgroundColor = Colors.TRANSPARENT;
+        this.foregroundColor = Colors.WHITE;
     }
 
     @Override

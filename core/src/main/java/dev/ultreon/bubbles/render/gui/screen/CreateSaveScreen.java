@@ -4,7 +4,7 @@ import dev.ultreon.bubbles.common.Difficulty;
 import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.Button;
@@ -59,8 +59,8 @@ public class CreateSaveScreen extends Screen {
     private void renderEntry(Renderer renderer, float width, float height, float y, Gamemode gamemode, boolean selected, boolean hovered) {
         var x = this.gamemodeList.getX();
 
-        renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
-        renderer.drawTextLeft(this.font, gamemode.getName(), x + 10, y + height / 2f - 4, Color.WHITE.withAlpha(0xc0));
+        renderer.fill(x, y, width, height, Colors.rgba(0xff, 0xff, 0xff, hovered ? 0x40 : 0x20));
+        renderer.drawTextLeft(this.font, gamemode.getName(), x + 10, y + height / 2f - 4, Colors.rgba(0xff, 0xff, 0xff, 0xc0));
 
         if (selected)
             renderer.drawEffectBox(x, y, width, height, new Insets(1, 1, 4, 1));
@@ -71,8 +71,8 @@ public class CreateSaveScreen extends Screen {
     private void renderEntry(Renderer renderer, float width, float height, float y, Difficulty difficulty, boolean selected, boolean hovered) {
         var x = this.difficultyList.getX();
 
-        renderer.fill(x, y, width, height, Color.WHITE.withAlpha(hovered ? 0x40 : 0x20));
-        renderer.drawTextLeft(this.font, difficulty.getTranslation(), x + 10, y + height / 2f - 4, Color.WHITE.withAlpha(0xc0));
+        renderer.fill(x, y, width, height, Colors.rgba(0xff, 0xff, 0xff, hovered ? 0x40 : 0x20));
+        renderer.drawTextLeft(this.font, difficulty.getTranslation(), x + 10, y + height / 2f - 4, Colors.rgba(0xff, 0xff, 0xff, 0xc0));
 
         if (selected)
             renderer.drawEffectBox(x, y, width, height, new Insets(1, 1, 4, 1));
@@ -99,10 +99,10 @@ public class CreateSaveScreen extends Screen {
     public void renderBackground(Renderer renderer) {
         super.renderBackground(renderer);
 
-        renderer.drawTextCenter(Fonts.SANS_HEADER_1.get(), TextObject.translation("bubbleblaster.screen.saves.create.title"), this.width / 2f, 60, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.seed"), this.width / 2f - 160, this.seedEntry.getY() + 24, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.gamemode"), this.width / 2f - 160, this.gamemodeList.getY() + 24, Color.WHITE.withAlpha(0x80));
-        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.difficulty"), this.width / 2f - 160, this.difficultyList.getY() + 24, Color.WHITE.withAlpha(0x80));
+        renderer.drawTextCenter(Fonts.SANS_HEADER_1.get(), TextObject.translation("bubbleblaster.screen.saves.create.title"), this.width / 2f, 60, Colors.rgba(0xff, 0xff, 0xff, 0x80));
+        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.seed"), this.width / 2f - 160, this.seedEntry.getY() + 24, Colors.rgba(0xff, 0xff, 0xff, 0x80));
+        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.gamemode"), this.width / 2f - 160, this.gamemodeList.getY() + 24, Colors.rgba(0xff, 0xff, 0xff, 0x80));
+        renderer.drawTextRight(Fonts.SANS_HEADER_2.get(), TextObject.translation("bubbleblaster.screen.saves.create.difficulty"), this.width / 2f - 160, this.difficultyList.getY() + 24, Colors.rgba(0xff, 0xff, 0xff, 0x80));
     }
 
     public TextEntry getSeedEntry() {

@@ -61,7 +61,7 @@ extensions.getByType(GameUtilsExt).with {
     projectName = "Bubble Blaster"
 
     projectVersion = "$project_version"
-    projectGroup = "io.github.ultreon.bubbles"
+    projectGroup = "dev.ultreon.bubbles"
     projectId = "bubble-blaster"
     production = true
 

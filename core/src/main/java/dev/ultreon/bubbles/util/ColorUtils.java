@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.util;
 
-import dev.ultreon.bubbles.render.Color;
+import com.badlogic.gdx.graphics.Color;
+import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.util.exceptions.InvalidValueException;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public final class ColorUtils {
         var colors = new ArrayList<Color>();
 
         for (var colorStr : colorStrings) {
-            colors.add(Color.hex(colorStr));
+            colors.add(Colors.hex(colorStr));
         }
 
         return colors.toArray(new Color[]{});
@@ -30,7 +31,7 @@ public final class ColorUtils {
             strings[i] = s.startsWith("#") ? s : "#" + s;
         }
 
-        return ColorUtils.extractMultiHex(strings);
+        return dev.ultreon.bubbles.util.ColorUtils.extractMultiHex(strings);
     }
 
     /**************************************************************************
@@ -38,28 +39,28 @@ public final class ColorUtils {
      *
      * @param hex e.g. "#FFFFFF" or with alpha "#FFFFFF00"
      * @return a new dev.ultreon.bubbles.render.Color instance based on the color hex code
-     * @see dev.ultreon.bubbles.render.Color
+     * @see Colors
      */
     public static Color unpackHex(String hex) {
         if (Pattern.matches("#[0-9a-fA-F]{6}", hex)) {
             int rgb = Integer.valueOf(hex.substring(1), 16);
-            return Color.rgb(rgb);
+            return Colors.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{8}", hex)) {
             int rgb = Integer.valueOf(hex.substring(1), 16);
-            return Color.rgb(rgb);
+            return Colors.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{3}", hex)) {
             int rgb = Integer.valueOf(new String(new char[]{
                     hex.charAt(1), hex.charAt(1),
                     hex.charAt(2), hex.charAt(2),
                     hex.charAt(3), hex.charAt(3)}), 16);
-            return Color.rgb(rgb);
+            return Colors.rgb(rgb);
         } else if (Pattern.matches("#[0-9a-fA-F]{4}", hex)) {
             int rgb = Integer.valueOf(new String(new char[]{
                     hex.charAt(1), hex.charAt(1),
                     hex.charAt(2), hex.charAt(2),
                     hex.charAt(3), hex.charAt(3),
                     hex.charAt(4), hex.charAt(4)}), 16);
-            return Color.rgb(rgb);
+            return Colors.rgb(rgb);
         } else {
             if (!hex.isEmpty()) {
                 if (hex.charAt(0) != '#') {
@@ -80,7 +81,7 @@ public final class ColorUtils {
         var colors = new ArrayList<Color>();
 
         for (var colorStr : colorStrings) {
-            colors.add(ColorUtils.unpackHex(colorStr));
+            colors.add(dev.ultreon.bubbles.util.ColorUtils.unpackHex(colorStr));
         }
 
         return colors.toArray(new Color[0]);
@@ -97,7 +98,7 @@ public final class ColorUtils {
      */
     @Deprecated
     public static Color[] parseColorString(String colorString) {
-        return ColorUtils.parseColorString(colorString, false);
+        return dev.ultreon.bubbles.util.ColorUtils.parseColorString(colorString, false);
     }
 
     /**
@@ -116,6 +117,6 @@ public final class ColorUtils {
             }
         }
 
-        return ColorUtils.multiConvertHexToRgb(strings);
+        return dev.ultreon.bubbles.util.ColorUtils.multiConvertHexToRgb(strings);
     }
 }
