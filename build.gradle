@@ -200,12 +200,43 @@ allprojects {
             dirs "${rootProject.projectDir}/libs"
         }
 
+        maven { url "https://maven.ultreon.dev/releases" }
+        maven { url "https://maven.ultreon.dev/snapshots" }
+
         maven {
             name = "BubbleBlasterMaven"
             url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "UltreonMavenReleases"
+                url = "https://maven.ultreon.dev/releases"
+                credentials(PasswordCredentials) {
+                    username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
+                    password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+
+            maven {
+                name = "UltreonMavenSnapshots"
+                url = "https://maven.ultreon.dev/snapshots"
+                credentials(PasswordCredentials) {
+                    username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
+                    password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
             }
         }
     }
