@@ -1,16 +1,17 @@
 package dev.ultreon.bubbles;
 
-import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.render.Renderer;
+import dev.ultreon.bubbles.vector.Vector2D;
 
 public abstract class GameObject {
-    protected final Vector2 pos = new Vector2();
+    public final Vector2D pos = new Vector2D();
 
     /**
      * Get the current x position of the entity.
+     *
      * @return the x position.
      */
-    public float getX() {
+    public double getX() {
         return this.pos.x;
     }
 
@@ -24,9 +25,10 @@ public abstract class GameObject {
 
     /**
      * Get the current y position of the entity.
+     *
      * @return the y position.
      */
-    public float getY() {
+    public double getY() {
         return this.pos.y;
     }
 
@@ -38,7 +40,7 @@ public abstract class GameObject {
         this.pos.y = y;
     }
 
-    public Vector2 getPos() {
+    public Vector2D getPos() {
         return this.pos;
     }
 

@@ -3,7 +3,6 @@ package dev.ultreon.bubbles.gamemode;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.bubble.BubbleType;
 import dev.ultreon.bubbles.common.Controllable;
@@ -20,6 +19,7 @@ import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.save.GameSave;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.annotation.MethodsReturnNonnullByDefault;
 import dev.ultreon.libs.commons.v0.Identifier;
@@ -157,15 +157,15 @@ public abstract class Gamemode implements Controllable {
     /**
      * Used for modifying the spawn location of an entity.
      *
-     * @param entity    the entity to get the spawn location for.
-     * @param pos       the position passed to the entity.
-     * @param usage     the spawn usage.
-     * @param random    the source of random to maybe determine the location.
-     * @param retry     the amount of retries it took to spawn the entity.
+     * @param entity the entity to get the spawn location for.
+     * @param pos    the position passed to the entity.
+     * @param usage  the spawn usage.
+     * @param random the source of random to maybe determine the location.
+     * @param retry  the amount of retries it took to spawn the entity.
      * @return the spawn location for that entity, or null to use the entity location given to the entity using {@link SpawnInformation}.
      * @see World#spawn(Entity, SpawnInformation)
      */
-    public @Nullable Vector2 getSpawnPos(@NotNull Entity entity, @Nullable Vector2 pos, @NotNull SpawnUsage usage, @NotNull RandomSource random, @IntRange(from = 0) int retry) {
+    public @Nullable Vector2D getSpawnPos(@NotNull Entity entity, @Nullable Vector2D pos, @NotNull SpawnUsage usage, @NotNull RandomSource random, @IntRange(from = 0) int retry) {
         return null;
     }
 
@@ -285,5 +285,9 @@ public abstract class Gamemode implements Controllable {
 
     public boolean canBePaused() {
         return true;
+    }
+
+    public void teleport(Entity entity, Vector2D old, Vector2D dest) {
+        entity.pos.set(dest);
     }
 }

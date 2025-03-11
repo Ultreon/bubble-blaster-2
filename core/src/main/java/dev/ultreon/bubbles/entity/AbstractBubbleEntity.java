@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.entity;
 
-import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.entity.types.EntityType;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.ubo.types.MapType;
 
@@ -18,7 +18,7 @@ public abstract class AbstractBubbleEntity extends LivingEntity {
     }
 
     @Override
-    public void onSpawn(Vector2 pos, World world) {
+    public void onSpawn(Vector2D pos, World world) {
         this.health = this.getMaxHealth();
     }
 

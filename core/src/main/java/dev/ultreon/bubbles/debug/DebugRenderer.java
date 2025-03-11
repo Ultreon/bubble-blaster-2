@@ -128,7 +128,7 @@ public class DebugRenderer {
                 this.left(renderer, "Temp Velocity", player.tempVel);
                 this.left(renderer, "BoostAccelTimer", player.boostAccelTimer);
                 this.left(renderer, "BoostRefillTimer", player.boostRefillTimer);
-                this.left(renderer, "DstToMouseCursor", player.distanceTo(DesktopInput.getMousePos()));
+                this.left(renderer, "DstToMouseCursor", player.visualDistanceToMouseCursor());
             }
         }
         var screen = this.game.getCurrentScreen();

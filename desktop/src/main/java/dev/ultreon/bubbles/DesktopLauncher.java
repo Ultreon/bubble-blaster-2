@@ -30,10 +30,6 @@ public class DesktopLauncher {
         arguments.parse(argv);
         var platform = new DesktopPlatform(arguments);
 
-        if (SharedLibraryLoader.os == Os.MacOsX) {
-            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
-        }
-
         GameLibGDXWrapper game;
         try {
             game = new GameLibGDXWrapper(platform);

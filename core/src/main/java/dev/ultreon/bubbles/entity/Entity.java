@@ -1,5 +1,6 @@
 package dev.ultreon.bubbles.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
@@ -17,12 +18,14 @@ import dev.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
 import dev.ultreon.bubbles.entity.types.EntityType;
 import dev.ultreon.bubbles.event.v1.EffectEvents;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.init.BubbleTypes;
 import dev.ultreon.bubbles.init.Entities;
 import dev.ultreon.bubbles.random.JavaRandom;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.util.CollisionUtil;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.ubo.types.ListType;
 import dev.ultreon.ubo.types.MapType;
@@ -71,7 +74,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     // Flags
     public boolean canMove = true;
 
-    protected final Vector2 prevPos = new Vector2();
+    protected final Vector2D prevPos = new Vector2D();
     public final Vector2 velocity = new Vector2();
     public final Vector2 accel = new Vector2();
 
@@ -111,6 +114,22 @@ public abstract class Entity extends GameObject implements StateHolder {
     @ApiStatus.Internal
     public void setId(long id) {
         this.id = id;
+    }
+
+    public float getVisualX() {
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            return (float) (this.pos.x - rel.x + Gdx.graphics.getWidth() / 2f);
+        }
+        return (float) this.pos.x;
+    }
+
+    public float getVisualY() {
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            return (float) (this.pos.y - rel.y + Gdx.graphics.getHeight() / 2f);
+        }
+        return (float) this.pos.y;
     }
 
     /**
@@ -158,10 +177,12 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param information the spawn information
      */
     public void preSpawn(SpawnInformation information) {
-        @Nullable Vector2 spawnPos = this.pos;
+        var spawnPos = this.pos;
         if (information.getReason() instanceof NaturalSpawnReason) {
             var reason = (NaturalSpawnReason) information.getReason();
-            spawnPos.set(information.getWorld().getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry()));
+            var spawnPos1 = information.getWorld().getGamemode().getSpawnPos(this, information.getPos(), reason.getUsage(), information.getRandom(), reason.getRetry());
+            if (spawnPos1 != null)
+                spawnPos.set(spawnPos1);
         }
 
         if (information.getPos() != null)
@@ -177,18 +198,18 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param pos         the position to spawn at.
      * @param world te world to spawn in.
      */
-    public void onSpawn(Vector2 pos, World world) {
+    public void onSpawn(Vector2D pos, World world) {
         this.spawned = true;
     }
 
     /**
      * Handle when the entity was teleported.
-     * To cancel teleport see {@link #onTeleporting(Vector2, Vector2)}
+     * To cancel teleport see {@link #onTeleporting(Vector2D, Vector2D)}
      *
      * @param from teleport origin.
      * @param to teleport destination.
      */
-    public void onTeleported(Vector2 from, Vector2 to) {
+    public void onTeleported(Vector2D from, Vector2D to) {
 
     }
 
@@ -199,7 +220,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param to teleport destination.
      * @return true to cancel, false to pass.
      */
-    public boolean onTeleporting(Vector2 from, Vector2 to) {
+    public boolean onTeleporting(Vector2D from, Vector2D to) {
         return false;
     }
 
@@ -352,8 +373,8 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         if (this.canMove)
             this.pos.add(
-                    this.accel.x + this.velocity.x / TPS,
-                    this.accel.y + this.velocity.y / TPS
+                    (double) this.accel.x + this.velocity.x / TPS,
+                    (double) this.accel.y + this.velocity.y / TPS
             );
 
         if (this.hasAi()) {
@@ -447,13 +468,13 @@ public abstract class Entity extends GameObject implements StateHolder {
     //     Teleport and Position     //
     ///////////////////////////////////
     public final void teleport(float x, float y) {
-        this.teleport(new Vector2(x, y));
+        this.teleport(new Vector2D(x, y));
     }
 
-    public final void teleport(Vector2 dest) {
+    public final void teleport(Vector2D dest) {
         var old = this.pos.cpy();
         if (this.onTeleporting(old, dest)) return;
-        this.pos.set(dest);
+        this.world.getGamemode().teleport(this, old, dest);
         this.onTeleported(old, dest.cpy());
     }
 
@@ -464,7 +485,7 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.pos.add(deltaX, deltaY);
     }
 
-    public void move(Vector2 delta) {
+    public void move(Vector2D delta) {
         this.pos.add(delta);
     }
 
@@ -588,20 +609,20 @@ public abstract class Entity extends GameObject implements StateHolder {
         this.attributes.loadModifiers(data.getList("AttributeModifiers"));
 
         var positionTag = data.getMap("Position");
-        this.pos.x = positionTag.getFloat("x");
-        this.pos.y = positionTag.getFloat("y");
+        this.pos.x = positionTag.getDouble("x");
+        this.pos.y = positionTag.getDouble("y");
 
         var acceleration = data.getMap("Acceleration");
-        this.accel.x = acceleration.getFloat("x");
-        this.accel.y = acceleration.getFloat("y");
+        this.accel.x = (float) acceleration.getDouble("x");
+        this.accel.y = (float) acceleration.getDouble("y");
 
         var previousTag = data.getMap("PrevPosition");
-        this.prevPos.x = previousTag.getFloat("x");
-        this.prevPos.y = previousTag.getFloat("y");
+        this.prevPos.x = previousTag.getDouble("x");
+        this.prevPos.y = previousTag.getDouble("y");
 
         var velocityTag = data.getMap("Velocity");
-        this.velocity.x = velocityTag.getFloat("x");
-        this.velocity.y = velocityTag.getFloat("y");
+        this.velocity.x = (float) velocityTag.getDouble("x");
+        this.velocity.y = (float) velocityTag.getDouble("y");
 
         ListType<MapType> activeEffectsData = data.getList("ActiveEffects");
         this.clearEffects();
@@ -630,8 +651,8 @@ public abstract class Entity extends GameObject implements StateHolder {
 
         // Save position.
         var positionTag = new MapType();
-        positionTag.putFloat("x", this.pos.x);
-        positionTag.putFloat("y", this.pos.y);
+        positionTag.putDouble("x", this.pos.x);
+        positionTag.putDouble("y", this.pos.y);
         data.put("Position", positionTag);
 
         var previousTag = new MapType();
@@ -911,7 +932,7 @@ public abstract class Entity extends GameObject implements StateHolder {
      */
     public abstract float radius();
 
-    public float getDistanceToTarget() {
+    public double getDistanceToTarget() {
         return this.pos.dst(this.target.pos);
     }
 
@@ -933,8 +954,16 @@ public abstract class Entity extends GameObject implements StateHolder {
      * @param pos the position.
      * @return the distance between this entity and the given position.
      */
-    public double distanceTo(Vector2 pos) {
+    public double distanceTo(Vector2D pos) {
         return this.pos.dst(pos);
+    }
+
+    public double distanceTo(Vector2 pos) {
+        return this.pos.dst(pos.x, pos.y);
+    }
+
+    public double distanceTo(double x, double y) {
+        return this.pos.dst(x, y);
     }
 
     /**

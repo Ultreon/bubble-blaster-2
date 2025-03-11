@@ -10,10 +10,10 @@ import dev.ultreon.bubbles.entity.spawning.SpawnUsage;
 import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.render.gui.hud.ModernHud;
 import dev.ultreon.bubbles.save.GameSave;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.annotation.MethodsReturnNonnullByDefault;
 import dev.ultreon.libs.commons.v0.Messenger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -63,7 +63,7 @@ public class NormalMode extends Gamemode {
     }
 
     @Override
-    public @NotNull Vector2 getSpawnPos(Entity entity, @Nullable Vector2 pos, SpawnUsage usage, RandomSource random, int retry) {
+    public @Nullable Vector2D getSpawnPos(Entity entity, @Nullable Vector2D pos, SpawnUsage usage, RandomSource random, int retry) {
         if (pos != null) return pos;
 
         var spawnRng = random.nextRandom(usage);
@@ -74,12 +74,12 @@ public class NormalMode extends Gamemode {
             var radius = bubble.getRadius();
             var x = usage == SpawnUsage.BUBBLE_INIT_SPAWN ? spawnRng.nextFloat(bounds.x, bounds.x + bounds.width) : bounds.x + bounds.width + radius;
             var y = spawnRng.nextFloat(bounds.y - radius, bounds.y + bounds.height + radius);
-            return new Vector2(x, y);
+            return new Vector2D(x, y);
         }
 
         var x = spawnRng.nextFloat(bounds.x, bounds.x + bounds.width);
         var y = spawnRng.nextFloat(bounds.y, bounds.y + bounds.height);
-        return new Vector2(x, y);
+        return new Vector2D(x, y);
     }
 
     public Thread getSpawner() {

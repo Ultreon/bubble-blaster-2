@@ -11,6 +11,7 @@ import dev.ultreon.bubbles.entity.player.ability.Ability;
 import dev.ultreon.bubbles.entity.player.ability.AbilityTrigger;
 import dev.ultreon.bubbles.entity.player.ability.AbilityTriggerType;
 import dev.ultreon.bubbles.init.Abilities;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.libs.commons.v0.Mth;
 
 import java.util.Objects;
@@ -70,7 +71,7 @@ public class TeleportAbility extends Ability<TeleportAbility> {
             var tempVelX = MathUtils.cos(angelRadians) * deltaMotion;
             var tempVelY = MathUtils.sin(angelRadians) * deltaMotion;
 
-            var pos = new Vector2(player.getX() + tempVelX, player.getY() + tempVelY);
+            var pos = new Vector2D(player.getX() + tempVelX, player.getY() + tempVelY);
 
             // Teleport to that position.
             player.teleport(pos);

@@ -5,6 +5,7 @@ import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.gamemode.ImpossibleMode;
 import dev.ultreon.bubbles.gamemode.NormalMode;
 import dev.ultreon.bubbles.gamemode.TimedMode;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.libs.registries.v0.DelayedRegister;
 import dev.ultreon.libs.registries.v0.RegistrySupplier;
@@ -22,6 +23,7 @@ public class Gamemodes {
     public static final RegistrySupplier<NormalMode> NORMAL = Gamemodes.register("normal", NormalMode::new);
     public static final RegistrySupplier<ImpossibleMode> IMPOSSIBLE = Gamemodes.register("impossible", ImpossibleMode::new);
     public static final RegistrySupplier<TimedMode> TIMED = Gamemodes.register("timed", TimedMode::new);
+    public static final RegistrySupplier<OpenWorldMode> OPEN_WORLD = Gamemodes.register("open_world", OpenWorldMode::new);
 
     @SuppressWarnings("SameParameterValue")
     private static <T extends Gamemode> RegistrySupplier<T> register(String name, Supplier<T> gamemode) {

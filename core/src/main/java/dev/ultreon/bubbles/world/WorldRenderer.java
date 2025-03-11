@@ -2,7 +2,6 @@ package dev.ultreon.bubbles.world;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Circle;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
@@ -23,7 +22,6 @@ import java.util.List;
 public class WorldRenderer implements Renderable {
     public static final Color BG_TOP = Colors.argb(0xff008EDA);
     public static final Color BG_BOTTOM = Colors.argb(0xff004BA1);
-    private static FrameBuffer worldFbo;
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final Profiler profiler = this.game.profiler;
 
@@ -159,10 +157,6 @@ public class WorldRenderer implements Renderable {
         return new Circle(x, y, r - i * 2f);
     }
 
-    public static FrameBuffer getWorldFbo() {
-        return worldFbo;
-    }
-
     @Nullable
     public World getWorld() {
         if (BubbleBlaster.getInstance() == null) return null;
@@ -211,6 +205,7 @@ public class WorldRenderer implements Renderable {
 
     private void renderEntities(Renderer renderer, World world) {
         for (var entity : world.getEntities()) {
+            if (entity == null) continue;
             if (entity.isVisible()) {
                 if (entity instanceof Player) {
                     var player = (Player) entity;

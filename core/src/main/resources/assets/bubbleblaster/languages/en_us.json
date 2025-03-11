@@ -27,7 +27,8 @@
   "bubbleblaster.misc.difficulty.super_natural": "Super Natural",
   "bubbleblaster.misc.difficulty.legend": "Legend",
   "bubbleblaster.misc.difficulty.gg": "Failing Speedrun any%%",
-  "bubbleblaster.misc.difficulty.what_the_frick": "Emotional Damage Mode",
+  "bubbleblaster.misc.difficulty.emotional_damage": "Emotional Damage Mode",
+  "bubbleblaster.misc.difficulty.beyond_godlike": "Beyond Godlike",
   "bubbleblaster.misc.difficultyEffect.bubbleSpeed": "Bubble Speed",
   "bubbleblaster.misc.difficultyEffect.local": "Local Difficulty",
   "bubbleblaster.misc.difficultyEffect.both": "Both Speed & Local",
@@ -36,6 +37,7 @@
   "bubbleblaster.gamemode.normal": "Normal",
   "bubbleblaster.gamemode.impossible": "Impossible",
   "bubbleblaster.gamemode.timed": "Timed Mode",
+  "bubbleblaster.gamemode.open_world": "Open World [BETA]",
 
   "bubbleblaster.hud.legacy": "Legacy HUD",
   "bubbleblaster.hud.beta": "Beta HUD",

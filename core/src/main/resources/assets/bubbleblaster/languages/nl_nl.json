@@ -27,7 +27,8 @@
   "bubbleblaster.misc.difficulty.super_natural": "Onnatuurlijk",
   "bubbleblaster.misc.difficulty.legend": "Legend",
   "bubbleblaster.misc.difficulty.gg": "Speedrun falen any%%",
-  "bubbleblaster.misc.difficulty.what_the_frick": "WAT DE ****",
+  "bubbleblaster.misc.difficulty.emotional_damage": "Emotional damage modus",
+  "bubbleblaster.misc.difficulty.beyond_godlike": "Meer dan godelijk",
   "bubbleblaster.misc.difficultyEffect.bubbleSpeed": "Bubbel snelheid",
   "bubbleblaster.misc.difficultyEffect.local": "Locale moeilijkheid",
   "bubbleblaster.misc.difficultyEffect.both": "Snelheid en lokaal",
@@ -36,6 +37,7 @@
   "bubbleblaster.gamemode.normal": "Normaal",
   "bubbleblaster.gamemode.impossible": "Onmogelijk",
   "bubbleblaster.gamemode.timed": "Tijd modus",
+  "bubbleblaster.gamemode.open_world": "Open wereld [Bèta]",
 
   "bubbleblaster.hud.legacy": "Originele HUD",
   "bubbleblaster.hud.beta": "Bèta HUD",

@@ -122,7 +122,7 @@ dependencies {
     implementation "com.github.oshi:oshi-core:$oshi_version"
 
     // Discord Presence
-    implementation "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
+    implementation "com.github.jagrosh:DiscordIPC:a8d6631"
 
     // LibGDX
     implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdx_version"
@@ -186,6 +186,7 @@ dependencies {
         exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
         exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
     }
+
     implementation "io.github.spair:imgui-java-natives-linux:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-macos:$imgui_version"
     implementation "io.github.spair:imgui-java-natives-windows:$imgui_version"
@@ -272,6 +273,17 @@ tasks.withType(Jar).configureEach {
 task("copyDependencies", type: Copy) {
     from(configurations.runtimeClasspath)
     into("$buildDir/jars")
+}
+
+tasks.register("run", JavaExec) {
+    dependsOn classes, ":core:build"
+    mainClass = "net.fabricmc.loader.launch.knot.KnotClient"
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.output
+    workingDir = rootProject.file("run")
+
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs += "-XstartOnFirstThread"
+    }
 }
 
 task("copyJar", type: Copy) {

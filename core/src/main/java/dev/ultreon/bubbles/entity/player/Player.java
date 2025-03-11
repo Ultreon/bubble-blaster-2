@@ -1,8 +1,10 @@
 package dev.ultreon.bubbles.entity.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.GameActivity;
 import dev.ultreon.bubbles.LoadedGame;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Bullet;
@@ -14,6 +16,7 @@ import dev.ultreon.bubbles.entity.damage.EntityDamageSource;
 import dev.ultreon.bubbles.entity.player.ability.AbilityContainer;
 import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
 import dev.ultreon.bubbles.event.v1.PlayerEvents;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.init.AmmoTypes;
 import dev.ultreon.bubbles.init.Entities;
 import dev.ultreon.bubbles.item.collection.PlayerItemCollection;
@@ -24,6 +27,7 @@ import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.CommandScreen;
 import dev.ultreon.bubbles.util.TimeProcessor;
 import dev.ultreon.bubbles.util.TimeUtils;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.ubo.types.MapType;
 import dev.ultreon.libs.commons.v0.Mth;
@@ -102,7 +106,8 @@ public class Player extends LivingEntity implements InputController {
     public long boostAccelTimer = 0;
     private int successRate;
     private boolean brake;
-    private float currentSpeed;
+    private double currentSpeed;
+    private Vector2 tmp = new Vector2();
 
     /**
      * Player entity.
@@ -163,8 +168,13 @@ public class Player extends LivingEntity implements InputController {
         super.preSpawn(information);
         var game = this.world.game();
         var gameBounds = game.getGameBounds();
-        this.pos.x = Mth.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
-        this.pos.y = Mth.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
+
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            this.pos.set(0.0, -8000.0);
+        } else {
+            this.pos.x = Mth.clamp(this.pos.x, gameBounds.getX(), gameBounds.getX() + gameBounds.getWidth());
+            this.pos.y = Mth.clamp(this.pos.y, gameBounds.getY(), gameBounds.getY() + gameBounds.getHeight());
+        }
         this.make();
     }
 
@@ -180,24 +190,37 @@ public class Player extends LivingEntity implements InputController {
 
     @Override
     public Circle getShape() {
-        return new Circle(this.pos.x - RADIUS * 2 * this.scale / 2, this.pos.y - RADIUS * 2 * this.scale / 2, RADIUS * 2 * this.scale);
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            return new Circle(Gdx.graphics.getWidth() / 2f - RADIUS * 2 * this.scale / 2, Gdx.graphics.getHeight() / 2f - RADIUS * 2 * this.scale / 2, RADIUS * 2 * this.scale);
+        }
+        return new Circle((float) (this.pos.x - RADIUS * 2 * this.scale / 2), (float) (this.pos.y - RADIUS * 2 * this.scale / 2), RADIUS * 2 * this.scale);
     }
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(this.pos.x - RADIUS, this.pos.y - RADIUS, RADIUS * 2, RADIUS * 2);
+        if (this.world.getGamemode() instanceof OpenWorldMode)
+            return new Rectangle(Gdx.graphics.getWidth() / 2f - RADIUS, Gdx.graphics.getHeight() / 2f - RADIUS, RADIUS * 2, RADIUS * 2);
+        return new Rectangle((float) (this.pos.x - RADIUS), (float) (this.pos.y - RADIUS), RADIUS * 2, RADIUS * 2);
     }
 
     private Circle transformShip(Circle ship) {
-        ship.setPosition(this.pos);
-
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            ship.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+            return ship;
+        }
+        ship.setPosition((float) this.pos.x, (float) this.pos.y);
         return ship;
     }
 
     private Polygon transformArrow(Polygon arrow) {
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            arrow.setRotation(this.rotation + 180f);
+            arrow.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+            return arrow;
+        }
         // Set position based on mouse cursor
         arrow.setRotation(this.rotation);
-        arrow.setPosition(this.pos.x, this.pos.y);
+        arrow.setPosition((float) this.pos.x, (float) this.pos.y);
 
         return arrow;
     }
@@ -219,7 +242,7 @@ public class Player extends LivingEntity implements InputController {
     /**
      * @return the center position.
      */
-    public Vector2 getCenter() {
+    public Vector2D getCenter() {
         return this.pos.cpy();
     }
 
@@ -250,7 +273,7 @@ public class Player extends LivingEntity implements InputController {
 
         if (this.boostAccelTimer > 0) {
             this.boostAccelTimer--;
-            this.accelerate(15f, true);
+            this.accelerate(15f, false);
         } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
             this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
         }
@@ -265,8 +288,10 @@ public class Player extends LivingEntity implements InputController {
         var rotate = 0.0f;
 
         // Check each direction, to create velocity
-        this.moving = Mth.clamp(this.moving, -1, 1);
-        this.rotating = Mth.clamp(this.rotating, -1, 1);
+        if (!(world.getGamemode() instanceof OpenWorldMode)) {
+            this.moving = Mth.clamp(this.moving, -1, 1);
+            this.rotating = Mth.clamp(this.rotating, -1, 1);
+        }
 
         if (this.moving != 0 && this.canMove) motion += this.getSpeed() * this.moving;
         if (this.rotating != 0 && this.canMove) rotate += this.rotationSpeed * this.rotating;
@@ -352,18 +377,20 @@ public class Player extends LivingEntity implements InputController {
         double maxX = bounds.x + bounds.width - this.radius();
         double maxY = bounds.y + bounds.height - this.radius();
 
-        if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
-        if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
-        if (this.pos.x > maxX && this.accel.x > 0) this.accel.x = 0;
-        if (this.pos.x < minX && this.accel.x < 0) this.accel.x = 0;
+        if (!(world.getGamemode() instanceof OpenWorldMode)) {
+            if (this.pos.x > maxX && this.velocity.x > 0) this.velocity.x = 0;
+            if (this.pos.x < minX && this.velocity.x < 0) this.velocity.x = 0;
+            if (this.pos.x > maxX && this.accel.x > 0) this.accel.x = 0;
+            if (this.pos.x < minX && this.accel.x < 0) this.accel.x = 0;
 
-        if (this.pos.y > maxY && this.velocity.y > 0) this.velocity.y = 0;
-        if (this.pos.y < minY && this.velocity.y < 0) this.velocity.y = 0;
-        if (this.pos.y > maxY && this.accel.y > 0) this.accel.y = 0;
-        if (this.pos.y < minY && this.accel.y < 0) this.accel.y = 0;
+            if (this.pos.y > maxY && this.velocity.y > 0) this.velocity.y = 0;
+            if (this.pos.y < minY && this.velocity.y < 0) this.velocity.y = 0;
+            if (this.pos.y > maxY && this.accel.y > 0) this.accel.y = 0;
+            if (this.pos.y < minY && this.accel.y < 0) this.accel.y = 0;
 
-        this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
-        this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
+            this.pos.x = (float) Mth.clamp(this.pos.x, minX, maxX);
+            this.pos.y = (float) Mth.clamp(this.pos.y, minY, maxY);
+        }
 
         var pixelsPerTick = this.prevPos.dst(this.pos);
         this.currentSpeed = pixelsPerTick * TPS;
@@ -437,9 +464,9 @@ public class Player extends LivingEntity implements InputController {
         if (this.isNotSpawned()) return;
 
         if (this.invincible)
-            renderer.withEffect(1.5f, () -> renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Colors.WHITE));
+            renderer.withEffect(1.5f, () -> renderer.fillCircle((float) this.pos.x, (float) this.pos.y, RADIUS * 2, Colors.WHITE));
         else
-            renderer.fillCircle(this.pos.x, this.pos.y, RADIUS * 2, Colors.CRIMSON);
+            renderer.fillCircle((float) this.pos.x, (float) this.pos.y, RADIUS * 2, Colors.CRIMSON);
 
         renderer.fillPolygon(this.getArrowShape(), Colors.WHITE);
     }
@@ -599,6 +626,8 @@ public class Player extends LivingEntity implements InputController {
         PlayerEvents.LEVEL_UP.factory().onLevelUp(this, this.level + 1);
         this.level++;
         this.successRate += 5;
+
+        BubbleBlaster.newActivity(GameActivity.PLAYING);
     }
 
     /**
@@ -770,7 +799,13 @@ public class Player extends LivingEntity implements InputController {
     /**
      * @return the current speed in pixels per second. (px/s)
      */
-    public float getCurrentSpeed() {
+    public double getCurrentSpeed() {
         return this.currentSpeed;
+    }
+
+    public double visualDistanceToMouseCursor() {
+        var mousePos = new Vector2D(Gdx.input.getX(), Gdx.input.getY());
+        var visualPos = new Vector2D(this.getVisualX(), this.getVisualY());
+        return mousePos.dst(visualPos);
     }
 }

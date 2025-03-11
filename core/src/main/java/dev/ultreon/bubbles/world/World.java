@@ -14,7 +14,6 @@ import dev.ultreon.bubbles.common.Difficulty;
 import dev.ultreon.bubbles.common.gamestate.GameplayContext;
 import dev.ultreon.bubbles.common.gamestate.GameplayEvent;
 import dev.ultreon.bubbles.common.random.BubbleRandomizer;
-import dev.ultreon.bubbles.common.random.GameRandom;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.LivingEntity;
@@ -26,10 +25,12 @@ import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
 import dev.ultreon.bubbles.entity.spawning.SpawnUsage;
 import dev.ultreon.bubbles.entity.types.EntityType;
 import dev.ultreon.bubbles.event.v1.EntityEvents;
+import dev.ultreon.bubbles.event.v1.EntityEvents.Spawn;
 import dev.ultreon.bubbles.event.v1.PlayerEvents;
 import dev.ultreon.bubbles.event.v1.TickEvents;
 import dev.ultreon.bubbles.event.v1.WorldEvents;
 import dev.ultreon.bubbles.gamemode.Gamemode;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.gameplay.GameplayStorage;
 import dev.ultreon.bubbles.gameplay.event.BloodMoonGameplayEvent;
 import dev.ultreon.bubbles.init.Gamemodes;
@@ -42,10 +43,7 @@ import dev.ultreon.bubbles.render.gui.screen.GameOverScreen;
 import dev.ultreon.bubbles.save.GameSave;
 import dev.ultreon.bubbles.util.Comparison;
 import dev.ultreon.bubbles.util.Randomizer;
-import dev.ultreon.ubo.types.ListType;
-import dev.ultreon.ubo.types.LongType;
-import dev.ultreon.ubo.types.MapType;
-import dev.ultreon.ubo.types.StringType;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.libs.commons.v0.DummyMessenger;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.Messenger;
@@ -53,6 +51,10 @@ import dev.ultreon.libs.crash.v0.CrashCategory;
 import dev.ultreon.libs.crash.v0.CrashLog;
 import dev.ultreon.libs.registries.v0.Registry;
 import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.ubo.types.ListType;
+import dev.ultreon.ubo.types.LongType;
+import dev.ultreon.ubo.types.MapType;
+import dev.ultreon.ubo.types.StringType;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceArrayMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceMaps;
@@ -134,22 +136,41 @@ public final class World implements CrashFiller, Closeable {
     private int nextBloodMoon;
     private int maxBubbles;
 
-    /// Constructors.
+    /**
+     * Create a new world instance.
+     *
+     * @param save       the game save.
+     * @param gamemode   the gamemode
+     * @param difficulty the difficulty
+     * @param seed       the seed
+     * @see #World(GameSave, Gamemode, Difficulty, long)
+     */
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, int seed) {
         this(save, gamemode, difficulty, (long) seed);
     }
 
+    /**
+     * Create a new world instance.
+     * Note: This also resets the {@link BubbleSystem}.
+     *
+     * @param save       the game save.
+     * @param gamemode   the gamemode
+     * @param difficulty the difficulty
+     * @param seed       the seed
+     */
     public World(GameSave save, Gamemode gamemode, Difficulty difficulty, long seed) {
         this.gamemode = gamemode;
         this.difficulty = difficulty;
-        var random = new GameRandom(seed);
+
+        BubbleSystem.reset();
         this.bubbleRng = this.gamemode.createBubbleRandomizer();
         this.seed = seed;
         this.gameSave = save;
         this.randomSource = new JavaRandom(seed ^ 0x58fa2bd933ec8ed3L);
 
         this.maxBubbles = BubbleBlasterConfig.MAX_BUBBLES.get();
-        if (this.maxBubbles < 100) throw new IllegalArgumentException("Hello, your amount of bubbles are too low for the game to run.");
+        if (this.maxBubbles < 100)
+            throw new IllegalArgumentException("Hello, your amount of bubbles are too low for the game to run.");
 
         if (GamePlatform.get().isMobile() && this.maxBubbles > 200) this.maxBubbles = 200;
         BubbleBlasterConfig.MAX_BUBBLES.set(this.maxBubbles);
@@ -164,7 +185,7 @@ public final class World implements CrashFiller, Closeable {
         try {
             // Spawn player
             messenger.send("Spawning player...");
-            var pos = new Vector2(this.game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f);
+            var pos = new Vector2D(this.game.getScaledWidth() / 4f, BubbleBlaster.getInstance().getHeight() / 2f);
             var player = this.game.loadPlayerIntoWorld(this);
             this.spawn(player, SpawnInformation.playerSpawn(pos, this, new JavaRandom()));
 
@@ -272,7 +293,7 @@ public final class World implements CrashFiller, Closeable {
         this.addEntity(player);
     }
 
-    private void addEntity(Entity entity) {
+    public void addEntity(Entity entity) {
         Preconditions.checkNotNull(entity, "Entity should not be null");
         this.entitiesLock.lock();
         this.addEntityUnlocked(entity);
@@ -370,7 +391,8 @@ public final class World implements CrashFiller, Closeable {
 
     @CanIgnoreReturnValue
     public boolean triggerGameOver(TextObject title) {
-        if (!BubbleBlaster.isOnTickingThread()) throw new IllegalCallerException("Called on wrong thread! Should be on ticking thread.");
+        if (!BubbleBlaster.isOnTickingThread())
+            throw new IllegalCallerException("Called on wrong thread! Should be on ticking thread.");
 
         if (this.isAlive()) {
             this.setResultScore(Math.round(Objects.requireNonNull(this.getPlayer()).getScore()));
@@ -389,7 +411,7 @@ public final class World implements CrashFiller, Closeable {
         return true;
     }
 
-    public float getLocalDifficulty() {
+    public double getLocalDifficulty() {
         var diff = this.getDifficulty();
 
         var value = this.difficultyModifiers.modify(diff);
@@ -628,7 +650,7 @@ public final class World implements CrashFiller, Closeable {
      * Note: this isn't reliable off the ticking thread.
      *
      * @param ticks the #th tick to run the function on.
-     * @param func the function to run.
+     * @param func  the function to run.
      */
     public void onlyTickEvery(long ticks, Runnable func) {
         if (this.ticks % ticks == 0L) {
@@ -638,6 +660,11 @@ public final class World implements CrashFiller, Closeable {
 
     /**
      * Spawn an entity into the world.
+     *
+     * @see Spawn#onSpawn(Entity, SpawnInformation)
+     *
+     * @param entity      the entity to spawn.
+     * @param information the spawn information
      */
     public void spawn(Entity entity, SpawnInformation information) {
         BubbleBlaster.invokeTick(() -> {
@@ -665,6 +692,18 @@ public final class World implements CrashFiller, Closeable {
         return this.nextEntityId++;
     }
 
+    /**
+     * Spawn an entity into the world.
+     *
+     * @param type        the entity to spawn (by type). This uses {@link EntityType#create(World, MapType)}
+     * @param information the spawn information.
+     * @param <T>         the type of entity.
+     * @return the spawned entity
+     *
+     * @see EntityType#create(World, MapType)
+     * @see SpawnInformation#getData()
+     * @see World#spawn(Entity, SpawnInformation)
+     */
     public <T extends Entity> T spawn(EntityType<T> type, SpawnInformation information) {
         var entity = type.create(this, information.getData());
         this.spawn(entity, information);
@@ -693,7 +732,8 @@ public final class World implements CrashFiller, Closeable {
     @ApiStatus.Internal
     public void tick() {
         if (this.initialized) {
-            entities: {
+            entities:
+            {
                 if (!this.entitiesLock.tryLock()) break entities;
 
                 // Tick entities
@@ -729,7 +769,8 @@ public final class World implements CrashFiller, Closeable {
             this.tickBloodMoon();
 
             // Tick gameplay events
-            gamePlayEvent: {
+            gamePlayEvent:
+            {
                 if (this.activeEvent != null) {
                     if (!this.activeEvent.shouldContinue(this.createGameplayContext())) {
                         if (!WorldEvents.GAMEPLAY_EVENT_DEACTIVATED.factory().onGameplayEventDeactivated(this, this.activeEvent).isCanceled()) {
@@ -766,6 +807,9 @@ public final class World implements CrashFiller, Closeable {
     }
 
     private void tickSpawning() {
+        if (this.bubblesFrozen || this.gamemode instanceof OpenWorldMode) {
+            return;
+        }
         if (this.entitiesById.values().stream().filter(Bubble.class::isInstance).count() < this.maxBubbles) {
             var idx = this.entitySeedIdx++;
             RandomSource random = new JavaRandom(this.seed ^ idx);
@@ -872,7 +916,7 @@ public final class World implements CrashFiller, Closeable {
     }
 
     @Nullable
-    public Entity getNearestEntity(Vector2 pos) {
+    public Entity getNearestEntity(Vector2D pos) {
         var distance = Double.MAX_VALUE;
         Entity nearest = null;
         for (var entity : this.entitiesById.values()) {
@@ -885,7 +929,7 @@ public final class World implements CrashFiller, Closeable {
         return nearest;
     }
 
-    public Entity getNearestEntity(Vector2 pos, EntityType<?> targetType) {
+    public Entity getNearestEntity(Vector2D pos, EntityType<?> targetType) {
         var distance = Double.MAX_VALUE;
         Entity nearest = null;
         for (var entity : this.entitiesById.values()) {

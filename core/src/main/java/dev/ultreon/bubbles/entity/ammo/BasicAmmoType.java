@@ -11,7 +11,7 @@ import dev.ultreon.bubbles.render.Renderer;
 public class BasicAmmoType extends AmmoType {
     @Override
     public Shape2D getShape(Bullet entity) {
-        return new Circle(entity.getX() - 2.5f, entity.getY() - 2.5f, 5);
+        return new Circle(entity.getVisualX() - 2.5f, entity.getVisualY() - 2.5f, 5);
     }
 
     @Override

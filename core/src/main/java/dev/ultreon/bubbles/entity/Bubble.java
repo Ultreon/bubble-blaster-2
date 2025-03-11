@@ -14,6 +14,8 @@ import dev.ultreon.bubbles.entity.spawning.NaturalSpawnReason;
 import dev.ultreon.bubbles.entity.spawning.SpawnInformation;
 import dev.ultreon.bubbles.entity.spawning.SpawnUsage;
 import dev.ultreon.bubbles.entity.types.EntityType;
+import dev.ultreon.bubbles.gamemode.Gamemode;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.init.BubbleTypes;
 import dev.ultreon.bubbles.init.Entities;
 import dev.ultreon.bubbles.init.SoundEvents;
@@ -188,7 +190,11 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public Rectangle getBounds() {
         var circle = this.getShape();
-        var rectangle = new Rectangle(this.pos.x - circle.radius / 2, this.pos.y - circle.radius / 2, circle.radius, circle.radius);
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            return new Rectangle((float) (this.pos.x - circle.radius / 2 - rel.x), (float) (this.pos.y - circle.radius / 2 - rel.y), circle.radius, circle.radius);
+        }
+        var rectangle = new Rectangle((float) (this.pos.x - circle.radius / 2), (float) (this.pos.y - circle.radius / 2), circle.radius, circle.radius);
         rectangle.width += 4;
         rectangle.height += 4;
         return rectangle;
@@ -206,6 +212,9 @@ public class Bubble extends AbstractBubbleEntity {
      */
     @Override
     public void tick(World world) {
+        var gamemode = this.world.getGamemode();
+        var isOpenWorld = gamemode instanceof OpenWorldMode;
+
         // Check player and current scene.
         var player = this.world.getPlayer();
 
@@ -220,7 +229,7 @@ public class Bubble extends AbstractBubbleEntity {
 
         super.tick(world);
 
-        if (this.pos.x + this.radius < 0) {
+        if (!isOpenWorld && this.pos.x + this.radius < 0) {
             this.delete();
         }
     }
@@ -254,10 +263,23 @@ public class Bubble extends AbstractBubbleEntity {
         if (this.willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
         var player = this.world.getPlayer();
+        double x = this.pos.x;
+        double y = this.pos.y;
+
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            x = rel.x - x + Gdx.graphics.getWidth() / 2f;
+            y = rel.y - y + Gdx.graphics.getHeight() / 2f;
+        }
+
+        if (x + this.radius < 0 || x - this.radius > Gdx.graphics.getWidth() || y + this.radius < 0 || y - this.radius > Gdx.graphics.getHeight()) {
+            return;
+        }
+
         if (player != null && player.getActiveEffect(StatusEffects.BLINDNESS) != null) {
-            WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, BubbleTypes.NORMAL);
+            WorldRenderer.drawBubble(renderer, (float) x, (float) y, this.radius, this.destroyFrame, BubbleTypes.NORMAL);
         } else {
-            WorldRenderer.drawBubble(renderer, this.pos.x, this.pos.y, this.radius, this.destroyFrame, this.bubbleType);
+            WorldRenderer.drawBubble(renderer, (float) x, (float) y, this.radius, this.destroyFrame, this.bubbleType);
         }
     }
 
@@ -271,11 +293,16 @@ public class Bubble extends AbstractBubbleEntity {
     @Override
     public Circle getShape() {
         var rad = this.radius / 2;
-        return new Circle(this.pos.x - rad, this.pos.y - rad, rad);
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            return new Circle((float) (this.pos.x - rad), (float) (this.pos.y - rad - rel.y), rad);
+        }
+        return new Circle((float) (this.pos.x - rad), (float) (this.pos.y - rad), rad);
     }
 
     @Override
     public boolean isVisible() {
+        if (this.world.getGamemode() instanceof OpenWorldMode) return true;
         var bounds = BubbleBlaster.getInstance().getBounds();
         return this.pos.x + this.radius >= 0 && this.pos.y + this.radius >= 0 &&
                 this.pos.x - this.radius <= bounds.width && this.pos.y - this.radius <= bounds.height;

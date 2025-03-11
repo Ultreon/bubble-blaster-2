@@ -7,7 +7,6 @@ import dev.ultreon.bubbles.random.RandomSource;
 import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.libs.collections.v0.exceptions.ValueExistsException;
-import dev.ultreon.libs.collections.v0.list.SizedList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +86,10 @@ public class BubbleSystem {
         }
     }
 
+    public static void reset() {
+        priorities.copyFrom(defaults);
+    }
+
     /**
      * Returns a random bubble from the bubbles initialized in {@link #init()}.
      *
@@ -94,7 +97,7 @@ public class BubbleSystem {
      * @return A random bubble.
      */
     public static BubbleType random(RandomSource random, World world) {
-        double localDifficulty = world.getLocalDifficulty();
+        var localDifficulty = world.getLocalDifficulty();
         priorities.editLengths(bubbleType2 -> bubbleType2.getModifiedPriority(localDifficulty));
 
         var index = random.nextDouble(0, priorities.getTotalSize());

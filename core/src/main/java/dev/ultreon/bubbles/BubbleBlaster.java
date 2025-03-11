@@ -68,7 +68,6 @@ import dev.ultreon.libs.datetime.v0.Duration;
 import dev.ultreon.libs.registries.v0.Registry;
 import dev.ultreon.libs.resources.v0.ResourceManager;
 import dev.ultreon.libs.translations.v1.LanguageManager;
-import de.jcm.discordgamesdk.activity.Activity;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.checkerframework.common.value.qual.IntRange;
@@ -91,7 +90,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Supplier;
 
 /**
  * The Bubble Blaster game main class.
@@ -139,7 +137,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private final GameWindow window;
     private Screen screen;
     private final RenderSettings renderSettings;
-    private final DiscordRPC discordRpc;
     // Rendering
     private final DebugRenderer debugRenderer;
     private WorldRenderer worldRenderer;
@@ -302,14 +299,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Load game with loading screen.
         this.load(new ProgressMessenger(this::log, 1000));
 
-        // Enable Discord RPC
-        this.discordRpc = new DiscordRPC();
-
-        BubbleBlaster.setActivity(() -> {
-            var activity = new Activity();
-            activity.setState("Loading game.");
-            return activity;
-        });
+        BubbleBlaster.newActivity(GameActivity.LOADING);
 
         LOGGER.info("Discord RPC is initializing!");
 
@@ -344,6 +334,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Start scene-manager.
         try {
             this.showScreen(new SplashScreen(), true);
+
+            RpcHandler.enable();
         } catch (Throwable t) {
             var crashLog = new CrashLog("Oops, game crashed!", t);
             BubbleBlaster.crash(crashLog.createCrash());
@@ -638,10 +630,6 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             if (this.garbageCollector != null) {
                 this.garbageCollector.shutdown();
             }
-            if (this.discordRpc != null) {
-                this.discordRpc.stop();
-                this.discordRpc.join();
-            }
             if (BubbleBlaster.tickingThread != null) {
                 BubbleBlaster.tickingThread.interrupt();
                 BubbleBlaster.tickingThread.join(1000);
@@ -885,12 +873,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         return null;
     }
 
-    public Activity getActivity() {
-        return this.discordRpc.getActivity();
-    }
-
-    public static void setActivity(Supplier<Activity> activity) {
-        instance.discordRpc.setActivity(activity);
+    public static void newActivity(GameActivity activity) {
+        RpcHandler.newActivity(activity);
     }
 
     private void initialGameTick() {
@@ -1078,7 +1062,10 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             Gdx.graphics.setCursor(this.arrowCursor);
             ScreenEvents.INIT.factory().onInit(newScreen);
             newScreen.init(this.getWidth(), this.getHeight());
+            BubbleBlaster.newActivity(GameActivity.MENUS);
         } else {
+            BubbleBlaster.newActivity(GameActivity.PLAYING);
+
             if (BubbleBlasterConfig.DEBUG_LOG_SCREENS.get())
                 LOGGER.debug("Showing <<NO-SCENE>>");
         }
@@ -1515,30 +1502,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private void tickRichPresence(@Nullable Player player) {
-        if (this.isInMainMenus())
-            BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
-                activity.setState("In the menus");
-                return activity;
-            });
-        else if (this.isInGame())
-            BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
-                activity.setState("In-Game");
-                if (player != null) {
-                    var score = player.getScore();
-                    activity.setDetails("Score: " + (int) score);
-                } else {
-                    activity.setDetails("?? ERROR ??");
-                }
-                return activity;
-            });
-        else
-            BubbleBlaster.setActivity(() -> {
-                var activity = new Activity();
-                activity.setState("Is nowhere to be found");
-                return activity;
-            });
+
     }
 
     /**
@@ -1773,6 +1737,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         this.afterLoading.values().forEach(Runnable::run);
         this.afterLoading.clear();
+
+        BubbleBlaster.newActivity(GameActivity.MENUS);
 
         LifecycleEvents.FINISHED.factory().onFinished(this);
     }

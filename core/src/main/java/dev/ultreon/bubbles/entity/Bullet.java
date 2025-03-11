@@ -2,14 +2,15 @@ package dev.ultreon.bubbles.entity;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
-import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.entity.ammo.AmmoType;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.entity.player.Player;
+import dev.ultreon.bubbles.gamemode.openworld.OpenWorldMode;
 import dev.ultreon.bubbles.init.AmmoTypes;
 import dev.ultreon.bubbles.init.Entities;
 import dev.ultreon.bubbles.render.Renderer;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.annotation.FieldsAreNonnullByDefault;
 import dev.ultreon.bubbles.util.annotation.MethodsReturnNonnullByDefault;
@@ -28,10 +29,10 @@ public class Bullet extends Entity {
     private int popsRemaining = 4;
 
     public Bullet(World world) {
-        this(AmmoTypes.BASIC, new Vector2(), 0, world);
+        this(AmmoTypes.BASIC, new Vector2D(), 0, world);
     }
 
-    public Bullet(@NotNull AmmoType type, Vector2 pos, float rotation, World world) {
+    public Bullet(@NotNull AmmoType type, Vector2D pos, float rotation, World world) {
         super(Entities.BULLET, world);
 
         this.pos.set(pos);
@@ -122,7 +123,11 @@ public class Bullet extends Entity {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(this.pos.x, this.pos.y, 1, 1);
+        if (this.world.getGamemode() instanceof OpenWorldMode) {
+            var rel = this.game.player.pos;
+            return new Rectangle((float) (this.pos.x - rel.x), (float) (this.pos.y - rel.y), 1, 1);
+        }
+        return new Rectangle((float) this.pos.x, (float) this.pos.y, 1, 1);
     }
 
     @Override

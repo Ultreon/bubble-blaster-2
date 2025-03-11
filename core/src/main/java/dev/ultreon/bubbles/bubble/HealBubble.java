@@ -30,12 +30,12 @@ public class HealBubble extends BubbleType {
             var player = (Player) target;
             var healAmount = source.getWorld().getLocalDifficulty() / 20.0f + 1.8f / 20.0f;
             healAmount /= (float) source.getAttributes().get(Attribute.DEFENSE);
-            player.restoreDamage(healAmount);
+            player.restoreDamage((float) healAmount);
 
             // Set ra
             var newRad = source.getRadius() - healAmount * 20f;
             if (newRad < 2 * this.getColors().size() * BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get()) source.pop();
-            else source.setRadius(newRad);
+            else source.setRadius((float) newRad);
         }
     }
 }

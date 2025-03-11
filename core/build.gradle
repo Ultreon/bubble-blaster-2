@@ -136,7 +136,7 @@ dependencies {
     api "com.github.oshi:oshi-core:$oshi_version"
 
     // Discord Presence
-    api "com.github.JnCrMx:discord-game-sdk4j:v0.5.5"
+    api "com.github.jagrosh:DiscordIPC:a8d6631"
 
     // LibGDX
     api "com.badlogicgames.gdx:gdx:$gdx_version"

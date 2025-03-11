@@ -1,9 +1,10 @@
 package dev.ultreon.bubbles.entity.bubble;
 
-import dev.ultreon.bubbles.common.exceptions.ValueExists;
+import dev.ultreon.libs.collections.v0.exceptions.OutOfRangeException;
+import dev.ultreon.libs.collections.v0.exceptions.ValueExistsException;
+import dev.ultreon.libs.collections.v0.util.ArrayUtils;
+import dev.ultreon.libs.collections.v0.util.Range;
 import dev.ultreon.libs.functions.v0.misc.Applier;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.exception.OutOfRangeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * One problem: it can cause performance issues. But, so far currently known is this the fastest method.
  *
  * @param <T> the type to use for the partition value.
- * @deprecated Use {@link dev.ultreon.libs.collections.v0.list.SizedList} from CoreLibs instead.
  */
-@Deprecated
+@SuppressWarnings("unused")
 public class SizedList<T> {
     List<Double> sizes = new CopyOnWriteArrayList<>();
     final List<T> values = new CopyOnWriteArrayList<>();
@@ -34,10 +34,10 @@ public class SizedList<T> {
      * @param size  the size.
      * @param value the value.
      * @return the partition index create the new partition.
-     * @throws ValueExists as the exception it says: if the value already exists.
+     * @throws ValueExistsException as the exception it says: if the value already exists.
      */
-    public int add(double size, T value) throws ValueExists {
-        if (this.values.contains(value)) throw new ValueExists();
+    public int add(double size, T value) {
+        if (this.values.contains(value)) throw new ValueExistsException();
 
         this.sizes.add(size);
         this.values.add(value);
@@ -67,7 +67,7 @@ public class SizedList<T> {
      * @param value the value.
      * @return the index.
      */
-    public int insert(int index, Double size, T value) {
+    public int insert(int index, double size, T value) {
         this.sizes.add(index, size);
         this.values.add(index, value);
 
@@ -130,7 +130,7 @@ public class SizedList<T> {
      * @return the value.
      */
     public T getValue(double drIndex) {
-        if (!(0d <= drIndex && this.totalSize > drIndex)) {
+        if (!((0d <= drIndex) && (this.totalSize > drIndex))) {
             throw new OutOfRangeException(drIndex, 0, this.totalSize);
         }
 
@@ -138,7 +138,7 @@ public class SizedList<T> {
         double currentSize = -1;
         for (var i = 0; i < this.sizes.size(); i++) {
             var newSize = currentSize + this.sizes.get(i);
-            if (currentSize < drIndex && newSize >= drIndex) {
+            if ((currentSize < drIndex) && (newSize >= drIndex)) {
                 value = this.values.get(i);
             }
 
@@ -155,7 +155,7 @@ public class SizedList<T> {
      * @param size  the size for the partition to set.
      * @return the new size.
      */
-    public Double edit(T value, Double size) {
+    public Double edit(T value, double size) {
         var index = this.indexOf(value);
 
         if (index >= this.sizes.size()) throw new OutOfRangeException(index, 0, this.sizes.size());
@@ -174,7 +174,7 @@ public class SizedList<T> {
      * @param newValue the value.
      * @return the new size.
      */
-    public Double edit(T value, Double size, T newValue) {
+    public Double edit(T value, double size, T newValue) {
         var index = this.indexOf(value);
 
         if (index >= this.sizes.size()) throw new OutOfRangeException(index, 0, this.sizes.size());
@@ -221,7 +221,7 @@ public class SizedList<T> {
     /**
      * Returns the range based create the value.
      *
-     * @param value the value to get the range from..
+     * @param value the value to get the range from.
      * @return the index.
      */
     public Range rangeOf(T value) {
@@ -234,7 +234,7 @@ public class SizedList<T> {
         double currentSize = 0;
         List<Double> sizes2 = new ArrayList<>(this.sizes);
         for (var i = 0; i < sizes2.size(); i++) {
-            var applierSize = applier.apply(this.values.get(i));
+            double applierSize = applier.apply(this.values.get(i));
             var newSize = currentSize + sizes2.get(i);
             this.totalSize = this.totalSize - sizes2.get(i) + applierSize;
             sizes2.set(i, applierSize);
@@ -242,5 +242,13 @@ public class SizedList<T> {
             currentSize = newSize;
         }
         this.sizes = sizes2;
+    }
+
+    public void copyFrom(SizedList<T> defaults) {
+        this.sizes.clear();
+        this.values.clear();
+        this.sizes.addAll(defaults.sizes);
+        this.values.addAll(defaults.values);
+        this.totalSize = defaults.totalSize;
     }
 }

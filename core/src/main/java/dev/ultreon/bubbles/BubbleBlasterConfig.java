@@ -75,7 +75,7 @@ public class BubbleBlasterConfig {
         BASE_BUBBLE_SPEED = builder.entry("gameplay.baseBubbleSpeed").comment("Speed of bubbles at level 1. (Will still increase after each level)").withinRange(0.1, 50.0, 2.0);
         SHOOT_COOLDOWN = builder.entry("gameplay.shootCooldown").comment("How much time to wait until the player can shoot a bullet again. (In milliseconds)").withinRange(50, 2_000, 500);
         BOOST_COOLDOWN = builder.entry("gameplay.boostCooldown").comment("How much time to wait until boost refills. (In milliseconds)").withinRange(500, 240_000, 120_000);
-        BOOST_DURATION = builder.entry("gameplay.boostDuration").comment("The amount of time to accelerate. (In milliseconds)").withinRange(500, 5_000, 1_000);
+        BOOST_DURATION = builder.entry("gameplay.boostDuration").comment("The amount of time to accelerate. (In milliseconds)").withinRange(100, 5_000, 300);
         BUBBLE_SCORE_REDUCTION = builder.entry("gameplay.bubbleScoreReduction").comment("How much to reduce the score when using bullets.").withinRange(0.01, 100.0, 16.0);
         BUBBLE_SCORE_REDUCTION_SELF = builder.entry("gameplay.bubbleScoreReductionSelf").comment("How much to reduce the score when destroying bubbles using the ship.").withinRange(0.01, 100.0, 16.0);
         DIFFICULTY_EFFECT_TYPE = builder.entry("gameplay.difficultyEffectType").comment("The type of difficulty effect.").value(DifficultyEffectType.LOCAL);

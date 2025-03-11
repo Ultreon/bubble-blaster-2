@@ -141,11 +141,17 @@ public class MathHelper {
     }
 
     public static String compress(double totalPriority) {
+        if (Double.isNaN(totalPriority) || Double.isInfinite(totalPriority)) {
+            return Double.toString(totalPriority);
+        }
+        if (totalPriority < 0d) {
+            return "-" + MathHelper.compress(-totalPriority);
+        }
         if (totalPriority >= 0d && totalPriority < 1_000d) {
             return Double.toString(totalPriority);
         }
         if (totalPriority >= 1_000d && totalPriority < 1_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000d, 1) + "K";
+            return MathHelper.toReadableString(totalPriority / 1_000d, 1) + "k";
         }
         if (totalPriority >= 1_000_000d && totalPriority < 1_000_000_000d) {
             return MathHelper.toReadableString(totalPriority / 1_000_000d, 1) + "M";
@@ -157,19 +163,28 @@ public class MathHelper {
             return MathHelper.toReadableString(totalPriority / 1_000_000_000_000d, 1) + "T";
         }
         if (totalPriority >= 1_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000d, 1) + "QD";
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000d, 1) + "Qa";
         }
         if (totalPriority >= 1_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000d, 1) + "QT";
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000d, 1) + "Qi";
         }
         if (totalPriority >= 1_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000d, 1) + "S";
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000d, 1) + "Sx";
         }
         if (totalPriority >= 1_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000d, 1) + "SX";
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000d, 1) + "Sp";
         }
         if (totalPriority >= 1_000_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000_000d) {
-            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000_000d, 1) + "C";
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000_000d, 1) + "Oc";
+        }
+        if (totalPriority >= 1_000_000_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000_000_000d) {
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000_000_000d, 1) + "No";
+        }
+        if (totalPriority >= 1_000_000_000_000_000_000_000_000_000_000_000d && totalPriority < 1_000_000_000_000_000_000_000_000_000_000_000_000d) {
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000_000_000_000d, 1) + "Dc";
+        }
+        if (totalPriority >= 1_000_000_000_000_000_000_000_000_000_000_000_000d) {
+            return MathHelper.toReadableString(totalPriority / 1_000_000_000_000_000_000_000_000_000_000_000_000d, 1) + "Ud";
         }
         return Double.toString(totalPriority);
     }

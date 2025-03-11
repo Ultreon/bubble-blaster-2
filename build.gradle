@@ -97,6 +97,7 @@ repositories {
 
         content {
             includeGroup "com.github.JnCrMx"
+            includeGroup "com.github.jagrosh"
             includeGroup "dev.ultreon"
             includeGroup "dev.ultreon.corelibs"
             includeGroup "space.earlygrey"
@@ -166,6 +167,7 @@ allprojects {
 
             content {
                 includeGroup "com.github.JnCrMx"
+                includeGroup "com.github.jagrosh"
                 includeGroup "space.earlygrey"
             }
         }
@@ -183,6 +185,7 @@ allprojects {
 
             content {
                 includeGroup "com.github.JnCrMx"
+                includeGroup "com.github.jagrosh"
                 includeGroup "dev.ultreon"
                 includeGroup "dev.ultreon.corelibs"
                 includeGroup "space.earlygrey"
@@ -315,7 +318,7 @@ idea{
 
             runConfigurations {
                 "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
-                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"
+                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient" + (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac") ? " -XstartOnFirstThread" : "")
                     mainClass = 'net.fabricmc.devlaunchinjector.Main'
                     moduleName = idea.module.name + ".desktop.main"
                     workingDirectory = "$projectDir/run/"

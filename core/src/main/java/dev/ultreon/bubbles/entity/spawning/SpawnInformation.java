@@ -1,10 +1,10 @@
 package dev.ultreon.bubbles.entity.spawning;
 
-import com.badlogic.gdx.math.Vector2;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.command.Command;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.random.RandomSource;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.annotation.FieldsAreNonnullByDefault;
 import dev.ultreon.bubbles.util.annotation.MethodsReturnNonnullByDefault;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnInformation {
     private final RandomSource random;
     private SpawnReason reason;
-    private @Nullable Vector2 pos;
+    private @Nullable Vector2D pos;
     private MapType tag;
     @Nullable
     private Command command;
@@ -27,7 +27,7 @@ public class SpawnInformation {
         return this.random;
     }
 
-    private SpawnInformation(SpawnReason reason, MapType tag, @Nullable Vector2 pos, @Nullable Command command, @NotNull World world, RandomSource random) {
+    private SpawnInformation(SpawnReason reason, MapType tag, @Nullable Vector2D pos, @Nullable Command command, @NotNull World world, RandomSource random) {
         this.pos = pos;
         this.tag = tag;
         this.reason = reason;
@@ -44,11 +44,11 @@ public class SpawnInformation {
         return new SpawnInformation(SpawnReason.LOAD, data, null, null, world, null);
     }
 
-    public static SpawnInformation naturalSpawn(@Nullable Vector2 pos, RandomSource random, SpawnUsage usage, @NotNull World world) {
+    public static SpawnInformation naturalSpawn(@Nullable Vector2D pos, RandomSource random, SpawnUsage usage, @NotNull World world) {
         return SpawnInformation.naturalSpawn(pos, random, usage, 0, world);
     }
 
-    public static SpawnInformation naturalSpawn(@Nullable Vector2 pos, RandomSource random, SpawnUsage usage, int retry, @NotNull World world) {
+    public static SpawnInformation naturalSpawn(@Nullable Vector2D pos, RandomSource random, SpawnUsage usage, int retry, @NotNull World world) {
         return new SpawnInformation(SpawnReason.natural(usage, retry), new MapType(), pos, null, world, random);
     }
 
@@ -64,7 +64,7 @@ public class SpawnInformation {
         return new SpawnInformation(SpawnReason.trigger(player), new MapType(), null, null, world, null);
     }
 
-    public static SpawnInformation playerSpawn(Vector2 pos, World world, RandomSource random) {
+    public static SpawnInformation playerSpawn(Vector2D pos, World world, RandomSource random) {
         return new SpawnInformation(SpawnReason.PLAYER, new MapType(), pos, null, world, random);
     }
 
@@ -94,11 +94,11 @@ public class SpawnInformation {
     }
 
     @Nullable
-    public Vector2 getPos() {
+    public Vector2D getPos() {
         return this.pos;
     }
 
-    public void setPos(@Nullable Vector2 pos) {
+    public void setPos(@Nullable Vector2D pos) {
         if (this.pos != null) {
             this.pos = pos;
         }

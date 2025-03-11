@@ -26,15 +26,16 @@ public enum Difficulty implements Translatable {
     SUPER_NATURAL(1024.0f),
     LEGEND(4096.0f),
     GG(65536.0f),
-    WHAT_THE_FRICK(Integer.MAX_VALUE / 2f + 1);
+    EMOTIONAL_DAMAGE(Integer.MAX_VALUE / 2f + 1),
+    BEYOND_GODLIKE(8.371160997540839E36);
 
-    private final float plainModifier;
+    private final double plainModifier;
 
-    Difficulty(float modifier) {
+    Difficulty(double modifier) {
         this.plainModifier = modifier;
     }
 
-    public float getPlainModifier() {
+    public double getPlainModifier() {
         return this.plainModifier;
     }
 
@@ -49,9 +50,9 @@ public enum Difficulty implements Translatable {
 
     public static final class Modifier {
         private final ModifierAction action;
-        private final float value;
+        private final double value;
 
-        public Modifier(ModifierAction action, float value) {
+        public Modifier(ModifierAction action, double value) {
             this.action = action;
             this.value = value;
         }
@@ -60,7 +61,7 @@ public enum Difficulty implements Translatable {
             return this.action;
         }
 
-        public float value() {
+        public double value() {
             return this.value;
         }
 
@@ -70,7 +71,7 @@ public enum Difficulty implements Translatable {
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (Modifier) obj;
             return Objects.equals(this.action, that.action) &&
-                    Float.floatToIntBits(this.value) == Float.floatToIntBits(that.value);
+                    Double.doubleToLongBits(this.value) == Double.doubleToLongBits(that.value);
         }
 
         @Override
@@ -131,9 +132,9 @@ public enum Difficulty implements Translatable {
             return this.modifiers.remove(token);
         }
 
-        public float modify(Difficulty difficulty) {
+        public double modify(Difficulty difficulty) {
             var value = difficulty.getPlainModifier();
-            float modifyTotal = 1;
+            double modifyTotal = 1;
             for (var modifier : this.modifiers.values()) {
                 switch (modifier.action) {
                     case ADD:

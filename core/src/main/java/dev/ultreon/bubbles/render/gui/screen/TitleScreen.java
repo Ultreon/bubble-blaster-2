@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
+import dev.ultreon.bubbles.GameActivity;
 import dev.ultreon.bubbles.GamePlatform;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.render.Colors;

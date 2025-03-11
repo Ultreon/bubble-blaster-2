@@ -10,6 +10,7 @@ import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.entity.types.EntityType;
 import dev.ultreon.bubbles.settings.GameSettings;
+import dev.ultreon.bubbles.vector.Vector2D;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.size.FloatSize;
 import dev.ultreon.libs.commons.v0.vector.*;
@@ -276,7 +277,16 @@ public final class DebugFormatters {
             context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
         }
     });
-    
+
+    public static final Formatter<Vector2D> Vector2D = FormatterRegistry.register(new Formatter<>(Vector2D.class, new Identifier("vector/2_float")) {
+        @Override
+        public void format(Vector2D obj, IFormatterContext context) {
+            context.parameter("x", DebugFormatters.roundTo(obj.x, 5));
+            context.separator();
+            context.parameter("y", DebugFormatters.roundTo(obj.y, 5));
+        }
+    });
+
     public static final Formatter<Vec2i> VEC2I = FormatterRegistry.register(new Formatter<>(Vec2i.class, new Identifier("vector/2_int")) {
         @Override
         public void format(Vec2i obj, IFormatterContext context) {
