@@ -76,7 +76,7 @@ jobs:
         java: [
           17    # Minimum supported
         ]
-        os: [macOS-11]
+        os: [macOS-latest]
     runs-on: ${{ matrix.os }}
     name: Build on ${{ matrix.os }}
     steps:
@@ -164,7 +164,7 @@ jobs:
         java: [
           17    # Minimum supported
         ]
-        os: [macOS-11]
+        os: [macOS-latest]
     runs-on: ${{ matrix.os }}
     name: Build on ${{ matrix.os }} (PORTABLE)
     steps:
