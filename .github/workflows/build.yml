@@ -35,7 +35,7 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster Android Build ${{ github.run_number }} (APK)
           path: android/build/outputs/apk/debug
@@ -65,7 +65,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster Linux Build ${{ github.run_number }} (DEB)
           path: desktop-merge/build/dist
@@ -95,7 +95,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster MacOS Build ${{ github.run_number }} (APP)
           path: desktop-merge/build/dist
@@ -123,7 +123,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster Windows Build ${{ github.run_number }} (EXE)
           path: desktop-merge/build/dist
@@ -153,7 +153,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster Linux Build ${{ github.run_number }} (PORTABLE)
           path: desktop-merge/build/dist
@@ -183,7 +183,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster MacOS Build ${{ github.run_number }} (PKG)
           path: desktop-merge/build/dist
@@ -211,7 +211,7 @@ jobs:
         env:
           GITHUB_BUILD_NUMBER: ${{ github.run_number }}
       - name: Capture the build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: Bubble Blaster Windows Build ${{ github.run_number }} (MSI)
           path: desktop-merge/build/dist
