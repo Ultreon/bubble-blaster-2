@@ -86,7 +86,6 @@ dependencies {
     api "it.unimi.dsi:fastutil:$fastutil_version"
     api "org.checkerframework:checker:$checker_framework_version"
 
-    api "dev.ultreon:ubo:$ubo_version"
     api "org.jetbrains:annotations:$jetbrains_annotations_version"
 
     // Test dependencies

@@ -70,9 +70,6 @@ dependencies {
     implementation "it.unimi.dsi:fastutil-extra:$fastutil_extras_version"
     implementation "it.unimi.dsi:fastutil-core:$fastutil_version"
 
-    // UBO
-    implementation "dev.ultreon:ubo:$ubo_version"
-
     // Misc
     implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
     implementation "com.electronwill.night-config:toml_android:$nightconfig_version"

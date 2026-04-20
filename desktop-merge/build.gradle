@@ -250,7 +250,7 @@ tasks.register('package', Zip) {
     dependsOn("build", ":gameprovider:build", ":desktop:build", ":core:build", "copyDependencies", "copyJar")
 
     from fileTree(dir: "$buildDir/jars", include: "*.jar")
-    archiveName 'package.zip'
+    archiveFileName.set 'package.zip'
     destinationDir(file("$rootProject.buildDir/dist/"))
 }
 

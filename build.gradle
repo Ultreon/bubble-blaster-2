@@ -78,7 +78,6 @@ repositories {
     mavenCentral()
     mavenLocal()
     google()
-    jcenter()
     maven {
         name "Atlassian"
         url "https://maven.atlassian.com/3rdparty/"
@@ -147,7 +146,7 @@ beforeEvaluate {
 }
 
 base {
-    archivesName = project.archivesBaseName
+    archivesName = archives_base_name
 }
 
 allprojects {
