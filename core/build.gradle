@@ -134,9 +134,6 @@ dependencies {
     // OSHi (For system info in crash reports)
     api "com.github.oshi:oshi-core:$oshi_version"
 
-    // Discord Presence
-    api "com.github.jagrosh:DiscordIPC:a8d6631"
-
     // LibGDX
     api "com.badlogicgames.gdx:gdx:$gdx_version"
     api "com.badlogicgames.gdx:gdx-box2d:$gdx_version"
@@ -278,25 +275,5 @@ println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getPro
 println("OS: " + System.getProperty("os.name") + " Version: " + System.getProperty("os.version"))
 
 println("Current version: $version")
-println("Project: " + group + ":" + archivesBaseName)
+println("Project: " + group + ":" + project.name)
 println("Bulding a Java " + compileJava.targetCompatibility + " project...")
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            groupId = project.group
-            artifactId = "bubble-blaster-" + project.name
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
-            credentials {
-                username = project.findProperty("gpr.user") == null ? System.getenv("USERNAME") : project.findProperty("gpr.user")
-                password = project.findProperty("gpr.key") == null ? System.getenv("TOKEN") : project.findProperty("gpr.key")
-            }
-        }
-    }
-}

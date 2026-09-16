@@ -34,7 +34,7 @@ java {
 }
 
 println("Current version: $version")
-println("Project: $group:$archivesBaseName")
+println("Project: $group:${project.name}")
 println("Bulding a Java $compileJava.targetCompatibility project...")
 
 repositories {
@@ -154,12 +154,4 @@ jar {
 }
 test {
     useJUnitPlatform()
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
 }

@@ -30,7 +30,6 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath group: 'org.mini2Dx', name: 'butler', version: '2.1.0'
     }
 }
@@ -45,7 +44,6 @@ plugins {
     id 'application'
 //    id 'com.github.johnrengelman.shadow' version '7.+'
 }
-apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
 apply plugin: "org.mini2Dx.butler"
 apply plugin: "gameutils"
 
@@ -150,6 +148,8 @@ base {
 }
 
 allprojects {
+    apply plugin: "java"
+    apply plugin: "java-library"
     apply plugin: "maven-publish"
 
     version project_version + "+snapshot." + new Date().format("yyyy.MM.dd.HH.mm")
@@ -201,40 +201,41 @@ allprojects {
 
         maven { url "https://maven.ultreon.dev/releases" }
         maven { url "https://maven.ultreon.dev/snapshots" }
-
-        maven {
-            name = "BubbleBlasterMaven"
-            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
     }
 
+
     publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = "dev.ultreon.bubbles"
+                artifactId = project.name
+                version = project.version
+                from components.java
+            }
+        }
+
         repositories {
             maven {
                 name = "UltreonMavenReleases"
-                url = "https://maven.ultreon.dev/releases"
-                credentials(PasswordCredentials) {
+                url = uri("https://maven.ultreon.dev/releases")
+                credentials {
                     username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
                     password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
                 }
                 authentication {
-                    basic(BasicAuthentication)
+                    create("basic", BasicAuthentication)
                 }
             }
 
             maven {
                 name = "UltreonMavenSnapshots"
-                url = "https://maven.ultreon.dev/snapshots"
-                credentials(PasswordCredentials) {
+                url = uri("https://maven.ultreon.dev/snapshots")
+                credentials {
                     username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
                     password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
                 }
                 authentication {
-                    basic(BasicAuthentication)
+                    create("basic", BasicAuthentication)
                 }
             }
         }
@@ -338,45 +339,6 @@ application {
 }
 
 run.workingDir("$rootProject.projectDir/run")
-
-idea{
-    project{
-        settings {
-            withIDEADir { File dir ->
-                println("Callback 1 executed with: " + dir.absolutePath)
-            }
-
-            runConfigurations {
-                "Bubble Blaster"(Application) {                       // Create new run configuration "MyApp" that will run class foo.App
-                    jvmArgs = "-Xmx2g -Dfabric.dli.config=$launchFile.path -Dfabric.dli.env=CLIENT -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient" + (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac") ? " -XstartOnFirstThread" : "")
-                    mainClass = 'net.fabricmc.devlaunchinjector.Main'
-                    moduleName = idea.module.name + ".desktop.main"
-                    workingDirectory = "$projectDir/run/"
-                    programParameters = "--gameDir=."
-                }
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = "bubble-blaster"
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Ultreon/bubble-blaster-2")
-            credentials {
-                username = project.findProperty("gpr.user") == null ? System.getenv("USERNAME") : project.findProperty("gpr.user")
-                password = project.findProperty("gpr.key") == null ? System.getenv("TOKEN") : project.findProperty("gpr.key")
-            }
-        }
-    }
-}
 
 butler {
     user = "xypercode"
