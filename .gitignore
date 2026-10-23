@@ -1474,3 +1474,6 @@ Thumbs.db
 /android-loader/libs/x86_64/libgdx-box2d.so
 /android-loader/libs/x86_64/libgdx-freetype.so
 /.profileconfig.json
+
+/logging/build/
+/logging/.gradle/
