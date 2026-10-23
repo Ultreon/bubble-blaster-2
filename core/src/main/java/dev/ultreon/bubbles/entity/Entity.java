@@ -291,8 +291,9 @@ public abstract class Entity extends GameObject implements StateHolder {
     public void applyForceDir(float direction, float velocity, float delta) {
         if (velocity == 0) return;
 
-        var x = MathUtils.cos(direction) * velocity;
-        var y = MathUtils.sin(direction) * velocity;
+        var angleRadians = direction * MathUtils.degRad;
+        var x = MathUtils.cos(angleRadians) * velocity;
+        var y = MathUtils.sin(angleRadians) * velocity;
         this.applyForce(x, y, delta);
     }
 

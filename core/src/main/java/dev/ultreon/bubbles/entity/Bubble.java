@@ -160,7 +160,9 @@ public class Bubble extends AbstractBubbleEntity {
         this.bubbleType.onCollision(this, other);
 
         if (this.bounceAmount > 0) {
-            other.bounceOff(this, (float) (this.bounceAmount * deltaTime), -0.1f);
+            // bounceAmount is an impulse strength. Do not scale it by the
+            // per-tick delta: that made the configured bounce nearly vanish.
+            other.bounceOff(this, this.bounceAmount, (float) deltaTime);
         }
     }
 
