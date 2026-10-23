@@ -251,7 +251,7 @@ tasks.register('package', Zip) {
 
     from fileTree(dir: "$buildDir/jars", include: "*.jar")
     archiveFileName.set 'package.zip'
-    destinationDir(file("$rootProject.buildDir/dist/"))
+    destinationDirectory.set(file("$rootProject.buildDir/dist/"))
 }
 
 final vmArgs = ["-Dfile.encoding=UTF-8", "-Dfabric.skipMcProvider=true", "-Xmx4G", "-Xms256M",

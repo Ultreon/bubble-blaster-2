@@ -121,19 +121,17 @@ class GameUtilsPlugin implements Plugin<Project> {
             def json = new JsonObject()
             def classpathJson = new JsonArray()
 
-            packProject.configurations.pack.with { Configuration conf ->
-                List<Dep> dependencies = getDependencies(conf)
-                dependencies.collect { Dep dep ->
-                    File file = dep.file
-                    println("Adding \"$file.name\" to classpath")
-                    String name = getLibraryName(dep, file, zip)
-                    classpathJson.add "libraries/" + dep.group.replaceAll("\\.", "/") + "/" + dep.name + "/" + name
-                    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-                    return null
-                }
-            }
             doFirst {
+                packProject.configurations.pack.with { Configuration conf ->
+                    List<Dep> dependencies = getDependencies(conf)
+                    dependencies.each { Dep dep ->
+                        File file = dep.file
+                        println("Adding \"$file.name\" to classpath")
+                        String name = getLibraryName(dep, file, zip)
+                        classpathJson.add "libraries/" + dep.group.replaceAll("\\.", "/") + "/" + dep.name + "/" + name
+                        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                    }
+                }
                 createAppJson(json, classpathJson, packProject)
             }
 

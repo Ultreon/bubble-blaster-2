@@ -310,11 +310,6 @@ println("Project: " + group + ":" + name)
 mkdir("$buildDir/bubbles")
 
 def ps = System.getProperty("path.separator")
-def files = configurations.runtimeClasspath
-def strm = (files.toList()).stream()
-def rcl = String.join(ps, strm.map {
-    it.path
-}.filter{it != null }.toList())
 //\tfabric.remapClasspathFile=$buildDir/bubbles/classpath.txt
 //\tfabric.classPathGroups=$buildDir/classes/java/main/$ps$buildDir/resources/main/$ps${project(":core").buildDir}/classes/java/main/$ps${project(":core").buildDir}/resources/main/$ps${project(":desktop").buildDir}/classes/java/main/$ps${project(":desktop").buildDir}/resources/main/$ps${project(":gameprovider").buildDir}/classes/java/main/$ps${project(":gameprovider").buildDir}/resources/main/$ps$rcl
 def conf = """
@@ -326,12 +321,18 @@ commonProperties
 """
 
 def launchFile = file("$buildDir/bubbles/launch.cfg")
-Files.writeString(launchFile.toPath(), conf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+def prepareLaunchConfig = tasks.register('prepareLaunchConfig') {
+    outputs.files(launchFile, file("$buildDir/bubbles/classpath.txt"))
+    doLast {
+        def rcl = configurations.runtimeClasspath.files
+                .collect { it.path }
+                .join(ps)
+        Files.writeString(launchFile.toPath(), conf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
 
-def cp = "$rcl"
-
-def cpFile = file("$buildDir.absolutePath/bubbles/classpath.txt")
-Files.writeString(cpFile.toPath(), cp, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+        def cpFile = file("$buildDir/bubbles/classpath.txt")
+        Files.writeString(cpFile.toPath(), rcl, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+    }
+}
 
 application {
     applicationDefaultJvmArgs = ["-Xmx2g", "-Dfabric.dli.config=$launchFile.path", "-Dfabric.dli.env=CLIENT", "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"]
@@ -339,6 +340,7 @@ application {
 }
 
 run.workingDir("$rootProject.projectDir/run")
+run.dependsOn(prepareLaunchConfig)
 
 butler {
     user = "xypercode"
