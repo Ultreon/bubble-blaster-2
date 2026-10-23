@@ -208,6 +208,9 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public static PollingExecutorService tickExecutor;
     private boolean unsupportedGL = false;
     private BitmapFont errorFont;
+    private double money;
+    private double xp;
+    private int xpLevel;
 
     private BubbleBlaster() {
         if (instance != null)
@@ -1910,5 +1913,42 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     public Matrix4 getTransform() {
         return this.shapes.getTransformMatrix();
+    }
+
+    public void addXp(double experience) {
+        if (!Double.isFinite(experience) || experience <= 0) return;
+
+        this.xp = this.globalSaveData.getXp();
+        if (!Double.isFinite(this.xp) || this.xp < 0) this.xp = 0;
+
+        this.xpLevel = Math.max(0, this.globalSaveData.getXpLevel());
+        this.money = this.globalSaveData.getMoney();
+        this.xp += experience * Math.PI;
+        this.money += experience;
+
+        while (this.xpLevel < Integer.MAX_VALUE && this.xp >= this.getXpForLevelUp(this.xpLevel)) {
+            this.levelUpXp();
+        }
+
+        this.globalSaveData.setXp(this.xp);
+        this.globalSaveData.setXpLevel(this.xpLevel);
+        this.globalSaveData.setMoney(this.money);
+
+        try {
+            this.globalSaveData.dump();
+        } catch (IOException e) {
+            BubbleBlaster.LOGGER.error("Failed to save money:", e);
+            BubbleBlaster.getInstance().notifications.notify(Notification.builder("Error!", "Saving money failed!").subText("Global Save Data").build());
+        }
+    }
+
+    public double getXpForLevelUp(int xpLevel) {
+        double level = Math.max(0, xpLevel);
+        return 3000.0 * Math.pow(level + 1.0, 1.5);
+    }
+
+    private void levelUpXp() {
+        this.xp -= this.getXpForLevelUp(this.xpLevel);
+        this.xpLevel++;
     }
 }

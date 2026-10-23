@@ -3,6 +3,7 @@ package dev.ultreon.bubbles.bubble;
 import com.badlogic.gdx.graphics.Texture;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.player.Player;
@@ -54,7 +55,7 @@ public class LevelUpBubble extends BubbleType {
         if (world.getPlayer() == null) return false;
 
         // Calculate the maximum level for the player's score.
-        var maxLevelUp = (int) Math.round(world.getPlayer().getScore()) / BubbleBlasterConfig.LEVEL_THRESHOLD.get() + 1;
+        var maxLevelUp = (int) Math.round(world.getPlayer().getScore()) / Constants.LEVEL_THRESHOLD + 1;
 
         // Check for existing level-up bubble entities.
         if (world.getEntities().stream().

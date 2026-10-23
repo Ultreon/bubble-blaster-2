@@ -87,11 +87,14 @@ public class WorldRenderer implements Renderable {
      */
     @Deprecated(forRemoval = true)
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, List<Color> colors, Texture insideTexture) {
+        float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
+        if (insideTexture == null && renderer.drawBubble(x, y, radius, thickness, thickness + 0.5f, colors)) {
+            return;
+        }
+
         // Define ellipse-depth (pixels).
         var i = 0f;
         var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
-
-        float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
         // Loop colors.
         for (var color : colors) {
@@ -120,11 +123,14 @@ public class WorldRenderer implements Renderable {
      * @param type   the type of bubble to render.
      */
     public static void drawBubble(Renderer renderer, float x, float y, float radius, int destroyFrame, BubbleType type) {
+        float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
+        if (type.getInsideTexture() == null && renderer.drawBubble(x, y, radius, thickness, thickness + 0.5f, type.getColors())) {
+            return;
+        }
+
         // Define ellipse-depth (pixels).
         var i = 0f;
         var destroyFrame0 = Mth.clamp(destroyFrame, 0, 10);
-
-        float thickness = BubbleBlasterConfig.BUBBLE_LINE_THICKNESS.get();
 
         // Loop colors.
         for (var color : type.getColors()) {

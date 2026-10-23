@@ -1,7 +1,6 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.GameActivity;
 import dev.ultreon.bubbles.GamePlatform;
 import dev.ultreon.bubbles.init.Fonts;
 import dev.ultreon.bubbles.render.Colors;
@@ -140,8 +139,14 @@ public class TitleScreen extends Screen {
             renderer.drawText(this.monospaced, "Mods Loaded: " + GamePlatform.get().getModsCount(), 40, 76, Colors.WHITE);
         }
 
-        renderer.drawTextRight(Fonts.SANS_HEADER_1.get(), "High Score", this.width - 40, 40, Colors.WHITE);
-        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), String.valueOf(Math.round(game.getGlobalData().getHighScore())), this.width - 40, 80, Colors.WHITE);
+        var highScore = game.getGlobalData().getHighScore();
+        var money = game.getGlobalData().getMoney();
+        var xp = game.getGlobalData().getXp();
+        var xpLevel = game.getGlobalData().getXpLevel();
+        var xpForLevelUp = game.getXpForLevelUp(xpLevel);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Highscore: " + Math.round(highScore), this.width - 40, 40, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Money: " + Math.round(money), this.width - 40, 60, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "XP: " + Math.round(xp) + " / " + Math.round(xpForLevelUp) + " (lvl. " + xpLevel + ")", this.width - 40, 80, Colors.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }

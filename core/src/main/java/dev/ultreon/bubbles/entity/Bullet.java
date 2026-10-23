@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.entity;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Shape2D;
-import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.entity.ammo.AmmoType;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.entity.player.Player;
@@ -98,7 +98,7 @@ public class Bullet extends Entity {
             // Calculate score value.
             var props = (radius * (speed + 1)) * (attack + defense + 1);
             var attrs = props * bubScore * bubScore * scoreModifier;
-            var scoreValue = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION.get();
+            var scoreValue = attrs * deltaTime / Constants.BUBBLE_SCORE_REDUCTION;
 
             // Add score.
             this.owner.awardScore(scoreValue);
@@ -154,7 +154,7 @@ public class Bullet extends Entity {
         return this.ammoType;
     }
 
-    public void setAmmoType(@NotNull AmmoType ammoType) {
+    public void setAmmoType(AmmoType ammoType) {
         this.ammoType = ammoType;
         this.attributes.setAll(ammoType.getDefaultAttributes());
     }

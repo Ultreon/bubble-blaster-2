@@ -30,10 +30,6 @@ public class OptionsScreen extends Screen {
         this.game.showScreen(new GenericOptionsScreen(this));
     }
 
-    private void showGameplay() {
-        this.game.showScreen(new GameplayOptionsScreen(this));
-    }
-
     private void showGraphical() {
         this.game.showScreen(new GraphicalOptionsScreen(this));
     }
@@ -48,10 +44,6 @@ public class OptionsScreen extends Screen {
                 .text(TextObject.translation("bubbleblaster.screen.options.generic"))
                 .bounds(this.middleX - 251, this.middleY + 51, 250, 48)
                 .command(this::showGeneric).build());
-        this.gameplay = this.add(Button.builder()
-                .text(TextObject.translation("bubbleblaster.screen.options.gameplay"))
-                .bounds(this.middleX + 1, this.middleY + 51, 250, 48)
-                .command(this::showGameplay).build());
         this.graphical = this.add(Button.builder()
                 .text(TextObject.translation("bubbleblaster.screen.options.graphical"))
                 .bounds(this.middleX - 251, this.middleY + 101, 250, 48)

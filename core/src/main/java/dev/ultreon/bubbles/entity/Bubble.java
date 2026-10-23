@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.bubble.BubbleType;
 import dev.ultreon.bubbles.entity.ai.AiTask;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
@@ -112,7 +113,7 @@ public class Bubble extends AbstractBubbleEntity {
             this.attributes.setBase(Attribute.ATTACK, properties.getAttack());
             this.attributes.setBase(Attribute.DEFENSE, properties.getDefense());
             this.attributes.setBase(Attribute.SCORE, properties.getScoreMultiplier());
-            this.attributes.setBase(Attribute.SPEED, properties.getSpeed() * BubbleBlasterConfig.BASE_BUBBLE_SPEED.get());
+            this.attributes.setBase(Attribute.SPEED, properties.getSpeed() * Constants.BASE_BUBBLE_SPEED);
 
             this.health = properties.getDamageValue();
 
@@ -246,7 +247,7 @@ public class Bubble extends AbstractBubbleEntity {
     }
 
     private float getLevelSpeedModifier() {
-        if (BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isSpeed())
+        if (Constants.DIFFICULTY_EFFECT_TYPE.isSpeed())
             return this.world.getPlayer().getLevel() / 2f + 1;
 
         return 1;
@@ -263,8 +264,8 @@ public class Bubble extends AbstractBubbleEntity {
         if (this.willBeDeleted()) return;
 //        renderer.image(TextureCollections.BUBBLE_TEXTURES.get().get(new TextureCollection.Index(getBubbleType().id().location(), getBubbleType().id().path() + "/" + radius)), (int) x - radius / 2, (int) y - radius / 2);
         var player = this.world.getPlayer();
-        double x = this.pos.x;
-        double y = this.pos.y;
+        var x = this.pos.x;
+        var y = this.pos.y;
 
         if (this.world.getGamemode() instanceof OpenWorldMode) {
             var rel = this.game.player.pos;
@@ -276,11 +277,10 @@ public class Bubble extends AbstractBubbleEntity {
             return;
         }
 
-        if (player != null && player.getActiveEffect(StatusEffects.BLINDNESS) != null) {
-            WorldRenderer.drawBubble(renderer, (float) x, (float) y, this.radius, this.destroyFrame, BubbleTypes.NORMAL);
-        } else {
-            WorldRenderer.drawBubble(renderer, (float) x, (float) y, this.radius, this.destroyFrame, this.bubbleType);
-        }
+        var renderType = player != null && player.getActiveEffect(StatusEffects.BLINDNESS) != null
+                ? BubbleTypes.NORMAL
+                : this.bubbleType;
+        WorldRenderer.drawBubble(renderer, (float) x, (float) y, this.radius, this.destroyFrame, renderType);
     }
 
     public boolean isBeingDestroyed() {

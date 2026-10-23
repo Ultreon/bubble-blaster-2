@@ -2,6 +2,7 @@ package dev.ultreon.bubbles.gamemode;
 
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.gameplay.GameplayStorage;
 import dev.ultreon.bubbles.init.HudTypes;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
@@ -78,7 +79,7 @@ public class TimedMode extends NormalMode {
     }
 
     public long getEndTime() {
-        return this.createTime + BubbleBlasterConfig.TIME_LIMIT.get() * 1000;
+        return this.createTime + Constants.TIME_LIMIT * 1000;
     }
 
     @Override

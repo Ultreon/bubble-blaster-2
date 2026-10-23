@@ -3,10 +3,7 @@ package dev.ultreon.bubbles.world;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.BubbleBlasterConfig;
-import dev.ultreon.bubbles.CrashFiller;
-import dev.ultreon.bubbles.GamePlatform;
+import dev.ultreon.bubbles.*;
 import dev.ultreon.bubbles.audio.MusicEvent;
 import dev.ultreon.bubbles.bubble.BubbleSpawnContext;
 import dev.ultreon.bubbles.bubble.BubbleType;
@@ -168,13 +165,7 @@ public final class World implements CrashFiller, Closeable {
         this.gameSave = save;
         this.randomSource = new JavaRandom(seed ^ 0x58fa2bd933ec8ed3L);
 
-        this.maxBubbles = BubbleBlasterConfig.MAX_BUBBLES.get();
-        if (this.maxBubbles < 100)
-            throw new IllegalArgumentException("Hello, your amount of bubbles are too low for the game to run.");
-
-        if (GamePlatform.get().isMobile() && this.maxBubbles > 200) this.maxBubbles = 200;
-        BubbleBlasterConfig.MAX_BUBBLES.set(this.maxBubbles);
-        BubbleBlasterConfig.save();
+        this.maxBubbles = 500;
 
         this.updateNextBloodMoon();
     }
@@ -395,7 +386,11 @@ public final class World implements CrashFiller, Closeable {
             throw new IllegalCallerException("Called on wrong thread! Should be on ticking thread.");
 
         if (this.isAlive()) {
-            this.setResultScore(Math.round(Objects.requireNonNull(this.getPlayer()).getScore()));
+            var score = Objects.requireNonNull(this.getPlayer()).getScore();
+            this.setResultScore(Math.round(score));
+
+            var xpModifier = this.difficulty.getPlainModifier() / 4.0;
+            this.game.addXp(score * xpModifier);
         }
 
         this.gameOverTime = Instant.now();
@@ -415,7 +410,7 @@ public final class World implements CrashFiller, Closeable {
         var diff = this.getDifficulty();
 
         var value = this.difficultyModifiers.modify(diff);
-        if (!BubbleBlasterConfig.DIFFICULTY_EFFECT_TYPE.get().isLocal()) {
+        if (!Constants.DIFFICULTY_EFFECT_TYPE.isLocal()) {
             return value;
         }
 

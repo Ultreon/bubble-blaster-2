@@ -2,10 +2,7 @@ package dev.ultreon.bubbles.entity.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
-import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.BubbleBlasterConfig;
-import dev.ultreon.bubbles.GameActivity;
-import dev.ultreon.bubbles.LoadedGame;
+import dev.ultreon.bubbles.*;
 import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Bullet;
 import dev.ultreon.bubbles.entity.Entity;
@@ -102,12 +99,11 @@ public class Player extends LivingEntity implements InputController {
     private final PlayerItemCollection inventory = new PlayerItemCollection(this);
     private int shootCooldown;
     public final Vector2 tempVel = new Vector2();
-    public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+    public long boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(Constants.BOOST_COOLDOWN));
     public long boostAccelTimer = 0;
     private int successRate;
     private boolean brake;
     private double currentSpeed;
-    private Vector2 tmp = new Vector2();
 
     /**
      * Player entity.
@@ -275,7 +271,7 @@ public class Player extends LivingEntity implements InputController {
             this.boostAccelTimer--;
             this.accelerate(15f, false);
         } else if (this.boostAccelTimer == 0 && this.boostRefillTimer == -1) {
-            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_COOLDOWN.get()));
+            this.boostRefillTimer = TimeUtils.toTicks(Duration.ofMilliseconds(Constants.BOOST_COOLDOWN));
         }
 
         this.abilityContainer.onEntityTick();
@@ -345,7 +341,7 @@ public class Player extends LivingEntity implements InputController {
         var bounds = loadedGame.getGamemode().getGameBounds();
 
         // Leveling up.
-        if (this.score / BubbleBlasterConfig.LEVEL_THRESHOLD.get() > this.level) {
+        if (this.score / Constants.LEVEL_THRESHOLD > this.level) {
             this.levelUp();
             world.onLevelUp(this, this.level);
         }
@@ -444,7 +440,7 @@ public class Player extends LivingEntity implements InputController {
             var attrs = props * bubbleDefense * bubbleScore * bubbleScore * scoreModifier;
 
             // Calculate score value.
-            var award = attrs * deltaTime / BubbleBlasterConfig.BUBBLE_SCORE_REDUCTION_SELF.get();
+            var award = attrs * deltaTime / Constants.BUBBLE_SCORE_REDUCTION_SELF;
 
             // Add score.
             this.awardScore(award);
@@ -747,7 +743,7 @@ public class Player extends LivingEntity implements InputController {
      */
     public void shoot(boolean force) {
         if (force || this.canShoot()) {
-            this.shootCooldown = TimeProcessor.millisToTicks(BubbleBlasterConfig.SHOOT_COOLDOWN.get());
+            this.shootCooldown = TimeProcessor.millisToTicks(Constants.SHOOT_COOLDOWN);
 
             var bulletPos = this.pos.cpy();
             var bullet = new Bullet(this.currentAmmo, bulletPos, this.rotation, this.world);
@@ -762,7 +758,7 @@ public class Player extends LivingEntity implements InputController {
 
     public void boost(boolean force) {
         if (force || this.canBoost()) {
-            this.boostAccelTimer = TimeUtils.toTicks(Duration.ofMilliseconds(BubbleBlasterConfig.BOOST_DURATION.get()));
+            this.boostAccelTimer = TimeUtils.toTicks(Duration.ofMilliseconds(Constants.BOOST_DURATION));
             if (!force) this.boostRefillTimer = -1;
         }
     }

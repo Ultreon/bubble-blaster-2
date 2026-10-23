@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.BubbleBlasterConfig;
+import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.event.v1.InputEvents;
 import dev.ultreon.bubbles.util.exceptions.OneTimeUseException;
 import dev.ultreon.libs.datetime.v0.Duration;

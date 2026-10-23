@@ -72,6 +72,7 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings({"FieldCanBeLocal"})
 public class Renderer {
+    private static final int MAX_BUBBLE_COLORS = 8;
     private static final Color ANIM_COLOR_1 = new Color(0f, 0.5f, 1f, 1f);
     private static final Color ANIM_COLOR_2 = new Color(0f, 1f, 0.5f, 1f);
     private static final Color ANIM_ERROR_COLOR_1 = Colors.rgb(0xff3000);
@@ -113,6 +114,7 @@ public class Renderer {
     private final ShaderProgram blurShader;
     private final ShaderProgram gradientTextureShader;
     private final ShaderProgram gradientColorShader;
+    private final ShaderProgram bubbleShader;
     private final TextureRegion white;
     private boolean blurred;
     private final long startTime = System.currentTimeMillis();
@@ -191,7 +193,79 @@ public class Renderer {
         var texture1 = new Texture(pixmap);
         this.white = new TextureRegion(texture1);
 
+        this.bubbleShader = new ShaderProgram(
+                "attribute vec4 a_position;\n" +
+                        "attribute vec4 a_color;\n" +
+                        "attribute vec2 a_texCoord0;\n" +
+                        "uniform mat4 u_projTrans;\n" +
+                        "uniform vec2 u_center;\n" +
+                        "varying vec4 v_color;\n" +
+                        "varying vec2 v_texCoords;\n" +
+                        "varying vec2 v_localPosition;\n" +
+                        "void main() { v_color = a_color; v_texCoords = a_texCoord0; v_localPosition = a_position.xy - u_center; gl_Position = u_projTrans * a_position; }",
+                "#ifdef GL_ES\nprecision mediump float;\n#endif\n" +
+                        "varying vec4 v_color;\n" +
+                        "varying vec2 v_texCoords;\n" +
+                        "varying vec2 v_localPosition;\n" +
+                        "uniform sampler2D u_texture;\n" +
+                        "uniform float u_outerRadius;\n" +
+                        "uniform float u_spacing;\n" +
+                        "uniform int u_colorCount;\n" +
+                        "uniform vec4 u_colors[8];\n" +
+                        "void main() {\n" +
+                        "  float distanceFromCenter = length(v_localPosition);\n" +
+                        "  float spacing = max(u_spacing, 0.001);\n" +
+                        "  float colorPosition = (u_outerRadius - distanceFromCenter) / spacing;\n" +
+                        "  float lastPosition = float(u_colorCount - 1);\n" +
+                        "  float clampedPosition = clamp(colorPosition, 0.0, lastPosition);\n" +
+                        "  int colorIndex = int(floor(clampedPosition));\n" +
+                        "  int nextColorIndex = min(colorIndex + 1, u_colorCount - 1);\n" +
+                        "  vec4 firstColor = vec4(0.0);\n" +
+                        "  vec4 nextColor = vec4(0.0);\n" +
+                        "  for (int i = 0; i < 8; i++) {\n" +
+                        "    if (i < u_colorCount) {\n" +
+                        "      if (i == colorIndex) firstColor = u_colors[i];\n" +
+                        "      if (i == nextColorIndex) nextColor = u_colors[i];\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "  vec4 result = mix(firstColor, nextColor, fract(clampedPosition));\n" +
+                        "  float feather = 0.75 / spacing;\n" +
+                        "  float coverage = smoothstep(-feather, 0.0, colorPosition) * (1.0 - smoothstep(lastPosition + 0.5, lastPosition + 0.5 + feather, colorPosition));\n" +
+                        "  result.a *= coverage;\n" +
+                        "  gl_FragColor = result * v_color * texture2D(u_texture, v_texCoords).a;\n" +
+                        "}");
+        if (!this.bubbleShader.isCompiled()) {
+            throw new GdxRuntimeException("Failed to compile bubble shader: " + this.bubbleShader.getLog());
+        }
+
         this.shapes = new ShapeDrawer(batch, this.white);
+    }
+
+    /** Draws all concentric bubble outlines with one SpriteBatch draw call. */
+    public boolean drawBubble(float x, float y, float radius, float spacing, float lineWidth, List<Color> colors) {
+        if (!this.rendering || colors.isEmpty() || colors.size() > MAX_BUBBLE_COLORS || radius <= 0) return false;
+
+        float[] colorValues = new float[colors.size() * 4];
+        for (int i = 0; i < colors.size(); i++) {
+            Color color = colors.get(i);
+            int offset = i * 4;
+            colorValues[offset] = color.r;
+            colorValues[offset + 1] = color.g;
+            colorValues[offset + 2] = color.b;
+            colorValues[offset + 3] = color.a;
+        }
+
+        var previousShader = this.batch.getShader();
+        this.batch.setShader(this.bubbleShader);
+        float quadSize = radius + lineWidth;
+        this.bubbleShader.setUniformf("u_center", x, y);
+        this.bubbleShader.setUniformf("u_outerRadius", radius * 0.5f);
+        this.bubbleShader.setUniformf("u_spacing", spacing);
+        this.bubbleShader.setUniformi("u_colorCount", colors.size());
+        this.bubbleShader.setUniform4fv("u_colors[0]", colorValues, 0, colorValues.length);
+        this.batch.draw(this.white, x - quadSize * 0.5f, y - quadSize * 0.5f, quadSize, quadSize);
+        this.batch.setShader(previousShader);
+        return true;
     }
 
     @ApiStatus.Internal
