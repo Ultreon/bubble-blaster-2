@@ -33,27 +33,27 @@ public interface GameWindow {
 
     /** The centered, aspect-preserving viewport occupied by the logical game area. */
     default Rectangle getGameViewport() {
-        float scale = Math.min((float) this.getWidth() / Constants.DEFAULT_SIZE.x,
+        var scale = Math.min((float) this.getWidth() / Constants.DEFAULT_SIZE.x,
                 (float) this.getHeight() / Constants.DEFAULT_SIZE.y);
-        float width = Constants.DEFAULT_SIZE.x * scale;
-        float height = Constants.DEFAULT_SIZE.y * scale;
+        var width = Constants.DEFAULT_SIZE.x * scale;
+        var height = Constants.DEFAULT_SIZE.y * scale;
         return new Rectangle((this.getWidth() - width) / 2f, (this.getHeight() - height) / 2f, width, height);
     }
 
     /** Convert a top-left-origin window position into logical game coordinates. */
     default Vector2 windowToGame(Vector2 position) {
-        Rectangle viewport = this.getGameViewport();
+        var viewport = this.getGameViewport();
         return position.set((position.x - viewport.x) * Constants.DEFAULT_SIZE.x / viewport.width,
                 (position.y - viewport.y) * Constants.DEFAULT_SIZE.y / viewport.height);
     }
 
     /** Convert a logical top-left-origin rectangle to backbuffer scissor coordinates. */
     default Rectangle gameToBackBuffer(Rectangle rect) {
-        Rectangle viewport = this.getGameViewport();
-        float scaleX = viewport.width / Constants.DEFAULT_SIZE.x;
-        float scaleY = viewport.height / Constants.DEFAULT_SIZE.y;
-        float x = viewport.x + rect.x * scaleX;
-        float yFromTop = viewport.y + (Constants.DEFAULT_SIZE.y - rect.y - rect.height) * scaleY;
+        var viewport = this.getGameViewport();
+        var scaleX = viewport.width / Constants.DEFAULT_SIZE.x;
+        var scaleY = viewport.height / Constants.DEFAULT_SIZE.y;
+        var x = viewport.x + rect.x * scaleX;
+        var yFromTop = viewport.y + (Constants.DEFAULT_SIZE.y - rect.y - rect.height) * scaleY;
         return new Rectangle(
                 HdpiUtils.toBackBufferX(Math.round(x)),
                 Math.round(yFromTop * Gdx.graphics.getBackBufferHeight() / Gdx.graphics.getHeight()),

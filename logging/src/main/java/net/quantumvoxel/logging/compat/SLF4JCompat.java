@@ -59,7 +59,7 @@ public class SLF4JCompat implements SLF4JServiceProvider {
 
             @Override
             public boolean detachMarker(String name) {
-                ULoggerMarker remove = SLF4JCompat.this.marker.remove(name);
+                var remove = SLF4JCompat.this.marker.remove(name);
                 if (remove != null) {
                     // Welp fuck off then :3
                 }

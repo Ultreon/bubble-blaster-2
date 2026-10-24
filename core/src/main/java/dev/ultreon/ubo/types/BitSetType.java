@@ -25,7 +25,7 @@ public class BitSetType implements DataType<BitSet> {
 
     public BitSetType(String bits) {
         this.obj = new BitSet(bits.length());
-        for (int i = 0; i < bits.length(); i++) {
+        for (var i = 0; i < bits.length(); i++) {
             this.obj.set(i, bits.charAt(i) == '1');
         }
     }
@@ -48,18 +48,18 @@ public class BitSetType implements DataType<BitSet> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] arr = this.obj.toByteArray();
+        var arr = this.obj.toByteArray();
         if (arr.length > 65535) throw new IllegalArgumentException("Bitset is too big to be written");
         output.writeShort(arr.length);
-        for (byte b : arr) {
+        for (var b : arr) {
             output.writeByte(b);
         }
     }
 
     public static BitSetType read(DataInput input) throws IOException {
-        int len = input.readUnsignedShort();
-        byte[] arr = new byte[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readUnsignedShort();
+        var arr = new byte[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readByte();
         }
         return new BitSetType(arr);
@@ -69,7 +69,7 @@ public class BitSetType implements DataType<BitSet> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof BitSetType)) return false;
-        BitSetType uuidType = (BitSetType) other;
+        var uuidType = (BitSetType) other;
         return Objects.equals(this.obj, uuidType.obj);
     }
 
@@ -85,8 +85,8 @@ public class BitSetType implements DataType<BitSet> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("x");
-        for (int i = 0; i < this.obj.length(); i++) {
+        var builder = new StringBuilder("x");
+        for (var i = 0; i < this.obj.length(); i++) {
             builder.append(this.obj.get(i) ? "1" : "0");
         }
 

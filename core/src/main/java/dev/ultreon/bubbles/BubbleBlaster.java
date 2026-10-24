@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
@@ -129,7 +130,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     public final RandomSource random = new JavaRandom();
 
     // Fonts.
-    private BitmapFont sansFont;
+    private FontSet sansFont;
     private final String fontName;
 
     public final ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
@@ -211,6 +212,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     private double money;
     private double xp;
     private int xpLevel;
+    private final List<FreeTypeFontGenerator> fontGenerators = new ArrayList<>();
+    private final List<PixmapPacker> fontPackers = new ArrayList<>();
 
     private BubbleBlaster() {
         if (instance != null)
@@ -284,7 +287,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         // Prepare for loading.
         this.prepare();
 
-        this.sansFont = this.loadFont(Gdx.files.internal("assets/bubbleblaster/fonts/noto_sans/noto_sans_regular.ttf"), 16);
+        this.sansFont = this.loadFont(BubbleBlaster.id("noto_sans/noto_sans_regular"), 16);
 
         BubbleTypes.register();
         AmmoTypes.register();
@@ -350,7 +353,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public static BitmapFont createBitmapFont(Identifier id, int size) {
-        return instance.loadFont(id, size);
+        return instance.loadFont(BubbleBlaster.resource(id.mapPath(path -> "fonts/" + path + ".ttf")), size);
     }
 
     private Cursor createCursor(String path, int hotspotX, int hotspotY) {
@@ -493,8 +496,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void resize(int width, int height) {
-        int logicalWidth = Constants.DEFAULT_SIZE.x;
-        int logicalHeight = Constants.DEFAULT_SIZE.y;
+        var logicalWidth = Constants.DEFAULT_SIZE.x;
+        var logicalHeight = Constants.DEFAULT_SIZE.y;
         var gameViewport = this.window.getGameViewport();
 
         this.camera.setToOrtho(true, logicalWidth, logicalHeight);
@@ -652,6 +655,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             LOGGER.warn("Failed to stop threads:", e);
             return;
         }
+        this.fontGenerators.forEach(FreeTypeFontGenerator::dispose);
+        this.fontPackers.forEach(PixmapPacker::dispose);
         this.checkForExitEvents();
     }
 
@@ -946,20 +951,32 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
             return bitmapFont;
         }
         var generator = new FreeTypeFontGenerator(handle);
+        var packer = new PixmapPacker(1024, 1024, Pixmap.Format.RGBA8888, 1, false);
         var parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.flip = true;
         parameter.size = size;
-        var font = generator.generateFont(parameter); // font size 12 pixels
-        generator.dispose(); // don't forget to dispose to avoid memory leaks!
-        return Objects.requireNonNull(font, "Font failed to generate!");
+        parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS;
+        parameter.incremental = true;
+        parameter.packer = packer;
+        try {
+            var font = Objects.requireNonNull(generator.generateFont(parameter), "Font failed to generate!");
+            font.setOwnsTexture(true);
+            this.fontGenerators.add(generator);
+            this.fontPackers.add(packer);
+            return font;
+        } catch (RuntimeException | Error e) {
+            packer.dispose();
+            generator.dispose();
+            throw e;
+        }
     }
 
-    public BitmapFont loadFont(Identifier id) {
+    public FontSet loadFont(Identifier id) {
         return this.loadFont(id, 12);
     }
 
-    public BitmapFont loadFont(Identifier id, int size) {
-        return this.loadFont(BubbleBlaster.resource(id.mapPath(path -> "fonts/" + path + ".ttf")), size);
+    public FontSet loadFont(Identifier id, int size) {
+        return FontSet.fromIdentifier(id, size);
     }
 
     ////////////////////////
@@ -1312,7 +1329,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     ///////////////////
     //     Fonts     //
     ///////////////////
-    public BitmapFont getSansFont() {
+    public FontSet getSansFont() {
         return this.sansFont;
     }
 

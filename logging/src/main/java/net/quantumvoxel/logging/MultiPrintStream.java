@@ -45,8 +45,8 @@ public class MultiPrintStream extends PrintStream {
     }
 
     public void addStream(PrintStream stream) {
-        PrintStream[] old = this.streams;
-        PrintStream[] updated = new PrintStream[old.length + 1];
+        var old = this.streams;
+        var updated = new PrintStream[old.length + 1];
         System.arraycopy(old, 0, updated, 0, old.length);
         updated[old.length] = stream;
         this.streams = updated;
@@ -54,35 +54,35 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public void write(int b) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.write(b);
         }
     }
 
     @Override
     public void write(byte[] buf) throws IOException {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.write(buf);
         }
     }
 
     @Override
     public void write(@NotNull byte[] buf, int off, int len) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.write(buf, off, len);
         }
     }
 
     @Override
     public void flush() {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.flush();
         }
     }
 
     @Override
     public void close() {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             try {
                 stream.close();
             } catch (Exception ignored) {
@@ -93,140 +93,140 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public void print(boolean b) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(b);
         }
     }
 
     @Override
     public void print(char c) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(c);
         }
     }
 
     @Override
     public void print(int i) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(i);
         }
     }
 
     @Override
     public void print(long l) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(l);
         }
     }
 
     @Override
     public void print(float f) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(f);
         }
     }
 
     @Override
     public void print(double d) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(d);
         }
     }
 
     @Override
     public void print(@NotNull char[] s) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(s);
         }
     }
 
     @Override
     public void print(@Nullable String s) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(s);
         }
     }
 
     @Override
     public void print(@Nullable Object obj) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.print(obj);
         }
     }
 
     @Override
     public void println() {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println();
         }
     }
 
     @Override
     public void println(boolean x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(char x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(int x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(long x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(float x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(double x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(@NotNull char[] x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(@Nullable String x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public void println(@Nullable Object x) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.println(x);
         }
     }
 
     @Override
     public PrintStream printf(@NotNull String format, Object... args) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.printf(format, args);
         }
         return this;
@@ -234,7 +234,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream printf(Locale l, @NotNull String format, Object... args) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.printf(l, format, args);
         }
         return this;
@@ -242,7 +242,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream format(@NotNull String format, Object... args) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.format(format, args);
         }
         return this;
@@ -250,7 +250,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream format(Locale l, @NotNull String format, Object... args) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.format(l, format, args);
         }
         return this;
@@ -258,7 +258,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream append(CharSequence csq) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.append(csq);
         }
         return this;
@@ -266,7 +266,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream append(CharSequence csq, int start, int end) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.append(csq, start, end);
         }
         return this;
@@ -274,7 +274,7 @@ public class MultiPrintStream extends PrintStream {
 
     @Override
     public PrintStream append(char c) {
-        for (PrintStream stream : this.streams) {
+        for (var stream : this.streams) {
             stream.append(c);
         }
         return this;

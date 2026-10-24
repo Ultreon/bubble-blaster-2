@@ -22,6 +22,7 @@ import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.Messenger;
 import dev.ultreon.libs.commons.v0.MessengerImpl;
 import dev.ultreon.libs.commons.v0.ProgressMessenger;
+import dev.ultreon.libs.crash.v0.CrashLog;
 import dev.ultreon.libs.registries.v0.Registry;
 import dev.ultreon.libs.registries.v0.event.RegistryEvents;
 import dev.ultreon.libs.translations.v1.LanguageManager;
@@ -126,6 +127,16 @@ public final class LoadScreen extends InternalScreen {
     }
 
     private void doLoading() {
+        try {
+            this.loadGame();
+        } catch (Throwable throwable) {
+            LOGGER.error("Game loading failed", throwable);
+            LoadScreen.done = true;
+            BubbleBlaster.invoke(() -> this.game.showScreen(new CrashScreen(new CrashLog("Game loading failed", throwable)), true));
+        }
+    }
+
+    private void loadGame() {
         LOGGER.info("Loading started");
 
         GameSettings.nopInit();
@@ -206,9 +217,11 @@ public final class LoadScreen extends InternalScreen {
 
         LoadScreen.done = true;
 
-        LifecycleEvents.LOADED.factory().onLoaded(this.game, this);
-
-        BubbleBlaster.invoke(this.game::finish);
+        try {
+            LifecycleEvents.LOADED.factory().onLoaded(this.game, this);
+        } finally {
+            BubbleBlaster.invoke(this.game::finish);
+        }
     }
 
     private void setupTextureCollections() {
@@ -239,6 +252,7 @@ public final class LoadScreen extends InternalScreen {
         this.registerLanguage("ko_kr");
         this.registerLanguage("ru_ru");
         this.registerLanguage("zh_cn");
+        this.registerLanguage("el_gr");
         this.registerLanguage("ja_jp");
 
         LifecycleEvents.REGISTER_LANGUAGES.factory().onRegisterLanguages(this.game, this, this::registerLanguage);

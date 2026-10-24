@@ -50,7 +50,7 @@ public class FloatType implements DataType<Float> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof FloatType)) return false;
-        FloatType floatType = (FloatType) other;
+        var floatType = (FloatType) other;
         return Float.compare(this.obj, floatType.obj) == 0;
     }
 

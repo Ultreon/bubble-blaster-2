@@ -42,7 +42,7 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     public ByteArrayType(Byte[] array) {
         this.obj = new byte[array.length];
-        for (int i = 0; i < array.length; i++) {
+        for (var i = 0; i < array.length; i++) {
             this.obj[i] = array[i];
         }
     }
@@ -66,15 +66,15 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (byte b : this.obj) {
+        for (var b : this.obj) {
             output.writeByte(b);
         }
     }
 
     public static ByteArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        byte[] arr = new byte[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new byte[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readByte();
         }
         return new ByteArrayType(arr);
@@ -84,7 +84,7 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof ByteArrayType)) return false;
-        ByteArrayType that = (ByteArrayType) other;
+        var that = (ByteArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -100,8 +100,8 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(b;");
-        for (byte v : this.obj) {
+        var builder = new StringBuilder("(b;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

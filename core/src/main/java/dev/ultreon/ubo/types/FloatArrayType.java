@@ -39,15 +39,15 @@ public class FloatArrayType implements ArrayType<float[], Float> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (float i : this.obj) {
+        for (var i : this.obj) {
             output.writeFloat(i);
         }
     }
 
     public static FloatArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        float[] arr = new float[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new float[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readFloat();
         }
         return new FloatArrayType(arr);
@@ -57,7 +57,7 @@ public class FloatArrayType implements ArrayType<float[], Float> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof FloatArrayType)) return false;
-        FloatArrayType that = (FloatArrayType) other;
+        var that = (FloatArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -96,8 +96,8 @@ public class FloatArrayType implements ArrayType<float[], Float> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(f;");
-        for (float v : this.obj) {
+        var builder = new StringBuilder("(f;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

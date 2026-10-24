@@ -54,7 +54,7 @@ public class ByteType implements DataType<Byte> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof ByteType)) return false;
-        ByteType byteType = (ByteType) other;
+        var byteType = (ByteType) other;
         return this.obj == byteType.obj;
     }
 

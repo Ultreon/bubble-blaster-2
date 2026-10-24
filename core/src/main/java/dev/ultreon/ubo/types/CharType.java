@@ -50,7 +50,7 @@ public class CharType implements DataType<Character> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof CharType)) return false;
-        CharType charType = (CharType) other;
+        var charType = (CharType) other;
         return this.obj == charType.obj;
     }
 

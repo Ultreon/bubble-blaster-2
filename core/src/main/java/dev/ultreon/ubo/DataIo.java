@@ -70,19 +70,19 @@ public class DataIo {
      */
     @SafeVarargs
     public static <T extends DataType<?>> T read(DataInput input, T... type) throws IOException {
-        int magic = input.readInt();
+        var magic = input.readInt();
         if (magic != HEADER) {
             throw new StreamCorruptedException(String.format("Invalid header got 0x%08X (expected 0xFF804269)", magic));
         }
 
-        short readVersion = input.readShort();
+        var readVersion = input.readShort();
         if (readVersion > VERSION) {
             throw new FutureVersionException(readVersion, VERSION);
         }
 
-        Class<T> componentType = (Class<T>) type.getClass().getComponentType();
-        int componentId = DataTypeRegistry.getId(componentType);
-        int id = input.readUnsignedByte();
+        var componentType = (Class<T>) type.getClass().getComponentType();
+        var componentId = DataTypeRegistry.getId(componentType);
+        var id = input.readUnsignedByte();
 
         if (componentId != id) {
             throw new DataTypeException("The read data id " + id + " is different from the expected id: " + componentId);
@@ -128,7 +128,7 @@ public class DataIo {
 
     @SafeVarargs
     public static <T extends DataType<?>> T readCompressed(InputStream stream, T... type) throws IOException {
-        GZIPInputStream gzipStream = new GZIPInputStream(stream);
+        var gzipStream = new GZIPInputStream(stream);
         return read(gzipStream, type);
     }
 
@@ -172,19 +172,19 @@ public class DataIo {
      * @throws DataTypeException when the read data type is invalid.
      */
     public static <T extends DataType<?>> T read(DataInput input, Class<T> type) throws IOException {
-        int magic = input.readInt();
+        var magic = input.readInt();
         if (magic != HEADER) {
             throw new StreamCorruptedException(String.format("Invalid header got 0x%08X (expected 0xFF804269)", magic));
         }
 
-        short readVersion = input.readShort();
+        var readVersion = input.readShort();
         if (readVersion > VERSION) {
             throw new FutureVersionException(readVersion, VERSION);
         }
 
-        Class<T> componentType = (Class<T>) type.getClass().getComponentType();
-        int componentId = DataTypeRegistry.getId(componentType);
-        int id = input.readUnsignedByte();
+        var componentType = (Class<T>) type.getClass().getComponentType();
+        var componentId = DataTypeRegistry.getId(componentType);
+        var id = input.readUnsignedByte();
 
         if (componentId != id) {
             throw new DataTypeException("The read data id " + id + " is different from the expected id: " + componentId);
@@ -218,7 +218,7 @@ public class DataIo {
     }
 
     public static <T extends DataType<?>> T readCompressed(InputStream stream, Class<T> type) throws IOException {
-        GZIPInputStream gzipStream = new GZIPInputStream(stream);
+        var gzipStream = new GZIPInputStream(stream);
         return read(gzipStream, type);
     }
 
@@ -285,7 +285,7 @@ public class DataIo {
     }
 
     public static void writeCompressed(DataType<?> dataType, OutputStream stream) throws IOException {
-        GZIPOutputStream gzipStream = new GZIPOutputStream(stream);
+        var gzipStream = new GZIPOutputStream(stream);
         write(dataType, gzipStream);
         gzipStream.finish();
         gzipStream.flush();
@@ -302,15 +302,15 @@ public class DataIo {
     @SafeVarargs
     @Deprecated
     public static <T extends DataType<?>> T fromUso(String value, T... type) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new StringReader(value))) {
-            DataType<?> iDataType = readUso(reader.readLine());
+        try (var reader = new BufferedReader(new StringReader(value))) {
+            var iDataType = readUso(reader.readLine());
             return (T) iDataType;
         }
     }
 
     public static <T extends DataType<?>> T fromUso(String value) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new StringReader(value))) {
-            DataType<?> iDataType = readUso(reader.readLine());
+        try (var reader = new BufferedReader(new StringReader(value))) {
+            var iDataType = readUso(reader.readLine());
             return (T) iDataType;
         }
     }

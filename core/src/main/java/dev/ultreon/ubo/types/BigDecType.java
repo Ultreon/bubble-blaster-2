@@ -37,19 +37,19 @@ public class BigDecType implements DataType<BigDecimal> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] bytes = this.obj.unscaledValue().toByteArray();
+        var bytes = this.obj.unscaledValue().toByteArray();
         output.writeInt(bytes.length);
         output.writeInt(this.obj.scale());
-        for (byte aByte : bytes) {
+        for (var aByte : bytes) {
             output.writeByte(aByte);
         }
     }
 
     public static BigDecType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        int scale = input.readInt();
-        byte[] bytes = new byte[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var scale = input.readInt();
+        var bytes = new byte[len];
+        for (var i = 0; i < len; i++) {
             bytes[i] = input.readByte();
         }
 
@@ -60,7 +60,7 @@ public class BigDecType implements DataType<BigDecimal> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof BigDecType)) return false;
-        BigDecType that = (BigDecType) other;
+        var that = (BigDecType) other;
         return this.obj.equals(that.obj);
     }
 

@@ -50,7 +50,7 @@ public class DoubleType implements DataType<Double> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof DoubleType)) return false;
-        DoubleType that = (DoubleType) other;
+        var that = (DoubleType) other;
         return Double.compare(this.obj, that.obj) == 0;
     }
 

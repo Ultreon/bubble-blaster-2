@@ -12,7 +12,7 @@ public interface ArrayType<T, B> extends DataType<T>, Iterable<B> {
     void set(int index, B value);
 
     default void fill(B value) {
-        for (int i = 0; i < size(); i++) {
+        for (var i = 0; i < size(); i++) {
             set(i, value);
         }
     }

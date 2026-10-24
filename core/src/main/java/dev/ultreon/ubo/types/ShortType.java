@@ -54,7 +54,7 @@ public class ShortType implements DataType<Short> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof ShortType)) return false;
-        ShortType shortType = (ShortType) other;
+        var shortType = (ShortType) other;
         return this.obj == shortType.obj;
     }
 

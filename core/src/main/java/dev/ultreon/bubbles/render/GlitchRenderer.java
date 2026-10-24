@@ -15,11 +15,16 @@ public class GlitchRenderer {
     private char[][] matrix;
     private int[][] cMatrix;
     private final int charW;
-    private final int charH;
+    private int charH;
 
     public GlitchRenderer(BubbleBlaster game) {
-        this.charW = this.font.getData().getGlyph('A').width + 4;
+        var a = this.font.getData().getGlyph('A');
+        if (a == null)
+            this.charW = 1;
+        else this.charW = a.width + 4;
         this.charH = (int) this.font.getData().lineHeight;
+        if (charH <= 0)
+            this.charH = 1;
         this.matrixW = game.getWidth() / this.charW;
         this.matrixH = game.getHeight() / this.charH;
         this.matrix = new char[this.matrixW][this.matrixH];

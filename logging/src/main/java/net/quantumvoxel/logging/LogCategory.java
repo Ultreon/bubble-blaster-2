@@ -42,7 +42,7 @@ public class LogCategory {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        LogCategory that = (LogCategory) o;
+        var that = (LogCategory) o;
         return Objects.equals(this.name, that.name);
     }
 

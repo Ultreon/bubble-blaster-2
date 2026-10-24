@@ -65,20 +65,20 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.size());
-        for (Entry<String, DataType<?>> e : this.obj.entrySet()) {
+        for (var e : this.obj.entrySet()) {
             output.writeUTF(e.getKey());
-            DataType<?> value = e.getValue();
+            var value = e.getValue();
             output.writeByte(value.id());
             value.write(output);
         }
     }
 
     public static MapType read(DataInput input) throws IOException {
-        int len = input.readInt();
+        var len = input.readInt();
         Map<String, DataType<?>> map = new HashMap<>(len);
-        for (int i = 0; i < len; i++) {
-            String key = input.readUTF();
-            int id = input.readUnsignedByte();
+        for (var i = 0; i < len; i++) {
+            var key = input.readUTF();
+            var id = input.readUnsignedByte();
             map.put(key, DataTypeRegistry.read(id, input));
         }
 
@@ -86,14 +86,14 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public boolean contains(String key, int type) {
-        DataType<?> data = this.obj.get(key);
+        var data = this.obj.get(key);
 
         return data != null && data.id() == type;
     }
 
     @SafeVarargs
     public final <T extends DataType<?>> boolean contains(String key, T... type) {
-        DataType<?> data = this.obj.get(key);
+        var data = this.obj.get(key);
 
         return data != null && type.getClass().getComponentType().isAssignableFrom(data.getClass());
     }
@@ -210,7 +210,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public byte getByte(String key, byte def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof ByteType) {
             return ((ByteType) dataType).getByteValue();
         }
@@ -222,7 +222,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public short getShort(String key, short def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof ShortType) {
             return ((ShortType) dataType).getShortValue();
         }
@@ -234,7 +234,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public int getInt(String key, int def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof IntType) {
             return ((IntType) dataType).getIntValue();
         }
@@ -246,7 +246,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public long getLong(String key, long def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof LongType) {
             return ((LongType) dataType).getLongValue();
         }
@@ -258,7 +258,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public BigInteger getBigInt(String key, BigInteger def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof BigIntType) {
             return ((BigIntType) dataType).getValue();
         }
@@ -270,7 +270,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public float getFloat(String key, float def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof FloatType) {
             return ((FloatType) dataType).getFloatValue();
         }
@@ -282,7 +282,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public double getDouble(String key, double def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof DoubleType) {
             return ((DoubleType) dataType).getDoubleValue();
         }
@@ -294,7 +294,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public BigDecimal getBigDec(String key, BigDecimal def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof BigDecType) {
             return ((BigDecType) dataType).getValue();
         }
@@ -306,7 +306,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public char getChar(String key, char def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof CharType) {
             return ((CharType) dataType).getCharValue();
         }
@@ -318,7 +318,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public boolean getBoolean(String key, boolean def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof BooleanType) {
             return ((BooleanType) dataType).getBooleanValue();
         }
@@ -330,7 +330,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public String getString(String key, String def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof StringType) {
             return ((StringType) dataType).getValue();
         }
@@ -342,7 +342,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public byte[] getByteArray(String key, byte[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof ByteArrayType) {
             return ((ByteArrayType) dataType).getValue();
         }
@@ -354,7 +354,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public short[] getShortArray(String key, short[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof ShortArrayType) {
             return ((ShortArrayType) dataType).getValue();
         }
@@ -366,7 +366,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public int[] getIntArray(String key, int[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof IntArrayType) {
             return ((IntArrayType) dataType).getValue();
         }
@@ -378,7 +378,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public long[] getLongArray(String key, long[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof LongArrayType) {
             return ((LongArrayType) dataType).getValue();
         }
@@ -390,7 +390,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public float[] getFloatArray(String key, float[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof FloatArrayType) {
             return ((FloatArrayType) dataType).getValue();
         }
@@ -402,7 +402,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public double[] getDoubleArray(String key, double[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof DoubleArrayType) {
             return ((DoubleArrayType) dataType).getValue();
         }
@@ -414,7 +414,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public char[] getCharArray(String key, char[] def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof CharArrayType) {
             return ((CharArrayType) dataType).getValue();
         }
@@ -426,7 +426,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public BitSet getBitSet(String key, BitSet def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof BitSetType) {
             return ((BitSetType) dataType).getValue();
         }
@@ -438,7 +438,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public MapType getMap(String key, MapType def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof MapType) {
             return (MapType) dataType;
         }
@@ -451,9 +451,9 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <T extends DataType<?>> ListType<T> getList(String key, ListType<T> def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof ListType<?>) {
-            ListType<?> obj = (ListType<?>) dataType;
+            var obj = (ListType<?>) dataType;
             if (obj.type() != def.type()) {
                 return def;
             }
@@ -467,7 +467,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public UUID getUUID(String key, UUID def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType instanceof UUIDType) {
             return ((UUIDType) dataType).getValue();
         }
@@ -479,7 +479,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <T extends DataType<?>> T get(String key, @NotNull T def) {
-        DataType<?> dataType = get(key);
+        var dataType = get(key);
         if (dataType == null) {
             return def;
         }
@@ -506,7 +506,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof MapType)) return false;
-        MapType mapType = (MapType) other;
+        var mapType = (MapType) other;
         return Objects.equals(this.obj, mapType.obj);
     }
 
@@ -525,7 +525,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <R> Map<String, R> mapTo(Function<DataType<?>, R> mapper, Map<String, R> map) {
-        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
+        for (var entry : this.obj.entrySet()) {
             if (map.put(entry.getKey(), mapper.apply(entry.getValue())) != null) {
                 throw new IllegalStateException("Duplicate key");
             }
@@ -538,7 +538,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <R> List<R> reduce(BiFunction<String, DataType<?>, R> reducer, List<R> list) {
-        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
+        for (var entry : this.obj.entrySet()) {
             list.add(reducer.apply(entry.getKey(), entry.getValue()));
         }
         return list;
@@ -546,8 +546,8 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("{");
-        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
+        var builder = new StringBuilder("{");
+        for (var entry : this.obj.entrySet()) {
             builder.append("\"").append(entry.getKey().replace("\"", "\\\"")).append("\": ").append(entry.getValue().writeUso()).append(", ");
         }
 

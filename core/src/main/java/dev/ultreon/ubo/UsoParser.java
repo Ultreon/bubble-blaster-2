@@ -18,7 +18,7 @@ public class UsoParser {
     }
 
     private DataType<?> readUso() throws IOException {
-        int read = read();
+        var read = read();
         switch (read) {
             case '[':
                 return readList();
@@ -45,9 +45,9 @@ public class UsoParser {
     }
 
     private DataType<?> readBoolean() throws IOException {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         while (true) {
-            int r = read();
+            var r = read();
             if (r == -1) break;
             if (!Character.isAlphabetic(r)) break;
             builder.append((char) r);
@@ -55,14 +55,14 @@ public class UsoParser {
 
         unread();
 
-        String string = builder.toString();
+        var string = builder.toString();
         if (string.equalsIgnoreCase("true")) return new BooleanType(true);
         if (string.equalsIgnoreCase("false")) return new BooleanType(false);
         throw new IOException("Invalid boolean: " + string);
     }
 
     private DataType<?> readArray() throws IOException {
-        int read = read();
+        var read = read();
         switch ((char) read) {
             case 'b':
                 if (read() != ';') throw new IOException("Invalid array: expected ';'");
@@ -94,7 +94,7 @@ public class UsoParser {
     }
 
     private CharArrayType readCharArray() throws IOException {
-        char[] chars = new char[0];
+        var chars = new char[0];
         while (true) {
             int r;
             if ((r = read()) == -1) {
@@ -105,7 +105,7 @@ public class UsoParser {
                 throw new IOException("Invalid character: expected ' but got " + (char) r);
             }
 
-            char c = readChar();
+            var c = readChar();
 
             r = read();
 
@@ -120,11 +120,11 @@ public class UsoParser {
     }
 
     private ByteArrayType readByteArray() throws IOException {
-        byte[] bytes = new byte[0];
+        var bytes = new byte[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -142,7 +142,7 @@ public class UsoParser {
             }
 
 
-            byte number = Byte.parseByte(builder.toString());
+            var number = Byte.parseByte(builder.toString());
             bytes = add(bytes, number);
 
             if (r == ',') continue;
@@ -154,11 +154,11 @@ public class UsoParser {
     }
 
     private ShortArrayType readShortArray() throws IOException {
-        short[] shorts = new short[0];
+        var shorts = new short[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -174,7 +174,7 @@ public class UsoParser {
                 throw new IOException("Invalid number");
             }
 
-            short number = Short.parseShort(builder.toString());
+            var number = Short.parseShort(builder.toString());
             shorts = add(shorts, number);
 
             if (r == ',') continue;
@@ -186,11 +186,11 @@ public class UsoParser {
     }
 
     private IntArrayType readIntArray() throws IOException {
-        int[] ints = new int[0];
+        var ints = new int[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -206,7 +206,7 @@ public class UsoParser {
                 throw new IOException("Invalid number");
             }
 
-            int number = Integer.parseInt(builder.toString());
+            var number = Integer.parseInt(builder.toString());
             ints = add(ints, number);
 
             if (r == ',') continue;
@@ -218,11 +218,11 @@ public class UsoParser {
     }
 
     private LongArrayType readLongArray() throws IOException {
-        long[] longs = new long[0];
+        var longs = new long[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -238,7 +238,7 @@ public class UsoParser {
                 throw new IOException("Invalid number");
             }
 
-            long number = Long.parseLong(builder.toString());
+            var number = Long.parseLong(builder.toString());
             longs = add(longs, number);
 
             if (r == ',') continue;
@@ -250,11 +250,11 @@ public class UsoParser {
     }
 
     private FloatArrayType readFloatArray() throws IOException {
-        float[] floats = new float[0];
+        var floats = new float[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -270,7 +270,7 @@ public class UsoParser {
                 throw new IOException("Invalid number");
             }
 
-            float number = Float.parseFloat(builder.toString());
+            var number = Float.parseFloat(builder.toString());
             floats = add(floats, number);
 
             if (r == ',') continue;
@@ -282,11 +282,11 @@ public class UsoParser {
     }
 
     private DoubleArrayType readDoubleArray() throws IOException {
-        double[] doubles = new double[0];
+        var doubles = new double[0];
         while (true) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             int r;
-            boolean first = true;
+            var first = true;
             while (true) {
                 r = read();
                 if (first && r == '-') {
@@ -302,7 +302,7 @@ public class UsoParser {
                 throw new IOException("Invalid number");
             }
 
-            double number = Double.parseDouble(builder.toString());
+            var number = Double.parseDouble(builder.toString());
             doubles = add(doubles, number);
 
             if (r == ',') continue;
@@ -314,7 +314,7 @@ public class UsoParser {
     }
 
     private char readChar() throws IOException {
-        int read = read();
+        var read = read();
         if (read == '\\') {
             read = read();
             if (read == 't') {
@@ -344,61 +344,61 @@ public class UsoParser {
     }
 
     private byte[] add(byte[] bytes, byte number) {
-        byte[] newBytes = new byte[bytes.length + 1];
+        var newBytes = new byte[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private short[] add(short[] bytes, short number) {
-        short[] newBytes = new short[bytes.length + 1];
+        var newBytes = new short[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private int[] add(int[] bytes, int number) {
-        int[] newBytes = new int[bytes.length + 1];
+        var newBytes = new int[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private long[] add(long[] bytes, long number) {
-        long[] newBytes = new long[bytes.length + 1];
+        var newBytes = new long[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private float[] add(float[] bytes, float number) {
-        float[] newBytes = new float[bytes.length + 1];
+        var newBytes = new float[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private double[] add(double[] bytes, double number) {
-        double[] newBytes = new double[bytes.length + 1];
+        var newBytes = new double[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private char[] add(char[] bytes, char number) {
-        char[] newBytes = new char[bytes.length + 1];
+        var newBytes = new char[bytes.length + 1];
         System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
         newBytes[bytes.length] = number;
         return newBytes;
     }
 
     private BitSetType readBitSet() throws IOException {
-        BitSet set = new BitSet();
-        int i = 0;
+        var set = new BitSet();
+        var i = 0;
 
         loop:
         while (true) {
-            int read = read();
+            var read = read();
             switch (read) {
                 case '0':
                     set.clear(i);
@@ -420,7 +420,7 @@ public class UsoParser {
     }
 
     private DataType<?> readNumber(int read) throws IOException {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         builder.append((char) read);
         while (true) {
             read = read();
@@ -455,15 +455,15 @@ public class UsoParser {
     }
 
     private DataType<?> readList() throws IOException {
-        DataType<?> dataType = readUso();
+        var dataType = readUso();
         if (dataType == null) {
             throw new IOException("Invalid list: expected at least one element");
         }
 
-        int id = dataType.id();
-        int read = read();
+        var id = dataType.id();
+        var read = read();
         if (read == ']') {
-            ListType<DataType<?>> list = new ListType<>(id);
+            var list = new ListType<DataType<?>>(id);
             list.add(dataType);
             return list;
         } else if (read != ',') {
@@ -472,10 +472,10 @@ public class UsoParser {
 
         readWhitespace();
 
-        ListType<DataType<?>> list = new ListType<>(id);
+        var list = new ListType<DataType<?>>(id);
         list.add(dataType);
         while (true) {
-            DataType<?> cur = readUso();
+            var cur = readUso();
             if (cur == null) {
                 throw new IOException("Invalid list: invalid element at index " + list.size());
             }
@@ -505,17 +505,17 @@ public class UsoParser {
     }
 
     private DataType<?> readMap() throws IOException {
-        MapType map = new MapType();
-        int read = read();
+        var map = new MapType();
+        var read = read();
         while (read != '}') {
             if (read != '"') throw new IOException("Invalid map: expected '\"' but got " + (char) read);
-            StringType key = readString();
+            var key = readString();
 
             readWhitespace();
             if (read() != ':') throw new IOException("Invalid map: expected ':' but got " + (char) read);
             read();
             readWhitespace();
-            DataType<?> value = readUso();
+            var value = readUso();
 
             map.put(key.getValue(), value);
 
@@ -539,8 +539,8 @@ public class UsoParser {
     }
 
     private StringType readString() {
-        StringBuilder builder = new StringBuilder();
-        int read = read();
+        var builder = new StringBuilder();
+        var read = read();
         while (read != '"') {
             builder.append((char) read);
             if (read == '\\') {
@@ -573,7 +573,7 @@ public class UsoParser {
 
     private void readWhitespace() {
         while (true) {
-            int read = read();
+            var read = read();
             if (!Character.isWhitespace(read)) {
                 unread();
                 return;
@@ -582,9 +582,9 @@ public class UsoParser {
     }
 
     private UUIDType readUUID() throws IOException {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         while (true) {
-            int read = read();
+            var read = read();
             if (read == '>') break;
 
             if (read == -1) throw new EOFException("Invalid UUID: EOF");

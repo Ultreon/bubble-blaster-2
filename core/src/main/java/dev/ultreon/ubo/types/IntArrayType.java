@@ -39,15 +39,15 @@ public class IntArrayType implements ArrayType<int[], Integer> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (int i : this.obj) {
+        for (var i : this.obj) {
             output.writeInt(i);
         }
     }
 
     public static IntArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        int[] arr = new int[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new int[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readInt();
         }
         return new IntArrayType(arr);
@@ -57,7 +57,7 @@ public class IntArrayType implements ArrayType<int[], Integer> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof IntArrayType)) return false;
-        IntArrayType that = (IntArrayType) other;
+        var that = (IntArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -96,8 +96,8 @@ public class IntArrayType implements ArrayType<int[], Integer> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(i;");
-        for (int v : this.obj) {
+        var builder = new StringBuilder("(i;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

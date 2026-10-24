@@ -51,14 +51,14 @@ public class DataTypeRegistry {
     @SafeVarargs
     @SuppressWarnings("unchecked")
     public static <T extends DataType<?>> void register(int id, DataReader<T> reader, T... type) {
-        Class<? extends T> componentType = (Class<? extends T>) type.getClass().getComponentType();
+        var componentType = (Class<? extends T>) type.getClass().getComponentType();
         READERS.put(id, reader);
         TYPES.put(id, componentType);
         ID_MAP.put(componentType.getName(), id);
     }
 
     public static DataType<?> read(int id, DataInput input) throws IOException {
-        DataReader<? extends DataType<?>> reader = READERS.get(id);
+        var reader = READERS.get(id);
 
         if (reader == null)
             throw new DataTypeException("Unknown datatype id: " + id);
@@ -75,8 +75,8 @@ public class DataTypeRegistry {
     }
 
     public static int getIdOrThrow(Class<? extends DataType<?>> dataType) {
-        String name = dataType.getName();
-        Integer id = ID_MAP.get(name);
+        var name = dataType.getName();
+        var id = ID_MAP.get(name);
 
         if (id == null)
             throw new IllegalArgumentException("No type registered for " + name);

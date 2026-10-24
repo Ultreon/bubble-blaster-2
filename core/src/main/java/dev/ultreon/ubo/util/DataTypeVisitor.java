@@ -31,9 +31,9 @@ public interface DataTypeVisitor<T> {
     static DataTypeVisitor<DataType<?>> deepCopy() {
         return type1 -> {
             if (type1 instanceof ListType<?>) {
-                ListType<?> original = (ListType<?>) type1;
-                ListType<DataType<?>> listType = new ListType<>(original.type());
-                for (DataType<?> dataType : ((ListType<?>) type1).getValue()) {
+                var original = (ListType<?>) type1;
+                var listType = new ListType<DataType<?>>(original.type());
+                for (var dataType : ((ListType<?>) type1).getValue()) {
                     listType.add(deepCopy(dataType));
                 }
 
@@ -41,8 +41,8 @@ public interface DataTypeVisitor<T> {
             }
 
             if (type1 instanceof MapType) {
-                MapType mapType = new MapType();
-                for (Map.Entry<String, DataType<?>> entry : ((MapType) type1).getValue().entrySet()) {
+                var mapType = new MapType();
+                for (var entry : ((MapType) type1).getValue().entrySet()) {
                     mapType.put(entry.getKey(), deepCopy(entry.getValue()));
                 }
 

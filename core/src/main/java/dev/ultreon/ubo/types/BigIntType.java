@@ -36,17 +36,17 @@ public class BigIntType implements DataType<BigInteger> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] bytes = this.obj.toByteArray();
+        var bytes = this.obj.toByteArray();
         output.writeInt(bytes.length);
-        for (byte aByte : bytes) {
+        for (var aByte : bytes) {
             output.writeByte(aByte);
         }
     }
 
     public static BigIntType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        byte[] bytes = new byte[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var bytes = new byte[len];
+        for (var i = 0; i < len; i++) {
             bytes[i] = input.readByte();
         }
 
@@ -57,7 +57,7 @@ public class BigIntType implements DataType<BigInteger> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof BigIntType)) return false;
-        BigIntType that = (BigIntType) other;
+        var that = (BigIntType) other;
         return this.obj.equals(that.obj);
     }
 

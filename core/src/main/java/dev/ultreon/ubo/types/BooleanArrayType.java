@@ -26,7 +26,7 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     public BooleanArrayType(Boolean[] array) {
         this.obj = new boolean[array.length];
-        for (int i = 0; i < array.length; i++) {
+        for (var i = 0; i < array.length; i++) {
             this.obj[i] = array[i];
         }
     }
@@ -50,15 +50,15 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (int i = 0; i < this.obj.length; i += 4) {
-            boolean b = this.obj[i];
-            boolean b1 = i + 1 < this.obj.length && this.obj[i + 1];
-            boolean b2 = i + 2 < this.obj.length && this.obj[i + 2];
-            boolean b3 = i + 3 < this.obj.length && this.obj[i + 3];
-            boolean b4 = i + 4 < this.obj.length && this.obj[i + 4];
-            boolean b5 = i + 5 < this.obj.length && this.obj[i + 5];
-            boolean b6 = i + 6 < this.obj.length && this.obj[i + 6];
-            boolean b7 = i + 7 < this.obj.length && this.obj[i + 7];
+        for (var i = 0; i < this.obj.length; i += 4) {
+            var b = this.obj[i];
+            var b1 = i + 1 < this.obj.length && this.obj[i + 1];
+            var b2 = i + 2 < this.obj.length && this.obj[i + 2];
+            var b3 = i + 3 < this.obj.length && this.obj[i + 3];
+            var b4 = i + 4 < this.obj.length && this.obj[i + 4];
+            var b5 = i + 5 < this.obj.length && this.obj[i + 5];
+            var b6 = i + 6 < this.obj.length && this.obj[i + 6];
+            var b7 = i + 7 < this.obj.length && this.obj[i + 7];
             output.writeByte(
                     (b ? 1 : 0) | (b1 ? 2 : 0) | (b2 ? 4 : 0) | (b3 ? 8 : 0) |
                             (b4 ? 16 : 0) | (b5 ? 32 : 0) | (b6 ? 64 : 0) | (b7 ? 128 : 0)
@@ -67,10 +67,10 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
     }
 
     public static BooleanArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        boolean[] arr = new boolean[len];
-        for (int i = 0; i < len; i += 4) {
-            byte b = input.readByte();
+        var len = input.readInt();
+        var arr = new boolean[len];
+        for (var i = 0; i < len; i += 4) {
+            var b = input.readByte();
             arr[i] = (b & 1) == 1;
             if (i + 1 < len) arr[i + 1] = (b & 2) == 2;
             if (i + 2 < len) arr[i + 2] = (b & 4) == 4;
@@ -87,7 +87,7 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof BooleanArrayType)) return false;
-        BooleanArrayType that = (BooleanArrayType) other;
+        var that = (BooleanArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -103,8 +103,8 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(z;");
-        for (boolean v : this.obj) {
+        var builder = new StringBuilder("(z;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

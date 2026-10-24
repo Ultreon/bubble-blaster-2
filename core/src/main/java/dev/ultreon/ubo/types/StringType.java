@@ -51,17 +51,17 @@ public class StringType implements DataType<String>, CharSequence {
     @Override
     public void write(DataOutput output) throws IOException {
         if (this.obj.length() > 65535) throw new IllegalArgumentException("String is too big to be written (length > 65535)");
-        byte[] bytes = this.obj.getBytes(StandardCharsets.UTF_8);
+        var bytes = this.obj.getBytes(StandardCharsets.UTF_8);
         output.writeShort(bytes.length);
-        for (byte aByte : bytes) {
+        for (var aByte : bytes) {
             output.writeByte(aByte);
         }
     }
 
     public static StringType read(DataInput input) throws IOException {
-        int strLen = input.readUnsignedShort();
-        byte[] bytes = new byte[strLen];
-        for (int j = 0; j < strLen; j++) {
+        var strLen = input.readUnsignedShort();
+        var bytes = new byte[strLen];
+        for (var j = 0; j < strLen; j++) {
             bytes[j] = input.readByte();
         }
         return new StringType(new String(bytes, StandardCharsets.UTF_8));
@@ -71,7 +71,7 @@ public class StringType implements DataType<String>, CharSequence {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StringType that = (StringType) o;
+        var that = (StringType) o;
         return this.obj.equals(that.obj);
     }
 

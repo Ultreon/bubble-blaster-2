@@ -65,15 +65,15 @@ public class Logger {
             doLog(time, level, category, null, exc, fromReplay, wasSuppressed);
             return;
         }
-        for (String line : msg.split("\r\n|\r|\n")) {
+        for (var line : msg.split("\r\n|\r|\n")) {
             doLog(time, level, category, line, exc, fromReplay, wasSuppressed);
             exc = null; //? Prevent exception log spam
         }
     }
 
     private void doLog(long time, LogLevel level, LogCategory category, String msg, Throwable exc, boolean fromReplay, boolean wasSuppressed) {
-        StringBuilder sb = new StringBuilder();
-        String format = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()).format(FORMAT);
+        var sb = new StringBuilder();
+        var format = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()).format(FORMAT);
         sb.append(BLUE).append(format).append(" ");
         sb.append(colorFor(level)).append("[").append(Thread.currentThread().getName()).append("/").append(level).append("] ");
         sb.append(CYAN).append("(").append(this.name);
@@ -113,16 +113,16 @@ public class Logger {
     }
 
     private static void stack(Throwable exc, StackTraceElement[] lastStack, StringBuilder sb) {
-        Collection<? extends StackTraceElement> stElems = removeLast(exc.getStackTrace(), lastStack);
-        for (StackTraceElement ste : stElems) {
+        var stElems = removeLast(exc.getStackTrace(), lastStack);
+        for (var ste : stElems) {
             sb.append("    at ");
-            String classLoaderName = ste.getClassLoaderName();
+            var classLoaderName = ste.getClassLoaderName();
             if (classLoaderName != null) {
                 sb.append(PURPLE).append(classLoaderName).append(RESET).append("/");
             }
-            String moduleName = ste.getModuleName();
+            var moduleName = ste.getModuleName();
             if (moduleName != null) {
-                String moduleVersion = ste.getModuleVersion();
+                var moduleVersion = ste.getModuleVersion();
                 sb.append(GREEN).append(moduleName);
                 if (moduleVersion != null) {
                     sb.append(RESET).append("@").append(GREEN).append(moduleVersion);
@@ -133,7 +133,7 @@ public class Logger {
             }
 
             sb.append(CYAN).append(ste.getClassName().replace("$", GREEN + "$").replace(".", CYAN + ".")).append(RESET);
-            String methodName = ste.getMethodName();
+            var methodName = ste.getMethodName();
             if (methodName.equals("<init>") || methodName.equals("<clinit>")) {
                 sb.append(".").append(RED).append(methodName);
             } else if (methodName.startsWith("lambda$")) {
@@ -153,17 +153,17 @@ public class Logger {
             sb.append("    ... ").append(PURPLE).append(exc.getStackTrace().length - stElems.size()).append(" more").append("\n");
         }
 
-        Throwable cause = exc.getCause();
+        var cause = exc.getCause();
         if (cause != null) {
             sb.append(RED).append("Caused by: ").append(BLUE).append(cause.getClass().getName()).append(": ").append(RESET).append(cause.getMessage()).append("\n");
             stack(cause, exc.getStackTrace(), sb);
         }
 
-        for (Throwable suppressed : exc.getSuppressed()) {
+        for (var suppressed : exc.getSuppressed()) {
             sb.append(RED).append("    Suppressed: ").append(BLUE).append(suppressed.getClass().getName()).append(": ").append(RESET).append(suppressed.getMessage()).append("\n");
-            StringBuilder suppressedSb = new StringBuilder();
+            var suppressedSb = new StringBuilder();
             stack(suppressed, exc.getStackTrace(), suppressedSb);
-            for (String str : suppressedSb.toString().split("\r\n|\r|\n")) {
+            for (var str : suppressedSb.toString().split("\r\n|\r|\n")) {
                 sb.append("    ").append(str).append("\n");
             }
         }
@@ -174,12 +174,12 @@ public class Logger {
             return Arrays.asList(stackTrace);
         }
 
-        int i = 0;
+        var i = 0;
         while (true) {
             if (i == stackTrace.length || i >= lastStack.length) break;
 
-            StackTraceElement ste = stackTrace[stackTrace.length - i - 1];
-            StackTraceElement lastSte = lastStack[lastStack.length - i - 1];
+            var ste = stackTrace[stackTrace.length - i - 1];
+            var lastSte = lastStack[lastStack.length - i - 1];
 
             if (!ste.equals(lastSte)) {
                 if (i > 0) i--;
@@ -234,7 +234,7 @@ public class Logger {
     }
 
     public boolean isEnabled(LogLevel logLevel) {
-        int ordinal = logLevel.ordinal();
+        var ordinal = logLevel.ordinal();
         return ordinal >= this.manager.getLevel().ordinal();
     }
 }

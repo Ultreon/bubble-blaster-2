@@ -39,15 +39,15 @@ public class LongArrayType implements ArrayType<long[], Long> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (long l : this.obj) {
+        for (var l : this.obj) {
             output.writeLong(l);
         }
     }
 
     public static LongArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        long[] arr = new long[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new long[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readLong();
         }
         return new LongArrayType(arr);
@@ -57,7 +57,7 @@ public class LongArrayType implements ArrayType<long[], Long> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof LongArrayType)) return false;
-        LongArrayType that = (LongArrayType) other;
+        var that = (LongArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -96,8 +96,8 @@ public class LongArrayType implements ArrayType<long[], Long> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(l;");
-        for (long v : this.obj) {
+        var builder = new StringBuilder("(l;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

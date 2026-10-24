@@ -38,8 +38,8 @@ public class UUIDType implements DataType<UUID> {
     }
 
     public static UUIDType read(DataInput input) throws IOException {
-        long msb = input.readLong();
-        long lsb = input.readLong();
+        var msb = input.readLong();
+        var lsb = input.readLong();
         return new UUIDType(new UUID(msb, lsb));
     }
 
@@ -47,7 +47,7 @@ public class UUIDType implements DataType<UUID> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof UUIDType)) return false;
-        UUIDType uuidType = (UUIDType) other;
+        var uuidType = (UUIDType) other;
         return Objects.equals(this.obj, uuidType.obj);
     }
 

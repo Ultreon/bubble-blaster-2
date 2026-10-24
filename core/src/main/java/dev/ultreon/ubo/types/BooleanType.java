@@ -50,7 +50,7 @@ public class BooleanType implements DataType<Boolean> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof BooleanType)) return false;
-        BooleanType that = (BooleanType) other;
+        var that = (BooleanType) other;
         return this.obj == that.obj;
     }
 

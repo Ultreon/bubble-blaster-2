@@ -16,13 +16,9 @@ import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.world.WorldRenderer;
-import dev.ultreon.libs.datetime.v0.Date;
-import dev.ultreon.libs.datetime.v0.DateTime;
-import dev.ultreon.libs.datetime.v0.Time;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.time.DayOfWeek;
 import java.util.UUID;
 
 import static dev.ultreon.bubbles.BubbleBlaster.NAMESPACE;
@@ -33,9 +29,6 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     private static final Color UPPER_COLOR = Colors.rgb(0xff2010);
     private static final Difficulty.ModifierToken MODIFIER_TOKEN = new Difficulty.ModifierToken();
     private static final Marker MARKER = MarkerFactory.getMarker("BloodMoon");
-    private final Date date = new Date(31, 10, 0);
-    private final Time timeLo = new Time(3, 0, 0);
-    private final Time timeHi = new Time(3, 59, 59);
 
     private final RandomSource randomSource = new JavaRandom();
     private long deactivateTicks;
@@ -84,29 +77,13 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
     public final boolean shouldActivate(GameplayContext context) {
         if (!super.shouldActivate(context)) return false;
 
-        var curDate = Date.current();
-        if (curDate.equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
-        if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
-        if (this.isFridayTheThirteenth(curDate)) return true;
-
         var storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
-    }
-
-    private boolean isFridayTheThirteenth(Date date) {
-        return date.getDayOfWeek() == DayOfWeek.FRIDAY && date.getDay() == 13;
     }
 
     @Override
     public final boolean shouldContinue(GameplayContext context) {
         if (!super.shouldContinue(context)) return false;
-
-        var curDate = Date.current();
-        if (Date.current().equalsIgnoreYear(this.date) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
-        if (Time.current().isBetween(this.timeLo, this.timeHi) && BubbleBlasterConfig.ENABLE_EASTER_EGGS.get()) return true;
-        if (this.isFridayTheThirteenth(curDate)) return true;
-
-        if (this.deactivateTicks > 0) return true;
 
         var storage = context.gameplayStorage().get(BubbleBlaster.NAMESPACE);
         return storage.getBoolean(DataKeys.BLOOD_MOON_ACTIVE, false);
@@ -119,16 +96,6 @@ public class BloodMoonGameplayEvent extends GameplayEvent {
         renderer.fillGradient(bounds, WorldRenderer.BG_TOP, WorldRenderer.BG_BOTTOM, Axis2D.VERTICAL);
         bounds.height *= 5f / 4f;
         renderer.fillGradient(bounds, UPPER_COLOR, Colors.TRANSPARENT, Axis2D.VERTICAL);
-    }
-
-    public final boolean wouldActive(DateTime dateTime) {
-        var flag1 = dateTime.getTime().isBetween(this.timeLo, this.timeHi);  // Devil's hour.
-        var flag2 = dateTime.getDate().equalsIgnoreYear(this.date);  // Halloween.
-
-        var flag3 = dateTime.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;  // Friday
-        var flag4 = dateTime.getDate().getDay() == 13;  // 13th
-
-        return flag1 && flag2 || flag3 && flag4;  // Every October 31st in devil's hour. Or Friday 13th.
     }
 
     public void deactivate() {

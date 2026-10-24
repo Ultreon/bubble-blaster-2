@@ -52,7 +52,10 @@ import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -80,6 +83,7 @@ public class Renderer {
     private final BubbleBlaster game = BubbleBlaster.getInstance();
     private final GL20 gl20;
     private final SpriteBatch batch;
+    private final Set<BitmapFont> filteredFonts = Collections.newSetFromMap(new IdentityHashMap<>());
     private final ShapeDrawer shapes;
     private final OrthographicCamera camera;
     private final DefaultSideEstimator sides;
@@ -245,10 +249,10 @@ public class Renderer {
     public boolean drawBubble(float x, float y, float radius, float spacing, float lineWidth, List<Color> colors) {
         if (!this.rendering || colors.isEmpty() || colors.size() > MAX_BUBBLE_COLORS || radius <= 0) return false;
 
-        float[] colorValues = new float[colors.size() * 4];
-        for (int i = 0; i < colors.size(); i++) {
-            Color color = colors.get(i);
-            int offset = i * 4;
+        var colorValues = new float[colors.size() * 4];
+        for (var i = 0; i < colors.size(); i++) {
+            var color = colors.get(i);
+            var offset = i * 4;
             colorValues[offset] = color.r;
             colorValues[offset + 1] = color.g;
             colorValues[offset + 2] = color.b;
@@ -257,7 +261,7 @@ public class Renderer {
 
         var previousShader = this.batch.getShader();
         this.batch.setShader(this.bubbleShader);
-        float quadSize = radius + lineWidth;
+        var quadSize = radius + lineWidth;
         this.bubbleShader.setUniformf("u_center", x, y);
         this.bubbleShader.setUniformf("u_outerRadius", radius * 0.5f);
         this.bubbleShader.setUniformf("u_spacing", spacing);
@@ -951,8 +955,15 @@ public class Renderer {
         this.blurred = true;
 
         try {
-            var blurTargetA = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
-            var blurTargetB = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+            var backBufferWidth = Gdx.graphics.getBackBufferWidth();
+            var backBufferHeight = Gdx.graphics.getBackBufferHeight();
+
+            if (backBufferWidth <= 0 || backBufferHeight <= 0) {
+                return;
+            }
+
+            var blurTargetA = new FrameBuffer(Pixmap.Format.RGBA8888, backBufferWidth, backBufferHeight, false);
+            var blurTargetB = new FrameBuffer(Pixmap.Format.RGBA8888, backBufferWidth, backBufferHeight, false);
             var fboRegion = new TextureRegion(blurTargetA.getColorBufferTexture());
 
             // Start rendering to the default framebuffer
@@ -983,7 +994,7 @@ public class Renderer {
 
             // set the shader uniforms
             this.blurShader.setUniformf("iBlurDirection", 1f, 0f);
-            this.blurShader.setUniformf("iResolution", Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+            this.blurShader.setUniformf("iResolution", backBufferWidth, backBufferHeight);
             this.blurShader.setUniformf("iBlurRadius", radius / guiScale);
             this.blurShader.setUniformf("iTime", System.currentTimeMillis() / 1000.0f);
 
@@ -995,7 +1006,7 @@ public class Renderer {
 
             //draw the scene to target B with a horizontal blur effect
             this.batch.setColor(1f, 1f, 1f, overlayOpacity);
-            this.batch.draw(fboRegion, 0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+            this.batch.draw(fboRegion, 0, 0, backBufferWidth, backBufferHeight);
 
             //flush the batch before ending the FBO
             this.batch.flush();
@@ -1008,7 +1019,7 @@ public class Renderer {
             this.blurShader.setUniformf("iBlurDirection", 0f, 1f);
 
             //update the resolution of the blur along Y-axis
-            this.blurShader.setUniformf("iResolution", Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+            this.blurShader.setUniformf("iResolution", backBufferWidth, backBufferHeight);
 
             //update the Y-axis blur radius
             this.blurShader.setUniformf("radius", radius);
@@ -1340,6 +1351,9 @@ public class Renderer {
     public void drawText(BitmapFont font, String str, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
+        this.prepareFont(font);
         font.setColor(color);
         font.draw(this.batch, str, x, y);
     }
@@ -1347,6 +1361,9 @@ public class Renderer {
     public void drawText(BitmapFont font, String str, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
+        this.prepareFont(font);
         font.setColor(color);
         font.draw(this.batch, str, x, y);
     }
@@ -1354,6 +1371,9 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
+        this.prepareFont(font);
         font.setColor(color);
         font.draw(this.batch, str.getText(), x, y);
     }
@@ -1361,13 +1381,29 @@ public class Renderer {
     public void drawText(BitmapFont font, TextObject str, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
+        this.prepareFont(font);
         font.setColor(color);
         font.draw(this.batch, str.getText(), x, y);
+    }
+
+    private static BitmapFont resolveFont(BitmapFont font) {
+        return font instanceof dev.ultreon.bubbles.init.FontSet set ? set.get() : font;
+    }
+
+    private void prepareFont(BitmapFont font) {
+        if (!this.filteredFonts.add(font)) return;
+
+        for (var region : font.getRegions()) {
+            region.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        }
     }
 
     public void drawText(String str, float x, float y, Anchor anchor, Color color) {
         if (!this.rendering) return;
 
+        this.prepareFont(this.font);
 
         var layout = this.glyphLayout.get();
         if (layout == null) {
@@ -1384,12 +1420,16 @@ public class Renderer {
     public void drawMultiLineText(BitmapFont font, String str, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
         for (var line : str.split("\n"))
             this.drawText(font, line, x, y += (int) font.getLineHeight(), color);
     }
 
     public void drawWrappedText(BitmapFont font, String text, int x, int y, int maxWidth, Color color) {
         if (!this.rendering) return;
+
+        font = resolveFont(font);
 
         this.setColor(color);
         var lines = StringUtils.wrap(text, font, new GlyphLayout(), maxWidth);
@@ -1400,6 +1440,8 @@ public class Renderer {
     public void drawWrappedText(BitmapFont font, TextObject text, int x, int y, int maxWidth, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
         this.setColor(color);
         var lines = StringUtils.wrap(text.getText(), font, new GlyphLayout(), maxWidth);
         var joined = org.apache.commons.lang3.StringUtils.join(lines.toArray(new String[]{}), '\n');
@@ -1409,12 +1451,16 @@ public class Renderer {
     public void drawTabbedText(BitmapFont font, String text, int x, int y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
         for (var line : text.split("\t"))
             this.drawText(font, line, x += (int) font.getLineHeight(), y, color);
     }
 
     public void drawTextCenter(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
+
+        font = resolveFont(font);
 
         this.layout.setText(font, text);
 
@@ -1430,6 +1476,8 @@ public class Renderer {
 
     public void drawTextCenter(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
+
+        font = resolveFont(font);
 
         var string = text.getText();
 
@@ -1448,6 +1496,8 @@ public class Renderer {
     public void drawTextLeft(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
         this.layout.setText(font, text);
 
         // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top create the screen)
@@ -1459,6 +1509,8 @@ public class Renderer {
 
     public void drawTextLeft(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
+
+        font = resolveFont(font);
 
         var string = text.getText();
 
@@ -1474,6 +1526,8 @@ public class Renderer {
     public void drawTextRight(BitmapFont font, String text, float x, float y, Color color) {
         if (!this.rendering) return;
 
+        font = resolveFont(font);
+
         this.layout.setText(font, text);
 
         // Determine the X coordinate for the text
@@ -1488,6 +1542,8 @@ public class Renderer {
 
     public void drawTextRight(BitmapFont font, TextObject text, float x, float y, Color color) {
         if (!this.rendering) return;
+
+        font = resolveFont(font);
 
         var string = text.getText();
 

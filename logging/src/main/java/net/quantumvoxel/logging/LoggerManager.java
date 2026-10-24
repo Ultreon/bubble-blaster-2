@@ -99,10 +99,10 @@ public class LoggerManager {
             Files.deleteIfExists(out);
             Files.createFile(out);
 
-            try (GZIPOutputStream gzip = new GZIPOutputStream(Files.newOutputStream(out))) {
-                byte[] buffer = new byte[1024];
+            try (var gzip = new GZIPOutputStream(Files.newOutputStream(out))) {
+                var buffer = new byte[1024];
                 int len;
-                try (InputStream in = Files.newInputStream(path)) {
+                try (var in = Files.newInputStream(path)) {
                     while ((len = in.read(buffer)) > 0) {
                         gzip.write(buffer, 0, len);
                     }

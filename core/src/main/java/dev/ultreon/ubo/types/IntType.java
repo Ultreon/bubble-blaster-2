@@ -50,7 +50,7 @@ public class IntType implements DataType<Integer> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof IntType)) return false;
-        IntType intType = (IntType) other;
+        var intType = (IntType) other;
         return this.obj == intType.obj;
     }
 

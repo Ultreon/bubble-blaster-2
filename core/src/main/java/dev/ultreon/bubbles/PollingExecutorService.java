@@ -1,6 +1,7 @@
 package dev.ultreon.bubbles;
 
 import com.google.common.collect.Queues;
+import dev.ultreon.bubbles.entity.Bubble;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -87,6 +88,7 @@ public class PollingExecutorService implements ExecutorService {
                 task.run();
                 future.complete(null);
             } catch (Throwable throwable) {
+                BubbleBlaster.LOGGER.error("Error while executing task", throwable);
                 future.completeExceptionally(throwable);
             }
         });

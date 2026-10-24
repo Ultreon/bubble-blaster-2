@@ -50,7 +50,7 @@ public class LongType implements DataType<Long> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof LongType)) return false;
-        LongType longType = (LongType) other;
+        var longType = (LongType) other;
         return this.obj == longType.obj;
     }
 

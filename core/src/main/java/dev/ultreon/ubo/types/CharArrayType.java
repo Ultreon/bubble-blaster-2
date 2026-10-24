@@ -40,15 +40,15 @@ public class CharArrayType implements ArrayType<char[], Character> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (char i : this.obj) {
+        for (var i : this.obj) {
             output.writeChar(i);
         }
     }
 
     public static CharArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        char[] arr = new char[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new char[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readChar();
         }
         return new CharArrayType(arr);
@@ -58,7 +58,7 @@ public class CharArrayType implements ArrayType<char[], Character> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof CharArrayType)) return false;
-        CharArrayType that = (CharArrayType) other;
+        var that = (CharArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -74,8 +74,8 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(c;");
-        for (char v : this.obj) {
+        var builder = new StringBuilder("(c;");
+        for (var v : this.obj) {
             builder.append("'").append(v == '\'' ? "\\'" : v).append("'").append(",");
         }
 

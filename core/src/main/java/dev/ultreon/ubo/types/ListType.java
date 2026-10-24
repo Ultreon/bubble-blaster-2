@@ -57,10 +57,10 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public void setValue(List<T> obj) {
-        int id = -1;
+        var id = -1;
         List<T> list = new ArrayList<>(obj.size());
         for (int i = 0, objSize = obj.size(); i < objSize; i++) {
-            T iType = obj.get(i);
+            var iType = obj.get(i);
             if (id == -1) {
                 id = iType.id();
             }
@@ -89,10 +89,10 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     }
 
     public static ListType<?> read(DataInput input) throws IOException {
-        int id = input.readUnsignedByte();
-        int len = input.readInt();
+        var id = input.readUnsignedByte();
+        var len = input.readInt();
         List<DataType<?>> list = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             list.add(DataTypeRegistry.read(id, input));
         }
 
@@ -153,8 +153,8 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     }
 
     public T @NotNull [] toTypeArray() {
-        T[] a = (T[]) Array.newInstance(this.componentType, this.obj.size());
-        for (int i = 0; i < this.obj.size(); i++) {
+        var a = (T[]) Array.newInstance(this.componentType, this.obj.size());
+        for (var i = 0; i < this.obj.size(); i++) {
             a[i] = this.obj.get(i);
         }
         return a;
@@ -185,7 +185,7 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     }
 
     public final <C extends DataType<?>> ListType<C> cast(Class<C> type) {
-        ListType<C> cs = new ListType<>(type);
+        var cs = new ListType<C>(type);
         cs.setValue((List<C>) this.obj);
         return cs;
     }
@@ -212,7 +212,7 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     public int indexOf(Object o) {
         if (!(o instanceof DataType<?>))
             return -1;
-        DataType<?> type = (DataType<?>) o;
+        var type = (DataType<?>) o;
         if (type.id() != this.id)
             throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + this.id + ")");
         return this.obj.indexOf(o);
@@ -223,7 +223,7 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     public int lastIndexOf(Object o) {
         if (!(o instanceof DataType<?>))
             return -1;
-        DataType<?> type = (DataType<?>) o;
+        var type = (DataType<?>) o;
         if (type.id() != this.id)
             throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + this.id + ")");
         return this.obj.lastIndexOf(o);
@@ -241,13 +241,13 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof ListType)) return false;
-        ListType<?> listType = (ListType<?>) other;
+        var listType = (ListType<?>) other;
         return this.id == listType.id && Objects.equals(this.obj, listType.obj);
     }
 
     @Override
     public int hashCode() {
-        int result = this.id;
+        var result = this.id;
         result = 31 * result + this.obj.hashCode();
         return result;
     }
@@ -259,8 +259,8 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("[");
-        for (T t : this)
+        var builder = new StringBuilder("[");
+        for (var t : this)
             builder.append(t.writeUso()).append(", ");
 
         if (!this.obj.isEmpty())
@@ -307,8 +307,8 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     }
 
     public <R> List<R> mapTo(Function<T, R> mapper, List<R> list) {
-        for (T t : this.obj) {
-            R r = mapper.apply(t);
+        for (var t : this.obj) {
+            var r = mapper.apply(t);
             list.add(r);
         }
         return list;

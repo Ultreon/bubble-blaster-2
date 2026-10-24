@@ -61,8 +61,7 @@ public class PauseScreen extends Screen {
     public PauseScreen() {
         super();
 
-        this.title = TextObject.translation("bubbleblaster.screen.pause.text");
-
+        this.title = TextObject.literal("Pause");
         this.registeredBubbles = Registries.BUBBLES.values().size();
     }
 

@@ -100,7 +100,7 @@ class ULogger extends AbstractLogger {
 
     @Override
     protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
-        FormattingTuple format = format(messagePattern, arguments);
+        var format = format(messagePattern, arguments);
         if (format == null) return;
         if (throwable != null) {
             if (format.getThrowable() != null) {

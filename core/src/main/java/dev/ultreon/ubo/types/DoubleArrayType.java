@@ -39,15 +39,15 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
     @Override
     public void write(DataOutput output) throws IOException {
         output.writeInt(this.obj.length);
-        for (double i : this.obj) {
+        for (var i : this.obj) {
             output.writeDouble(i);
         }
     }
 
     public static DoubleArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        double[] arr = new double[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new double[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readDouble();
         }
         return new DoubleArrayType(arr);
@@ -57,7 +57,7 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof DoubleArrayType)) return false;
-        DoubleArrayType that = (DoubleArrayType) other;
+        var that = (DoubleArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -96,8 +96,8 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(d;");
-        for (double v : this.obj) {
+        var builder = new StringBuilder("(d;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 

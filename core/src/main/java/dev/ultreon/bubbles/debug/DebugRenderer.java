@@ -2,7 +2,6 @@ package dev.ultreon.bubbles.debug;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Lists;
@@ -13,6 +12,7 @@ import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
 import dev.ultreon.bubbles.event.v1.InputEvents;
 import dev.ultreon.bubbles.init.Fonts;
+import dev.ultreon.bubbles.init.FontSet;
 import dev.ultreon.bubbles.input.DesktopInput;
 import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.render.Colors;
@@ -35,7 +35,7 @@ public class DebugRenderer {
             context.hexValue(obj.hashCode());
         }
     };
-    private final RegistrySupplier<BitmapFont> font;
+    private final RegistrySupplier<FontSet> font;
     private final BubbleBlaster game;
     private int yLeft;
     private int yRight;
@@ -272,8 +272,8 @@ public class DebugRenderer {
 
     public void left(Renderer renderer, MutableText text) {
         var text1 = text.getText();
-        this.layout.setText(this.font.get(), text1);
-        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        this.layout.setText(this.font.get().get(), text1);
+        var bounds = new Vector2(this.layout.width, this.font.get().get().getLineHeight());
         var width = (int) bounds.x;
         var height = (int) bounds.y;
         var y = this.yLeft += height + 5;
@@ -282,7 +282,7 @@ public class DebugRenderer {
         }
 
         renderer.fill(10, y, width + 4, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
-        renderer.drawTextLeft(this.font.get(), text1, 12, y + 1, Colors.WHITE);
+        renderer.drawTextLeft(this.font.get().get(), text1, 12, y + 1, Colors.WHITE);
     }
 
     public void right(Renderer renderer, String text, Object o) {
@@ -301,8 +301,8 @@ public class DebugRenderer {
 
     public void right(Renderer renderer, MutableText text) {
         var text1 = text.getText();
-        this.layout.setText(this.font.get(), text1);
-        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        this.layout.setText(this.font.get().get(), text1);
+        var bounds = new Vector2(this.layout.width, this.font.get().get().getLineHeight());
         var width = (int) bounds.x;
         var height = (int) bounds.y;
         var y = this.yRight += height + 5;
@@ -311,16 +311,16 @@ public class DebugRenderer {
         }
 
         renderer.fill(this.game.getWidth() - width - 10, y, width + 4, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
-        renderer.drawTextRight(this.font.get(), text1, this.game.getWidth() - 8, y + 1, Colors.WHITE);
+        renderer.drawTextRight(this.font.get().get(), text1, this.game.getWidth() - 8, y + 1, Colors.WHITE);
     }
 
     public void right(Renderer renderer, MutableText text, MutableText text1) {
         var text2 = text.getText();
-        this.layout.setText(this.font.get(), text2);
-        var bounds = new Vector2(this.layout.width, this.font.get().getLineHeight());
+        this.layout.setText(this.font.get().get(), text2);
+        var bounds = new Vector2(this.layout.width, this.font.get().get().getLineHeight());
         int height;
         if (!text1.getText().isEmpty()) {
-            var bounds1 = new Vector2(this.layout.width, this.font.get().getLineHeight());
+            var bounds1 = new Vector2(this.layout.width, this.font.get().get().getLineHeight());
             height = Math.max((int) bounds.y, (int) bounds1.y);
         } else {
             height = (int) bounds.y;
@@ -333,9 +333,9 @@ public class DebugRenderer {
         var i = 400;
 
         renderer.fill(this.game.getWidth() - i - 10, y, i, height + 4, Colors.rgba(0x00, 0x00, 0x00, 0x99));
-        renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - i - 8, y + 1, Colors.WHITE);
+        renderer.drawTextRight(this.font.get().get(), text2, this.game.getWidth() - i - 8, y + 1, Colors.WHITE);
         if (!text1.getText().isEmpty()) {
-            renderer.drawTextRight(this.font.get(), text2, this.game.getWidth() - 12, y + 1, Colors.WHITE);
+            renderer.drawTextRight(this.font.get().get(), text2, this.game.getWidth() - 12, y + 1, Colors.WHITE);
         }
     }
 }

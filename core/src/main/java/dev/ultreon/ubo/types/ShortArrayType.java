@@ -45,9 +45,9 @@ public class ShortArrayType implements ArrayType<short[], Short> {
     }
 
     public static ShortArrayType read(DataInput input) throws IOException {
-        int len = input.readInt();
-        short[] arr = new short[len];
-        for (int i = 0; i < len; i++) {
+        var len = input.readInt();
+        var arr = new short[len];
+        for (var i = 0; i < len; i++) {
             arr[i] = input.readShort();
         }
         return new ShortArrayType(arr);
@@ -57,7 +57,7 @@ public class ShortArrayType implements ArrayType<short[], Short> {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof ShortArrayType)) return false;
-        ShortArrayType that = (ShortArrayType) other;
+        var that = (ShortArrayType) other;
         return Arrays.equals(this.obj, that.obj);
     }
 
@@ -96,8 +96,8 @@ public class ShortArrayType implements ArrayType<short[], Short> {
 
     @Override
     public String writeUso() {
-        StringBuilder builder = new StringBuilder("(s;");
-        for (short v : this.obj) {
+        var builder = new StringBuilder("(s;");
+        for (var v : this.obj) {
             builder.append(v).append(",");
         }
 
