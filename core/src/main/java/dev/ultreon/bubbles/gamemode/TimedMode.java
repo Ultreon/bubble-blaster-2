@@ -1,14 +1,13 @@
 package dev.ultreon.bubbles.gamemode;
 
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.BubbleBlasterConfig;
 import dev.ultreon.bubbles.Constants;
 import dev.ultreon.bubbles.gameplay.GameplayStorage;
 import dev.ultreon.bubbles.init.HudTypes;
 import dev.ultreon.bubbles.render.gui.hud.HudType;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.ubo.types.MapType;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.jetbrains.annotations.NotNull;
 
 public class TimedMode extends NormalMode {

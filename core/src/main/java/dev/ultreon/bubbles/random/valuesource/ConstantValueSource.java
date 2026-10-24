@@ -1,8 +1,8 @@
 package dev.ultreon.bubbles.random.valuesource;
 
 import dev.ultreon.bubbles.util.helpers.MathHelper;
-import dev.ultreon.libs.text.v1.MutableText;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.MutableText;
+import dev.ultreon.bubbles.text.TextObject;
 
 import java.util.Objects;
 

@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.render.gui.screen;
 
 import dev.ultreon.bubbles.render.Renderer;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 public abstract class InternalScreen extends Screen {
     public InternalScreen() {

@@ -1,4 +1,4 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
 import dev.ultreon.libs.commons.v0.Mth;
 import org.jetbrains.annotations.NotNull;

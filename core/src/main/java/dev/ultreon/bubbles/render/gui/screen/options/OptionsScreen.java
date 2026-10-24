@@ -7,7 +7,7 @@ import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.bubbles.text.Translations;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 public class OptionsScreen extends Screen {
     private Button generic;

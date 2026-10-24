@@ -7,7 +7,7 @@ import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.widget.CrashButton;
 import dev.ultreon.libs.crash.v0.CrashLog;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 public class CrashScreen extends Screen {
     private final CrashLog crashLog;

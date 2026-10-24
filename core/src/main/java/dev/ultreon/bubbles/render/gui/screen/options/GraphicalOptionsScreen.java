@@ -13,7 +13,7 @@ import dev.ultreon.bubbles.render.gui.widget.TextEntry;
 import dev.ultreon.bubbles.text.Translations;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.registries.v0.exception.RegistryException;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 import static dev.ultreon.bubbles.BubbleBlasterConfig.*;
 

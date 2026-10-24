@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.render;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import dev.ultreon.libs.resources.v0.Resource;
+import dev.ultreon.bubbles.resources.Resource;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -9,7 +9,7 @@ import dev.ultreon.bubbles.event.v1.ConfigEvents;
 import dev.ultreon.bubbles.init.HudTypes;
 import dev.ultreon.bubbles.notification.Notification;
 import dev.ultreon.bubbles.render.gui.screen.LoadScreen;
-import dev.ultreon.libs.translations.v1.LanguageManager;
+import dev.ultreon.bubbles.lang.LanguageManager;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Locale;

@@ -12,7 +12,7 @@ import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.world.World;
-import dev.ultreon.libs.translations.v1.Language;
+import dev.ultreon.bubbles.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
 /**

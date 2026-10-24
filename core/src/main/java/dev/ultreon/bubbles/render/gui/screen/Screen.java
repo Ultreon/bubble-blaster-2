@@ -13,7 +13,7 @@ import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.bubbles.render.gui.widget.Circle;
 import dev.ultreon.bubbles.render.gui.widget.Container;
 import dev.ultreon.libs.crash.v0.CrashLog;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.util.concurrent.CopyOnWriteArrayList;

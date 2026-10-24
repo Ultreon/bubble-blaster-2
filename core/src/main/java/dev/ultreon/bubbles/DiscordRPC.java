@@ -8,7 +8,7 @@
 //import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
 //import dev.ultreon.bubbles.gamemode.TimedMode;
 //import dev.ultreon.bubbles.notification.Notification;
-//import dev.ultreon.libs.translations.v1.LanguageManager;
+//import dev.ultreon.bubbles.lang.LanguageManager;
 //
 //import java.time.Instant;
 //import java.time.OffsetDateTime;

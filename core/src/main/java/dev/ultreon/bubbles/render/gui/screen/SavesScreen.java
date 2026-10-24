@@ -11,7 +11,7 @@ import dev.ultreon.bubbles.save.GameSave;
 import dev.ultreon.bubbles.save.GameSaveInfo;
 import dev.ultreon.bubbles.save.SaveLoader;
 import dev.ultreon.bubbles.util.Result;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

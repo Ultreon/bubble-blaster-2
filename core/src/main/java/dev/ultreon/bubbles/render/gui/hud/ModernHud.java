@@ -14,7 +14,7 @@ import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.util.RomanNumbers;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.libs.commons.v0.Mth;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;

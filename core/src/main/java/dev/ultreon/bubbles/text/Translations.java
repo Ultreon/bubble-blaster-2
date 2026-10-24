@@ -1,8 +1,5 @@
 package dev.ultreon.bubbles.text;
 
-import dev.ultreon.libs.text.v1.MutableText;
-import dev.ultreon.libs.text.v1.TextObject;
-
 public class Translations {
 
     public static final TextObject OK = TextObject.translation("bubbleblaster.misc.ok");

@@ -30,7 +30,7 @@ import dev.ultreon.bubbles.world.World;
 import dev.ultreon.ubo.types.ListType;
 import dev.ultreon.ubo.types.MapType;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.translations.v1.Language;
+import dev.ultreon.bubbles.lang.Language;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

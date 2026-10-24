@@ -9,7 +9,7 @@ import dev.ultreon.bubbles.render.gui.TitleScreenBackground;
 import dev.ultreon.bubbles.render.gui.screen.options.LanguageScreen;
 import dev.ultreon.bubbles.render.gui.screen.options.OptionsScreen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 public class TitleScreen extends Screen {
 
@@ -137,9 +137,12 @@ public class TitleScreen extends Screen {
         var xp = game.getGlobalData().getXp();
         var xpLevel = game.getGlobalData().getXpLevel();
         var xpForLevelUp = game.getXpForLevelUp(xpLevel);
-        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Highscore: " + Math.round(highScore), this.width - 40, 40, Colors.WHITE);
-        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Money: " + Math.round(money), this.width - 40, 60, Colors.WHITE);
-        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "XP: " + Math.round(xp) + " / " + Math.round(xpForLevelUp) + " (lvl. " + xpLevel + ")", this.width - 40, 80, Colors.WHITE);
+//        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Highscore: " + Math.round(highScore), this.width - 40, 40, Colors.WHITE);
+//        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "Money: " + Math.round(money), this.width - 40, 60, Colors.WHITE);
+//        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), "XP: " + Math.round(xp) + " / " + Math.round(xpForLevelUp) + " (lvl. " + xpLevel + ")", this.width - 40, 80, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), TextObject.translation("bubbleblaster.screen.title.highscore", Math.round(highScore)), this.width - 40, 40, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), TextObject.translation("bubbleblaster.screen.title.money", money), this.width - 40, 60, Colors.WHITE);
+        renderer.drawTextRight(Fonts.SANS_PARAGRAPH.get(), TextObject.translation("bubbleblaster.screen.title.xp", Math.round(xp), Math.round(xpForLevelUp), xpLevel), this.width - 40, 80, Colors.WHITE);
 
         this.renderChildren(renderer, mouseX, mouseY, deltaTime);
     }

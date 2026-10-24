@@ -24,7 +24,7 @@ import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.annotation.MethodsReturnNonnullByDefault;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.Messenger;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

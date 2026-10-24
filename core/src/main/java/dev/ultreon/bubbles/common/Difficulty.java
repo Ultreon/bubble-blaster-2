@@ -2,7 +2,7 @@ package dev.ultreon.bubbles.common;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 
 import java.util.HashMap;
 import java.util.Map;

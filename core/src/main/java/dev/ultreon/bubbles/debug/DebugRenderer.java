@@ -19,8 +19,8 @@ import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.libs.commons.v0.size.FloatSize;
 import dev.ultreon.libs.registries.v0.RegistrySupplier;
-import dev.ultreon.libs.text.v1.MutableText;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.MutableText;
+import dev.ultreon.bubbles.text.TextObject;
 
 import java.util.*;
 

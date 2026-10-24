@@ -11,7 +11,7 @@ import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.bubbles.render.gui.widget.Label;
 import dev.ultreon.bubbles.render.gui.widget.ObjectList;
 import dev.ultreon.bubbles.render.gui.widget.TextEntry;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 import java.util.List;
 

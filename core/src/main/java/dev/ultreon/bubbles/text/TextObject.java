@@ -1,4 +1,4 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
 import org.jetbrains.annotations.Nullable;
 

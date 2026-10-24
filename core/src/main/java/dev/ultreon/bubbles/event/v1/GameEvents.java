@@ -4,7 +4,7 @@ import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.render.TextureCollection;
 import dev.ultreon.libs.crash.v0.ApplicationCrash;
 import dev.ultreon.libs.events.v1.Event;
-import dev.ultreon.libs.resources.v0.ResourceManager;
+import dev.ultreon.bubbles.resources.ResourceManager;
 
 import java.util.Locale;
 

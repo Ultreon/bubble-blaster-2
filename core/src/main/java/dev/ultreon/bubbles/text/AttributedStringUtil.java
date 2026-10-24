@@ -1,4 +1,4 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;

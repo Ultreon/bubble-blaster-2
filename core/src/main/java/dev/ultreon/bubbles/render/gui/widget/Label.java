@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 public class Label extends GuiComponent {
     private TextObject text;

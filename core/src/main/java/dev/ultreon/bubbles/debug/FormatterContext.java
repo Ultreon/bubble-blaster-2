@@ -2,8 +2,8 @@ package dev.ultreon.bubbles.debug;
 
 import dev.ultreon.bubbles.settings.GameSettings;
 import dev.ultreon.bubbles.render.Colors;
-import dev.ultreon.libs.text.v1.MutableText;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.MutableText;
+import dev.ultreon.bubbles.text.TextObject;
 
 import java.util.Locale;
 import java.util.function.Consumer;

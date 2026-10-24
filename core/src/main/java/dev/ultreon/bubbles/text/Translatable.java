@@ -1,6 +1,6 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
-import dev.ultreon.libs.translations.v1.Language;
+import dev.ultreon.bubbles.lang.Language;
 
 public interface Translatable {
     String getTranslationPath();

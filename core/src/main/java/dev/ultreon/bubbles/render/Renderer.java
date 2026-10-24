@@ -38,7 +38,7 @@ import dev.ultreon.bubbles.util.StringUtils;
 import dev.ultreon.libs.commons.v0.Anchor;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.util.IOUtils;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
 import space.earlygrey.shapedrawer.DefaultSideEstimator;

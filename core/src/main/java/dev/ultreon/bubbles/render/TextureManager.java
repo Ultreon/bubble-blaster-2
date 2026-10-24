@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.resources.v0.ResourceManager;
+import dev.ultreon.bubbles.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

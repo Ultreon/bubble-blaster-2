@@ -1,4 +1,4 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
 import com.badlogic.gdx.graphics.Color;
 import com.google.common.base.Preconditions;

@@ -1,6 +1,6 @@
 package dev.ultreon.bubbles;
 
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 
 public enum Axis2D implements Translatable {
     HORIZONTAL("horizontal"),

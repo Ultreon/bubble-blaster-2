@@ -47,7 +47,7 @@ import dev.ultreon.libs.commons.v0.Messenger;
 import dev.ultreon.libs.crash.v0.CrashCategory;
 import dev.ultreon.libs.crash.v0.CrashLog;
 import dev.ultreon.libs.registries.v0.Registry;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import dev.ultreon.ubo.types.ListType;
 import dev.ultreon.ubo.types.LongType;
 import dev.ultreon.ubo.types.MapType;

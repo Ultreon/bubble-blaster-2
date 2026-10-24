@@ -12,7 +12,7 @@ import dev.ultreon.bubbles.init.Gamemodes;
 import dev.ultreon.bubbles.input.Keybind;
 import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.translations.v1.LanguageManager;
+import dev.ultreon.bubbles.lang.LanguageManager;
 
 import java.io.Serializable;
 import java.util.Locale;

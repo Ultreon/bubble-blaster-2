@@ -25,7 +25,7 @@ import dev.ultreon.libs.commons.v0.ProgressMessenger;
 import dev.ultreon.libs.crash.v0.CrashLog;
 import dev.ultreon.libs.registries.v0.Registry;
 import dev.ultreon.libs.registries.v0.event.RegistryEvents;
-import dev.ultreon.libs.translations.v1.LanguageManager;
+import dev.ultreon.bubbles.lang.LanguageManager;
 import org.slf4j.Logger;
 
 import java.io.IOException;

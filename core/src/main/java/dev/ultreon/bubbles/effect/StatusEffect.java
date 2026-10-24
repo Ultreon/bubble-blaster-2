@@ -8,8 +8,8 @@ import dev.ultreon.bubbles.registry.Registries;
 import dev.ultreon.bubbles.render.TextureManager;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.registries.v0.exception.RegistryException;
-import dev.ultreon.libs.resources.v0.Resource;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.resources.Resource;
+import dev.ultreon.bubbles.text.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;

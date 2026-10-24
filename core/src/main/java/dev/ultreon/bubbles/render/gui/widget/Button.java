@@ -7,7 +7,7 @@ import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Insets;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.checkerframework.common.returnsreceiver.qual.This;
 
 public class Button extends AbstractButton implements GuiStateListener {

@@ -10,7 +10,7 @@ import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.bubbles.render.gui.widget.NumberSlider;
 import dev.ultreon.bubbles.render.gui.widget.ToggleButton;
 import dev.ultreon.bubbles.text.Translations;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 import static dev.ultreon.bubbles.BubbleBlasterConfig.*;
 

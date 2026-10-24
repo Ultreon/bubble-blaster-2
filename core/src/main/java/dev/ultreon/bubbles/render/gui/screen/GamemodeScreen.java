@@ -6,7 +6,7 @@ import dev.ultreon.bubbles.gamemode.Gamemode;
 import dev.ultreon.bubbles.init.Gamemodes;
 import dev.ultreon.bubbles.input.DesktopInput;
 import dev.ultreon.bubbles.render.gui.widget.Button;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 
 @Deprecated(forRemoval = true)
 public class GamemodeScreen extends Screen {

@@ -1,7 +1,7 @@
 package dev.ultreon.bubbles.common;
 
 import com.google.common.base.CaseFormat;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 
 public enum DifficultyEffectType implements Translatable {
     BUBBLE_SPEED(true, false),

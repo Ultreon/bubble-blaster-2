@@ -1,4 +1,4 @@
-package dev.ultreon.libs.text.v1;
+package dev.ultreon.bubbles.text;
 
 public class LiteralText extends MutableText {
     private final String text;

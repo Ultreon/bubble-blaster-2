@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.translations.v1.LanguageManager;
+import dev.ultreon.bubbles.lang.LanguageManager;
 
 import java.util.HashMap;
 import java.util.Locale;

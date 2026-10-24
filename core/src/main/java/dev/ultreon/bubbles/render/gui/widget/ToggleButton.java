@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import dev.ultreon.bubbles.config.Config;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.checkerframework.common.returnsreceiver.qual.This;
 
 public class ToggleButton extends Button implements GuiStateListener {

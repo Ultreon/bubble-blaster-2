@@ -19,7 +19,7 @@ import dev.ultreon.bubbles.world.World;
 import dev.ultreon.bubbles.util.exceptions.InvalidValueException;
 import dev.ultreon.libs.commons.v0.Identifier;
 import dev.ultreon.libs.commons.v0.tuple.Pair;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

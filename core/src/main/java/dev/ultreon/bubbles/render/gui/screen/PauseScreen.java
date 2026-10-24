@@ -15,8 +15,8 @@ import dev.ultreon.bubbles.text.Translations;
 import dev.ultreon.bubbles.util.helpers.MathHelper;
 import dev.ultreon.bubbles.world.WorldRenderer;
 import dev.ultreon.libs.commons.v0.Mth;
-import dev.ultreon.libs.text.v1.TextObject;
-import dev.ultreon.libs.translations.v1.Language;
+import dev.ultreon.bubbles.text.TextObject;
+import dev.ultreon.bubbles.lang.Language;
 
 import java.util.ArrayList;
 

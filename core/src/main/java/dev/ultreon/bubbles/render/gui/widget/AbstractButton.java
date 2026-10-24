@@ -4,11 +4,10 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.ultreon.bubbles.BubbleBlaster;
-import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiComponent;
 import dev.ultreon.libs.commons.v0.vector.Vec2i;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.checkerframework.common.value.qual.IntRange;
 
 public abstract class AbstractButton extends GuiComponent {

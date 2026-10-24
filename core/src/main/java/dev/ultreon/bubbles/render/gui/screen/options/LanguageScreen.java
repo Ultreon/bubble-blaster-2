@@ -9,8 +9,8 @@ import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.bubbles.render.gui.widget.ObjectList;
 import dev.ultreon.bubbles.text.Translations;
-import dev.ultreon.libs.translations.v1.Language;
-import dev.ultreon.libs.translations.v1.LanguageManager;
+import dev.ultreon.bubbles.lang.Language;
+import dev.ultreon.bubbles.lang.LanguageManager;
 
 import java.util.List;
 import java.util.Locale;

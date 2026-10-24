@@ -12,7 +12,7 @@ import dev.ultreon.bubbles.util.Numbers;
 import dev.ultreon.libs.commons.v0.Mth;
 import dev.ultreon.libs.commons.v0.size.IntSize;
 import dev.ultreon.libs.commons.v0.vector.Vec2i;
-import dev.ultreon.libs.text.v1.TextObject;
+import dev.ultreon.bubbles.text.TextObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntConsumer;

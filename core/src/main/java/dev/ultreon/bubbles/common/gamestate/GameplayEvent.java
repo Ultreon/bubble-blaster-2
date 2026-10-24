@@ -4,12 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 import dev.ultreon.bubbles.BubbleBlaster;
 import dev.ultreon.bubbles.event.v1.VfxEffectBuilder;
 import dev.ultreon.bubbles.registry.Registries;
-import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.screen.Screen;
 import dev.ultreon.bubbles.world.World;
 import dev.ultreon.libs.commons.v0.Identifier;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class GameplayEvent implements Translatable {

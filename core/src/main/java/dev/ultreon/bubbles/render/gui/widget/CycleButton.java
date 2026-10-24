@@ -7,8 +7,8 @@ import dev.ultreon.bubbles.render.Colors;
 import dev.ultreon.bubbles.render.Renderer;
 import dev.ultreon.bubbles.render.gui.GuiStateListener;
 import dev.ultreon.bubbles.util.Enums;
-import dev.ultreon.libs.text.v1.TextObject;
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.TextObject;
+import dev.ultreon.bubbles.text.Translatable;
 import org.checkerframework.common.returnsreceiver.qual.This;
 
 public class CycleButton<T extends Enum<T>> extends Button implements GuiStateListener {

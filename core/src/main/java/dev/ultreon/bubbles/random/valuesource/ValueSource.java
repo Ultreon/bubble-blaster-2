@@ -1,6 +1,6 @@
 package dev.ultreon.bubbles.random.valuesource;
 
-import dev.ultreon.libs.text.v1.Translatable;
+import dev.ultreon.bubbles.text.Translatable;
 
 public interface ValueSource extends Translatable {
     double getValue();
