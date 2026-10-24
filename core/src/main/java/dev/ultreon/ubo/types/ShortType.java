@@ -19,11 +19,11 @@ public class ShortType implements DataType<Short> {
 
     @Override
     public Short getValue() {
-        return obj;
+        return this.obj;
     }
 
     public short getShortValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ShortType implements DataType<Short> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeShort(obj);
+        output.writeShort(this.obj);
     }
 
     public static ShortType read(DataInput input) throws IOException {
@@ -55,22 +55,22 @@ public class ShortType implements DataType<Short> {
         if (this == other) return true;
         if (!(other instanceof ShortType)) return false;
         ShortType shortType = (ShortType) other;
-        return obj == shortType.obj;
+        return this.obj == shortType.obj;
     }
 
     @Override
     public int hashCode() {
-        return obj;
+        return this.obj;
     }
 
     @Override
     public ShortType copy() {
-        return new ShortType(obj);
+        return new ShortType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "s";
+        return this.obj + "s";
     }
 
     @Override

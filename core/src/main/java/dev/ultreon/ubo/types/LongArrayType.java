@@ -22,7 +22,7 @@ public class LongArrayType implements ArrayType<long[], Long> {
 
     @Override
     public long[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class LongArrayType implements ArrayType<long[], Long> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (long l : obj) {
+        output.writeInt(this.obj.length);
+        for (long l : this.obj) {
             output.writeLong(l);
         }
     }
@@ -58,46 +58,46 @@ public class LongArrayType implements ArrayType<long[], Long> {
         if (this == other) return true;
         if (!(other instanceof LongArrayType)) return false;
         LongArrayType that = (LongArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public LongArrayType copy() {
-        return new LongArrayType(obj.clone());
+        return new LongArrayType(this.obj.clone());
     }
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public Long get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Long value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public long getLong(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, long value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(l;");
-        for (long v : obj) {
+        for (long v : this.obj) {
             builder.append(v).append(",");
         }
 
@@ -111,7 +111,7 @@ public class LongArrayType implements ArrayType<long[], Long> {
 
     @Override
     public @NotNull Iterator<Long> iterator() {
-        return new LongIterator(obj);
+        return new LongIterator(this.obj);
     }
 
     public static class LongIterator implements Iterator<Long> {
@@ -124,16 +124,16 @@ public class LongArrayType implements ArrayType<long[], Long> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         public Long next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public long nextLong() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

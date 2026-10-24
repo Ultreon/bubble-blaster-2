@@ -15,11 +15,11 @@ public class DoubleType implements DataType<Double> {
 
     @Override
     public Double getValue() {
-        return obj;
+        return this.obj;
     }
 
     public double getDoubleValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class DoubleType implements DataType<Double> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeDouble(obj);
+        output.writeDouble(this.obj);
     }
 
     public static DoubleType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class DoubleType implements DataType<Double> {
         if (this == other) return true;
         if (!(other instanceof DoubleType)) return false;
         DoubleType that = (DoubleType) other;
-        return Double.compare(obj, that.obj) == 0;
+        return Double.compare(this.obj, that.obj) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Double.hashCode(obj);
+        return Double.hashCode(this.obj);
     }
 
     @Override
     public DoubleType copy() {
-        return new DoubleType(obj);
+        return new DoubleType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "d";
+        return this.obj + "d";
     }
 
     @Override

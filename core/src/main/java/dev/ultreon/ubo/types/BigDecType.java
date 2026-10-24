@@ -21,7 +21,7 @@ public class BigDecType implements DataType<BigDecimal> {
 
     @Override
     public BigDecimal getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -37,9 +37,9 @@ public class BigDecType implements DataType<BigDecimal> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] bytes = obj.unscaledValue().toByteArray();
+        byte[] bytes = this.obj.unscaledValue().toByteArray();
         output.writeInt(bytes.length);
-        output.writeInt(obj.scale());
+        output.writeInt(this.obj.scale());
         for (byte aByte : bytes) {
             output.writeByte(aByte);
         }
@@ -61,22 +61,22 @@ public class BigDecType implements DataType<BigDecimal> {
         if (this == other) return true;
         if (!(other instanceof BigDecType)) return false;
         BigDecType that = (BigDecType) other;
-        return obj.equals(that.obj);
+        return this.obj.equals(that.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
     public BigDecType copy() {
-        return new BigDecType(obj);
+        return new BigDecType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj.toString() + "D";
+        return this.obj.toString() + "D";
     }
 
     @Override

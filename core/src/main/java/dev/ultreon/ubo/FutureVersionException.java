@@ -17,10 +17,10 @@ public class FutureVersionException extends IOException {
     }
 
     public short getRead() {
-        return read;
+        return this.read;
     }
 
     public short getCurrent() {
-        return current;
+        return this.current;
     }
 }

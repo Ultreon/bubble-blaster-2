@@ -32,7 +32,7 @@ public class BitSetType implements DataType<BitSet> {
 
     @Override
     public BitSet getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class BitSetType implements DataType<BitSet> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] arr = obj.toByteArray();
+        byte[] arr = this.obj.toByteArray();
         if (arr.length > 65535) throw new IllegalArgumentException("Bitset is too big to be written");
         output.writeShort(arr.length);
         for (byte b : arr) {
@@ -70,12 +70,12 @@ public class BitSetType implements DataType<BitSet> {
         if (this == other) return true;
         if (!(other instanceof BitSetType)) return false;
         BitSetType uuidType = (BitSetType) other;
-        return Objects.equals(obj, uuidType.obj);
+        return Objects.equals(this.obj, uuidType.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
@@ -86,44 +86,44 @@ public class BitSetType implements DataType<BitSet> {
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("x");
-        for (int i = 0; i < obj.length(); i++) {
-            builder.append(obj.get(i) ? "1" : "0");
+        for (int i = 0; i < this.obj.length(); i++) {
+            builder.append(this.obj.get(i) ? "1" : "0");
         }
 
         return builder + ";";
     }
 
     public void setBit(int index, boolean value) {
-        if (value) obj.set(index);
-        else obj.clear(index);
+        if (value) this.obj.set(index);
+        else this.obj.clear(index);
     }
 
     public boolean getBit(int index) {
-        return obj.get(index);
+        return this.obj.get(index);
     }
 
     public int length() {
-        return obj.length();
+        return this.obj.length();
     }
 
     public int cardinality() {
-        return obj.cardinality();
+        return this.obj.cardinality();
     }
 
     public int nextSetBit(int fromIndex) {
-        return obj.nextSetBit(fromIndex);
+        return this.obj.nextSetBit(fromIndex);
     }
 
     public int nextClearBit(int fromIndex) {
-        return obj.nextClearBit(fromIndex);
+        return this.obj.nextClearBit(fromIndex);
     }
 
     public int previousSetBit(int fromIndex) {
-        return obj.previousSetBit(fromIndex);
+        return this.obj.previousSetBit(fromIndex);
     }
 
     public int previousClearBit(int fromIndex) {
-        return obj.previousClearBit(fromIndex);
+        return this.obj.previousClearBit(fromIndex);
     }
 
     @Override

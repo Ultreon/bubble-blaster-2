@@ -23,7 +23,7 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
     @Override
     public char[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,8 +39,8 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (char i : obj) {
+        output.writeInt(this.obj.length);
+        for (char i : this.obj) {
             output.writeChar(i);
         }
     }
@@ -59,23 +59,23 @@ public class CharArrayType implements ArrayType<char[], Character> {
         if (this == other) return true;
         if (!(other instanceof CharArrayType)) return false;
         CharArrayType that = (CharArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public CharArrayType copy() {
-        return new CharArrayType(obj.clone());
+        return new CharArrayType(this.obj.clone());
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(c;");
-        for (char v : obj) {
+        for (char v : this.obj) {
             builder.append("'").append(v == '\'' ? "\\'" : v).append("'").append(",");
         }
 
@@ -84,25 +84,25 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public @NotNull Character get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Character value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public char getChar(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, char value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
     @Override
     public @NotNull Iterator<Character> iterator() {
-        return new CharIterator(obj);
+        return new CharIterator(this.obj);
     }
 
     public static class CharIterator implements Iterator<Character> {
@@ -125,16 +125,16 @@ public class CharArrayType implements ArrayType<char[], Character> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         public Character next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public char nextChar() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

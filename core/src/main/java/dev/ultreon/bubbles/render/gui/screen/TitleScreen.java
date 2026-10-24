@@ -11,8 +11,6 @@ import dev.ultreon.bubbles.render.gui.screen.options.OptionsScreen;
 import dev.ultreon.bubbles.render.gui.widget.Button;
 import dev.ultreon.libs.text.v1.TextObject;
 
-import java.time.Instant;
-
 public class TitleScreen extends Screen {
 
     private TitleScreenBackground background;
@@ -99,15 +97,17 @@ public class TitleScreen extends Screen {
                 .build());
         this.add(Button.builder()
                 .bounds(this.width - 40 - 180, 100, 180, 40)
-                .text(TextObject.translation("bubbleblaster.screen.title.resetHighScore"))
-                .command(this::resetHighScore)
+                .text(TextObject.translation("bubbleblaster.screen.title.resetData"))
+                .command(this::resetData)
                 .font(Fonts.SANS_BIG.get())
                 .build());
     }
 
-    private void resetHighScore() {
-        var globalData = this.game.getGlobalData();
-        globalData.setHighScore(0.0, Instant.EPOCH);
+    private void resetData() {
+        this.game.showScreen(new ConfirmScreen(() -> {
+            var globalData = this.game.getGlobalData();
+            globalData.reset();
+        }));
     }
 
     @Override

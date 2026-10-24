@@ -17,7 +17,7 @@ public class UUIDType implements DataType<UUID> {
 
     @Override
     public UUID getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class UUIDType implements DataType<UUID> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeLong(obj.getMostSignificantBits());
-        output.writeLong(obj.getLeastSignificantBits());
+        output.writeLong(this.obj.getMostSignificantBits());
+        output.writeLong(this.obj.getLeastSignificantBits());
     }
 
     public static UUIDType read(DataInput input) throws IOException {
@@ -48,22 +48,22 @@ public class UUIDType implements DataType<UUID> {
         if (this == other) return true;
         if (!(other instanceof UUIDType)) return false;
         UUIDType uuidType = (UUIDType) other;
-        return Objects.equals(obj, uuidType.obj);
+        return Objects.equals(this.obj, uuidType.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
     public UUIDType copy() {
-        return new UUIDType(obj);
+        return new UUIDType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return '<' + obj.toString() + '>';
+        return '<' + this.obj.toString() + '>';
     }
 
     @Override

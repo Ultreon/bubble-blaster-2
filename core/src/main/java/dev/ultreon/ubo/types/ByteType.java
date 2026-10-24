@@ -19,11 +19,11 @@ public class ByteType implements DataType<Byte> {
 
     @Override
     public Byte getValue() {
-        return obj;
+        return this.obj;
     }
 
     public byte getByteValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ByteType implements DataType<Byte> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeByte(obj);
+        output.writeByte(this.obj);
     }
 
     public static ByteType read(DataInput input) throws IOException {
@@ -55,22 +55,22 @@ public class ByteType implements DataType<Byte> {
         if (this == other) return true;
         if (!(other instanceof ByteType)) return false;
         ByteType byteType = (ByteType) other;
-        return obj == byteType.obj;
+        return this.obj == byteType.obj;
     }
 
     @Override
     public int hashCode() {
-        return obj;
+        return this.obj;
     }
 
     @Override
     public ByteType copy() {
-        return new ByteType(obj);
+        return new ByteType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "b";
+        return this.obj + "b";
     }
 
     @Override

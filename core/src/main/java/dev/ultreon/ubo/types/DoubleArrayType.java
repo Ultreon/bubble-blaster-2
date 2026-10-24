@@ -22,7 +22,7 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
 
     @Override
     public double[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (double i : obj) {
+        output.writeInt(this.obj.length);
+        for (double i : this.obj) {
             output.writeDouble(i);
         }
     }
@@ -58,50 +58,50 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
         if (this == other) return true;
         if (!(other instanceof DoubleArrayType)) return false;
         DoubleArrayType that = (DoubleArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public DoubleArrayType copy() {
-        return new DoubleArrayType(obj.clone());
+        return new DoubleArrayType(this.obj.clone());
     }
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public Double get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Double value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public double getDouble(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, double value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(d;");
-        for (double v : obj) {
+        for (double v : this.obj) {
             builder.append(v).append(",");
         }
 
-        if (obj.length > 0) {
+        if (this.obj.length > 0) {
             return builder.substring(0, builder.length() - 1) + ")";
         }
 
@@ -115,7 +115,7 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
 
     @Override
     public @NotNull Iterator<Double> iterator() {
-        return new DoubleIterator(obj);
+        return new DoubleIterator(this.obj);
     }
 
     public static class DoubleIterator implements Iterator<Double> {
@@ -128,16 +128,16 @@ public class DoubleArrayType implements ArrayType<double[], Double> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         public Double next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public double nextDouble() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

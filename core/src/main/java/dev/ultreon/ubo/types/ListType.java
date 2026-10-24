@@ -52,7 +52,7 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public List<T> getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -81,9 +81,9 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeByte(id);
-        output.writeInt(obj.size());
-        for (DataType<?> l : obj) {
+        output.writeByte(this.id);
+        output.writeInt(this.obj.size());
+        for (DataType<?> l : this.obj) {
             l.write(output);
         }
     }
@@ -101,82 +101,82 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public boolean add(T type) {
-        if (type.id() != id)
-            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + id + ")");
-        return obj.add(type);
+        if (type.id() != this.id)
+            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + this.id + ")");
+        return this.obj.add(type);
     }
 
     @Override
     public boolean remove(Object o) {
-        return obj.remove(o);
+        return this.obj.remove(o);
     }
 
     @Override
     @SuppressWarnings("SlowListContainsAll")
     public boolean containsAll(@NotNull Collection<?> c) {
-        return obj.containsAll(c);
+        return this.obj.containsAll(c);
     }
 
     @Override
     public boolean addAll(@NotNull Collection<? extends T> c) {
-        return obj.addAll(c);
+        return this.obj.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, @NotNull Collection<? extends T> c) {
-        return obj.addAll(index, c);
+        return this.obj.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(@NotNull Collection<?> c) {
-        return obj.removeAll(c);
+        return this.obj.removeAll(c);
     }
 
     @Override
     public boolean retainAll(@NotNull Collection<?> c) {
-        return obj.retainAll(c);
+        return this.obj.retainAll(c);
     }
 
     @Override
     public @NotNull Iterator<T> iterator() {
-        return obj.iterator();
+        return this.obj.iterator();
     }
 
     @Override
     public Object @NotNull [] toArray() {
-        return obj.toArray();
+        return this.obj.toArray();
     }
 
     @Override
     public <T1> T1 @NotNull [] toArray(T1 @NotNull [] a) {
-        return obj.toArray(a);
+        return this.obj.toArray(a);
     }
 
     public T @NotNull [] toTypeArray() {
-        T[] a = (T[]) Array.newInstance(componentType, obj.size());
-        for (int i = 0; i < obj.size(); i++) {
-            a[i] = obj.get(i);
+        T[] a = (T[]) Array.newInstance(this.componentType, this.obj.size());
+        for (int i = 0; i < this.obj.size(); i++) {
+            a[i] = this.obj.get(i);
         }
         return a;
     }
 
     @Override
     public @NotNull ListIterator<T> listIterator() {
-        return obj.listIterator();
+        return this.obj.listIterator();
     }
 
     @Override
     public @NotNull ListIterator<T> listIterator(int index) {
-        return obj.listIterator(index);
+        return this.obj.listIterator(index);
     }
 
     @Override
     public @NotNull List<T> subList(int fromIndex, int toIndex) {
-        return obj.subList(fromIndex, toIndex);
+        return this.obj.subList(fromIndex, toIndex);
     }
 
     public int type() {
-        return id;
+        return this.id;
     }
 
     @SafeVarargs
@@ -186,24 +186,24 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     public final <C extends DataType<?>> ListType<C> cast(Class<C> type) {
         ListType<C> cs = new ListType<>(type);
-        cs.setValue((List<C>) obj);
+        cs.setValue((List<C>) this.obj);
         return cs;
     }
 
     @Override
     public T get(int index) {
-        return obj.get(index);
+        return this.obj.get(index);
     }
 
     @Override
     public T remove(int index) {
-        if (index >= obj.size())
+        if (index >= this.obj.size())
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);
         if (index < 0)
-            index = obj.size() + index;
+            index = this.obj.size() + index;
         if (index < 0)
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);
-        obj.remove(index);
+        this.obj.remove(index);
         return null;
     }
 
@@ -213,9 +213,9 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
         if (!(o instanceof DataType<?>))
             return -1;
         DataType<?> type = (DataType<?>) o;
-        if (type.id() != id)
-            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + id + ")");
-        return obj.indexOf(o);
+        if (type.id() != this.id)
+            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + this.id + ")");
+        return this.obj.indexOf(o);
     }
 
     @Override
@@ -224,17 +224,17 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
         if (!(o instanceof DataType<?>))
             return -1;
         DataType<?> type = (DataType<?>) o;
-        if (type.id() != id)
-            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + id + ")");
-        return obj.lastIndexOf(o);
+        if (type.id() != this.id)
+            throw new IllegalArgumentException("Type has invalid id: " + type.id() + " (expected " + this.id + ")");
+        return this.obj.lastIndexOf(o);
     }
 
     public int indexOf(T type) {
-        return obj.indexOf(type);
+        return this.obj.indexOf(type);
     }
 
     public int lastIndexOf(T type) {
-        return obj.lastIndexOf(type);
+        return this.obj.lastIndexOf(type);
     }
 
     @Override
@@ -242,19 +242,19 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
         if (this == other) return true;
         if (!(other instanceof ListType)) return false;
         ListType<?> listType = (ListType<?>) other;
-        return id == listType.id && Objects.equals(obj, listType.obj);
+        return this.id == listType.id && Objects.equals(this.obj, listType.obj);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + obj.hashCode();
+        int result = this.id;
+        result = 31 * result + this.obj.hashCode();
         return result;
     }
 
     @Override
     public ListType<T> copy() {
-        return new ListType<>(obj.stream().map(t -> (T) t.copy()).collect(Collectors.toList()));
+        return new ListType<>(this.obj.stream().map(t -> (T) t.copy()).collect(Collectors.toList()));
     }
 
     @Override
@@ -271,35 +271,35 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public int size() {
-        return obj.size();
+        return this.obj.size();
     }
 
     @Override
     public void clear() {
-        obj.clear();
+        this.obj.clear();
     }
 
     @Override
     public T set(int index, T type) {
-        if (type.id() != id)
-            throw new IllegalArgumentException("Type at index " + index + " has invalid id: " + type.id() + " (expected " + id + ")");
-        return obj.set(index, type);
+        if (type.id() != this.id)
+            throw new IllegalArgumentException("Type at index " + index + " has invalid id: " + type.id() + " (expected " + this.id + ")");
+        return this.obj.set(index, type);
     }
 
     @Override
     public void add(int index, T element) {
-        if (element.id() != id)
-            throw new IllegalArgumentException("Type at index " + index + " has invalid id: " + element.id() + " (expected " + id + ")");
-        obj.add(index, element);
+        if (element.id() != this.id)
+            throw new IllegalArgumentException("Type at index " + index + " has invalid id: " + element.id() + " (expected " + this.id + ")");
+        this.obj.add(index, element);
     }
 
     public T remove(T type) {
-        obj.remove(type);
+        this.obj.remove(type);
         return type;
     }
 
     public boolean contains(T type) {
-        return obj.contains(type);
+        return this.obj.contains(type);
     }
 
     public <R> List<R> mapTo(Function<T, R> mapper) {
@@ -307,7 +307,7 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
     }
 
     public <R> List<R> mapTo(Function<T, R> mapper, List<R> list) {
-        for (T t : obj) {
+        for (T t : this.obj) {
             R r = mapper.apply(t);
             list.add(r);
         }
@@ -316,23 +316,23 @@ public class ListType<T extends DataType<?>> implements DataType<List<T>>, List<
 
     @Override
     public @NotNull Stream<T> stream() {
-        return obj.stream();
+        return this.obj.stream();
     }
 
     @Override
     public @NotNull Stream<T> parallelStream() {
-        return obj.parallelStream();
+        return this.obj.parallelStream();
     }
 
     @Override
     public boolean isEmpty() {
-        return obj.isEmpty();
+        return this.obj.isEmpty();
     }
 
     @Override
     @Deprecated
     public boolean contains(Object o) {
-        return obj.contains(o);
+        return this.obj.contains(o);
     }
 
     @Override

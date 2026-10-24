@@ -33,7 +33,7 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     @Override
     public boolean[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -49,16 +49,16 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (int i = 0; i < obj.length; i += 4) {
-            boolean b = obj[i];
-            boolean b1 = i + 1 < obj.length && obj[i + 1];
-            boolean b2 = i + 2 < obj.length && obj[i + 2];
-            boolean b3 = i + 3 < obj.length && obj[i + 3];
-            boolean b4 = i + 4 < obj.length && obj[i + 4];
-            boolean b5 = i + 5 < obj.length && obj[i + 5];
-            boolean b6 = i + 6 < obj.length && obj[i + 6];
-            boolean b7 = i + 7 < obj.length && obj[i + 7];
+        output.writeInt(this.obj.length);
+        for (int i = 0; i < this.obj.length; i += 4) {
+            boolean b = this.obj[i];
+            boolean b1 = i + 1 < this.obj.length && this.obj[i + 1];
+            boolean b2 = i + 2 < this.obj.length && this.obj[i + 2];
+            boolean b3 = i + 3 < this.obj.length && this.obj[i + 3];
+            boolean b4 = i + 4 < this.obj.length && this.obj[i + 4];
+            boolean b5 = i + 5 < this.obj.length && this.obj[i + 5];
+            boolean b6 = i + 6 < this.obj.length && this.obj[i + 6];
+            boolean b7 = i + 7 < this.obj.length && this.obj[i + 7];
             output.writeByte(
                     (b ? 1 : 0) | (b1 ? 2 : 0) | (b2 ? 4 : 0) | (b3 ? 8 : 0) |
                             (b4 ? 16 : 0) | (b5 ? 32 : 0) | (b6 ? 64 : 0) | (b7 ? 128 : 0)
@@ -88,23 +88,23 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
         if (this == other) return true;
         if (!(other instanceof BooleanArrayType)) return false;
         BooleanArrayType that = (BooleanArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public BooleanArrayType copy() {
-        return new BooleanArrayType(obj.clone());
+        return new BooleanArrayType(this.obj.clone());
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(z;");
-        for (boolean v : obj) {
+        for (boolean v : this.obj) {
             builder.append(v).append(",");
         }
 
@@ -113,25 +113,25 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public @NotNull Boolean get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Boolean value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public boolean getBoolean(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, boolean value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
@@ -141,7 +141,7 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
     @Override
     public @NotNull BooleanIterator iterator() {
-        return new BooleanIterator(obj);
+        return new BooleanIterator(this.obj);
     }
 
     public static class BooleanIterator implements Iterator<@NotNull Boolean> {
@@ -154,17 +154,17 @@ public class BooleanArrayType implements ArrayType<boolean[], Boolean> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         @Deprecated
         public Boolean next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public boolean nextBoolean() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

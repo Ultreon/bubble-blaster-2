@@ -46,8 +46,8 @@ group project_group
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 //**********************//
@@ -87,6 +87,8 @@ dependencies {
     api "org.checkerframework:checker:$checker_framework_version"
 
     api "org.jetbrains:annotations:$jetbrains_annotations_version"
+
+    api project(":logging")
 
     // Test dependencies
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"

@@ -21,7 +21,7 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     public ByteArrayType(ByteBuffer buffer) {
         this.obj = new byte[buffer.remaining()];
-        buffer.get(obj);
+        buffer.get(this.obj);
     }
 
     public ByteArrayType(String str) {
@@ -49,7 +49,7 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     @Override
     public byte[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -65,8 +65,8 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (byte b : obj) {
+        output.writeInt(this.obj.length);
+        for (byte b : this.obj) {
             output.writeByte(b);
         }
     }
@@ -85,23 +85,23 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
         if (this == other) return true;
         if (!(other instanceof ByteArrayType)) return false;
         ByteArrayType that = (ByteArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public ByteArrayType copy() {
-        return new ByteArrayType(obj.clone());
+        return new ByteArrayType(this.obj.clone());
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(b;");
-        for (byte v : obj) {
+        for (byte v : this.obj) {
             builder.append(v).append(",");
         }
 
@@ -110,25 +110,25 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public @NotNull Byte get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Byte value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public byte getByte(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, byte value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
     @Override
     public @NotNull ByteIterator iterator() {
-        return new ByteIterator(obj);
+        return new ByteIterator(this.obj);
     }
 
     public static class ByteIterator implements Iterator<@NotNull Byte> {
@@ -151,17 +151,17 @@ public class ByteArrayType implements ArrayType<byte[], Byte> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         @Deprecated
         public Byte next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public byte nextByte() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

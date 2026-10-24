@@ -15,11 +15,11 @@ public class IntType implements DataType<Integer> {
 
     @Override
     public Integer getValue() {
-        return obj;
+        return this.obj;
     }
 
     public int getIntValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class IntType implements DataType<Integer> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj);
+        output.writeInt(this.obj);
     }
 
     public static IntType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class IntType implements DataType<Integer> {
         if (this == other) return true;
         if (!(other instanceof IntType)) return false;
         IntType intType = (IntType) other;
-        return obj == intType.obj;
+        return this.obj == intType.obj;
     }
 
     @Override
     public int hashCode() {
-        return obj;
+        return this.obj;
     }
 
     @Override
     public IntType copy() {
-        return new IntType(obj);
+        return new IntType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "i";
+        return this.obj + "i";
     }
 
     @Override

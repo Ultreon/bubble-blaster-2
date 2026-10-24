@@ -621,7 +621,7 @@ public class UsoParser {
         try {
             return readUso();
         } catch (Exception e) {
-            throw new IOException("Unable to parse USO at pos " + pos + ": " + e.getMessage(), e);
+            throw new IOException("Unable to parse USO at pos " + this.pos + ": " + e.getMessage(), e);
         }
     }
 }

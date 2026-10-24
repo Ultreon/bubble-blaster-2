@@ -131,4 +131,12 @@ public final class GlobalSaveData extends GameData {
     public void setXpLevel(int xpLevel) {
         this.xpLevel = xpLevel;
     }
+
+    public void reset() {
+        this.money = 0;
+        this.xp = 0;
+        this.xpLevel = 0;
+        this.highScore = 0;
+        this.highScoreTime = 0;
+    }
 }

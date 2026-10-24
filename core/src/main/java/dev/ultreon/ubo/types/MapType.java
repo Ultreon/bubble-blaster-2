@@ -18,7 +18,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     private Map<String, DataType<?>> obj;
 
     public MapType() {
-        obj = new HashMap<>();
+        this.obj = new HashMap<>();
     }
 
     public MapType(Map<String, DataType<?>> map) {
@@ -26,13 +26,13 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public MapType(String key, DataType<?> value) {
-        obj = new HashMap<>();
-        obj.put(key, value);
+        this.obj = new HashMap<>();
+        this.obj.put(key, value);
     }
 
     @Override
     public Map<String, DataType<?>> getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -41,20 +41,20 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public Set<String> keys() {
-        return obj.keySet();
+        return this.obj.keySet();
     }
 
     public Set<Entry<String, DataType<?>>> entries() {
-        return obj.entrySet();
+        return this.obj.entrySet();
     }
 
     public @NotNull Collection<DataType<?>> values() {
-        return obj.values();
+        return this.obj.values();
     }
 
     @Override
     public @NotNull Set<Entry<String, DataType<?>>> entrySet() {
-        return obj.entrySet();
+        return this.obj.entrySet();
     }
 
     @Override
@@ -64,8 +64,8 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.size());
-        for (Entry<String, DataType<?>> e : obj.entrySet()) {
+        output.writeInt(this.obj.size());
+        for (Entry<String, DataType<?>> e : this.obj.entrySet()) {
             output.writeUTF(e.getKey());
             DataType<?> value = e.getValue();
             output.writeByte(value.id());
@@ -86,31 +86,31 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public boolean contains(String key, int type) {
-        DataType<?> data = obj.get(key);
+        DataType<?> data = this.obj.get(key);
 
         return data != null && data.id() == type;
     }
 
     @SafeVarargs
     public final <T extends DataType<?>> boolean contains(String key, T... type) {
-        DataType<?> data = obj.get(key);
+        DataType<?> data = this.obj.get(key);
 
         return data != null && type.getClass().getComponentType().isAssignableFrom(data.getClass());
     }
 
     public DataType<?> put(String key, DataType<?> dataType) {
-        return obj.put(key, dataType);
+        return this.obj.put(key, dataType);
     }
 
     @Override
     @Deprecated
     public DataType<?> remove(Object key) {
-        return obj.remove(key);
+        return this.obj.remove(key);
     }
 
     @Override
     public void putAll(@NotNull Map<? extends String, ? extends DataType<?>> m) {
-        obj.putAll(m);
+        this.obj.putAll(m);
     }
 
     public void putByte(String key, byte value) {
@@ -475,7 +475,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public DataType<?> get(String key) {
-        return obj.get(key);
+        return this.obj.get(key);
     }
 
     public <T extends DataType<?>> T get(String key, @NotNull T def) {
@@ -487,19 +487,19 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public boolean remove(String key) {
-        return obj.remove(key, get(key));
+        return this.obj.remove(key, get(key));
     }
 
     public boolean contains(String key) {
-        return obj.containsKey(key);
+        return this.obj.containsKey(key);
     }
 
     public boolean containsValue(DataType<?> value) {
-        return obj.containsValue(value);
+        return this.obj.containsValue(value);
     }
 
     public DataType<?> pop(String key) {
-        return obj.remove(key);
+        return this.obj.remove(key);
     }
 
     @Override
@@ -507,17 +507,17 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
         if (this == other) return true;
         if (!(other instanceof MapType)) return false;
         MapType mapType = (MapType) other;
-        return Objects.equals(obj, mapType.obj);
+        return Objects.equals(this.obj, mapType.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
     public MapType copy() {
-        return new MapType(obj.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().copy(), (a, b) -> b)));
+        return new MapType(this.obj.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().copy(), (a, b) -> b)));
     }
 
     public <R> Map<String, R> mapTo(Function<DataType<?>, R> mapper) {
@@ -525,7 +525,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <R> Map<String, R> mapTo(Function<DataType<?>, R> mapper, Map<String, R> map) {
-        for (Entry<String, DataType<?>> entry : obj.entrySet()) {
+        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
             if (map.put(entry.getKey(), mapper.apply(entry.getValue())) != null) {
                 throw new IllegalStateException("Duplicate key");
             }
@@ -538,7 +538,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public <R> List<R> reduce(BiFunction<String, DataType<?>, R> reducer, List<R> list) {
-        for (Entry<String, DataType<?>> entry : obj.entrySet()) {
+        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
             list.add(reducer.apply(entry.getKey(), entry.getValue()));
         }
         return list;
@@ -547,7 +547,7 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("{");
-        for (Entry<String, DataType<?>> entry : obj.entrySet()) {
+        for (Entry<String, DataType<?>> entry : this.obj.entrySet()) {
             builder.append("\"").append(entry.getKey().replace("\"", "\\\"")).append("\": ").append(entry.getValue().writeUso()).append(", ");
         }
 
@@ -559,11 +559,11 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public int size() {
-        return obj.size();
+        return this.obj.size();
     }
 
     public void clear() {
-        obj.clear();
+        this.obj.clear();
     }
 
     @Override
@@ -572,25 +572,25 @@ public class MapType implements DataType<Map<String, DataType<?>>>, Map<String, 
     }
 
     public boolean isEmpty() {
-        return obj.isEmpty();
+        return this.obj.isEmpty();
     }
 
     @Override
     @Deprecated
     public boolean containsKey(Object key) {
-        return obj.containsKey(key);
+        return this.obj.containsKey(key);
     }
 
     @Override
     @Deprecated
     public boolean containsValue(Object value) {
-        return obj.containsValue(value);
+        return this.obj.containsValue(value);
     }
 
     @Override
     @Deprecated
     public DataType<?> get(Object key) {
-        return obj.get(key);
+        return this.obj.get(key);
     }
 
     @Override

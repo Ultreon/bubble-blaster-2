@@ -22,7 +22,7 @@ public class IntArrayType implements ArrayType<int[], Integer> {
 
     @Override
     public int[] getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class IntArrayType implements ArrayType<int[], Integer> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeInt(obj.length);
-        for (int i : obj) {
+        output.writeInt(this.obj.length);
+        for (int i : this.obj) {
             output.writeInt(i);
         }
     }
@@ -58,46 +58,46 @@ public class IntArrayType implements ArrayType<int[], Integer> {
         if (this == other) return true;
         if (!(other instanceof IntArrayType)) return false;
         IntArrayType that = (IntArrayType) other;
-        return Arrays.equals(obj, that.obj);
+        return Arrays.equals(this.obj, that.obj);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(obj);
+        return Arrays.hashCode(this.obj);
     }
 
     @Override
     public IntArrayType copy() {
-        return new IntArrayType(obj.clone());
+        return new IntArrayType(this.obj.clone());
     }
 
     @Override
     public int size() {
-        return obj.length;
+        return this.obj.length;
     }
 
     @Override
     public Integer get(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     @Override
     public void set(int index, Integer value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     public int getInt(int index) {
-        return obj[index];
+        return this.obj[index];
     }
 
     public void set(int index, int value) {
-        obj[index] = value;
+        this.obj[index] = value;
     }
 
     @Override
     public String writeUso() {
         StringBuilder builder = new StringBuilder("(i;");
-        for (int v : obj) {
+        for (int v : this.obj) {
             builder.append(v).append(",");
         }
 
@@ -111,7 +111,7 @@ public class IntArrayType implements ArrayType<int[], Integer> {
 
     @Override
     public @NotNull IntIterator iterator() {
-        return new IntIterator(obj);
+        return new IntIterator(this.obj);
     }
 
     public static class IntIterator implements Iterator<Integer> {
@@ -124,16 +124,16 @@ public class IntArrayType implements ArrayType<int[], Integer> {
 
         @Override
         public boolean hasNext() {
-            return index < obj.length;
+            return this.index < this.obj.length;
         }
 
         @Override
         public Integer next() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
 
         public int nextInt() {
-            return obj[index++];
+            return this.obj[this.index++];
         }
     }
 }

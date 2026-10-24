@@ -15,11 +15,11 @@ public class FloatType implements DataType<Float> {
 
     @Override
     public Float getValue() {
-        return obj;
+        return this.obj;
     }
 
     public float getFloatValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class FloatType implements DataType<Float> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeFloat(obj);
+        output.writeFloat(this.obj);
     }
 
     public static FloatType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class FloatType implements DataType<Float> {
         if (this == other) return true;
         if (!(other instanceof FloatType)) return false;
         FloatType floatType = (FloatType) other;
-        return Float.compare(obj, floatType.obj) == 0;
+        return Float.compare(this.obj, floatType.obj) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Float.hashCode(obj);
+        return Float.hashCode(this.obj);
     }
 
     @Override
     public FloatType copy() {
-        return new FloatType(obj);
+        return new FloatType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "f";
+        return this.obj + "f";
     }
 
     @Override

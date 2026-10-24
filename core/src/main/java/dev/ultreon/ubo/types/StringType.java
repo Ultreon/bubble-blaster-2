@@ -34,7 +34,7 @@ public class StringType implements DataType<String>, CharSequence {
 
     @Override
     public String getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -50,8 +50,8 @@ public class StringType implements DataType<String>, CharSequence {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        if (obj.length() > 65535) throw new IllegalArgumentException("String is too big to be written (length > 65535)");
-        byte[] bytes = obj.getBytes(StandardCharsets.UTF_8);
+        if (this.obj.length() > 65535) throw new IllegalArgumentException("String is too big to be written (length > 65535)");
+        byte[] bytes = this.obj.getBytes(StandardCharsets.UTF_8);
         output.writeShort(bytes.length);
         for (byte aByte : bytes) {
             output.writeByte(aByte);
@@ -72,38 +72,38 @@ public class StringType implements DataType<String>, CharSequence {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StringType that = (StringType) o;
-        return obj.equals(that.obj);
+        return this.obj.equals(that.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
     public StringType copy() {
-        return new StringType(obj);
+        return new StringType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return "\"" + obj.replace("\"", "\\\"") + "\"";
+        return "\"" + this.obj.replace("\"", "\\\"") + "\"";
     }
 
     @Override
     public int length() {
-        return obj.length();
+        return this.obj.length();
     }
 
     @Override
     public char charAt(int index) {
-        return obj.charAt(index);
+        return this.obj.charAt(index);
     }
 
     @NotNull
     @Override
     public CharSequence subSequence(int start, int end) {
-        return obj.subSequence(start, end);
+        return this.obj.subSequence(start, end);
     }
 
     @Override

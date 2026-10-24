@@ -70,6 +70,7 @@
   "bubbleblaster.screen.title.language": "Language...",
   "bubbleblaster.screen.title.quit": "Quit Game",
   "bubbleblaster.screen.title.resetHighScore": "Reset Highscore",
+  "bubbleblaster.screen.title.resetData": "Reset Data",
   "bubbleblaster.screen.options.language": "Language...",
   "bubbleblaster.screen.options.gameplay": "Gameplay...",
   "bubbleblaster.screen.options.gameplay.timedMode.timeLimit": "Timed Mode Limit (secs)",
@@ -167,5 +168,8 @@
   "bubbleblaster.bubble.bubble_freeze.desc": "This bubble will freeze all bubbles for some time.",
   "bubbleblaster.bubble.paralyze.desc": "This bubble will paralyze the player for some time.",
   "bubbleblaster.bubble.hardened.desc": "A bubble that's harder to destroy than others.",
-  "bubbleblaster.bubble.ultra.desc": "De meest overweldigende bubbel die er is, heeft alle positieve statuseffecten (ondersteunt nog geen modificaties) en geeft 10x meer punten dan de normale bubbel."
+  "bubbleblaster.bubble.ultra.desc": "De meest overweldigende bubbel die er is, heeft alle positieve statuseffecten (ondersteunt nog geen modificaties) en geeft 10x meer punten dan de normale bubbel.",
+
+  "gui.confirm": "Confirm",
+  "gui.cancel": "Cancel"
 }

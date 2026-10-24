@@ -15,11 +15,11 @@ public class LongType implements DataType<Long> {
 
     @Override
     public Long getValue() {
-        return obj;
+        return this.obj;
     }
 
     public long getLongValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LongType implements DataType<Long> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeLong(obj);
+        output.writeLong(this.obj);
     }
 
     public static LongType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class LongType implements DataType<Long> {
         if (this == other) return true;
         if (!(other instanceof LongType)) return false;
         LongType longType = (LongType) other;
-        return obj == longType.obj;
+        return this.obj == longType.obj;
     }
 
     @Override
     public int hashCode() {
-        return (int) (obj ^ obj >>> 32);
+        return (int) (this.obj ^ this.obj >>> 32);
     }
 
     @Override
     public LongType copy() {
-        return new LongType(obj);
+        return new LongType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj + "l";
+        return this.obj + "l";
     }
 
     @Override

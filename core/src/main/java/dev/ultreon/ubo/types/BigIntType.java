@@ -20,7 +20,7 @@ public class BigIntType implements DataType<BigInteger> {
 
     @Override
     public BigInteger getValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BigIntType implements DataType<BigInteger> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        byte[] bytes = obj.toByteArray();
+        byte[] bytes = this.obj.toByteArray();
         output.writeInt(bytes.length);
         for (byte aByte : bytes) {
             output.writeByte(aByte);
@@ -58,22 +58,22 @@ public class BigIntType implements DataType<BigInteger> {
         if (this == other) return true;
         if (!(other instanceof BigIntType)) return false;
         BigIntType that = (BigIntType) other;
-        return obj.equals(that.obj);
+        return this.obj.equals(that.obj);
     }
 
     @Override
     public int hashCode() {
-        return obj.hashCode();
+        return this.obj.hashCode();
     }
 
     @Override
     public BigIntType copy() {
-        return new BigIntType(obj);
+        return new BigIntType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj.toString() + "I";
+        return this.obj.toString() + "I";
     }
 
     @Override

@@ -2,6 +2,7 @@ package dev.ultreon.bubbles;
 
 import com.badlogic.gdx.files.FileHandle;
 import dev.ultreon.bubbles.common.Controllable;
+import dev.ultreon.bubbles.entity.Bubble;
 import dev.ultreon.bubbles.entity.Entity;
 import dev.ultreon.bubbles.entity.LivingEntity;
 import dev.ultreon.bubbles.entity.attribute.Attribute;
@@ -111,6 +112,13 @@ public class LoadedGame implements Controllable {
         if (entityB.isCollidableWith(entityA)) {
             EntityEvents.COLLISION.factory().onCollision(delta, entityB, entityA);
             entityB.onCollision(entityA, delta);
+        }
+
+        // Bubble-to-bubble contact is a physical bounce for bouncy bubbles,
+        // not an attack. Keep it out of the generic collision damage below.
+        if (entityA instanceof Bubble && entityB instanceof Bubble &&
+                (((Bubble) entityA).getBounceAmount() > 0 || ((Bubble) entityB).getBounceAmount() > 0)) {
+            return;
         }
 
         if (entityA instanceof LivingEntity && entityB.doesAttack(entityA) && entityA.canBeAttackedBy(entityB)) {

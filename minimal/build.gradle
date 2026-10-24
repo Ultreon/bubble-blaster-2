@@ -29,8 +29,8 @@ group project_group // http://maven.apache.org/guides/mini/guide-naming-conventi
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 println("Current version: $version")

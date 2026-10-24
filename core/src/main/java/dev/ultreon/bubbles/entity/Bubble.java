@@ -131,6 +131,9 @@ public class Bubble extends AbstractBubbleEntity {
         }
 
         this.markAsAttackable(Entities.PLAYER);
+        if (this.bounceAmount > 0) {
+            this.markAsCollidable(Entities.BUBBLE);
+        }
         this.markAsCollidable(Entities.BULLET);
         this.markAsCollidable(Entities.PLAYER);
 
@@ -157,6 +160,13 @@ public class Bubble extends AbstractBubbleEntity {
 
     @Override
     public void onCollision(Entity other, double deltaTime) {
+        if (other instanceof Bubble) {
+            if (this.bounceAmount > 0) {
+                other.bounceOff(this, this.bounceAmount, (float) deltaTime);
+            }
+            return;
+        }
+
         this.bubbleType.onCollision(this, other);
 
         if (this.bounceAmount > 0) {

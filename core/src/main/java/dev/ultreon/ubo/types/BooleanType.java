@@ -15,11 +15,11 @@ public class BooleanType implements DataType<Boolean> {
 
     @Override
     public Boolean getValue() {
-        return obj;
+        return this.obj;
     }
 
     public boolean getBooleanValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class BooleanType implements DataType<Boolean> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeBoolean(obj);
+        output.writeBoolean(this.obj);
     }
 
     public static BooleanType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class BooleanType implements DataType<Boolean> {
         if (this == other) return true;
         if (!(other instanceof BooleanType)) return false;
         BooleanType that = (BooleanType) other;
-        return obj == that.obj;
+        return this.obj == that.obj;
     }
 
     @Override
     public int hashCode() {
-        return obj ? 1231 : 1237;
+        return this.obj ? 1231 : 1237;
     }
 
     @Override
     public BooleanType copy() {
-        return new BooleanType(obj);
+        return new BooleanType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return obj ? "true" : "false";
+        return this.obj ? "true" : "false";
     }
 
     @Override

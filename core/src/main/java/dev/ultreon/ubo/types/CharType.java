@@ -15,11 +15,11 @@ public class CharType implements DataType<Character> {
 
     @Override
     public Character getValue() {
-        return obj;
+        return this.obj;
     }
 
     public char getCharValue() {
-        return obj;
+        return this.obj;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class CharType implements DataType<Character> {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeChar(obj);
+        output.writeChar(this.obj);
     }
 
     public static CharType read(DataInput input) throws IOException {
@@ -51,22 +51,22 @@ public class CharType implements DataType<Character> {
         if (this == other) return true;
         if (!(other instanceof CharType)) return false;
         CharType charType = (CharType) other;
-        return obj == charType.obj;
+        return this.obj == charType.obj;
     }
 
     @Override
     public int hashCode() {
-        return obj;
+        return this.obj;
     }
 
     @Override
     public CharType copy() {
-        return new CharType(obj);
+        return new CharType(this.obj);
     }
 
     @Override
     public String writeUso() {
-        return "'" + (obj == '\'' ? "\\'" : String.valueOf(obj)) + "'";
+        return "'" + (this.obj == '\'' ? "\\'" : String.valueOf(this.obj)) + "'";
     }
 
     @Override

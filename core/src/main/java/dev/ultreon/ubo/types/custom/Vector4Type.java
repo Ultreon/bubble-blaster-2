@@ -67,15 +67,15 @@ class Vector4Iterator<T, V> implements Iterator<V> {
     }
     @Override
     public boolean hasNext() {
-        return index < 4;
+        return this.index < 4;
     }
     @Override
     public V next() {
-        if (index >= 4) throw new NoSuchElementException("No more elements");
-        if (index++ == 0) return vector.getX();
-        if (index++ == 1) return vector.getY();
-        if (index++ == 2) return vector.getZ();
-        if (index++ == 3) return vector.getW();
+        if (this.index >= 4) throw new NoSuchElementException("No more elements");
+        if (this.index++ == 0) return this.vector.getX();
+        if (this.index++ == 1) return this.vector.getY();
+        if (this.index++ == 2) return this.vector.getZ();
+        if (this.index++ == 3) return this.vector.getW();
 
         throw new NoSuchElementException("No more elements");
     }

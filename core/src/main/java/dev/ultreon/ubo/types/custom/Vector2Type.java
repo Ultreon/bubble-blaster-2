@@ -59,14 +59,14 @@ class Vector2Iterator<V> implements Iterator<V> {
 
     @Override
     public boolean hasNext() {
-        return index < 2;
+        return this.index < 2;
     }
 
     @Override
     public V next() {
-        if (index >= 2) throw new NoSuchElementException("No more elements");
-        if (index++ == 0) return vector.getX();
-        if (index++ == 1) return vector.getY();
+        if (this.index >= 2) throw new NoSuchElementException("No more elements");
+        if (this.index++ == 0) return this.vector.getX();
+        if (this.index++ == 1) return this.vector.getY();
         throw new NoSuchElementException("No more elements");
     }
 }
