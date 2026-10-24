@@ -31,15 +31,6 @@ public class CreateSaveScreen extends Screen {
 
     @Override
     public void init() {
-        var label = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.title"), this.width / 2 - 150, 0, 300, 50));
-        label.setFontSize(36);
-
-        var label1 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.seed"), this.width / 2 - 150, 50, 300, 30));
-        label1.setFontSize(20);
-
-        var label2 = this.add(new Label(TextObject.translation("bubbleblaster.saves.create.gamemode"), this.width / 2 - 150, 95, 300, 25));
-        label2.setFontSize(20);
-
         var startY = 120;
 
         this.seedEntry = this.add(new TextEntry.Builder().bounds(this.width / 2 - 150, startY, 300, 45).entryWidth(300).build());
