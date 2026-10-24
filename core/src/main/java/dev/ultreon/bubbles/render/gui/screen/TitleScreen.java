@@ -64,33 +64,26 @@ public class TitleScreen extends Screen {
                 .command(this::startGame)
                 .font(Fonts.SANS_BIG.get())
                 .build());
-        var savesBtn = this.add(Button.builder()
-                .bounds(this.width / 2 - 200, 300, 400, 60)
-                .text(TextObject.translation("bubbleblaster.screen.title.saves"))
-                .command(this::openSavesSelection)
-                .font(Fonts.SANS_BIG.get())
-                .build());
-        savesBtn.enabled = GamePlatform.get().isDevelopmentEnvironment();
         this.add(Button.builder()
-                .bounds(this.width / 2 - 200, 380, 190, 60)
+                .bounds(this.width / 2 - 200, 300, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.mods"))
                 .command(this::openModList)
                 .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
-                .bounds(this.width / 2 + 10, 380, 190, 60)
+                .bounds(this.width / 2 + 10, 300, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.options"))
                 .command(this::openOptions)
                 .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
-                .bounds(this.width / 2 - 200, 460, 190, 60)
+                .bounds(this.width / 2 - 200, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.language"))
                 .command(this::openLanguageSettings)
                 .font(Fonts.SANS_BIG.get())
                 .build());
         this.add(Button.builder()
-                .bounds(this.width / 2 + 10, 460, 190, 60)
+                .bounds(this.width / 2 + 10, 380, 190, 60)
                 .text(TextObject.translation("bubbleblaster.screen.title.quit"))
                 .command(this.game::shutdown)
                 .font(Fonts.SANS_BIG.get())

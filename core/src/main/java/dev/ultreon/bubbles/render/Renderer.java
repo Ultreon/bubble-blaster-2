@@ -131,7 +131,7 @@ public class Renderer {
         this.vfxManager = new VfxManager(Pixmap.Format.RGBA8888);
         this.vfxManager.setBlendingEnabled(true);
         this.vfxBlur = new GaussianBlurEffect(GaussianBlurEffect.BlurType.Gaussian5x5);
-        this.vfxBlur.setPasses(10);
+        this.vfxBlur.setPasses(15);
 //        this.vfxBlur.setAmount(15);
         new NfaaEffect(true);
         this.vfxNoise = new FilmGrainEffect();
@@ -1040,6 +1040,60 @@ public class Renderer {
         this.vfxManager.applyEffects();
         this.vfxManager.renderToScreen(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
 
+        this.flush();
+    }
+
+    /** Captures the current framebuffer and applies the renderer's Gaussian blur shader off-screen. */
+    public FrameBuffer captureBlurredFrame() {
+        this.flush();
+        this.batch.end();
+        var capturedPixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+        Texture capturedTexture = null;
+        FrameBuffer blurredFrame = null;
+        var targetBound = false;
+        var completed = false;
+        try {
+            capturedTexture = new Texture(capturedPixmap);
+            capturedTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+            blurredFrame = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+            blurredFrame.begin();
+            targetBound = true;
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            this.batch.setColor(1, 1, 1, 1);
+            this.batch.disableBlending();
+            this.batch.begin();
+            this.batch.setShader(this.blurShader);
+            this.blurShader.setUniformf("iResolution", Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+            this.blurShader.setUniformf("iBlurRadius", Config.blurRadius);
+            this.batch.draw(capturedTexture, 0, 0, this.getWidth(), this.getHeight());
+            this.batch.flush();
+            this.batch.setShader(null);
+            this.batch.end();
+            blurredFrame.end();
+            targetBound = false;
+            completed = true;
+            return blurredFrame;
+        } finally {
+            if (targetBound) blurredFrame.end();
+            if (capturedTexture != null) capturedTexture.dispose();
+            capturedPixmap.dispose();
+            this.batch.begin();
+            this.batch.enableBlending();
+            this.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            if (!completed && blurredFrame != null) blurredFrame.dispose();
+        }
+    }
+
+    /** Draws the part of a full-frame blurred image that lies under the given UI rectangle. */
+    public void drawBlurredFrameRegion(Texture texture, float x, float y, float width, float height) {
+        if (!this.rendering) return;
+
+        var u = x / this.getWidth();
+        var v = 1.0F - y / this.getHeight();
+        var u2 = (x + width) / this.getWidth();
+        var v2 = 1.0F - (y + height) / this.getHeight();
+        this.batch.setColor(Color.WHITE);
+        this.batch.draw(texture, x, y, width, height, u, v, u2, v2);
         this.flush();
     }
 

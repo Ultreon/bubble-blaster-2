@@ -3,6 +3,7 @@ package dev.ultreon.bubbles.render.gui.hud;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import dev.ultreon.bubbles.GamePlatform;
 import dev.ultreon.bubbles.entity.player.Player;
 import dev.ultreon.bubbles.gamemode.Gamemode;
@@ -52,7 +53,8 @@ public class ModernHud extends HudType {
         if (player == null) return;
 
         if (!world.isGameOver()) {
-            this.game.profiler.section("Draw Badge", () -> this.drawBadge(renderer, player));
+            var blurredFrame = renderer.captureBlurredFrame();
+            this.game.profiler.section("Draw Badge", () -> this.drawBadge(renderer, player, blurredFrame));
             this.game.profiler.section("Draw Status Effects", () -> this.drawStatusEffects(renderer, player));
         }
 
@@ -70,12 +72,17 @@ public class ModernHud extends HudType {
         }
     }
 
-    private void drawBadge(Renderer renderer, Player player) {
-        this.game.profiler.section("Draw Background", () -> this.drawBadgeBackground(renderer));
+    private void drawBadge(Renderer renderer, Player player, FrameBuffer blurredFrame) {
+        this.game.profiler.section("Draw Background", () -> this.drawBadgeBackground(renderer, blurredFrame));
         this.game.profiler.section("Draw Player Details", () -> this.drawPlayerDetails(renderer, player));
     }
 
-    private void drawBadgeBackground(Renderer renderer) {
+    private void drawBadgeBackground(Renderer renderer, FrameBuffer blurredFrame) {
+        try {
+            renderer.drawBlurredFrameRegion(blurredFrame.getColorBufferTexture(), 20, 20, 300, 80);
+        } finally {
+            blurredFrame.dispose();
+        }
         renderer.fill(20, 20, 300, 80, Colors.rgba(0x00, 0x00, 0x00, 0x80));
     }
 
