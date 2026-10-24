@@ -493,9 +493,19 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
     @Override
     public void resize(int width, int height) {
-        this.camera.setToOrtho(true, HdpiUtils.toBackBufferX(width), HdpiUtils.toBackBufferY(height)); // Set up the camera's projection matrix
-        this.renderer.resize(width, height);
-        this.viewport.update(HdpiUtils.toBackBufferX(width), HdpiUtils.toBackBufferY(height));
+        int logicalWidth = Constants.DEFAULT_SIZE.x;
+        int logicalHeight = Constants.DEFAULT_SIZE.y;
+        var gameViewport = this.window.getGameViewport();
+
+        this.camera.setToOrtho(true, logicalWidth, logicalHeight);
+        this.renderer.resize(logicalWidth, logicalHeight);
+        this.viewport.update(logicalWidth, logicalHeight);
+        Gdx.gl.glViewport(
+                HdpiUtils.toBackBufferX(Math.round(gameViewport.x)),
+                HdpiUtils.toBackBufferY(Math.round(gameViewport.y)),
+                HdpiUtils.toBackBufferX(Math.round(gameViewport.width)),
+                HdpiUtils.toBackBufferY(Math.round(gameViewport.height))
+        );
 
         var glitch = this.glitchRenderer;
         if (glitch != null)
@@ -503,7 +513,7 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
 
         var screen = this.screen;
         if (screen != null)
-            screen.resize(width, height);
+            screen.resize(logicalWidth, logicalHeight);
     }
 
     @Override
@@ -597,7 +607,8 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
         this.window.setVisible(true);
         this.window.setFullscreen(BubbleBlasterConfig.FULLSCREEN.get());
 
-        this.mouseMove(Gdx.input.getX(), Gdx.input.getY());
+        var mousePos = this.windowToGame(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        this.mouseMove((int) mousePos.x, (int) mousePos.y);
     }
 
     @SuppressWarnings("ConstantValue")
@@ -813,6 +824,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     private void onKeyPress(int keyCode, boolean holding) {
+        if (keyCode == Keys.F11) {
+            if (!Gdx.graphics.isFullscreen()) {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                return;
+            }
+
+            Gdx.graphics.setWindowedMode(1280, 720);
+            return;
+        }
+
         final var loadedGame = this.loadedGame;
 
         if (loadedGame != null) {
@@ -967,11 +988,11 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public int getScaledWidth() {
-        return this.getWidth();
+        return Constants.DEFAULT_SIZE.x;
     }
 
     public int getScaledHeight() {
-        return this.getHeight();
+        return Constants.DEFAULT_SIZE.y;
     }
 
     private void checkForExitEvents() {
@@ -1649,11 +1670,16 @@ public final class BubbleBlaster extends ApplicationAdapter implements CrashFill
     }
 
     public int getWidth() {
-        return Gdx.graphics.getWidth();
+        return Constants.DEFAULT_SIZE.x;
     }
 
     public int getHeight() {
-        return Gdx.graphics.getHeight();
+        return Constants.DEFAULT_SIZE.y;
+    }
+
+    /** Convert a window-space pointer position to the fixed logical game area. */
+    public Vector2 windowToGame(Vector2 position) {
+        return this.window.windowToGame(position);
     }
 
     public int getFps() {

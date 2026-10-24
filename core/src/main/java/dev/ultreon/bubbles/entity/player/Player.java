@@ -187,7 +187,7 @@ public class Player extends LivingEntity implements InputController {
     @Override
     public Circle getShape() {
         if (this.world.getGamemode() instanceof OpenWorldMode) {
-            return new Circle(Gdx.graphics.getWidth() / 2f - RADIUS * 2 * this.scale / 2, Gdx.graphics.getHeight() / 2f - RADIUS * 2 * this.scale / 2, RADIUS * 2 * this.scale);
+            return new Circle(this.world.game().getWidth() / 2f - RADIUS * 2 * this.scale / 2, this.world.game().getHeight() / 2f - RADIUS * 2 * this.scale / 2, RADIUS * 2 * this.scale);
         }
         return new Circle((float) (this.pos.x - RADIUS * 2 * this.scale / 2), (float) (this.pos.y - RADIUS * 2 * this.scale / 2), RADIUS * 2 * this.scale);
     }
@@ -195,13 +195,13 @@ public class Player extends LivingEntity implements InputController {
     @Override
     public Rectangle getBounds() {
         if (this.world.getGamemode() instanceof OpenWorldMode)
-            return new Rectangle(Gdx.graphics.getWidth() / 2f - RADIUS, Gdx.graphics.getHeight() / 2f - RADIUS, RADIUS * 2, RADIUS * 2);
+            return new Rectangle(this.world.game().getWidth() / 2f - RADIUS, this.world.game().getHeight() / 2f - RADIUS, RADIUS * 2, RADIUS * 2);
         return new Rectangle((float) (this.pos.x - RADIUS), (float) (this.pos.y - RADIUS), RADIUS * 2, RADIUS * 2);
     }
 
     private Circle transformShip(Circle ship) {
         if (this.world.getGamemode() instanceof OpenWorldMode) {
-            ship.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+            ship.setPosition(this.world.game().getWidth() / 2f, this.world.game().getHeight() / 2f);
             return ship;
         }
         ship.setPosition((float) this.pos.x, (float) this.pos.y);
@@ -211,7 +211,7 @@ public class Player extends LivingEntity implements InputController {
     private Polygon transformArrow(Polygon arrow) {
         if (this.world.getGamemode() instanceof OpenWorldMode) {
             arrow.setRotation(this.rotation + 180f);
-            arrow.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+            arrow.setPosition(this.world.game().getWidth() / 2f, this.world.game().getHeight() / 2f);
             return arrow;
         }
         // Set position based on mouse cursor
@@ -800,8 +800,9 @@ public class Player extends LivingEntity implements InputController {
     }
 
     public double visualDistanceToMouseCursor() {
-        var mousePos = new Vector2D(Gdx.input.getX(), Gdx.input.getY());
+        var mousePos = dev.ultreon.bubbles.input.DesktopInput.getMousePos();
+        var mousePosition = new Vector2D(mousePos.x, mousePos.y);
         var visualPos = new Vector2D(this.getVisualX(), this.getVisualY());
-        return mousePos.dst(visualPos);
+        return mousePosition.dst(visualPos);
     }
 }

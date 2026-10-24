@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import dev.ultreon.bubbles.event.v1.WindowEvents;
 import dev.ultreon.libs.commons.v0.Identifier;
 import org.jetbrains.annotations.Contract;
@@ -23,12 +24,42 @@ public interface GameWindow {
     static GameWindow create(Properties properties) {
         var window = GamePlatform.get().createWindow(properties);
         window.setSize(properties.width, properties.height);
-        Gdx.graphics.setResizable(false);
         return window;
     }
 
     default Vector2 getSize() {
         return new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    /** The centered, aspect-preserving viewport occupied by the logical game area. */
+    default Rectangle getGameViewport() {
+        float scale = Math.min((float) this.getWidth() / Constants.DEFAULT_SIZE.x,
+                (float) this.getHeight() / Constants.DEFAULT_SIZE.y);
+        float width = Constants.DEFAULT_SIZE.x * scale;
+        float height = Constants.DEFAULT_SIZE.y * scale;
+        return new Rectangle((this.getWidth() - width) / 2f, (this.getHeight() - height) / 2f, width, height);
+    }
+
+    /** Convert a top-left-origin window position into logical game coordinates. */
+    default Vector2 windowToGame(Vector2 position) {
+        Rectangle viewport = this.getGameViewport();
+        return position.set((position.x - viewport.x) * Constants.DEFAULT_SIZE.x / viewport.width,
+                (position.y - viewport.y) * Constants.DEFAULT_SIZE.y / viewport.height);
+    }
+
+    /** Convert a logical top-left-origin rectangle to backbuffer scissor coordinates. */
+    default Rectangle gameToBackBuffer(Rectangle rect) {
+        Rectangle viewport = this.getGameViewport();
+        float scaleX = viewport.width / Constants.DEFAULT_SIZE.x;
+        float scaleY = viewport.height / Constants.DEFAULT_SIZE.y;
+        float x = viewport.x + rect.x * scaleX;
+        float yFromTop = viewport.y + (Constants.DEFAULT_SIZE.y - rect.y - rect.height) * scaleY;
+        return new Rectangle(
+                HdpiUtils.toBackBufferX(Math.round(x)),
+                Math.round(yFromTop * Gdx.graphics.getBackBufferHeight() / Gdx.graphics.getHeight()),
+                HdpiUtils.toBackBufferX(Math.round(rect.width * scaleX)),
+                Math.round(rect.height * scaleY * Gdx.graphics.getBackBufferHeight() / Gdx.graphics.getHeight())
+        );
     }
 
     default void setSize(int width, int height) {

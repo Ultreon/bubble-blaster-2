@@ -126,7 +126,7 @@ public class Bubble extends AbstractBubbleEntity {
             this.rotation = 180;
 
             if (reason.getUsage() == SpawnUsage.BUBBLE_INIT_SPAWN) {
-                this.pos.set(random.nextFloat(-this.radius, Gdx.graphics.getWidth() + this.radius), random.nextFloat(-this.radius, Gdx.graphics.getHeight() + this.radius));
+                this.pos.set(random.nextFloat(-this.radius, this.world.game().getWidth() + this.radius), random.nextFloat(-this.radius, this.world.game().getHeight() + this.radius));
             }
         }
 
@@ -281,11 +281,11 @@ public class Bubble extends AbstractBubbleEntity {
 
         if (this.world.getGamemode() instanceof OpenWorldMode) {
             var rel = this.game.player.pos;
-            x = rel.x - x + Gdx.graphics.getWidth() / 2f;
-            y = rel.y - y + Gdx.graphics.getHeight() / 2f;
+            x = rel.x - x + this.world.game().getWidth() / 2f;
+            y = rel.y - y + this.world.game().getHeight() / 2f;
         }
 
-        if (x + this.radius < 0 || x - this.radius > Gdx.graphics.getWidth() || y + this.radius < 0 || y - this.radius > Gdx.graphics.getHeight()) {
+        if (x + this.radius < 0 || x - this.radius > this.world.game().getWidth() || y + this.radius < 0 || y - this.radius > this.world.game().getHeight()) {
             return;
         }
 

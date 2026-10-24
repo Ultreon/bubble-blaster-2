@@ -40,7 +40,6 @@ public class AndroidGameWindow implements GameWindow {
      */
     public AndroidGameWindow(Properties properties) {
         this.setSize(properties.width, properties.height);
-        Gdx.graphics.setResizable(false);
     }
 
     @Override

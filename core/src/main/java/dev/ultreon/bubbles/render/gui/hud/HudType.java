@@ -1,6 +1,5 @@
 package dev.ultreon.bubbles.render.gui.hud;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.ultreon.bubbles.BubbleBlaster;
@@ -72,10 +71,10 @@ public abstract class HudType implements Controllable {
     }
 
     protected float width() {
-        return Gdx.graphics.getWidth();
+        return this.game.getWidth();
     }
 
     protected int height() {
-        return Gdx.graphics.getHeight();
+        return this.game.getHeight();
     }
 }

@@ -44,7 +44,7 @@ public class DesktopInput implements InputProcessor, InputObject {
     }
 
     public static Vector2 getMousePos() {
-        return new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        return BubbleBlaster.getInstance().windowToGame(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
     }
 
     public static Vector2 getMouseDelta() {
@@ -105,6 +105,9 @@ public class DesktopInput implements InputProcessor, InputObject {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        var position = this.game.windowToGame(new Vector2(screenX, screenY));
+        screenX = (int) position.x;
+        screenY = (int) position.y;
         if (pointer == 0) POS.set(screenX, screenY);
         this.pressedByPointer.put(pointer, true);
 
@@ -117,6 +120,9 @@ public class DesktopInput implements InputProcessor, InputObject {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        var position = this.game.windowToGame(new Vector2(screenX, screenY));
+        screenX = (int) position.x;
+        screenY = (int) position.y;
         if (pointer == 0) POS.set(screenX, screenY);
 
         this.pressedByPointer.put(pointer, false);
@@ -135,6 +141,9 @@ public class DesktopInput implements InputProcessor, InputObject {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        var position = this.game.windowToGame(new Vector2(screenX, screenY));
+        screenX = (int) position.x;
+        screenY = (int) position.y;
         if (pointer == 0) POS.set(screenX, screenY);
 
         for (var entry : this.dragStarts.int2ReferenceEntrySet()) {
@@ -147,6 +156,9 @@ public class DesktopInput implements InputProcessor, InputObject {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        var position = this.game.windowToGame(new Vector2(screenX, screenY));
+        screenX = (int) position.x;
+        screenY = (int) position.y;
         POS.set(screenX, screenY);
 
         InputEvents.MOUSE_MOVE.factory().onMouseMove(screenX, screenY);

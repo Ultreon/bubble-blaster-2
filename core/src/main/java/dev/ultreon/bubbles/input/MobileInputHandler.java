@@ -61,10 +61,10 @@ public class MobileInputHandler extends InputHandler<MobileInput> {
     }
 
     public Shape2D getShootBtnRegion() {
-        return new Circle(Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 100, 100);
+        return new Circle(BubbleBlaster.getInstance().getWidth() - 100, BubbleBlaster.getInstance().getHeight() - 100, 100);
     }
 
     public Shape2D getPauseBtnRegion() {
-        return new Circle(Gdx.graphics.getWidth() / 2f, 100, 100);
+        return new Circle(BubbleBlaster.getInstance().getWidth() / 2f, 100, 100);
     }
 }

@@ -37,7 +37,6 @@ public class DesktopGameWindow implements GameWindow {
      */
     public DesktopGameWindow(Properties properties) {
         this.setSize(properties.width, properties.height);
-        Gdx.graphics.setResizable(false);
     }
 
     @Override

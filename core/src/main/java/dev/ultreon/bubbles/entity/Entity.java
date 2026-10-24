@@ -119,7 +119,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public float getVisualX() {
         if (this.world.getGamemode() instanceof OpenWorldMode) {
             var rel = this.game.player.pos;
-            return (float) (this.pos.x - rel.x + Gdx.graphics.getWidth() / 2f);
+            return (float) (this.pos.x - rel.x + this.world.game().getWidth() / 2f);
         }
         return (float) this.pos.x;
     }
@@ -127,7 +127,7 @@ public abstract class Entity extends GameObject implements StateHolder {
     public float getVisualY() {
         if (this.world.getGamemode() instanceof OpenWorldMode) {
             var rel = this.game.player.pos;
-            return (float) (this.pos.y - rel.y + Gdx.graphics.getHeight() / 2f);
+            return (float) (this.pos.y - rel.y + this.world.game().getHeight() / 2f);
         }
         return (float) this.pos.y;
     }

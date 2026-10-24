@@ -37,8 +37,8 @@ public class ControllerInputHandler extends InputHandler<ControllerInput> {
         var cursorPos = DesktopInput.getMousePos();
         if (moveX > 0 || moveY > 0) {
             cursorPos.add(moveX * MOUSE_SPEED / TPS, moveY * MOUSE_SPEED / TPS);
-            cursorPos.x = Mth.clamp(cursorPos.x, 0, Gdx.graphics.getWidth());
-            cursorPos.y = Mth.clamp(cursorPos.y, 0, Gdx.graphics.getHeight());
+            cursorPos.x = Mth.clamp(cursorPos.x, 0, BubbleBlaster.getInstance().getWidth());
+            cursorPos.y = Mth.clamp(cursorPos.y, 0, BubbleBlaster.getInstance().getHeight());
 
 //            Vector2 screenCoordinates = this.game.viewport.toScreenCoordinates(cursorPos, this.game.getTransform());
 //            Gdx.input.setCursorPosition((int) screenCoordinates.x, (int) screenCoordinates.y);
